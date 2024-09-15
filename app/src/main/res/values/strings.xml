@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">PartyPuzz</string>
+
+    <!-- Navigation Routes -->
+    <string name="home_screen">HomeScreen</string>
+
+    <!-- Game Modes -->
+    <string name="solo_game_mode">Solo</string>
+    <string name="teams_game_mode">Teams</string>
+    <string name="couples_game_mode">Couples</string>
+    <string name="party_puzz_game_mode">Party Puzz</string>
+
+    <!-- Game Modes Descriptions -->
+    <string name="solo_description">An standard mode in which every party member can win or lose</string>
+    <string name="teams_description">A mode for those who cannot stay away from each other for too long </string>
+    <string name="couples_description">Reinforce your love with your couple playing as a team</string>
+    <string name="party_puzz_description">It is simple Party Puzz</string>
+
+    <string name="welcome">Welcome</string>
+    <string name="glad_to_have_you_back">Hi %1$s we are glad to have you back. What do you want to play today?</string>
 </resources>
