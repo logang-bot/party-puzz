@@ -3,6 +3,7 @@
 
     <!-- Navigation Routes -->
     <string name="home_screen">HomeScreen</string>
+    <string name="game_config_screen">GameConfigScreen</string>
 
     <!-- Game Modes -->
     <string name="solo_game_mode">Solo</string>

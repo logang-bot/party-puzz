@@ -1,5 +1,9 @@
 package com.restrusher.partypuzz.ui.views.home
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,35 +32,25 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.appDataSource.GameModesDatasource
 import com.restrusher.partypuzz.data.appModels.GameMode
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(
-    modifier: Modifier = Modifier
+fun SharedTransitionScope.HomeScreen(
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onGameOptionSelected: (String) -> Unit, modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.background(
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    MaterialTheme.colorScheme.primary
+                    MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.primary
                 )
             )
         )
     ) {
-//        Image(
-//            painter = painterResource(id = R.drawable.img_light_background),
-//            contentDescription = stringResource(
-//                id = R.string.app_name
-//            ),
-//            contentScale = ContentScale.Crop,
-//            modifier = Modifier.fillMaxSize()
-//        )
         Column {
             Box(
                 modifier = Modifier.padding(
-                    top = 15.dp,
-                    bottom = 30.dp,
-                    start = 15.dp,
-                    end = 15.dp
+                    top = 15.dp, bottom = 30.dp, start = 15.dp, end = 15.dp
                 )
             ) {
                 Column {
@@ -65,46 +59,84 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.headlineLarge,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Text(
                         text = stringResource(id = R.string.glad_to_have_you_back, "John"),
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
                         style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
             }
-            Row(modifier = Modifier.fillMaxWidth().padding(5.dp), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
                 val gamesModes = GameModesDatasource.gameModesList
-                Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    GameModeCard(gamesModes.elementAt(0), modifier = modifier.weight(1.2f))
-                    GameModeCard(gamesModes.elementAt(1), modifier = modifier.weight(0.8f))
+                Column(
+                    modifier = modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    GameModeCard(
+                        animatedVisibilityScope,
+                        onGameOptionSelected,
+                        gamesModes.elementAt(0),
+                        modifier = modifier.weight(1.2f)
+                    )
+                    GameModeCard(
+                        animatedVisibilityScope,
+                        onGameOptionSelected,
+                        gamesModes.elementAt(1),
+                        modifier = modifier.weight(0.8f)
+                    )
                 }
-                Column(modifier = modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                    GameModeCard(gamesModes.elementAt(2), modifier = modifier.weight(0.8f))
-                    GameModeCard(gamesModes.elementAt(3), modifier = modifier.weight(1.2f))
+                Column(
+                    modifier = modifier.weight(1f),
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    GameModeCard(
+                        animatedVisibilityScope,
+                        onGameOptionSelected,
+                        gamesModes.elementAt(2),
+                        modifier = modifier.weight(0.8f)
+                    )
+                    GameModeCard(
+                        animatedVisibilityScope,
+                        onGameOptionSelected,
+                        gamesModes.elementAt(3),
+                        modifier = modifier.weight(1.2f)
+                    )
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun GameModeCard(
-    gameMode: GameMode, modifier: Modifier = Modifier
+fun SharedTransitionScope.GameModeCard(
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onClick: (String) -> Unit,
+    gameMode: GameMode,
+    modifier: Modifier = Modifier
 ) {
     Box(contentAlignment = Alignment.Center,
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
-            .clickable { }) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(3.dp)) {
+            .clickable {
+                onClick(gameMode.name.toString())
+            }) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(3.dp)
+        ) {
             Image(
                 painter = painterResource(id = gameMode.imageId),
                 contentDescription = stringResource(id = gameMode.description),
@@ -114,6 +146,13 @@ fun GameModeCard(
                 text = stringResource(id = gameMode.name),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "game/${gameMode.name}"),
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    boundsTransform = { _, _ ->
+                        tween(durationMillis = 1500)
+                    }
+                )
             )
             Text(
                 text = stringResource(id = gameMode.description),
