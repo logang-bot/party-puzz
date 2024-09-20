@@ -5,6 +5,9 @@
     <string name="home_screen">HomeScreen</string>
     <string name="game_config_screen">GameConfigScreen</string>
 
+    <!-- Navigation Routes Titles -->
+    <string name="prepare_your_party">Prepare your Party</string>
+
     <!-- Game Modes -->
     <string name="solo_game_mode">Solo</string>
     <string name="teams_game_mode">Teams</string>
@@ -19,4 +22,8 @@
 
     <string name="welcome">Welcome</string>
     <string name="glad_to_have_you_back">Hi %1$s we are glad to have you back. What do you want to play today?</string>
+
+    <string name="back_button">Back</string>
+    <string name="game_mode_image">Game mode image</string>
+
 </resources>

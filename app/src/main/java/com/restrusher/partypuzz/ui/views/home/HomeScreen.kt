@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -36,7 +38,8 @@ import com.restrusher.partypuzz.data.appModels.GameMode
 @Composable
 fun SharedTransitionScope.HomeScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onGameOptionSelected: (String) -> Unit, modifier: Modifier = Modifier
+    onGameOptionSelected: (Int, Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.background(
@@ -121,7 +124,7 @@ fun SharedTransitionScope.HomeScreen(
 @Composable
 fun SharedTransitionScope.GameModeCard(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onClick: (String) -> Unit,
+    onClick: (Int, Int) -> Unit,
     gameMode: GameMode,
     modifier: Modifier = Modifier
 ) {
@@ -131,7 +134,7 @@ fun SharedTransitionScope.GameModeCard(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
             .clickable {
-                onClick(gameMode.name.toString())
+                onClick(gameMode.name, gameMode.imageId)
             }) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -139,18 +142,29 @@ fun SharedTransitionScope.GameModeCard(
         ) {
             Image(
                 painter = painterResource(id = gameMode.imageId),
-                contentDescription = stringResource(id = gameMode.description),
-                contentScale = ContentScale.Crop
+                contentDescription = stringResource(id = R.string.game_mode_image),
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .height(100.dp)
+                    .padding(bottom = 10.dp)
+                    .sharedElement(
+                        state = rememberSharedContentState(key = "game/${gameMode.imageId}"),
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        boundsTransform = { _, _ ->
+                            tween(durationMillis = 400)
+                        }
+                    )
             )
             Text(
                 text = stringResource(id = gameMode.name),
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.sharedElement(
                     state = rememberSharedContentState(key = "game/${gameMode.name}"),
                     animatedVisibilityScope = animatedVisibilityScope,
                     boundsTransform = { _, _ ->
-                        tween(durationMillis = 1500)
+                        tween(durationMillis = 400)
                     }
                 )
             )
