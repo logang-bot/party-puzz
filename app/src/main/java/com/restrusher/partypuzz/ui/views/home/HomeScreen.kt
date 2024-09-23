@@ -1,8 +1,12 @@
 package com.restrusher.partypuzz.ui.views.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,10 +33,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.appDataSource.GameModesDatasource
 import com.restrusher.partypuzz.data.appModels.GameMode
+import com.restrusher.partypuzz.navigation.HomeScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -68,7 +74,7 @@ fun SharedTransitionScope.HomeScreen(
                     Text(
                         text = stringResource(id = R.string.glad_to_have_you_back, "John"),
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -159,6 +165,7 @@ fun SharedTransitionScope.GameModeCard(
                 text = stringResource(id = gameMode.name),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
+                fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.sharedElement(
                     state = rememberSharedContentState(key = "game/${gameMode.name}"),
@@ -173,6 +180,20 @@ fun SharedTransitionScope.GameModeCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                 textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Preview
+@Composable
+fun HomeScreenPreview() {
+    SharedTransitionLayout {
+        AnimatedVisibility(visible = true) {
+            HomeScreen(
+                animatedVisibilityScope = this,
+                onGameOptionSelected = {_, _ -> }
             )
         }
     }
