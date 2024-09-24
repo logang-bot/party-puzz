@@ -23,7 +23,15 @@
     <string name="welcome">Welcome</string>
     <string name="glad_to_have_you_back">Hi %1$s we are glad to have you back. What do you want to play today?</string>
 
+    <!-- Image Descriptions -->
     <string name="back_button">Back</string>
     <string name="game_mode_image">Game mode image</string>
+    <string name="player_avatar">Player Avatar</string>
+    <string name="player_gender">Player Gender</string>
+
+    <string name="lets_set_up_your_party">Let\'s set up your party</string>
+    <string name="enter_some_players_name">Enter the players\' names</string>
+
+    <string name="players_name">Player\'s name</string>
 
 </resources>

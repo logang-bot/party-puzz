@@ -5,9 +5,16 @@ data class Player (
     val nickName: String,
     val gender: Gender,
     val age: Int
-)
+) {
+    companion object {
+        fun getEmptyPlayer(): Player {
+            return Player(0, "", Gender.Male, 0)
+        }
+    }
+}
 
 enum class Gender {
     Male,
-    Female
+    Female,
+    Unknown,
 }

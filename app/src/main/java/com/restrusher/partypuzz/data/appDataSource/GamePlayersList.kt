@@ -4,9 +4,20 @@ import com.restrusher.partypuzz.data.models.Player
 
 // TODO: This class and functionality needs to be migrated to ROOM
 object GamePlayersList {
-    var PlayerList: MutableList<Player> = mutableListOf()
+    var PlayersList: MutableList<Player> = mutableListOf()
 
     fun addPlayer(player: Player) {
-        PlayerList.add(player)
+        PlayersList.add(player)
+    }
+
+    fun setBaseNumberOfPlayers(numberOfPlayers: Int) {
+        resetPlayersList()
+        repeat(numberOfPlayers) {
+            PlayersList.add(Player.getEmptyPlayer())
+        }
+    }
+
+    fun resetPlayersList() {
+        PlayersList.clear();
     }
 }
