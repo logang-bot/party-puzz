@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,9 +24,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -45,12 +48,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
-import com.restrusher.partypuzz.ui.theme.backgroundDark
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -67,7 +68,7 @@ fun SharedTransitionScope.GameConfigScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .padding(10.dp)
+            .padding(16.dp)
     ) {
         Text(
             text = stringResource(id = gameModeName),
@@ -97,22 +98,26 @@ fun SharedTransitionScope.GameConfigScreen(
                     })
         )
 
-        Text(
-            text = stringResource(id = R.string.lets_set_up_your_party),
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Light,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Text(
-            text = stringResource(id = R.string.enter_some_players_name),
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.fillMaxWidth()
-        )
+        Spacer(modifier = Modifier.height(10.dp))
 
         NamesContainer()
+
+        Spacer(modifier = Modifier.height(5.dp))
+
+        TextButton(onClick = { /*TODO*/ }) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_plus),
+                    contentDescription = stringResource(
+                        id = R.string.add_player
+                    )
+                )
+                Text(text = stringResource(id = R.string.add_player))
+            }
+        }
+
+        OptionsContainer()
+
     }
 }
 
@@ -120,6 +125,13 @@ fun SharedTransitionScope.GameConfigScreen(
 fun NamesContainer(
     modifier: Modifier = Modifier
 ) {
+    Text(
+        text = stringResource(id = R.string.enter_the_players_name),
+        textAlign = TextAlign.Start,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.fillMaxWidth()
+    )
     LazyColumn(verticalArrangement = Arrangement.spacedBy(5.dp)) {
         GamePlayersList.setBaseNumberOfPlayers(2)
         items(GamePlayersList.PlayersList) { player ->
@@ -136,17 +148,24 @@ fun PlayerDataCard(
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        modifier = modifier.fillMaxWidth()
+        ), modifier = modifier.fillMaxWidth()
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(5.dp)
+        ) {
             PlayerAvatar()
             TextField(value = playerName,
                 onValueChange = { playerName = it },
                 singleLine = true,
-                placeholder = { Text(stringResource(id = R.string.players_name), Modifier.alpha(0.5f)) },
+                placeholder = {
+                    Text(
+                        stringResource(id = R.string.players_name),
+                        Modifier.alpha(0.5f)
+                    )
+                },
                 shape = RoundedCornerShape(10.dp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -158,7 +177,7 @@ fun PlayerDataCard(
             )
 
             Image(
-                painter = painterResource(id = R.drawable.baseline_male_24),
+                painter = painterResource(id = R.drawable.ic_male),
                 contentDescription = stringResource(
                     id = R.string.player_avatar
                 ),
@@ -182,6 +201,38 @@ fun PlayerAvatar() {
                 .height(48.dp)
                 .clip(CircleShape)
         )
+    }
+}
+
+@Composable
+fun OptionsContainer() {
+    Column {
+        Text(
+            text = stringResource(id = R.string.customize_your_party),
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Column(modifier = Modifier.padding(start = 16.dp)) {
+            OptionCard(stringResource(id = R.string.bar_mode))
+            OptionCard(stringResource(id = R.string.can_skip_questions))
+            OptionCard(stringResource(id = R.string.unlimited_mode))
+        }
+    }
+
+}
+
+@Composable
+fun OptionCard(
+    optionName: String,
+    modifier: Modifier = Modifier
+) {
+    var isChecked by remember { mutableStateOf(false) }
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
+        Text(text = optionName, style = MaterialTheme.typography.labelLarge,  modifier = Modifier.weight(1f))
+        Switch(checked = isChecked, onCheckedChange = { isChecked = it })
     }
 }
 

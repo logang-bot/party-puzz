@@ -7,7 +7,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.restrusher.partypuzz.R
 
 val bodyFontFamily = FontFamily(
-    Font(R.font.anek_malayalam_variable)
+    Font(R.font.actor_regular)
 )
 
 val displayFontFamily = FontFamily(
