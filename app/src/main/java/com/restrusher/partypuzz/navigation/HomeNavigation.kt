@@ -18,7 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.restrusher.partypuzz.ui.common.HomeAppBar
-import com.restrusher.partypuzz.ui.views.gameConfig.GameConfigScreen
+import com.restrusher.partypuzz.ui.views.gameConfig.ui.GameConfigScreen
 import com.restrusher.partypuzz.ui.views.home.HomeScreen
 
 @OptIn(ExperimentalSharedTransitionApi::class)

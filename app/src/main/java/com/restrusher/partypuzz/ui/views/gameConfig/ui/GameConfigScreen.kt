@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.gameConfig
+package com.restrusher.partypuzz.ui.views.gameConfig.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -27,12 +29,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,6 +69,7 @@ fun SharedTransitionScope.GameConfigScreen(
     modifier: Modifier = Modifier
 ) {
     setAppBarTitle(stringResource(id = R.string.prepare_your_party))
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -104,135 +111,7 @@ fun SharedTransitionScope.GameConfigScreen(
 
         Spacer(modifier = Modifier.height(5.dp))
 
-        TextButton(onClick = { /*TODO*/ }) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_plus),
-                    contentDescription = stringResource(
-                        id = R.string.add_player
-                    )
-                )
-                Text(text = stringResource(id = R.string.add_player))
-            }
-        }
-
         OptionsContainer()
-
-    }
-}
-
-@Composable
-fun NamesContainer(
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = stringResource(id = R.string.enter_the_players_name),
-        textAlign = TextAlign.Start,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.fillMaxWidth()
-    )
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-        GamePlayersList.setBaseNumberOfPlayers(2)
-        items(GamePlayersList.PlayersList) { player ->
-            PlayerDataCard(player)
-        }
-    }
-}
-
-@Composable
-fun PlayerDataCard(
-    player: Player, modifier: Modifier = Modifier
-) {
-    var playerName by remember { mutableStateOf("") }
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ), modifier = modifier.fillMaxWidth()
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-        ) {
-            PlayerAvatar()
-            TextField(value = playerName,
-                onValueChange = { playerName = it },
-                singleLine = true,
-                placeholder = {
-                    Text(
-                        stringResource(id = R.string.players_name),
-                        Modifier.alpha(0.5f)
-                    )
-                },
-                shape = RoundedCornerShape(10.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer
-                ),
-                modifier = Modifier.weight(1f)
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_male),
-                contentDescription = stringResource(
-                    id = R.string.player_avatar
-                ),
-                modifier = Modifier.padding(end = 5.dp)
-            )
-        }
-    }
-}
-
-@Composable
-fun PlayerAvatar() {
-    Box(modifier = Modifier.padding(end = 5.dp)) {
-        Image(
-            painter = painterResource(id = R.drawable.img_dummy_avatar),
-            contentDescription = stringResource(
-                id = R.string.player_avatar
-            ),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .width(48.dp)
-                .height(48.dp)
-                .clip(CircleShape)
-        )
-    }
-}
-
-@Composable
-fun OptionsContainer() {
-    Column {
-        Text(
-            text = stringResource(id = R.string.customize_your_party),
-            textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Column(modifier = Modifier.padding(start = 16.dp)) {
-            OptionCard(stringResource(id = R.string.bar_mode))
-            OptionCard(stringResource(id = R.string.can_skip_questions))
-            OptionCard(stringResource(id = R.string.unlimited_mode))
-        }
-    }
-
-}
-
-@Composable
-fun OptionCard(
-    optionName: String,
-    modifier: Modifier = Modifier
-) {
-    var isChecked by remember { mutableStateOf(false) }
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
-        Text(text = optionName, style = MaterialTheme.typography.labelLarge,  modifier = Modifier.weight(1f))
-        Switch(checked = isChecked, onCheckedChange = { isChecked = it })
     }
 }
 
@@ -253,3 +132,7 @@ fun GameConfigScreenPreview() {
         }
     }
 }
+
+data class ConfigurationTabItem(
+    val title: String
+)
