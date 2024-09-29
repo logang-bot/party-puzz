@@ -28,15 +28,16 @@
     <string name="game_mode_image">Game mode image</string>
     <string name="player_avatar">Player Avatar</string>
     <string name="player_gender">Player Gender</string>
+    <string name="option_description">Option Description</string>
 
     <string name="lets_set_up_your_party">Let\'s set up your party</string>
     <string name="enter_the_players_name">Enter the players\' names</string>
-
     <string name="players_name">Player\'s name</string>
     <string name="add_player">Add player</string>
     <string name="customize_your_party">Customize your party</string>
     <string name="bar_mode">Bar Mode</string>
     <string name="can_skip_questions">Can skip questions</string>
     <string name="unlimited_mode">Unlimited mode</string>
+    <string name="start_game">Start Game</string>
 
 </resources>
