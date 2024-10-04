@@ -7,7 +7,7 @@ data class Player (
 ) {
     companion object {
         fun getEmptyPlayer(): Player {
-            return Player(0, "", Gender.Male, 0)
+            return Player(0, "", Gender.Male)
         }
     }
 }

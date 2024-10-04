@@ -39,5 +39,7 @@
     <string name="can_skip_questions">Can skip questions</string>
     <string name="unlimited_mode">Unlimited mode</string>
     <string name="start_game">Start Game</string>
+    <string name="generate_random_name">Generate random name</string>
+    <string name="generate_random_image">Generate random image</string>
 
 </resources>
