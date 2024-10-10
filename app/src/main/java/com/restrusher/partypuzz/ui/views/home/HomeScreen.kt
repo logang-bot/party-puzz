@@ -11,15 +11,22 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +47,7 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.appDataSource.GameModesDatasource
 import com.restrusher.partypuzz.data.appModels.GameMode
 import com.restrusher.partypuzz.navigation.HomeScreen
+import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -48,139 +57,52 @@ fun SharedTransitionScope.HomeScreen(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.background(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.primaryContainer, MaterialTheme.colorScheme.primary
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        MaterialTheme.colorScheme.tertiaryContainer
+                    )
                 )
             )
-        )
     ) {
         Column {
             Box(
-                modifier = Modifier.padding(
-                    top = 15.dp, bottom = 30.dp, start = 15.dp, end = 15.dp
-                )
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        top = 15.dp, bottom = 30.dp, start = 15.dp, end = 15.dp
+                    )
             ) {
                 Column {
                     Text(
                         text = stringResource(id = R.string.welcome),
                         color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineLarge,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text(
-                        text = stringResource(id = R.string.glad_to_have_you_back, "John"),
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        style = MaterialTheme.typography.headlineSmall,
+                        textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
-
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
-            ) {
-                val gamesModes = GameModesDatasource.gameModesList
-                Column(
-                    modifier = modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    GameModeCard(
-                        animatedVisibilityScope,
-                        onGameOptionSelected,
-                        gamesModes.elementAt(0),
-                        modifier = modifier.weight(1.2f)
-                    )
-                    GameModeCard(
-                        animatedVisibilityScope,
-                        onGameOptionSelected,
-                        gamesModes.elementAt(1),
-                        modifier = modifier.weight(0.8f)
-                    )
-                }
-                Column(
-                    modifier = modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    GameModeCard(
-                        animatedVisibilityScope,
-                        onGameOptionSelected,
-                        gamesModes.elementAt(2),
-                        modifier = modifier.weight(0.8f)
-                    )
-                    GameModeCard(
-                        animatedVisibilityScope,
-                        onGameOptionSelected,
-                        gamesModes.elementAt(3),
-                        modifier = modifier.weight(1.2f)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-fun SharedTransitionScope.GameModeCard(
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    onClick: (Int, Int) -> Unit,
-    gameMode: GameMode,
-    modifier: Modifier = Modifier
-) {
-    Box(contentAlignment = Alignment.Center,
-        modifier = modifier
-            .clip(RoundedCornerShape(15.dp))
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.3f))
-            .clickable {
-                onClick(gameMode.name, gameMode.imageId)
-            }) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(3.dp)
-        ) {
-            Image(
-                painter = painterResource(id = gameMode.imageId),
-                contentDescription = stringResource(id = R.string.game_mode_image),
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .height(100.dp)
-                    .padding(bottom = 10.dp)
-                    .sharedElement(
-                        state = rememberSharedContentState(key = "game/${gameMode.imageId}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 400)
-                        }
-                    )
-            )
-            Text(
-                text = stringResource(id = gameMode.name),
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.sharedElement(
-                    state = rememberSharedContentState(key = "game/${gameMode.name}"),
+            val gamesModes = GameModesDatasource.gameModesList
+            val pagerState = rememberPagerState(initialPage = 0) {4}
+            HorizontalPager(
+                state = pagerState,
+                key = { gamesModes[it].imageId },
+                pageSize = PageSize.Fill,
+                modifier = Modifier.align(Alignment.CenterHorizontally))
+            { index ->
+                GameModeCard(
                     animatedVisibilityScope = animatedVisibilityScope,
-                    boundsTransform = { _, _ ->
-                        tween(durationMillis = 400)
-                    }
+                    onClick = onGameOptionSelected,
+                    gameMode = gamesModes[index],
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(0.7f).padding(horizontal = 20.dp)
                 )
-            )
-            Text(
-                text = stringResource(id = gameMode.description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-                textAlign = TextAlign.Center
-            )
+            }
         }
     }
 }
@@ -189,12 +111,11 @@ fun SharedTransitionScope.GameModeCard(
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    SharedTransitionLayout {
-        AnimatedVisibility(visible = true) {
-            HomeScreen(
-                animatedVisibilityScope = this,
-                onGameOptionSelected = {_, _ -> }
-            )
+    PartyPuzzTheme {
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                HomeScreen(animatedVisibilityScope = this, onGameOptionSelected = { _, _ -> })
+            }
         }
     }
 }

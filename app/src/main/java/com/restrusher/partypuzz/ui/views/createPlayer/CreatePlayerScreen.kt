@@ -88,7 +88,7 @@ fun CreatePlayerScreen(
         }
 
         Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(id = R.color.grey)
+            containerColor = MaterialTheme.colorScheme.primary
         )) {
             Text(text = stringResource(id = R.string.generate_random_image))
         }
@@ -112,7 +112,7 @@ fun NameContainer(
     )
 
     Button(onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-        containerColor = colorResource(id = R.color.pink)
+        containerColor = MaterialTheme.colorScheme.secondary
     )) {
         Text(text = stringResource(id = R.string.generate_random_name))
     }
