@@ -59,7 +59,7 @@ fun SharedTransitionScope.GameConfigScreen(
         ) {
             Text(
                 text = stringResource(id = gameModeName),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
@@ -77,7 +77,7 @@ fun SharedTransitionScope.GameConfigScreen(
                 contentDescription = stringResource(id = R.string.game_mode_image),
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
-                    .width(110.dp)
+                    .width(90.dp)
                     .padding(vertical = 20.dp)
                     .sharedElement(state = rememberSharedContentState(key = "game/${gameModeImage}"),
                         animatedVisibilityScope = animatedVisibilityScope,

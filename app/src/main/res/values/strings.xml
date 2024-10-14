@@ -41,5 +41,8 @@
     <string name="start_game">Start Game</string>
     <string name="generate_random_name">Generate random name</string>
     <string name="generate_random_image">Generate random image</string>
+    <string name="play">Play</string>
+    <string name="last_party">Last party</string>
+    <string name="see">See</string>
 
 </resources>
