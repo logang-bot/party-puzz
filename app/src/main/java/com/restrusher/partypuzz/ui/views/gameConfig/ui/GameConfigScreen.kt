@@ -43,19 +43,20 @@ fun SharedTransitionScope.GameConfigScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     gameModeName: Int,
     gameModeImage: Int,
+    onCreatePlayerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     setAppBarTitle(stringResource(id = R.string.prepare_your_party))
-    val scrollState = rememberScrollState()
+//    val scrollState = rememberScrollState()
     Column(modifier = modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(16.dp)
                 .weight(1f)
-//                .verticalScroll(scrollState)
+//                .verticalScroll(rememberScrollState()) // Disable it to make preview work
         ) {
             Text(
                 text = stringResource(id = gameModeName),
@@ -85,16 +86,15 @@ fun SharedTransitionScope.GameConfigScreen(
                             tween(durationMillis = 400)
                         })
             )
-
             PlayersContainer()
-
             Spacer(modifier = Modifier.height(10.dp))
-
             OptionsContainer()
-
         }
         Spacer(modifier = Modifier.height(5.dp))
-        StartGameButton(Modifier.fillMaxWidth().padding(10.dp))
+        StartGameButton(
+            Modifier
+                .fillMaxWidth()
+                .padding(10.dp))
     }
 }
 
@@ -131,7 +131,8 @@ fun GameConfigScreenPreview() {
                     setAppBarTitle = { },
                     animatedVisibilityScope = this,
                     gameModeName = R.string.party_puzz_game_mode,
-                    gameModeImage = R.drawable.img_partypuzz_mode_illustration
+                    gameModeImage = R.drawable.img_partypuzz_mode_illustration,
+                    onCreatePlayerClick = {}
                 )
             }
         }

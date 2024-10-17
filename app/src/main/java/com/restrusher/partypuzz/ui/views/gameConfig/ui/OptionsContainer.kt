@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -36,10 +38,21 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OptionsContainer(modifier: Modifier = Modifier) {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(3.dp), modifier = modifier) {
-        OptionChip(stringResource(id = R.string.bar_mode), true)
-        OptionChip(stringResource(id = R.string.can_skip_questions), false)
-        OptionChip(stringResource(id = R.string.unlimited_mode), true)
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(id = R.string.options),
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+            modifier = modifier
+        ) {
+            OptionChip(stringResource(id = R.string.bar_mode), true)
+            OptionChip(stringResource(id = R.string.can_skip_questions), false)
+            OptionChip(stringResource(id = R.string.unlimited_mode), true)
+        }
     }
 }
 
@@ -48,29 +61,32 @@ fun OptionChip(
     optionName: String, isEnabled: Boolean, modifier: Modifier = Modifier
 ) {
     val iconId = if (isEnabled) R.drawable.ic_check else R.drawable.ic_close
-    val backgroundColor = if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
-    val textColor = if (isEnabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
+    val backgroundColor =
+        if (isEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primaryContainer
+    val textColor =
+        if (isEnabled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onPrimaryContainer
     Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
+        verticalAlignment = Alignment.CenterVertically, modifier = modifier
             .wrapContentWidth()
             .clip(
                 RoundedCornerShape(20.dp)
             )
             .background(backgroundColor)
-            .padding(vertical = 2.dp, horizontal = 6.dp)
+            .padding(vertical = 2.dp, horizontal = 10.dp)
     ) {
         Image(
             painter = painterResource(id = iconId),
             contentDescription = stringResource(id = R.string.option_description),
             colorFilter = ColorFilter.tint(textColor),
-            modifier = Modifier.size(16.dp).padding(end = 2.dp)
+            modifier = Modifier
+                .size(16.dp)
+                .padding(end = 2.dp)
         )
         Text(text = optionName, style = MaterialTheme.typography.labelLarge, color = textColor)
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun OptionsContainerPreview() {
     PartyPuzzTheme {

@@ -10,3 +10,6 @@ data class GameConfigScreen(
     val gameModeName: Int,
     val gameModeImage: Int
 )
+
+@Serializable
+data object CreatePlayerScreen

@@ -3,9 +3,11 @@ package com.restrusher.partypuzz.ui.views.gameConfig.ui
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,9 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,63 +49,59 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 fun PlayerDataCard(
     player: Player, modifier: Modifier = Modifier
 ) {
-    var playerName by remember { mutableStateOf("") }
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
-        ), modifier = modifier.fillMaxWidth()
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .height(120.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(5.dp)
-        ) {
-            Box {
-                PlayerAvatar(R.drawable.img_dummy_avatar)
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.tertiary)
-                        .align(Alignment.BottomEnd)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_male),
-                        contentDescription = stringResource(
-                            id = R.string.player_avatar
-                        ),
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiary),
-                        modifier = Modifier.padding(1.dp)
-                    )
-                }
-            }
-            Text(
-                text = "John Doefdasfadsfsa",
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+        Box {
+            Image(
+                painter = painterResource(id = R.drawable.img_dummy_avatar),
+                contentDescription = stringResource(
+                    id = R.string.player_avatar
+                ),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
             )
+//            Box(
+//                modifier = Modifier
+//                    .clip(CircleShape)
+//                    .background(MaterialTheme.colorScheme.tertiary)
+//                    .align(Alignment.BottomEnd)
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.ic_male),
+//                    contentDescription = stringResource(
+//                        id = R.string.player_avatar
+//                    ),
+//                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiary),
+//                    modifier = Modifier.padding(1.dp)
+//                )
+//            }
+            Box(modifier = Modifier
+                .align(Alignment.BottomStart)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            colorResource(id = R.color.black)
+                        )
+                    )
+                )
+                .padding(top = 20.dp, start = 6.dp, end = 6.dp, bottom = 5.dp)
+            ) {
+                Text(
+                    text = "John Doefdasfadsfsa",
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = colorResource(id = R.color.white)
+                )
+            }
         }
-    }
-}
-
-@Composable
-fun PlayerAvatar(
-    @DrawableRes imageId: Int
-) {
-    Box(modifier = Modifier.padding(end = 5.dp)) {
-        Image(
-            painter = painterResource(id = imageId),
-            contentDescription = stringResource(
-                id = R.string.player_avatar
-            ),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .width(68.dp)
-                .height(68.dp)
-                .clip(CircleShape)
-        )
     }
 }
 
@@ -111,18 +111,27 @@ fun AddPlayerCard(modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
         ),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth().height(120.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(5.dp)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f))
         ) {
-            Box {
-                PlayerAvatar(R.drawable.ic_plus)
-            }
+            Image(
+                painter = painterResource(id = R.drawable.ic_plus),
+                contentDescription = stringResource(
+                    id = R.string.player_avatar
+                ),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .width(68.dp)
+                    .height(68.dp)
+                    .clip(CircleShape)
+            )
             Text(
                 text = stringResource(id = R.string.add_player),
                 style = MaterialTheme.typography.titleMedium,

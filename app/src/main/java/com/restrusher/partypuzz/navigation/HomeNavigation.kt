@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.restrusher.partypuzz.ui.common.HomeAppBar
+import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen
 import com.restrusher.partypuzz.ui.views.gameConfig.ui.GameConfigScreen
 import com.restrusher.partypuzz.ui.views.home.HomeScreen
 
@@ -64,8 +65,14 @@ fun HomeNavigation(
                         animatedVisibilityScope = this,
                         gameModeName = args.gameModeName,
                         gameModeImage = args.gameModeImage,
+                        onCreatePlayerClick = {
+                            navController.navigate(CreatePlayerScreen)
+                        },
                         modifier = Modifier.fillMaxSize()
                     )
+                }
+                composable<CreatePlayerScreen> {
+                    CreatePlayerScreen()
                 }
             }
         }

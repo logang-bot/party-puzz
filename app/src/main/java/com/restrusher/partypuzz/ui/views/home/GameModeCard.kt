@@ -12,25 +12,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,65 +39,16 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 @Composable
 fun SharedTransitionScope.GameModeCard(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onClick: (Int, Int) -> Unit,
+    onPlayClick: (Int, Int) -> Unit,
     gameMode: GameMode,
     modifier: Modifier = Modifier
 ) {
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//
-//        Text("Shadow Order")
-//
-//        Box(
-//            modifier = Modifier
-//                .size(100.dp)
-//                .shadow(
-//                    elevation = 10.dp,
-//                    spotColor = Color.Red,
-//                    shape = RoundedCornerShape(8.dp)
-//                ),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text("Hello World")
-//        }
-//
-//        Spacer(modifier = Modifier.height(20.dp))
-//        Box(
-//            modifier = Modifier
-//                .background(Color.Red)
-//                .size(100.dp)
-//                .shadow(
-//                    elevation = 10.dp,
-//                    shape = RoundedCornerShape(8.dp)
-//                ),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text("Hello World")
-//        }
-//
-//        Spacer(modifier = Modifier.height(20.dp))
-//
-//        Box(
-//            modifier = Modifier
-//                .shadow(
-//                    elevation = 10.dp,
-//                    shape = RoundedCornerShape(8.dp)
-//                )
-//                .background(Color.Red)
-//                .size(100.dp),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text("Hello World")
-//        }
-//    }
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.1f))
             .clickable {
-                onClick(gameMode.name, gameMode.imageId)
+                onPlayClick(gameMode.name, gameMode.imageId)
             }
     ) {
         Column(
@@ -152,7 +96,7 @@ fun SharedTransitionScope.GameModeCard(
             }
 
             Button(
-                onClick = {},
+                onClick = { onPlayClick(gameMode.name, gameMode.imageId) },
                 colors = ButtonDefaults.buttonColors(
                     contentColor = MaterialTheme.colorScheme.tertiary,
                     containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
@@ -160,6 +104,7 @@ fun SharedTransitionScope.GameModeCard(
             ) {
                 Text(
                     text = stringResource(id = R.string.play),
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.ExtraBold,
                     modifier = Modifier.padding(horizontal = 20.dp))
             }
@@ -175,7 +120,7 @@ fun GameModeCardPreview() {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 GameModeCard(
-                    animatedVisibilityScope = this, onClick = { _, _ -> }, gameMode = GameMode(
+                    animatedVisibilityScope = this, onPlayClick = { _, _ -> }, gameMode = GameMode(
                         R.drawable.img_solo_mode_illustration,
                         R.string.solo_game_mode,
                         R.string.solo_description

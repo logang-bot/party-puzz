@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
-import com.restrusher.partypuzz.ui.views.gameConfig.ui.PlayerAvatar
 
 @Composable
 fun CreatePlayerScreen(

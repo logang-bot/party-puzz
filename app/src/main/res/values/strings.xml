@@ -44,5 +44,7 @@
     <string name="play">Play</string>
     <string name="last_party">Last party</string>
     <string name="see">See</string>
+    <string name="players">Players</string>
+    <string name="options">Options</string>
 
 </resources>

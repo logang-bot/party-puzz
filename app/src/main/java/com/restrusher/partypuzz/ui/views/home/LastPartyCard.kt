@@ -32,12 +32,12 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @Composable
-fun LasPartyCard(
+fun LastPartyCard(
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(30.dp))
             .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.1f))
             .fillMaxWidth()
     ) {
@@ -122,6 +122,6 @@ fun LasPartyCard(
 @Preview(showBackground = true)
 fun LastPartyCardPreview() {
     PartyPuzzTheme {
-        LasPartyCard(modifier = Modifier.fillMaxWidth())
+        LastPartyCard(modifier = Modifier.fillMaxWidth())
     }
 }
