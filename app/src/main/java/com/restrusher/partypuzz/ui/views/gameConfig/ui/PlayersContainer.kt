@@ -1,13 +1,17 @@
 package com.restrusher.partypuzz.ui.views.gameConfig.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,22 +29,22 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @Composable
 fun PlayersContainer(
-
+    onAddPlayerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier) {
         Text(text = stringResource(id = R.string.players), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(10.dp))
-        LazyVerticalGrid(
-            verticalArrangement = Arrangement.spacedBy(5.dp),
+        LazyRow(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
-            columns = GridCells.Adaptive(minSize = 70.dp)
         ) {
             items(GamePlayersList.PlayersList) { player ->
-                PlayerDataCard(player)
+                PlayerDataCard(
+                    player = player,
+                    modifier = Modifier.width(80.dp))
             }
             item {
-                AddPlayerCard()
+                AddPlayerCard(modifier = Modifier.clickable { onAddPlayerClick() })
             }
         }
     }
@@ -51,6 +55,6 @@ fun PlayersContainer(
 fun PlayersContainerPreview() {
     PartyPuzzTheme {
         GamePlayersList.setBaseNumberOfPlayers(4)
-        PlayersContainer()
+        PlayersContainer(onAddPlayerClick = { })
     }
 }

@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,48 +48,52 @@ fun SharedTransitionScope.GameConfigScreen(
     modifier: Modifier = Modifier
 ) {
     setAppBarTitle(stringResource(id = R.string.prepare_your_party))
-//    val scrollState = rememberScrollState()
     Column(modifier = modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .weight(1f)
-//                .verticalScroll(rememberScrollState()) // Disable it to make preview work
+                .verticalScroll(rememberScrollState()) // Disable it to make preview work
         ) {
-            Text(
-                text = stringResource(id = gameModeName),
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontWeight = FontWeight.Medium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .sharedElement(state = rememberSharedContentState(key = "game/${gameModeName}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 400)
-                        })
-            )
-
-            Image(
-                painter = painterResource(id = gameModeImage),
-                contentDescription = stringResource(id = R.string.game_mode_image),
-                contentScale = ContentScale.Fit,
-                modifier = Modifier
-                    .width(90.dp)
-                    .padding(vertical = 20.dp)
-                    .sharedElement(state = rememberSharedContentState(key = "game/${gameModeImage}"),
-                        animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 400)
-                        })
-            )
-            PlayersContainer()
-            Spacer(modifier = Modifier.height(10.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(id = gameModeName),
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier
+                        .sharedElement(state = rememberSharedContentState(key = "game/${gameModeName}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ ->
+                                tween(durationMillis = 400)
+                            })
+                )
+                Spacer(modifier = Modifier.width(10.dp).weight(1f))
+                Image(
+                    painter = painterResource(id = gameModeImage),
+                    contentDescription = stringResource(id = R.string.game_mode_image),
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .height(85.dp)
+                        .padding(vertical = 20.dp)
+                        .sharedElement(state = rememberSharedContentState(key = "game/${gameModeImage}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ ->
+                                tween(durationMillis = 400)
+                            })
+                )
+            }
+            Text(text = stringResource(id = R.string.gather_your_friends_for_a_night_of_fun), style = MaterialTheme.typography.labelLarge)
             OptionsContainer()
+            Spacer(modifier = Modifier.height(10.dp))
+            PlayersContainer(onAddPlayerClick = onCreatePlayerClick, modifier = Modifier.fillMaxWidth())
         }
         Spacer(modifier = Modifier.height(5.dp))
         StartGameButton(

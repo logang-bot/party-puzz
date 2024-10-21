@@ -54,8 +54,6 @@ fun PlayerDataCard(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         modifier = modifier
-            .fillMaxWidth()
-            .height(120.dp)
     ) {
         Box {
             Image(
@@ -66,21 +64,6 @@ fun PlayerDataCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
             )
-//            Box(
-//                modifier = Modifier
-//                    .clip(CircleShape)
-//                    .background(MaterialTheme.colorScheme.tertiary)
-//                    .align(Alignment.BottomEnd)
-//            ) {
-//                Image(
-//                    painter = painterResource(id = R.drawable.ic_male),
-//                    contentDescription = stringResource(
-//                        id = R.string.player_avatar
-//                    ),
-//                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onTertiary),
-//                    modifier = Modifier.padding(1.dp)
-//                )
-//            }
             Box(modifier = Modifier
                 .align(Alignment.BottomStart)
                 .background(
@@ -107,11 +90,11 @@ fun PlayerDataCard(
 
 @Composable
 fun AddPlayerCard(modifier: Modifier = Modifier) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
-        ),
-        modifier = modifier.fillMaxWidth().height(120.dp)
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(15.dp))
+            .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f))
+            .padding(horizontal = 10.dp, vertical = 25.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -119,7 +102,6 @@ fun AddPlayerCard(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f))
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_plus),
@@ -133,7 +115,7 @@ fun AddPlayerCard(modifier: Modifier = Modifier) {
                     .clip(CircleShape)
             )
             Text(
-                text = stringResource(id = R.string.add_player),
+                text = stringResource(id = R.string.add),
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

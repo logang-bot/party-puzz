@@ -34,6 +34,7 @@
     <string name="enter_the_players_name">Enter the players\' names</string>
     <string name="players_name">Player\'s name</string>
     <string name="add_player">Add player</string>
+    <string name="add">Add</string>
     <string name="customize_your_party">Customize your party</string>
     <string name="bar_mode">Bar Mode</string>
     <string name="can_skip_questions">Can skip questions</string>
@@ -46,5 +47,6 @@
     <string name="see">See</string>
     <string name="players">Players</string>
     <string name="options">Options</string>
+    <string name="gather_your_friends_for_a_night_of_fun">Gather your friends for a night of fun and friendly competition in our new Bar Brawl game mode! This immersive experience will transport you to a virtual bar where you can challenge your friends to a variety of drinking games and challenges.</string>
 
 </resources>

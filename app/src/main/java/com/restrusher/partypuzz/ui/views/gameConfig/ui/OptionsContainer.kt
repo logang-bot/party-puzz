@@ -39,10 +39,6 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 @Composable
 fun OptionsContainer(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = stringResource(id = R.string.options),
-            style = MaterialTheme.typography.titleLarge
-        )
         Spacer(modifier = Modifier.height(10.dp))
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(3.dp),
@@ -82,7 +78,7 @@ fun OptionChip(
                 .size(16.dp)
                 .padding(end = 2.dp)
         )
-        Text(text = optionName, style = MaterialTheme.typography.labelLarge, color = textColor)
+        Text(text = optionName, style = MaterialTheme.typography.labelMedium, color = textColor)
     }
 }
 
