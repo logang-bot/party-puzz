@@ -1,6 +1,20 @@
 package com.restrusher.partypuzz.ui.views.gameConfig.ui
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.BoundsTransform
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.estimateAnimationDurationMillis
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -44,6 +59,11 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+private val boundsTransform = BoundsTransform { _: Rect, _: Rect ->
+    tween(durationMillis = 2000, easing = FastOutSlowInEasing)
+}
 
 @Composable
 fun PlayerDataCard(
@@ -88,40 +108,63 @@ fun PlayerDataCard(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun AddPlayerCard(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(15.dp))
-            .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f))
-            .padding(horizontal = 10.dp, vertical = 25.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
+fun SharedTransitionScope.AddPlayerCard(
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    modifier: Modifier = Modifier) {
+    Box(modifier = Modifier.sharedBounds(
+        rememberSharedContentState(key = "bounds"),
+        animatedVisibilityScope = animatedVisibilityScope,
+        boundsTransform = boundsTransform,
+        enter = fadeIn(
+            tween(
+                2000,
+                easing = FastOutSlowInEasing
+            )
+        ),
+        exit = fadeOut(
+            tween(
+                2000,
+                easing = FastOutSlowInEasing
+            )
+        ),
+    )) {
+        Box(
+            modifier = modifier
+                .clip(RoundedCornerShape(15.dp))
+                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f))
+                .padding(horizontal = 10.dp, vertical = 25.dp)
+
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_plus),
-                contentDescription = stringResource(
-                    id = R.string.player_avatar
-                ),
-                contentScale = ContentScale.Crop,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .width(68.dp)
-                    .height(68.dp)
-                    .clip(CircleShape)
-            )
-            Text(
-                text = stringResource(id = R.string.add),
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_plus),
+                    contentDescription = stringResource(
+                        id = R.string.player_avatar
+                    ),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .width(68.dp)
+                        .height(68.dp)
+                        .clip(CircleShape)
+                )
+                Text(
+                    text = stringResource(id = R.string.add),
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
+
 }
 
 @Preview(widthDp = 90)
@@ -132,10 +175,15 @@ fun PlayerDataCardPreview() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(widthDp = 90)
 @Composable
 fun AddPlayerCardPreview() {
     PartyPuzzTheme {
-        AddPlayerCard()
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                AddPlayerCard(animatedVisibilityScope = this)
+            }
+        }
     }
 }

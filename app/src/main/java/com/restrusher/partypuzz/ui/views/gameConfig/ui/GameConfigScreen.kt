@@ -23,6 +23,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -36,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -47,7 +53,11 @@ fun SharedTransitionScope.GameConfigScreen(
     onCreatePlayerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    setAppBarTitle(stringResource(id = R.string.prepare_your_party))
+    val title = stringResource(id = R.string.prepare_your_party)
+    LaunchedEffect(key1 = title) {
+        delay(100)
+        setAppBarTitle(title)
+    }
     Column(modifier = modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -56,7 +66,7 @@ fun SharedTransitionScope.GameConfigScreen(
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
                 .weight(1f)
-                .verticalScroll(rememberScrollState()) // Disable it to make preview work
+                .verticalScroll(rememberScrollState())
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -75,7 +85,9 @@ fun SharedTransitionScope.GameConfigScreen(
                                 tween(durationMillis = 400)
                             })
                 )
-                Spacer(modifier = Modifier.width(10.dp).weight(1f))
+                Spacer(modifier = Modifier
+                    .width(10.dp)
+                    .weight(1f))
                 Image(
                     painter = painterResource(id = gameModeImage),
                     contentDescription = stringResource(id = R.string.game_mode_image),
@@ -93,7 +105,10 @@ fun SharedTransitionScope.GameConfigScreen(
             Text(text = stringResource(id = R.string.gather_your_friends_for_a_night_of_fun), style = MaterialTheme.typography.labelLarge)
             OptionsContainer()
             Spacer(modifier = Modifier.height(10.dp))
-            PlayersContainer(onAddPlayerClick = onCreatePlayerClick, modifier = Modifier.fillMaxWidth())
+            PlayersContainer(
+                animatedVisibilityScope = animatedVisibilityScope,
+                onAddPlayerClick = onCreatePlayerClick,
+                modifier = Modifier.fillMaxWidth())
         }
         Spacer(modifier = Modifier.height(5.dp))
         StartGameButton(

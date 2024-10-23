@@ -2,6 +2,9 @@ package com.restrusher.partypuzz.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -45,7 +48,7 @@ fun HomeNavigation(
             NavHost(
                 navController = navController,
                 startDestination = HomeScreen,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
             ) {
                 composable<HomeScreen> {
                     HomeScreen(
@@ -71,8 +74,14 @@ fun HomeNavigation(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-                composable<CreatePlayerScreen> {
-                    CreatePlayerScreen()
+                composable<CreatePlayerScreen>(
+                ) {
+                    CreatePlayerScreen(
+                        setAppBarTitle = { title ->
+                            appBarTitle = title
+                        },
+                        animatedVisibilityScope = this
+                    )
                 }
             }
         }

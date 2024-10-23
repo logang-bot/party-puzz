@@ -1,17 +1,25 @@
 package com.restrusher.partypuzz.ui.views.createPlayer
 
-import android.widget.Space
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.BoundsTransform
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -28,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -39,17 +48,41 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CreatePlayerScreen(
-    createPlayerViewModel: CreatePlayerViewModel = viewModel(), modifier: Modifier = Modifier
+fun SharedTransitionScope.CreatePlayerScreen(
+    setAppBarTitle: (String) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    modifier: Modifier = Modifier,
+    createPlayerViewModel: CreatePlayerViewModel = viewModel()
 ) {
+    setAppBarTitle(stringResource(id = R.string.create_player))
     var playerName by remember { mutableStateOf("") }
     Column(
-        modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+            .sharedBounds(
+                rememberSharedContentState(key = "bounds"),
+                animatedVisibilityScope = animatedVisibilityScope,
+                enter = fadeIn(
+                    tween(
+                        2000,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                exit = fadeOut(
+                    tween(
+                        2000,
+                        easing = FastOutSlowInEasing
+                    )
+                ),
+                boundsTransform = BoundsTransform { _: Rect, _: Rect ->
+                    tween(durationMillis = 2000, easing = FastOutSlowInEasing)
+                }
+            ),
     ) {
 
         Box(
@@ -116,10 +149,15 @@ fun NameContainer(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable
 fun CreatePlayerScreenPreview() {
     PartyPuzzTheme {
-        CreatePlayerScreen()
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                CreatePlayerScreen({}, animatedVisibilityScope = this)
+            }
+        }
     }
 }

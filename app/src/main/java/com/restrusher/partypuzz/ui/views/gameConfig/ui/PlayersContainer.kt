@@ -1,5 +1,10 @@
 package com.restrusher.partypuzz.ui.views.gameConfig.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,8 +32,10 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun PlayersContainer(
+fun SharedTransitionScope.PlayersContainer(
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onAddPlayerClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,17 +51,22 @@ fun PlayersContainer(
                     modifier = Modifier.width(80.dp))
             }
             item {
-                AddPlayerCard(modifier = Modifier.clickable { onAddPlayerClick() })
+                AddPlayerCard(animatedVisibilityScope = animatedVisibilityScope, modifier = Modifier.clickable { onAddPlayerClick() })
             }
         }
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(showBackground = true)
 @Composable
 fun PlayersContainerPreview() {
     PartyPuzzTheme {
         GamePlayersList.setBaseNumberOfPlayers(4)
-        PlayersContainer(onAddPlayerClick = { })
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                PlayersContainer(animatedVisibilityScope = this, onAddPlayerClick = { })
+            }
+        }
     }
 }
