@@ -30,6 +30,7 @@
     <string name="player_avatar">Player Avatar</string>
     <string name="player_gender">Player Gender</string>
     <string name="option_description">Option Description</string>
+    <string name="random_image">Random Image</string>
 
     <string name="lets_set_up_your_party">Let\'s set up your party</string>
     <string name="enter_the_players_name">Enter the players\' names</string>
@@ -43,11 +44,13 @@
     <string name="start_game">Start Game</string>
     <string name="generate_random_name">Generate random name</string>
     <string name="generate_random_image">Generate random image</string>
+    <string name="take_photo">Take Photo</string>
     <string name="play">Play</string>
     <string name="last_party">Last party</string>
     <string name="see">See</string>
     <string name="players">Players</string>
     <string name="options">Options</string>
+    <string name="confirm">Confirm</string>
     <string name="gather_your_friends_for_a_night_of_fun">Gather your friends for a night of fun and friendly competition in our new Bar Brawl game mode! This immersive experience will transport you to a virtual bar where you can challenge your friends to a variety of drinking games and challenges.</string>
 
 </resources>

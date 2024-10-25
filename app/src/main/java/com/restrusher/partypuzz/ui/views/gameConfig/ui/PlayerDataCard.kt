@@ -62,7 +62,7 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private val boundsTransform = BoundsTransform { _: Rect, _: Rect ->
-    tween(durationMillis = 2000, easing = FastOutSlowInEasing)
+    tween(durationMillis = 500, easing = FastOutSlowInEasing)
 }
 
 @Composable
@@ -119,13 +119,13 @@ fun SharedTransitionScope.AddPlayerCard(
         boundsTransform = boundsTransform,
         enter = fadeIn(
             tween(
-                2000,
+                500,
                 easing = FastOutSlowInEasing
             )
         ),
         exit = fadeOut(
             tween(
-                2000,
+                500,
                 easing = FastOutSlowInEasing
             )
         ),
@@ -150,6 +150,7 @@ fun SharedTransitionScope.AddPlayerCard(
                         id = R.string.player_avatar
                     ),
                     contentScale = ContentScale.Crop,
+                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
                     modifier = Modifier
                         .width(68.dp)
                         .height(68.dp)
