@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.data.entities
+package com.restrusher.partypuzz.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

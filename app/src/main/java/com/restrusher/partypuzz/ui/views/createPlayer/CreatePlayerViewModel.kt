@@ -1,7 +1,7 @@
 package com.restrusher.partypuzz.ui.views.createPlayer
 
 import androidx.lifecycle.ViewModel
-import com.restrusher.partypuzz.data.appDataSource.GamePlayersList
+import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.data.models.Player
 import kotlinx.coroutines.flow.MutableStateFlow

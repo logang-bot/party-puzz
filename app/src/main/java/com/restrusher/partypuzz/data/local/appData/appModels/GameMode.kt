@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.data.appModels
+package com.restrusher.partypuzz.data.local.appData.appModels
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

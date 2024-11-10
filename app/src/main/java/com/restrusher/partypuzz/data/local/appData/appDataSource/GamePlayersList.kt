@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.data.appDataSource
+package com.restrusher.partypuzz.data.local.appData.appDataSource
 
 import com.restrusher.partypuzz.data.models.Player
 

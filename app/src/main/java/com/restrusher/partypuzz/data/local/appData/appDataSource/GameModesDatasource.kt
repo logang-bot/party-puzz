@@ -1,8 +1,7 @@
-package com.restrusher.partypuzz.data.appDataSource
+package com.restrusher.partypuzz.data.local.appData.appDataSource
 
 import com.restrusher.partypuzz.R
-import com.restrusher.partypuzz.data.appModels.GameMode
-
+import com.restrusher.partypuzz.data.local.appData.appModels.GameMode
 
 object GameModesDatasource {
     val gameModesList = listOf(

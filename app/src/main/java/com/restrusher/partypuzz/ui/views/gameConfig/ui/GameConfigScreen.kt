@@ -110,10 +110,10 @@ fun SharedTransitionScope.GameConfigScreen(
                 onAddPlayerClick = onCreatePlayerClick,
                 modifier = Modifier.fillMaxWidth())
         }
-        Spacer(modifier = Modifier.height(5.dp))
         StartGameButton(
             Modifier
                 .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(10.dp))
     }
 }

@@ -1,11 +1,11 @@
-package com.restrusher.partypuzz.data
+package com.restrusher.partypuzz.data.local
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.restrusher.partypuzz.data.daos.PlayerDao
-import com.restrusher.partypuzz.data.entities.PlayerEntity
+import com.restrusher.partypuzz.data.local.dao.PlayerDao
+import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 

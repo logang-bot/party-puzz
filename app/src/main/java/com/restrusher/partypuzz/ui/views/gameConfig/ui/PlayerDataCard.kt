@@ -56,7 +56,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
-import com.restrusher.partypuzz.data.appDataSource.GamePlayersList
+import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
