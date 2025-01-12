@@ -1,6 +1,7 @@
 package com.restrusher.partypuzz.di
 
 import com.restrusher.partypuzz.data.local.dao.PlayerDao
+import com.restrusher.partypuzz.data.proxies.PlayerProxy
 import com.restrusher.partypuzz.data.repositories.PlayerRepositoryImpl
 import com.restrusher.partypuzz.data.repositories.interfaces.PlayerRepository
 import dagger.Module
@@ -15,7 +16,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun providePlayerRepository(playerDao: PlayerDao): PlayerRepository {
-        return PlayerRepositoryImpl(playerDao)
+    fun providePlayerRepository(playerProxy: PlayerProxy): PlayerRepository {
+        return PlayerRepositoryImpl(playerProxy)
     }
 }

@@ -1,5 +1,9 @@
 package com.restrusher.partypuzz.ui.views.createPlayer
 
+import android.Manifest
+import android.content.Context
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -46,6 +50,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,7 +62,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.ui.common.CameraPermissionTextProvider
+import com.restrusher.partypuzz.ui.common.PermissionDialog
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
+import com.restrusher.partypuzz.utils.getActivity
+import com.restrusher.partypuzz.utils.openAppSettings
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -65,8 +74,35 @@ fun SharedTransitionScope.CreatePlayerScreen(
     setAppBarTitle: (String) -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier,
-    createPlayerViewModel: CreatePlayerViewModel = viewModel()
+    viewModel: CreatePlayerViewModel = viewModel()
 ) {
+    val dialogQueue = viewModel.visiblePermissionDialogQueue
+    val mainActivity = LocalContext.current.getActivity()!!
+
+    val permissionsToRequest = arrayOf(
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.CALL_PHONE,
+    )
+
+    val cameraPermissionResultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+            viewModel.onPermissionResult(
+                permission = Manifest.permission.CAMERA,
+                isGranted = isGranted
+            )
+    }
+
+
+    val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()) { perms ->
+            perms.keys.forEach { permission ->
+                viewModel.onPermissionResult(
+                    permission = permission,
+                    isGranted = perms[permission] == true
+                )
+            }
+    }
+
     setAppBarTitle(stringResource(id = R.string.create_player))
     var playerName by remember { mutableStateOf("") }
     Column(
@@ -112,6 +148,31 @@ fun SharedTransitionScope.CreatePlayerScreen(
             Text(text = stringResource(id = R.string.confirm).uppercase(), style = MaterialTheme.typography.headlineSmall)
         }
     }
+
+    dialogQueue
+        .reversed()
+        .forEach { permission ->
+            PermissionDialog(
+                permissionTextProvider = when (permission) {
+                    Manifest.permission.CAMERA -> CameraPermissionTextProvider()
+                    else -> return@forEach
+                },
+                isPermanentlyDeclined = !LocalContext.current.getActivity()
+                    ?.shouldShowRequestPermissionRationale(
+                        permission
+                    )!!,
+                onDismiss = viewModel::dismissDialog,
+                onOkClick = {
+                    viewModel.dismissDialog()
+                    multiplePermissionResultLauncher.launch(
+                        arrayOf(permission)
+                    )
+                },
+                onGoToAppSettingsClick = {
+                    mainActivity.openAppSettings()
+                }
+            )
+        }
 }
 
 @Composable

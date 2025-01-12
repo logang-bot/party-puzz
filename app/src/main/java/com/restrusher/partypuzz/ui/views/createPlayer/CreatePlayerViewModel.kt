@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class CreatePlayerViewModel : ViewModel() {
+
+    val visiblePermissionDialogQueue = mutableListOf<String>()
+
     private val _uiState = MutableStateFlow(CreatePlayerState())
     val uiState: StateFlow<CreatePlayerState> = _uiState.asStateFlow()
 
@@ -25,4 +28,14 @@ class CreatePlayerViewModel : ViewModel() {
         }
     }
 
+    fun dismissDialog() {
+        visiblePermissionDialogQueue.removeFirst()
+    }
+
+    fun onPermissionResult(permission: String, isGranted: Boolean) {
+        if (!isGranted) {
+            visiblePermissionDialogQueue.add(permission)
+        }
+
+    }
 }
