@@ -2,6 +2,7 @@ package com.restrusher.partypuzz.ui.views.createPlayer
 
 import android.Manifest
 import android.content.Context
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
@@ -18,6 +19,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -60,6 +62,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
+import androidx.core.os.BuildCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.common.CameraPermissionTextProvider
@@ -67,6 +71,12 @@ import com.restrusher.partypuzz.ui.common.PermissionDialog
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import com.restrusher.partypuzz.utils.getActivity
 import com.restrusher.partypuzz.utils.openAppSettings
+import java.io.File
+import java.util.Objects
+
+var permissionsToRequest = arrayOf(
+    Manifest.permission.CAMERA
+)
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -77,31 +87,45 @@ fun SharedTransitionScope.CreatePlayerScreen(
     viewModel: CreatePlayerViewModel = viewModel()
 ) {
     val dialogQueue = viewModel.visiblePermissionDialogQueue
-    val mainActivity = LocalContext.current.getActivity()!!
-
-    val permissionsToRequest = arrayOf(
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.CALL_PHONE,
-    )
-
-    val cameraPermissionResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()) { isGranted ->
-            viewModel.onPermissionResult(
-                permission = Manifest.permission.CAMERA,
-                isGranted = isGranted
-            )
-    }
-
-
+    val context = LocalContext?.current
+    val mainActivity = context?.getActivity()
     val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()) { perms ->
-            perms.keys.forEach { permission ->
-                viewModel.onPermissionResult(
-                    permission = permission,
-                    isGranted = perms[permission] == true
-                )
-            }
+        permissionsToRequest.forEach { permission ->
+            viewModel.onPermissionResult(
+                permission = permission,
+                isGranted = perms[permission] == true
+            )
+        }
     }
+
+    val tempFile = File.createTempFile(
+        "picture_${System.currentTimeMillis()}", ".png", context?.cacheDir
+    ).apply {
+        createNewFile()
+    }
+    val uri = FileProvider.getUriForFile(
+        context?.applicationContext!!,
+        "${context?.packageName}.provider",
+        tempFile
+    )
+
+    var capturedImageUri by remember {
+        mutableStateOf<Uri>(Uri.EMPTY)
+    }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()) { it ->
+        capturedImageUri = uri
+    }
+
+//    val cameraPermissionResultLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.RequestPermission()) { isGranted ->
+//            viewModel.onPermissionResult(
+//                permission = Manifest.permission.CAMERA,
+//                isGranted = isGranted
+//            )
+//    }
 
     setAppBarTitle(stringResource(id = R.string.create_player))
     var playerName by remember { mutableStateOf("") }
@@ -111,7 +135,8 @@ fun SharedTransitionScope.CreatePlayerScreen(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .sharedBounds(rememberSharedContentState(key = "bounds"),
+            .sharedBounds(
+                rememberSharedContentState(key = "bounds"),
                 animatedVisibilityScope = animatedVisibilityScope,
                 enter = fadeIn(
                     tween(
@@ -132,9 +157,13 @@ fun SharedTransitionScope.CreatePlayerScreen(
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            ImageOptionsContainer(modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp))
+            ImageOptionsContainer(
+                {
+                    multiplePermissionResultLauncher.launch(permissionsToRequest)
+                    cameraLauncher.launch(uri)
+                },
+                modifier = Modifier
+                    .padding(24.dp))
             EditPlayerCard()
             NameOptionsContainer(value = playerName, onValueChanged = { playerName = it },
                 modifier = Modifier
@@ -157,10 +186,9 @@ fun SharedTransitionScope.CreatePlayerScreen(
                     Manifest.permission.CAMERA -> CameraPermissionTextProvider()
                     else -> return@forEach
                 },
-                isPermanentlyDeclined = !LocalContext.current.getActivity()
-                    ?.shouldShowRequestPermissionRationale(
-                        permission
-                    )!!,
+                isPermanentlyDeclined = !mainActivity!!.shouldShowRequestPermissionRationale(
+                    permission
+                ),
                 onDismiss = viewModel::dismissDialog,
                 onOkClick = {
                     viewModel.dismissDialog()
@@ -169,27 +197,42 @@ fun SharedTransitionScope.CreatePlayerScreen(
                     )
                 },
                 onGoToAppSettingsClick = {
-                    mainActivity.openAppSettings()
+                    mainActivity?.openAppSettings()
                 }
             )
         }
 }
 
+//fun Context.createTempPictureUri(
+//    provider: String = "${BuildConfig.APPLICATION_ID}.provider",
+//    fileName: String = "picture_${System.currentTimeMillis()}",
+//    fileExtension: String = ".png"
+//): Uri {
+//    val tempFile = File.createTempFile(
+//        fileName, fileExtension, cacheDir
+//    ).apply {
+//        createNewFile()
+//    }
+//
+//    return FileProvider.getUriForFile(applicationContext, provider, tempFile)
+//}
+
 @Composable
 fun ImageOptionsContainer(
+    takePictureAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .height(IntrinsicSize.Min)
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
-        ImageOptionButton(R.drawable.ic_camera, R.string.take_photo)
+        ImageOptionButton(R.drawable.ic_camera, R.string.take_photo, takePictureAction)
         VerticalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), modifier = Modifier.padding(vertical = 5.dp))
-        ImageOptionButton(R.drawable.ic_random, R.string.generate_random_image)
+        ImageOptionButton(R.drawable.ic_random, R.string.generate_random_image, {})
     }
 }
 
@@ -197,15 +240,18 @@ fun ImageOptionsContainer(
 fun ImageOptionButton(
     @DrawableRes icon: Int,
     @StringRes text: Int,
+    action: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier.padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = modifier
+        .clickable(onClick = action)
+        .padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
         Image(
             painter = painterResource(icon),
             contentDescription = stringResource(text),
             colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimaryContainer)
         )
-        Spacer(modifier = Modifier.width(3.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(text = stringResource(text), lineHeight = 16.sp, style = MaterialTheme.typography.titleMedium)
     }
 }
@@ -241,7 +287,7 @@ fun EditPlayerCard() {
                 .padding(top = 50.dp, start = 6.dp, end = 6.dp, bottom = 5.dp)
         ) {
             Text(
-                text = "John Doefdasfadsfsa",
+                text = "John Doe Something",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,

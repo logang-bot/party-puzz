@@ -117,18 +117,6 @@ fun SharedTransitionScope.AddPlayerCard(
         rememberSharedContentState(key = "bounds"),
         animatedVisibilityScope = animatedVisibilityScope,
         boundsTransform = boundsTransform,
-        enter = fadeIn(
-            tween(
-                500,
-                easing = FastOutSlowInEasing
-            )
-        ),
-        exit = fadeOut(
-            tween(
-                500,
-                easing = FastOutSlowInEasing
-            )
-        ),
     )) {
         Box(
             modifier = modifier

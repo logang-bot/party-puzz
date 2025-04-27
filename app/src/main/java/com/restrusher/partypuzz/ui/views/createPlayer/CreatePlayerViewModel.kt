@@ -1,5 +1,6 @@
 package com.restrusher.partypuzz.ui.views.createPlayer
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Gender
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.update
 
 class CreatePlayerViewModel : ViewModel() {
 
-    val visiblePermissionDialogQueue = mutableListOf<String>()
+    val visiblePermissionDialogQueue = mutableStateListOf<String>()
 
     private val _uiState = MutableStateFlow(CreatePlayerState())
     val uiState: StateFlow<CreatePlayerState> = _uiState.asStateFlow()
@@ -33,7 +34,7 @@ class CreatePlayerViewModel : ViewModel() {
     }
 
     fun onPermissionResult(permission: String, isGranted: Boolean) {
-        if (!isGranted) {
+        if (!isGranted && !visiblePermissionDialogQueue.contains(permission)) {
             visiblePermissionDialogQueue.add(permission)
         }
 
