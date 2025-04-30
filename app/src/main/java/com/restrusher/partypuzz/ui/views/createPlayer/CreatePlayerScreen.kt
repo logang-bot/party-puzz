@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.core.os.BuildCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.common.CameraPermissionTextProvider
 import com.restrusher.partypuzz.ui.common.PermissionDialog
@@ -119,14 +120,6 @@ fun SharedTransitionScope.CreatePlayerScreen(
         capturedImageUri = uri
     }
 
-//    val cameraPermissionResultLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.RequestPermission()) { isGranted ->
-//            viewModel.onPermissionResult(
-//                permission = Manifest.permission.CAMERA,
-//                isGranted = isGranted
-//            )
-//    }
-
     setAppBarTitle(stringResource(id = R.string.create_player))
     var playerName by remember { mutableStateOf("") }
     Column(
@@ -164,7 +157,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 },
                 modifier = Modifier
                     .padding(24.dp))
-            EditPlayerCard()
+            EditPlayerCard(capturedImageUri)
             NameOptionsContainer(value = playerName, onValueChanged = { playerName = it },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -257,21 +250,35 @@ fun ImageOptionButton(
 }
 
 @Composable
-fun EditPlayerCard() {
+fun EditPlayerCard(
+    imageUri: Uri,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = Modifier
             .width(300.dp)
             .height(300.dp)
             .clip(RoundedCornerShape(70.dp))
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_dummy_avatar),
-            contentDescription = stringResource(
-                id = R.string.player_avatar
-            ),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        if (imageUri.path?.isNotEmpty() == true) {
+            AsyncImage(
+                model = imageUri,
+                contentDescription = stringResource(
+                    id = R.string.player_avatar
+                ),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.img_dummy_avatar),
+                contentDescription = stringResource(
+                    id = R.string.player_avatar
+                ),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         Box(
             modifier = Modifier
