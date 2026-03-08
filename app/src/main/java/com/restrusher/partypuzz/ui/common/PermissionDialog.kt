@@ -55,7 +55,7 @@ class CameraPermissionTextProvider: PermissionTextProvider {
                     "You can go to the app settings to grant it."
         } else {
             "This app needs access to your camera so that your friends " +
-                    "can see you in the call"
+                    "can see your face in each turn"
         }
     }
 }
