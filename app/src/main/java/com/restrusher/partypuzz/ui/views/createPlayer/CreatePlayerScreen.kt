@@ -3,8 +3,10 @@ package com.restrusher.partypuzz.ui.views.createPlayer
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.BoundsTransform
@@ -24,20 +26,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.common.CameraPermissionTextProvider
@@ -51,6 +55,7 @@ var permissionsToRequest = arrayOf(
     Manifest.permission.CAMERA
 )
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.CreatePlayerScreen(
@@ -59,8 +64,10 @@ fun SharedTransitionScope.CreatePlayerScreen(
     modifier: Modifier = Modifier,
     viewModel: CreatePlayerViewModel = viewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val dialogQueue = viewModel.visiblePermissionDialogQueue
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
     val mainActivity = context.getActivity()
     val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()) { perms ->
@@ -77,7 +84,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
             "picture_${System.currentTimeMillis()}", ".png", context.cacheDir
         ).apply {
             createNewFile()
-            deleteOnExit() // Good practice for cache files
+            deleteOnExit()
         }
 
         FileProvider.getUriForFile(
@@ -87,18 +94,12 @@ fun SharedTransitionScope.CreatePlayerScreen(
         )
     }
 
-    var capturedImageUri by remember {
-        mutableStateOf<Uri>(Uri.EMPTY)
-    }
-
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()) { success ->
-        if (success)
-            capturedImageUri = uri
+        if (success) viewModel.onCapturedImage(uri)
     }
 
     setAppBarTitle(stringResource(id = R.string.create_player))
-    var playerName by remember { mutableStateOf("") }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -120,7 +121,10 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 ),
                 boundsTransform = BoundsTransform { _: Rect, _: Rect ->
                     tween(durationMillis = 500, easing = FastOutSlowInEasing)
-                }),
+                })
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = { focusManager.clearFocus() })
+            },
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -128,7 +132,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             ImageOptionsContainer(
-                {
+                takePictureAction = {
                     val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
                         context, Manifest.permission.CAMERA
                     ) == PackageManager.PERMISSION_GRANTED
@@ -138,10 +142,22 @@ fun SharedTransitionScope.CreatePlayerScreen(
                     else
                         multiplePermissionResultLauncher.launch(permissionsToRequest)
                 },
+                generateRandomImageAction = {
+                    val index = viewModel.randomAvatarIndex()
+                    val resId = context.resources.getIdentifier(
+                        "img_dummy_avatar_$index", "drawable", context.packageName
+                    )
+                    viewModel.onRandomAvatarRequested(if (resId != 0) resId else null)
+                },
                 modifier = Modifier
                     .padding(24.dp))
-            EditPlayerCard(capturedImageUri)
-            NameOptionsContainer(value = playerName, onValueChanged = { playerName = it },
+            EditPlayerCard(uiState.capturedImageUri, uiState.playerName, uiState.randomAvatarRes)
+            NameOptionsContainer(
+                value = uiState.playerName,
+                onValueChanged = { viewModel.onPlayerNameChanged(it) },
+                onGenerateRandomName = {
+                    viewModel.onPlayerNameChanged(viewModel.generateRandomName())
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp))
@@ -179,6 +195,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
         }
 }
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview
 @Composable

@@ -30,6 +30,7 @@ import com.restrusher.partypuzz.R
 @Composable
 fun ImageOptionsContainer(
     takePictureAction: () -> Unit,
+    generateRandomImageAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -42,7 +43,7 @@ fun ImageOptionsContainer(
     ) {
         ImageOptionButton(R.drawable.ic_camera, R.string.take_photo, takePictureAction)
         VerticalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), modifier = Modifier.padding(vertical = 5.dp))
-        ImageOptionButton(R.drawable.ic_random, R.string.generate_random_image, {})
+        ImageOptionButton(R.drawable.ic_random, R.string.generate_random_image, generateRandomImageAction)
     }
 }
 

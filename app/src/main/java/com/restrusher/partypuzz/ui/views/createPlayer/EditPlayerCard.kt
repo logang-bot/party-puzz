@@ -32,6 +32,8 @@ import com.restrusher.partypuzz.R
 @Composable
 fun EditPlayerCard(
     imageUri: Uri,
+    playerName: String,
+    avatarRes: Int? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -51,7 +53,7 @@ fun EditPlayerCard(
             )
         } else {
             Image(
-                painter = painterResource(id = R.drawable.img_dummy_avatar),
+                painter = painterResource(id = avatarRes ?: R.drawable.img_dummy_avatar),
                 contentDescription = stringResource(
                     id = R.string.player_avatar
                 ),
@@ -74,7 +76,7 @@ fun EditPlayerCard(
                 .padding(top = 50.dp, start = 6.dp, end = 6.dp, bottom = 5.dp)
         ) {
             Text(
-                text = "John Doe Something",
+                text = playerName.ifBlank { stringResource(id = R.string.players_name) },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
