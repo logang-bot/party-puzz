@@ -80,7 +80,8 @@ fun HomeNavigation(
                         setAppBarTitle = { title ->
                             appBarTitle = title
                         },
-                        animatedVisibilityScope = this
+                        animatedVisibilityScope = this,
+                        navigateBack = { navController.popBackStack() }
                     )
                 }
             }

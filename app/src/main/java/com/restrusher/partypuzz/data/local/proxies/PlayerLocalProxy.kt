@@ -4,13 +4,14 @@ import com.restrusher.partypuzz.data.local.dao.PlayerDao
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.data.proxies.PlayerProxy
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class PlayerLocalProxy(private val playerDao: PlayerDao) : PlayerProxy {
+class PlayerLocalProxy @Inject constructor(private val playerDao: PlayerDao) : PlayerProxy {
     override fun getPlayers(): Flow<List<PlayerEntity>> {
         return playerDao.getAllPlayers()
     }
 
-    override suspend fun createPlayer(player: PlayerEntity) {
-        playerDao.insert(player)
+    override suspend fun createPlayer(player: PlayerEntity): Long {
+        return playerDao.insert(player)
     }
 }

@@ -14,8 +14,8 @@ class PlayerRepositoryImpl(
         return playerLocalProxy.getPlayers()
     }
 
-    override suspend fun createPlayer(player: PlayerEntity) {
-        playerLocalProxy.createPlayer(player)
+    override suspend fun createPlayer(player: PlayerEntity): Long {
+        return playerLocalProxy.createPlayer(player)
     }
 
     override suspend fun deletePlayer() {

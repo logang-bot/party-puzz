@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 interface PlayerDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(player: PlayerEntity)
+    suspend fun insert(player: PlayerEntity): Long
 
     @Update
     suspend fun update(player: PlayerEntity)

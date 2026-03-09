@@ -9,5 +9,7 @@ data class PlayerEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val nickName: String,
-    val gender: Gender
+    val gender: Gender,
+    val photoPath: String? = null,
+    val avatarName: String? = null
 )
