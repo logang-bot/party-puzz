@@ -33,8 +33,8 @@ import com.restrusher.partypuzz.R
 fun EditPlayerCard(
     imageUri: Uri,
     playerName: String,
+    modifier: Modifier = Modifier,
     avatarRes: Int? = null,
-    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier

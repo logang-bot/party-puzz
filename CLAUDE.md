@@ -1,27 +1,3 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Project Overview
-
-**PartyPuzz** is an Android party game app built with Kotlin and Jetpack Compose. Package: `com.restrusher.partypuzz`.
-
-## Build Commands
-
-```bash
-./gradlew assembleDebug           # Build debug APK
-./gradlew assembleRelease         # Build release APK
-./gradlew test                    # Run unit tests
-./gradlew connectedAndroidTest    # Run instrumented tests (requires device/emulator)
-./gradlew lint                    # Run lint checks
-./gradlew clean                   # Clean build outputs
-```
-
-Run a single test class:
-```bash
-./gradlew test --tests "com.restrusher.partypuzz.ExampleUnitTest"
-```
-
 ## Architecture
 
 **Pattern**: MVVM + Repository + Proxy, single-module app.
@@ -67,12 +43,6 @@ Routes are defined as `@Serializable` objects/data classes in `HomeScreenRoutes.
 - `CreatePlayerScreen`
 
 Navigation is wired in `HomeNavigation.kt`. The `AppBar` shows a logo on `HomeScreen` and a title string on other screens.
-
-## Known TODOs in Codebase
-
-- Remote proxy module for API integration (commented in `ProxyModule`)
-- Edit and delete player in `PlayerRepository`
-- `GamePlayersList` (in-memory list in `appDataSource/`) is a temporary workaround before full persistence
 
 ## SDK Targets
 

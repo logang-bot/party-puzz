@@ -151,7 +151,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 },
                 modifier = Modifier
                     .padding(24.dp))
-            EditPlayerCard(uiState.capturedImageUri, uiState.playerName, uiState.randomAvatarRes)
+            EditPlayerCard(uiState.capturedImageUri, uiState.playerName, avatarRes = uiState.randomAvatarRes)
             NameOptionsContainer(
                 value = uiState.playerName,
                 onValueChanged = { viewModel.onPlayerNameChanged(it) },
@@ -163,7 +163,9 @@ fun SharedTransitionScope.CreatePlayerScreen(
                     .padding(24.dp))
         }
 
-        Button(onClick = {  }, modifier = Modifier
+        Button(onClick = {
+
+        }, modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)) {
             Text(text = stringResource(id = R.string.confirm).uppercase(), style = MaterialTheme.typography.headlineSmall)
@@ -189,7 +191,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                     )
                 },
                 onGoToAppSettingsClick = {
-                    mainActivity?.openAppSettings()
+                    mainActivity.openAppSettings()
                 }
             )
         }
