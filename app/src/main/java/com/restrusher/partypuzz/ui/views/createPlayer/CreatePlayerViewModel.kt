@@ -13,10 +13,12 @@ import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.data.repositories.interfaces.PartyRepository
 import com.restrusher.partypuzz.data.repositories.interfaces.PlayerRepository
+import com.restrusher.partypuzz.data.models.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -95,6 +97,18 @@ class CreatePlayerViewModel @Inject constructor(
                     .also { GamePlayersList.currentPartyId = it }
 
             partyRepository.linkPlayerToParty(partyId, playerId.toInt())
+
+            withContext(Dispatchers.Main) {
+                GamePlayersList.addPlayer(
+                    Player(
+                        id = playerId.toInt(),
+                        nickName = state.playerName,
+                        gender = state.gender,
+                        photoPath = photoPath,
+                        avatarName = avatarName
+                    )
+                )
+            }
 
             _uiState.update { it.copy(isLoading = false) }
             _navigationEvents.send(Unit)
