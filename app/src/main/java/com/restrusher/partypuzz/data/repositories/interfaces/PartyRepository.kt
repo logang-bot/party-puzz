@@ -6,5 +6,6 @@ import kotlinx.coroutines.flow.Flow
 interface PartyRepository {
     suspend fun createParty(name: String): Long
     suspend fun linkPlayerToParty(partyId: Int, playerId: Int)
-    fun getLastParty(): Flow<PartyWithPlayers?>
+    fun getAllParties(): Flow<List<PartyWithPlayers>>
+    suspend fun updateLastUsed(partyId: Int)
 }

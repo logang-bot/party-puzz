@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
-private const val MAX_RANDOM_AVATARS = 7
+private const val MAX_RANDOM_AVATARS = 9
 
 @HiltViewModel
 class CreatePlayerViewModel @Inject constructor(

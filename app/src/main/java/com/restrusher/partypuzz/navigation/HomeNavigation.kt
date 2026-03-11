@@ -62,6 +62,11 @@ fun HomeNavigation(
                         onGameOptionSelected = { name, image ->
                             navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image))
                         },
+                        onTogglePartySelection = viewModel::togglePartySelection,
+                        onOpenDialog = viewModel::openDialog,
+                        onCloseDialog = viewModel::closeDialog,
+                        onSelectDialogParty = viewModel::selectDialogParty,
+                        onConfirmPartySelection = viewModel::confirmPartySelection,
                         modifier = Modifier.fillMaxSize()
                     )
                 }

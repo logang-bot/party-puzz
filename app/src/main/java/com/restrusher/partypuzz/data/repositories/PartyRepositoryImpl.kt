@@ -13,5 +13,7 @@ class PartyRepositoryImpl(@DatabaseProxy private val proxy: PartyProxy) : PartyR
     override suspend fun linkPlayerToParty(partyId: Int, playerId: Int) =
         proxy.linkPlayerToParty(PartyPlayerCrossRef(partyId, playerId))
 
-    override fun getLastParty() = proxy.getLastParty()
+    override fun getAllParties() = proxy.getAllParties()
+
+    override suspend fun updateLastUsed(partyId: Int) = proxy.updateLastUsed(partyId)
 }

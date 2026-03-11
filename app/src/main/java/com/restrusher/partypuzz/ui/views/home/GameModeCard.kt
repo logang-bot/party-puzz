@@ -27,10 +27,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,11 +39,6 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appModels.GameMode
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
-
-private fun String.shortenedName(): String {
-    val first = trim().split("\\s+".toRegex()).firstOrNull() ?: this
-    return if (first.length > 10) "${first.take(10)}…" else first
-}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -106,6 +101,8 @@ fun SharedTransitionScope.GameModeCard(
             val prefix = stringResource(R.string.game_mode_tap_prefix)
             val modeName = stringResource(id = gameMode.name)
             val suffix = stringResource(R.string.game_mode_tap_suffix)
+            val (displayedNames, remaining) = playerNamesSlice(players)
+            val andXMore = if (remaining > 0) stringResource(R.string.and_x_more, remaining) else null
             val tapText = buildAnnotatedString {
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                     append("$prefix ")
@@ -116,24 +113,31 @@ fun SharedTransitionScope.GameModeCard(
                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                     append(" $suffix")
                 }
-                if (players.isNotEmpty()) {
+                if (displayedNames.isNotEmpty()) {
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
                         append(" with ")
                     }
-                    players.take(3).forEachIndexed { index, player ->
+                    displayedNames.forEachIndexed { index, name ->
                         withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
-                            append(player.nickName.shortenedName())
+                            append(name)
                         }
-                        if (index < players.take(3).lastIndex) append(", ")
+                        if (index < displayedNames.lastIndex) append(", ")
                     }
-                    if (players.size > 3) append(", …")
+                    if (andXMore != null) {
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
+                            append(" $andXMore")
+                        }
+                    }
                 }
             }
             Text(
                 text = tapText,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.displaySmall,
-                fontSize = 15.sp,
+                fontSize = 20.sp,
+                maxLines = 2,
+                lineHeight = 22.sp,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
             )
         }

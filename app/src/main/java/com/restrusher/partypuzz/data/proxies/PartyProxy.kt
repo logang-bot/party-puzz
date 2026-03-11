@@ -8,5 +8,6 @@ import kotlinx.coroutines.flow.Flow
 interface PartyProxy {
     suspend fun createParty(party: PartyEntity): Long
     suspend fun linkPlayerToParty(crossRef: PartyPlayerCrossRef)
-    fun getLastParty(): Flow<PartyWithPlayers?>
+    fun getAllParties(): Flow<List<PartyWithPlayers>>
+    suspend fun updateLastUsed(partyId: Int)
 }

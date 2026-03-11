@@ -47,23 +47,21 @@ import java.io.File
 
 private val cardShape = RoundedCornerShape(15.dp)
 
-private fun String.shortenedName(): String {
-    val first = trim().split("\\s+".toRegex()).firstOrNull() ?: this
-    return if (first.length > 10) "${first.take(10)}…" else first
-}
-
 @Composable
 fun LastPartyCard(
     party: PartyWithPlayers,
     isSelected: Boolean,
     onCardClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showSeeButton: Boolean = true
 ) {
     val context = LocalContext.current
     val players = party.players
-    val displayNames = players.take(3).joinToString(", ") { it.nickName.shortenedName() }
-    val remaining = players.size - 3
-    val namesText = if (remaining > 0) "$displayNames ${stringResource(R.string.and_x_more, remaining)}" else displayNames
+    val (displayedNames, remaining) = playerNamesSlice(players)
+    val namesText = if (remaining > 0)
+        "${displayedNames.joinToString(", ")} ${stringResource(R.string.and_x_more, remaining)}"
+    else
+        displayedNames.joinToString(", ")
 
     val borderColor by animateColorAsState(
         targetValue = if (isSelected) MaterialTheme.colorScheme.tertiary else Color.Transparent,
@@ -100,7 +98,7 @@ fun LastPartyCard(
             ) {
                 Column {
                     Row(horizontalArrangement = Arrangement.spacedBy((-15).dp)) {
-                        players.take(4).forEach { player ->
+                        players.take(3).forEach { player ->
                             when {
                                 player.photoPath != null -> AsyncImage(
                                     model = ImageRequest.Builder(context)
@@ -148,14 +146,16 @@ fun LastPartyCard(
                         fontWeight = FontWeight.ExtraLight
                     )
                 }
-                Button(
-                    onClick = { /*TODO*/ },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
-                    )
-                ) {
-                    Text(text = stringResource(id = R.string.see), fontWeight = FontWeight.ExtraBold)
+                if (showSeeButton) {
+                    Button(
+                        onClick = { /*TODO*/ },
+                        colors = ButtonDefaults.buttonColors(
+                            contentColor = MaterialTheme.colorScheme.tertiary,
+                            containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
+                        )
+                    ) {
+                        Text(text = stringResource(id = R.string.see), fontWeight = FontWeight.ExtraBold)
+                    }
                 }
             }
         }

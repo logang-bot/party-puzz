@@ -19,6 +19,9 @@ interface PartyDao {
     suspend fun insertCrossRef(crossRef: PartyPlayerCrossRef)
 
     @Transaction
-    @Query("SELECT * FROM parties ORDER BY dateCreation DESC LIMIT 1")
-    fun getLastPartyWithPlayers(): Flow<PartyWithPlayers?>
+    @Query("SELECT * FROM parties ORDER BY COALESCE(lastUsedAt, dateCreation) DESC")
+    fun getAllPartiesWithPlayers(): Flow<List<PartyWithPlayers>>
+
+    @Query("UPDATE parties SET lastUsedAt = :timestamp WHERE id = :partyId")
+    suspend fun updateLastUsed(partyId: Int, timestamp: Long)
 }
