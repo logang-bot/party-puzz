@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,13 +25,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appModels.GameMode
+import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
+
+private fun String.shortenedName(): String {
+    val first = trim().split("\\s+".toRegex()).firstOrNull() ?: this
+    return if (first.length > 10) "${first.take(10)}…" else first
+}
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -41,21 +51,19 @@ fun SharedTransitionScope.GameModeCard(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onPlayClick: (Int, Int) -> Unit,
     gameMode: GameMode,
+    players: List<PlayerEntity>,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.1f))
-            .clickable {
-                onPlayClick(gameMode.name, gameMode.imageId)
-            }
+            .clickable { onPlayClick(gameMode.name, gameMode.imageId) }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,11 +76,11 @@ fun SharedTransitionScope.GameModeCard(
                     modifier = Modifier
                         .height(200.dp)
                         .padding(bottom = 10.dp)
-                        .sharedElement(state = rememberSharedContentState(key = "game/${gameMode.imageId}"),
+                        .sharedElement(
+                            state = rememberSharedContentState(key = "game/${gameMode.imageId}"),
                             animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ ->
-                                tween(durationMillis = 400)
-                            })
+                            boundsTransform = { _, _ -> tween(durationMillis = 400) }
+                        )
                 )
                 Text(
                     text = stringResource(id = gameMode.name),
@@ -80,34 +88,54 @@ fun SharedTransitionScope.GameModeCard(
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     fontWeight = FontWeight.Medium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.sharedElement(state = rememberSharedContentState(key = "game/${gameMode.name}"),
+                    modifier = Modifier.sharedElement(
+                        state = rememberSharedContentState(key = "game/${gameMode.name}"),
                         animatedVisibilityScope = animatedVisibilityScope,
-                        boundsTransform = { _, _ ->
-                            tween(durationMillis = 400)
-                        })
+                        boundsTransform = { _, _ -> tween(durationMillis = 400) }
+                    )
                 )
                 Text(
                     text = stringResource(id = gameMode.description),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondaryContainer,
                     textAlign = TextAlign.Center,
                     fontWeight = FontWeight.Light
                 )
             }
 
-            Button(
-                onClick = { onPlayClick(gameMode.name, gameMode.imageId) },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.tertiary,
-                    containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
-                )
-            ) {
-                Text(
-                    text = stringResource(id = R.string.play),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.ExtraBold,
-                    modifier = Modifier.padding(horizontal = 20.dp))
+            val prefix = stringResource(R.string.game_mode_tap_prefix)
+            val modeName = stringResource(id = gameMode.name)
+            val suffix = stringResource(R.string.game_mode_tap_suffix)
+            val tapText = buildAnnotatedString {
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append("$prefix ")
+                }
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.ExtraBold)) {
+                    append(modeName)
+                }
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(" $suffix")
+                }
+                if (players.isNotEmpty()) {
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(" with ")
+                    }
+                    players.take(3).forEachIndexed { index, player ->
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
+                            append(player.nickName.shortenedName())
+                        }
+                        if (index < players.take(3).lastIndex) append(", ")
+                    }
+                    if (players.size > 3) append(", …")
+                }
             }
+            Text(
+                text = tapText,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.displaySmall,
+                fontSize = 15.sp,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+            )
         }
     }
 }
@@ -120,11 +148,14 @@ fun GameModeCardPreview() {
         SharedTransitionLayout {
             AnimatedVisibility(visible = true) {
                 GameModeCard(
-                    animatedVisibilityScope = this, onPlayClick = { _, _ -> }, gameMode = GameMode(
+                    animatedVisibilityScope = this,
+                    onPlayClick = { _, _ -> },
+                    gameMode = GameMode(
                         R.drawable.img_solo_mode_illustration,
                         R.string.solo_game_mode,
                         R.string.solo_description
-                    )
+                    ),
+                    players = emptyList()
                 )
             }
         }

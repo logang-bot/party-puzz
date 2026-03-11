@@ -20,10 +20,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.ui.common.HomeAppBar
 import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen
 import com.restrusher.partypuzz.ui.views.gameConfig.ui.GameConfigScreen
 import com.restrusher.partypuzz.ui.views.home.HomeScreen
+import com.restrusher.partypuzz.ui.views.home.HomeViewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -51,8 +54,11 @@ fun HomeNavigation(
                 modifier = Modifier.padding(innerPadding),
             ) {
                 composable<HomeScreen> {
+                    val viewModel: HomeViewModel = hiltViewModel()
+                    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                     HomeScreen(
                         animatedVisibilityScope = this,
+                        uiState = uiState,
                         onGameOptionSelected = { name, image ->
                             navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image))
                         },

@@ -1,7 +1,11 @@
 package com.restrusher.partypuzz.ui.views.home
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,103 +22,143 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.local.entities.PartyEntity
+import com.restrusher.partypuzz.data.local.entities.PartyWithPlayers
+import com.restrusher.partypuzz.data.local.entities.PlayerEntity
+import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
+import java.io.File
+
+private val cardShape = RoundedCornerShape(15.dp)
+
+private fun String.shortenedName(): String {
+    val first = trim().split("\\s+".toRegex()).firstOrNull() ?: this
+    return if (first.length > 10) "${first.take(10)}…" else first
+}
 
 @Composable
 fun LastPartyCard(
+    party: PartyWithPlayers,
+    isSelected: Boolean,
+    onCardClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val players = party.players
+    val displayNames = players.take(3).joinToString(", ") { it.nickName.shortenedName() }
+    val remaining = players.size - 3
+    val namesText = if (remaining > 0) "$displayNames ${stringResource(R.string.and_x_more, remaining)}" else displayNames
+
+    val borderColor by animateColorAsState(
+        targetValue = if (isSelected) MaterialTheme.colorScheme.tertiary else Color.Transparent,
+        animationSpec = tween(durationMillis = 400),
+        label = "borderColor"
+    )
+    val backgroundColor by animateColorAsState(
+        targetValue = if (isSelected)
+            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+        else
+            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.03f),
+        animationSpec = tween(durationMillis = 400),
+        label = "backgroundColor"
+    )
+
     Box(
         modifier = modifier
-            .clip(RoundedCornerShape(30.dp))
-            .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.1f))
+            .border(width = 2.dp, color = borderColor, shape = cardShape)
+            .clip(cardShape)
+            .background(backgroundColor)
             .fillMaxWidth()
+            .clickable { onCardClick() }
     ) {
-        val names = listOf("Laura", "John", "Clara", "Chris")
-        val joinedNames = names.joinToString(", ")
-            Column(modifier = Modifier
+        Column(
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 15.dp, vertical = 10.dp)) {
-                Spacer(modifier = Modifier.height(5.dp))
-                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Column {
-                        Row(horizontalArrangement = Arrangement.spacedBy((-15).dp)) {
-                            Image(
-                                painter = painterResource(id = R.drawable.img_dummy_avatar),
-                                contentDescription = stringResource(
-                                    id = R.string.player_avatar
-                                ),
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .clip(CircleShape)
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.img_dummy_avatar),
-                                contentDescription = stringResource(
-                                    id = R.string.player_avatar
-                                ),
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .clip(CircleShape)
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.img_dummy_avatar),
-                                contentDescription = stringResource(
-                                    id = R.string.player_avatar
-                                ),
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .clip(CircleShape)
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.img_dummy_avatar),
-                                contentDescription = stringResource(
-                                    id = R.string.player_avatar
-                                ),
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .width(50.dp)
-                                    .height(50.dp)
-                                    .clip(CircleShape)
-                            )
+                .padding(horizontal = 15.dp, vertical = 10.dp)
+        ) {
+            Spacer(modifier = Modifier.height(5.dp))
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Row(horizontalArrangement = Arrangement.spacedBy((-15).dp)) {
+                        players.take(4).forEach { player ->
+                            when {
+                                player.photoPath != null -> AsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data(File(player.photoPath))
+                                        .build(),
+                                    contentDescription = stringResource(id = R.string.player_avatar),
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(50.dp)
+                                        .clip(CircleShape)
+                                )
+                                player.avatarName != null -> {
+                                    val resId = context.resources.getIdentifier(
+                                        player.avatarName, "drawable", context.packageName
+                                    )
+                                    Image(
+                                        painter = painterResource(id = if (resId != 0) resId else R.drawable.img_dummy_avatar),
+                                        contentDescription = stringResource(id = R.string.player_avatar),
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .width(50.dp)
+                                            .height(50.dp)
+                                            .clip(CircleShape)
+                                    )
+                                }
+                                else -> Image(
+                                    painter = painterResource(id = R.drawable.img_dummy_avatar),
+                                    contentDescription = stringResource(id = R.string.player_avatar),
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(50.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
                         }
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = "$joinedNames and 2 more",
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = MaterialTheme.typography.bodySmall,
-                            fontWeight = FontWeight.ExtraLight
-                        )
                     }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                            containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
-                        )
-                    ) {
-                        Text(text = stringResource(id = R.string.see), fontWeight = FontWeight.ExtraBold)
-                    }
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = namesText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.ExtraLight
+                    )
+                }
+                Button(
+                    onClick = { /*TODO*/ },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.tertiary,
+                        containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
+                    )
+                ) {
+                    Text(text = stringResource(id = R.string.see), fontWeight = FontWeight.ExtraBold)
                 }
             }
+        }
     }
 }
 
@@ -122,6 +166,20 @@ fun LastPartyCard(
 @Preview(showBackground = true)
 fun LastPartyCardPreview() {
     PartyPuzzTheme {
-        LastPartyCard(modifier = Modifier.fillMaxWidth())
+        val fakeParty = PartyWithPlayers(
+            party = PartyEntity(id = 1, name = "Friday Party"),
+            players = listOf(
+                PlayerEntity(id = 1, nickName = "Laura", gender = Gender.Female),
+                PlayerEntity(id = 2, nickName = "John", gender = Gender.Male),
+                PlayerEntity(id = 3, nickName = "Clara", gender = Gender.Female),
+                PlayerEntity(id = 4, nickName = "Chris", gender = Gender.Male),
+            )
+        )
+        LastPartyCard(
+            party = fakeParty,
+            isSelected = true,
+            onCardClick = {},
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

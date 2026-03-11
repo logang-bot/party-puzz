@@ -52,5 +52,10 @@
     <string name="options">Options</string>
     <string name="confirm">Confirm</string>
     <string name="gather_your_friends_for_a_night_of_fun">Gather your friends for a night of fun and friendly competition in our new Bar Brawl game mode! This immersive experience will transport you to a virtual bar where you can challenge your friends to a variety of drinking games and challenges.</string>
+    <string name="choose_a_different_party">Choose a different party</string>
+    <string name="no_parties_yet">No parties created yet, start a game and enjoy</string>
+    <string name="game_mode_tap_prefix">Tap to play on</string>
+    <string name="game_mode_tap_suffix">mode</string>
+    <string name="and_x_more">and %1$d more</string>
 
 </resources>
