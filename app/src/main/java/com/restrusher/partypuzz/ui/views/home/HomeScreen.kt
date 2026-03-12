@@ -89,7 +89,7 @@ fun SharedTransitionScope.HomeScreen(
                 Spacer(modifier = Modifier.height(20.dp))
                 if (uiState.hasParties) {
                     Text(
-                        text = stringResource(id = R.string.last_party),
+                        text = stringResource(id = if (uiState.isPartyCustomSelected) R.string.selected_party else R.string.last_party),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Light,
                         modifier = Modifier.padding(horizontal = 20.dp)
@@ -105,7 +105,7 @@ fun SharedTransitionScope.HomeScreen(
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp),
+                            .padding(20.dp),
                         onClick = onOpenDialog,
                         colors = ButtonDefaults.buttonColors(
                             contentColor = MaterialTheme.colorScheme.tertiary,

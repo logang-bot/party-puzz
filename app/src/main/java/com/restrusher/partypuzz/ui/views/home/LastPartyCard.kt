@@ -9,6 +9,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,10 +21,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +57,7 @@ import java.io.File
 
 private val cardShape = RoundedCornerShape(15.dp)
 
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun LastPartyCard(
     party: PartyWithPlayers,
@@ -57,6 +68,9 @@ fun LastPartyCard(
 ) {
     val context = LocalContext.current
     val players = party.players
+    var showPlayersSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState()
+    val coroutineScope = rememberCoroutineScope()
     val (displayedNames, remaining) = playerNamesSlice(players)
     val namesText = if (remaining > 0)
         "${displayedNames.joinToString(", ")} ${stringResource(R.string.and_x_more, remaining)}"
@@ -64,13 +78,14 @@ fun LastPartyCard(
         displayedNames.joinToString(", ")
 
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.tertiary else Color.Transparent,
+        targetValue = if (isSelected) MaterialTheme.colorScheme.outlineVariant else Color.Transparent,
         animationSpec = tween(durationMillis = 400),
         label = "borderColor"
     )
+
     val backgroundColor by animateColorAsState(
         targetValue = if (isSelected)
-            MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.3f)
+            MaterialTheme.colorScheme.inversePrimary.copy(alpha = 0.3f)
         else
             MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.03f),
         animationSpec = tween(durationMillis = 400),
@@ -79,7 +94,7 @@ fun LastPartyCard(
 
     Box(
         modifier = modifier
-            .border(width = 2.dp, color = borderColor, shape = cardShape)
+            .border(width = 1.dp, color = borderColor, shape = cardShape)
             .clip(cardShape)
             .background(backgroundColor)
             .fillMaxWidth()
@@ -148,7 +163,7 @@ fun LastPartyCard(
                 }
                 if (showSeeButton) {
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { showPlayersSheet = true },
                         colors = ButtonDefaults.buttonColors(
                             contentColor = MaterialTheme.colorScheme.tertiary,
                             containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
@@ -156,6 +171,101 @@ fun LastPartyCard(
                     ) {
                         Text(text = stringResource(id = R.string.see), fontWeight = FontWeight.ExtraBold)
                     }
+                }
+            }
+        }
+    }
+
+    if (showPlayersSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showPlayersSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 24.dp)
+            ) {
+                Text(
+                    text = stringResource(id = R.string.players),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    players.forEach { player ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            when {
+                                player.photoPath != null -> AsyncImage(
+                                    model = ImageRequest.Builder(context)
+                                        .data(File(player.photoPath))
+                                        .build(),
+                                    contentDescription = stringResource(id = R.string.player_avatar),
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(50.dp)
+                                        .clip(CircleShape)
+                                )
+                                player.avatarName != null -> {
+                                    val resId = context.resources.getIdentifier(
+                                        player.avatarName, "drawable", context.packageName
+                                    )
+                                    Image(
+                                        painter = painterResource(id = if (resId != 0) resId else R.drawable.img_dummy_avatar),
+                                        contentDescription = stringResource(id = R.string.player_avatar),
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .width(50.dp)
+                                            .height(50.dp)
+                                            .clip(CircleShape)
+                                    )
+                                }
+                                else -> Image(
+                                    painter = painterResource(id = R.drawable.img_dummy_avatar),
+                                    contentDescription = stringResource(id = R.string.player_avatar),
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .width(50.dp)
+                                        .height(50.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = if (player.nickName.length > 12) player.nickName.take(12) + "…" else player.nickName,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Light,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = {
+                        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                            showPlayersSheet = false
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = MaterialTheme.colorScheme.tertiary,
+                        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f)
+                    )
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.close),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
                 }
             }
         }

@@ -48,7 +48,7 @@ class HomeViewModel @Inject constructor(
         val partyId = _uiState.value.dialogPendingPartyId ?: return
         viewModelScope.launch {
             partyRepository.updateLastUsed(partyId)
-            _uiState.update { it.copy(isDialogOpen = false, dialogPendingPartyId = null, isPartySelected = true) }
+            _uiState.update { it.copy(isDialogOpen = false, dialogPendingPartyId = null, isPartySelected = true, isPartyCustomSelected = true) }
         }
     }
 }

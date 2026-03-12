@@ -10,7 +10,8 @@ data class HomeState(
     val isLoading: Boolean = true,
     val isPartySelected: Boolean = false,
     val isDialogOpen: Boolean = false,
-    val dialogPendingPartyId: Int? = null
+    val dialogPendingPartyId: Int? = null,
+    val isPartyCustomSelected: Boolean = false
 ) {
     val activeParty: PartyWithPlayers? get() = allParties.firstOrNull()
     val hasParties: Boolean get() = !isLoading && activeParty != null

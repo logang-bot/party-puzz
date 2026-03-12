@@ -47,6 +47,8 @@
     <string name="take_photo">Take Photo</string>
     <string name="play">Play</string>
     <string name="last_party">Last party</string>
+    <string name="selected_party">Selected party</string>
+    <string name="close">Close</string>
     <string name="see">See</string>
     <string name="players">Players</string>
     <string name="options">Options</string>
