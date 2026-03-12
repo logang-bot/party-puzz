@@ -2,8 +2,6 @@ package com.restrusher.partypuzz.ui.views.createPlayer
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,6 +45,10 @@ class CreatePlayerViewModel @Inject constructor(
 
     fun onPlayerNameChanged(name: String) {
         _uiState.update { it.copy(playerName = name) }
+    }
+
+    fun onGenderSelected(gender: Gender) {
+        _uiState.update { it.copy(gender = gender) }
     }
 
     fun onCapturedImage(uri: Uri) {
@@ -122,9 +124,8 @@ class CreatePlayerViewModel @Inject constructor(
         return dest.absolutePath
     }
 
-    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     fun dismissDialog() {
-        visiblePermissionDialogQueue.removeFirst()
+        visiblePermissionDialogQueue.removeAt(0)
     }
 
     fun onPermissionResult(permission: String, isGranted: Boolean) {

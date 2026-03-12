@@ -48,8 +48,8 @@ import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import java.io.File
 
-private val CARD_WIDTH = 80.dp
-private val CARD_HEIGHT = 120.dp
+internal val CARD_WIDTH = 80.dp
+internal val CARD_HEIGHT = 120.dp
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 private val boundsTransform = BoundsTransform { _: Rect, _: Rect ->
@@ -149,15 +149,12 @@ fun SharedTransitionScope.AddPlayerCard(
                         id = R.string.player_avatar
                     ),
                     contentScale = ContentScale.Crop,
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
-                    modifier = Modifier
-                        .width(68.dp)
-                        .height(68.dp)
-                        .clip(CircleShape)
+                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.tertiary)
                 )
                 Text(
                     text = stringResource(id = R.string.add),
                     style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.tertiary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

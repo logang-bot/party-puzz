@@ -59,8 +59,8 @@ fun HomeNavigation(
                     HomeScreen(
                         animatedVisibilityScope = this,
                         uiState = uiState,
-                        onGameOptionSelected = { name, image ->
-                            navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image))
+                        onGameOptionSelected = { name, image, partyId ->
+                            navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image, partyId = partyId))
                         },
                         onTogglePartySelection = viewModel::togglePartySelection,
                         onOpenDialog = viewModel::openDialog,

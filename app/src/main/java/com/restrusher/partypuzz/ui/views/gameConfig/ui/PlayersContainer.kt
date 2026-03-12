@@ -10,16 +10,14 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +32,7 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 private const val MAX_PLAYERS = 8
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun SharedTransitionScope.PlayersContainer(
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -44,11 +42,10 @@ fun SharedTransitionScope.PlayersContainer(
     Column(modifier) {
         Text(text = stringResource(id = R.string.players), style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(10.dp))
-        Row(
+        FlowRow(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
-            modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-                .height(IntrinsicSize.Max)
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+            modifier = Modifier.fillMaxWidth()
         ) {
             GamePlayersList.PlayersList.forEach { player ->
                 val visibleState = remember(player.id) {
@@ -61,8 +58,8 @@ fun SharedTransitionScope.PlayersContainer(
                     PlayerDataCard(
                         player = player,
                         modifier = Modifier
-                            .width(80.dp)
-                            .fillMaxHeight()
+                            .width(CARD_WIDTH)
+                            .height(CARD_HEIGHT)
                     )
                 }
             }
@@ -70,7 +67,8 @@ fun SharedTransitionScope.PlayersContainer(
                 AddPlayerCard(
                     animatedVisibilityScope = animatedVisibilityScope,
                     modifier = Modifier
-                        .width(80.dp)
+                        .width(CARD_WIDTH)
+                        .height(CARD_HEIGHT)
                         .clickable { onAddPlayerClick() }
                 )
             }

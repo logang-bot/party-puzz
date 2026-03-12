@@ -22,6 +22,10 @@ interface PartyDao {
     @Query("SELECT * FROM parties ORDER BY COALESCE(lastUsedAt, dateCreation) DESC")
     fun getAllPartiesWithPlayers(): Flow<List<PartyWithPlayers>>
 
+    @Transaction
+    @Query("SELECT * FROM parties WHERE id = :partyId")
+    suspend fun getPartyById(partyId: Int): PartyWithPlayers?
+
     @Query("UPDATE parties SET lastUsedAt = :timestamp WHERE id = :partyId")
     suspend fun updateLastUsed(partyId: Int, timestamp: Long)
 }

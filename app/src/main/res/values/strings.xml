@@ -46,6 +46,9 @@
     <string name="generate_random_image">Generate random image</string>
     <string name="take_photo">Take Photo</string>
     <string name="play">Play</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="name_is_required">Name is required</string>
     <string name="last_party">Last party</string>
     <string name="selected_party">Selected party</string>
     <string name="close">Close</string>

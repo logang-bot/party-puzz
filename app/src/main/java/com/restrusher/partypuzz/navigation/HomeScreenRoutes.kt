@@ -8,7 +8,8 @@ data object HomeScreen
 @Serializable
 data class GameConfigScreen(
     val gameModeName: Int,
-    val gameModeImage: Int
+    val gameModeImage: Int,
+    val partyId: Int? = null
 )
 
 @Serializable

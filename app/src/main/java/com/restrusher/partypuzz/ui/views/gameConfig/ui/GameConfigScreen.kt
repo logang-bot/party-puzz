@@ -29,6 +29,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.restrusher.partypuzz.ui.views.gameConfig.GameConfigViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -51,7 +53,8 @@ fun SharedTransitionScope.GameConfigScreen(
     gameModeName: Int,
     gameModeImage: Int,
     onCreatePlayerClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: GameConfigViewModel = hiltViewModel()
 ) {
     val title = stringResource(id = R.string.prepare_your_party)
     LaunchedEffect(key1 = title) {

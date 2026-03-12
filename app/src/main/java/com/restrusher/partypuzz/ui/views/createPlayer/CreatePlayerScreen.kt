@@ -3,10 +3,8 @@ package com.restrusher.partypuzz.ui.views.createPlayer
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.BoundsTransform
@@ -34,6 +32,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import com.restrusher.partypuzz.data.models.Gender
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
@@ -41,6 +40,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -59,7 +59,6 @@ var permissionsToRequest = arrayOf(
     Manifest.permission.CAMERA
 )
 
-@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.CreatePlayerScreen(
@@ -80,7 +79,8 @@ fun SharedTransitionScope.CreatePlayerScreen(
     }
 
     val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()) { perms ->
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { perms ->
         permissionsToRequest.forEach { permission ->
             viewModel.onPermissionResult(
                 permission = permission,
@@ -105,7 +105,8 @@ fun SharedTransitionScope.CreatePlayerScreen(
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()) { success ->
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
         if (success) viewModel.onCapturedImage(uri)
     }
 
@@ -117,7 +118,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .sharedBounds(
                     rememberSharedContentState(key = "bounds"),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -138,50 +139,44 @@ fun SharedTransitionScope.CreatePlayerScreen(
                     detectTapGestures(onTap = { focusManager.clearFocus() })
                 },
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ImageOptionsContainer(
-                    takePictureAction = {
-                        val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
-                            context, Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
+            PlayerFormContent(
+                capturedImageUri = uiState.capturedImageUri,
+                playerName = uiState.playerName,
+                avatarRes = uiState.randomAvatarRes,
+                gender = uiState.gender,
+                onTakePicture = {
+                    val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
 
-                        if (isCameraPermissionGranted)
-                            cameraLauncher.launch(uri)
-                        else
-                            multiplePermissionResultLauncher.launch(permissionsToRequest)
-                    },
-                    generateRandomImageAction = {
-                        val index = viewModel.randomAvatarIndex()
-                        val resId = context.resources.getIdentifier(
-                            "img_dummy_avatar_$index", "drawable", context.packageName
-                        )
-                        viewModel.onRandomAvatarRequested(if (resId != 0) resId else null)
-                    },
-                    modifier = Modifier
-                        .padding(24.dp))
-                EditPlayerCard(uiState.capturedImageUri, uiState.playerName, avatarRes = uiState.randomAvatarRes)
-                NameOptionsContainer(
-                    value = uiState.playerName,
-                    onValueChanged = { viewModel.onPlayerNameChanged(it) },
-                    onGenerateRandomName = {
-                        viewModel.onPlayerNameChanged(viewModel.generateRandomName())
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp))
-            }
+                    if (isCameraPermissionGranted)
+                        cameraLauncher.launch(uri)
+                    else
+                        multiplePermissionResultLauncher.launch(permissionsToRequest)
+                },
+                onGenerateRandomImage = {
+                    val index = viewModel.randomAvatarIndex()
+                    val resId = context.resources.getIdentifier(
+                        "img_dummy_avatar_$index", "drawable", context.packageName
+                    )
+                    viewModel.onRandomAvatarRequested(if (resId != 0) resId else null)
+                },
+                onPlayerNameChanged = viewModel::onPlayerNameChanged,
+                onGenerateRandomName = { viewModel.onPlayerNameChanged(viewModel.generateRandomName()) },
+                onGenderSelected = viewModel::onGenderSelected
+            )
 
             Button(
                 onClick = { viewModel.confirmPlayer() },
+                enabled = uiState.playerName.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
             ) {
-                Text(text = stringResource(id = R.string.confirm).uppercase(), style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = stringResource(id = R.string.confirm).uppercase(),
+                    style = MaterialTheme.typography.headlineSmall
+                )
             }
         }
 
@@ -222,16 +217,73 @@ fun SharedTransitionScope.CreatePlayerScreen(
         }
 }
 
-@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Preview
 @Composable
-fun CreatePlayerScreenPreview() {
-    PartyPuzzTheme {
-        SharedTransitionLayout {
-            AnimatedVisibility(visible = true) {
-                CreatePlayerScreen({}, animatedVisibilityScope = this, navigateBack = {})
-            }
+fun PlayerFormContent(
+    capturedImageUri: Uri,
+    playerName: String,
+    avatarRes: Int?,
+    gender: Gender,
+    onTakePicture: () -> Unit,
+    onGenerateRandomImage: () -> Unit,
+    onPlayerNameChanged: (String) -> Unit,
+    onGenerateRandomName: () -> Unit,
+    onGenderSelected: (Gender) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        ImageOptionsContainer(
+            takePictureAction = onTakePicture,
+            generateRandomImageAction = onGenerateRandomImage,
+            modifier = Modifier.padding(24.dp)
+        )
+        EditPlayerCard(capturedImageUri, playerName, avatarRes = avatarRes)
+        AnimatedVisibility(visible = playerName.isBlank()) {
+            Text(
+                text = stringResource(R.string.name_is_required),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, top = 6.dp)
+            )
         }
+        NameOptionsContainer(
+            value = playerName,
+            onValueChanged = onPlayerNameChanged,
+            onGenerateRandomName = onGenerateRandomName,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp)
+        )
+        GenderOptionsContainer(
+            selectedGender = gender,
+            onGenderSelected = onGenderSelected,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlayerFormContentPreview() {
+    PartyPuzzTheme {
+        PlayerFormContent(
+            capturedImageUri = Uri.EMPTY,
+            playerName = "Alex",
+            avatarRes = null,
+            gender = Gender.Unknown,
+            onTakePicture = {},
+            onGenerateRandomImage = {},
+            onPlayerNameChanged = {},
+            onGenerateRandomName = {},
+            onGenderSelected = {}
+        )
     }
 }

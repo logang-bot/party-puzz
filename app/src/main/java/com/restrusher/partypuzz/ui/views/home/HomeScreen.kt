@@ -38,7 +38,7 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 fun SharedTransitionScope.HomeScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     uiState: HomeState,
-    onGameOptionSelected: (Int, Int) -> Unit,
+    onGameOptionSelected: (Int, Int, Int?) -> Unit,
     onTogglePartySelection: () -> Unit,
     onOpenDialog: () -> Unit,
     onCloseDialog: () -> Unit,
@@ -77,7 +77,10 @@ fun SharedTransitionScope.HomeScreen(
                 ) { index ->
                     GameModeCard(
                         animatedVisibilityScope = animatedVisibilityScope,
-                        onPlayClick = onGameOptionSelected,
+                        onPlayClick = { name, image ->
+                            val partyId = if (uiState.isPartySelected) uiState.activeParty?.party?.id else null
+                            onGameOptionSelected(name, image, partyId)
+                        },
                         gameMode = uiState.gameModes[index],
                         players = uiState.activePlayers,
                         modifier = Modifier
@@ -152,7 +155,7 @@ fun HomeScreenPreview() {
                 HomeScreen(
                     animatedVisibilityScope = this,
                     uiState = HomeState(),
-                    onGameOptionSelected = { _, _ -> },
+                    onGameOptionSelected = { _, _, _ -> },
                     onTogglePartySelection = {},
                     onOpenDialog = {},
                     onCloseDialog = {},

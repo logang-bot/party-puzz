@@ -9,5 +9,6 @@ interface PartyProxy {
     suspend fun createParty(party: PartyEntity): Long
     suspend fun linkPlayerToParty(crossRef: PartyPlayerCrossRef)
     fun getAllParties(): Flow<List<PartyWithPlayers>>
+    suspend fun getPartyById(partyId: Int): PartyWithPlayers?
     suspend fun updateLastUsed(partyId: Int)
 }

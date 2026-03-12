@@ -76,7 +76,7 @@ fun EditPlayerCard(
                 .padding(top = 50.dp, start = 6.dp, end = 6.dp, bottom = 5.dp)
         ) {
             Text(
-                text = playerName.ifBlank { stringResource(id = R.string.players_name) },
+                text = playerName,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,

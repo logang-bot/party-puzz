@@ -78,7 +78,7 @@ fun LastPartyCard(
         displayedNames.joinToString(", ")
 
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.outlineVariant else Color.Transparent,
+        targetValue = if (isSelected) MaterialTheme.colorScheme.outline else Color.Transparent,
         animationSpec = tween(durationMillis = 400),
         label = "borderColor"
     )
