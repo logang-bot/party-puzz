@@ -14,3 +14,9 @@ data class GameConfigScreen(
 
 @Serializable
 data object CreatePlayerScreen
+
+@Serializable
+data object LoadingScreen
+
+@Serializable
+data object GameScreen

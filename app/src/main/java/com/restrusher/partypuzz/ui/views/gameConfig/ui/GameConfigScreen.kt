@@ -5,9 +5,12 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,8 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,8 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.restrusher.partypuzz.ui.views.gameConfig.GameConfigViewModel
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -53,6 +56,7 @@ fun SharedTransitionScope.GameConfigScreen(
     gameModeName: Int,
     gameModeImage: Int,
     onCreatePlayerClick: () -> Unit,
+    onStartGameClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GameConfigViewModel = hiltViewModel()
 ) {
@@ -114,7 +118,8 @@ fun SharedTransitionScope.GameConfigScreen(
                 modifier = Modifier.fillMaxWidth())
         }
         StartGameButton(
-            Modifier
+            onClick = onStartGameClick,
+            modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(10.dp))
@@ -123,23 +128,44 @@ fun SharedTransitionScope.GameConfigScreen(
 
 @Composable
 fun StartGameButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        onClick = {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
-        },
-        modifier = modifier.background(
-            brush = Brush.horizontalGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.primary
-                )
-            ),
-            shape = ButtonDefaults.shape
-        ),
-        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+    val primary = MaterialTheme.colorScheme.primary
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
+
+    val animatedBgColor by animateColorAsState(
+        targetValue = if (isPressed) onPrimary else primary,
+        animationSpec = tween(durationMillis = 300),
+        label = "bg color"
+    )
+    val animatedTextColor by animateColorAsState(
+        targetValue = if (isPressed) primary else onPrimary,
+        animationSpec = tween(durationMillis = 300),
+        label = "text color"
+    )
+
+    val shape = RoundedCornerShape(50)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .defaultMinSize(minHeight = 40.dp)
+            .background(color = animatedBgColor, shape = shape)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = 24.dp, vertical = 8.dp)
     ) {
-        Text(text = stringResource(id = R.string.start_game).uppercase(), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSecondary)
+        Text(
+            text = stringResource(id = R.string.start_game).uppercase(),
+            fontWeight = FontWeight.Bold,
+            color = animatedTextColor
+        )
     }
 }
 
@@ -155,7 +181,8 @@ fun GameConfigScreenPreview() {
                     animatedVisibilityScope = this,
                     gameModeName = R.string.party_puzz_game_mode,
                     gameModeImage = R.drawable.img_partypuzz_mode_illustration,
-                    onCreatePlayerClick = {}
+                    onCreatePlayerClick = {},
+                    onStartGameClick = {}
                 )
             }
         }

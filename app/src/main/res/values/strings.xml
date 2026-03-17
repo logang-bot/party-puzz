@@ -64,5 +64,6 @@
     <string name="and_x_more">and %1$d more</string>
     <string name="select_a_party">Select a party</string>
     <string name="cancel">Cancel</string>
+    <string name="game">Game</string>
 
 </resources>

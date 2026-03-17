@@ -24,7 +24,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.ui.common.HomeAppBar
 import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen
+import com.restrusher.partypuzz.ui.views.game.GameScreen
 import com.restrusher.partypuzz.ui.views.gameConfig.ui.GameConfigScreen
+import com.restrusher.partypuzz.ui.views.gameLoading.LoadingScreen
 import com.restrusher.partypuzz.ui.views.home.HomeScreen
 import com.restrusher.partypuzz.ui.views.home.HomeViewModel
 
@@ -82,17 +84,40 @@ fun HomeNavigation(
                         onCreatePlayerClick = {
                             navController.navigate(CreatePlayerScreen)
                         },
+                        onStartGameClick = {
+                            navController.navigate(LoadingScreen)
+                        },
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-                composable<CreatePlayerScreen>(
-                ) {
+                composable<CreatePlayerScreen> {
                     CreatePlayerScreen(
                         setAppBarTitle = { title ->
                             appBarTitle = title
                         },
                         animatedVisibilityScope = this,
                         navigateBack = { navController.popBackStack() }
+                    )
+                }
+                composable<LoadingScreen> {
+                    LoadingScreen(
+                        setAppBarTitle = { title ->
+                            appBarTitle = title
+                        },
+                        onLoadingComplete = {
+                            navController.navigate(GameScreen) {
+                                popUpTo(LoadingScreen) { inclusive = true }
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                composable<GameScreen> {
+                    GameScreen(
+                        setAppBarTitle = { title ->
+                            appBarTitle = title
+                        },
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
