@@ -40,7 +40,11 @@
     <string name="customize_your_party">Customize your party</string>
     <string name="bar_mode">Bar Mode</string>
     <string name="can_skip_questions">Can skip questions</string>
-    <string name="unlimited_mode">Unlimited mode</string>
+    <string name="unlimited_mode">No-end mode</string>
+    <string name="mini_games">Mini-games</string>
+    <string name="truth_or_dare">Truth or Dare</string>
+    <string name="general_culture">General culture</string>
+    <string name="save_stats">Save stats</string>
     <string name="start_game">Start Game</string>
     <string name="generate_random_name">Generate random name</string>
     <string name="generate_random_image">Generate random image</string>
