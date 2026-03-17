@@ -84,4 +84,18 @@
         <item>Almost ready to play\u2026</item>
     </string-array>
 
+    <!-- Truth texts -->
+    <string-array name="truth_texts">
+        <item>Who\'s the last person you searched on social media</item>
+        <item>What\'s your relationship dealbreaker</item>
+        <item>What\'s your most bizarre nickname</item>
+    </string-array>
+
+    <!-- Dare texts -->
+    <string-array name="dare_texts">
+        <item>Do 100 squats</item>
+        <item>Say yes to everything for the next 1 minute</item>
+        <item>Keep your eyes closed until it\'s your go again</item>
+    </string-array>
+
 </resources>
