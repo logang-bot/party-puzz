@@ -1,6 +1,8 @@
 package com.restrusher.partypuzz.ui.views.game
 
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -26,6 +28,7 @@ fun GameScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     var showExitDialog by remember { mutableStateOf(false) }
 
     BackHandler { showExitDialog = true }

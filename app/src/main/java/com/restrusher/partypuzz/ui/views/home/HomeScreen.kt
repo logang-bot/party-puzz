@@ -24,7 +24,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import android.content.pm.ActivityInfo
 import androidx.compose.ui.Modifier
+import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,6 +48,7 @@ fun SharedTransitionScope.HomeScreen(
     onConfirmPartySelection: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     Box(
         modifier = modifier
             .fillMaxSize()

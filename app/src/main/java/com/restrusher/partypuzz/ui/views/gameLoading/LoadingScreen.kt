@@ -18,7 +18,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.content.pm.ActivityInfo
 import androidx.compose.ui.res.stringArrayResource
+import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.common.loadingAnimations.BlurredAnimatedText
@@ -33,6 +35,7 @@ fun LoadingScreen(
     onLoadingComplete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     val loadingTexts = stringArrayResource(id = R.array.loading_texts)
     var currentTextIndex by remember { mutableIntStateOf(0) }
 

@@ -45,8 +45,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import android.content.pm.ActivityInfo
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
+import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import kotlinx.coroutines.delay
 
@@ -62,6 +64,7 @@ fun SharedTransitionScope.GameConfigScreen(
     modifier: Modifier = Modifier,
     viewModel: GameConfigViewModel = hiltViewModel()
 ) {
+    LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     val title = stringResource(id = R.string.prepare_your_party)
     LaunchedEffect(key1 = title) {
         delay(100)
