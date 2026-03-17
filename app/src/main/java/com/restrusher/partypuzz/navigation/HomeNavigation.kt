@@ -5,6 +5,7 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -15,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -39,14 +41,20 @@ fun HomeNavigation(
     val currentScreen = backStackEntry?.destination
     var appBarTitle by remember { mutableStateOf("") }
 
+    val isFullScreenRoute = currentScreen?.hasRoute(LoadingScreen::class) == true ||
+            currentScreen?.hasRoute(GameScreen::class) == true
+
     Scaffold(
+        contentWindowInsets = WindowInsets(0),
         topBar = {
-            HomeAppBar(
-                title = appBarTitle,
-                currentDestination = currentScreen,
-                canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() }
-            )
+            if (!isFullScreenRoute) {
+                HomeAppBar(
+                    title = appBarTitle,
+                    currentDestination = currentScreen,
+                    canNavigateBack = navController.previousBackStackEntry != null,
+                    navigateUp = { navController.navigateUp() }
+                )
+            }
         }
     ) { innerPadding ->
         SharedTransitionLayout {
@@ -101,9 +109,6 @@ fun HomeNavigation(
                 }
                 composable<LoadingScreen> {
                     LoadingScreen(
-                        setAppBarTitle = { title ->
-                            appBarTitle = title
-                        },
                         onLoadingComplete = {
                             navController.navigate(GameScreen) {
                                 popUpTo(LoadingScreen) { inclusive = true }
@@ -114,9 +119,7 @@ fun HomeNavigation(
                 }
                 composable<GameScreen> {
                     GameScreen(
-                        setAppBarTitle = { title ->
-                            appBarTitle = title
-                        },
+                        onNavigateBack = { navController.popBackStack() },
                         modifier = Modifier.fillMaxSize()
                     )
                 }

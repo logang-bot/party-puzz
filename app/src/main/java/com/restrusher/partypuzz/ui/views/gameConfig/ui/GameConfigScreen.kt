@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import kotlinx.coroutines.delay
 
@@ -119,9 +121,11 @@ fun SharedTransitionScope.GameConfigScreen(
         }
         StartGameButton(
             onClick = onStartGameClick,
+            enabled = GamePlayersList.PlayersList.isNotEmpty(),
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceVariant)
+                .navigationBarsPadding()
                 .padding(10.dp))
     }
 }
@@ -129,6 +133,7 @@ fun SharedTransitionScope.GameConfigScreen(
 @Composable
 fun StartGameButton(
     onClick: () -> Unit,
+    enabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -136,6 +141,8 @@ fun StartGameButton(
 
     val primary = MaterialTheme.colorScheme.primary
     val onPrimary = MaterialTheme.colorScheme.onPrimary
+    val disabledBg = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    val disabledText = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
 
     val animatedBgColor by animateColorAsState(
         targetValue = if (isPressed) onPrimary else primary,
@@ -148,15 +155,19 @@ fun StartGameButton(
         label = "text color"
     )
 
+    val bgColor = if (enabled) animatedBgColor else disabledBg
+    val textColor = if (enabled) animatedTextColor else disabledText
+
     val shape = RoundedCornerShape(50)
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .defaultMinSize(minHeight = 40.dp)
-            .background(color = animatedBgColor, shape = shape)
+            .background(color = bgColor, shape = shape)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
+                enabled = enabled,
                 onClick = onClick
             )
             .padding(horizontal = 24.dp, vertical = 8.dp)
@@ -164,7 +175,7 @@ fun StartGameButton(
         Text(
             text = stringResource(id = R.string.start_game).uppercase(),
             fontWeight = FontWeight.Bold,
-            color = animatedTextColor
+            color = textColor
         )
     }
 }

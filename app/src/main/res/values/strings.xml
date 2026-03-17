@@ -65,5 +65,23 @@
     <string name="select_a_party">Select a party</string>
     <string name="cancel">Cancel</string>
     <string name="game">Game</string>
+    <string name="exit_game_title">Exit game?</string>
+    <string name="exit_game_message">Are you sure you want to exit the current game?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- Loading Screen -->
+    <string-array name="loading_texts">
+        <item>Shuffling the deck\u2026</item>
+        <item>Warming up the party\u2026</item>
+        <item>Rolling the dice\u2026</item>
+        <item>Getting the party started\u2026</item>
+        <item>Preparing your questions\u2026</item>
+        <item>Setting up the game\u2026</item>
+        <item>Loading the fun\u2026</item>
+        <item>Gathering the players\u2026</item>
+        <item>Mixing things up\u2026</item>
+        <item>Almost ready to play\u2026</item>
+    </string-array>
 
 </resources>
