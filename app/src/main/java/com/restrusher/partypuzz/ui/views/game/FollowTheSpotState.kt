@@ -1,6 +1,10 @@
 package com.restrusher.partypuzz.ui.views.game
 
+import com.restrusher.partypuzz.data.models.Player
+
 data class FollowTheSpotState(
+    val player1: Player? = null,
+    val player2: Player? = null,
     val player1Score: Int = 0,
     val player2Score: Int = 0,
     val timeRemaining: Int = 15,

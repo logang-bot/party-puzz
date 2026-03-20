@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.models.Player
 
 // ─── CardContent maps phase to what the main deal card shows ─────────────────
 
@@ -65,6 +68,7 @@ internal fun GameDealSection(
     onChallengeDismissed: () -> Unit,
     onTruthOrDareChosen: (TruthOrDareChoice) -> Unit,
     onGeneralKnowledgeAnswered: (Char) -> Unit,
+    onMiniGameOpponentSelected: (Player) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val mainInteractionSource = remember { MutableInteractionSource() }
@@ -136,6 +140,11 @@ internal fun GameDealSection(
                     GameDealType.GENERAL_KNOWLEDGE -> GeneralKnowledgeChallengeContent(
                         uiState = uiState,
                         onAnswerSelected = onGeneralKnowledgeAnswered,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                    GameDealType.MINI_GAME -> MiniGameChallengeContent(
+                        uiState = uiState,
+                        onOpponentSelected = onMiniGameOpponentSelected,
                         modifier = Modifier.fillMaxSize()
                     )
                     null -> Unit
@@ -440,6 +449,101 @@ private fun GeneralKnowledgeChallengeContent(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)
+            )
+        }
+    }
+}
+
+// ─── Mini-game challenge ──────────────────────────────────────────────────────
+
+@Composable
+private fun MiniGameChallengeContent(
+    uiState: GameScreenState,
+    onOpponentSelected: (Player) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val miniGame = uiState.miniGame ?: return
+    val result = uiState.miniGameResult
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .padding(horizontal = 24.dp)
+            .padding(top = 32.dp, bottom = 24.dp)
+    ) {
+        Text(
+            text = stringResource(miniGame.nameRes),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White.copy(alpha = 0.65f),
+            textAlign = TextAlign.Center
+        )
+
+        if (result == null) {
+            // ── Opponent selection ──────────────────────────────────────────
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = uiState.selectedPlayer?.nickName.orEmpty(),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(24.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+            ) {
+                val opponents = uiState.players.filter { it != uiState.selectedPlayer }
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(opponents, key = { it.id }) { player ->
+                        DealOptionButton(
+                            text = player.nickName,
+                            onClick = { onOpponentSelected(player) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
+        } else {
+            // ── Result summary ──────────────────────────────────────────────
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = "${result.player1Name}:  ${result.player1Score}",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "${result.player2Name}:  ${result.player2Score}",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(20.dp))
+            Text(
+                text = if (result.winner != null)
+                    stringResource(R.string.mini_game_winner, result.winner!!)
+                else
+                    stringResource(R.string.mini_game_tie),
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White.copy(alpha = 0.9f),
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = stringResource(R.string.tap_to_dismiss),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.45f),
+                textAlign = TextAlign.Center
             )
         }
     }

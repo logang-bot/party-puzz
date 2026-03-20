@@ -215,4 +215,10 @@
     <string name="no_active_dares">No active dares right now</string>
     <string name="no_active_dares_for_player">No active dares for this player</string>
 
+    <!-- Mini-games -->
+    <string name="follow_the_spot">Follow The Spot</string>
+    <string name="tap_to_exit">Tap to exit</string>
+    <string name="mini_game_winner">Winner: %1$s</string>
+    <string name="mini_game_tie">It\'s a tie!</string>
+
 </resources>

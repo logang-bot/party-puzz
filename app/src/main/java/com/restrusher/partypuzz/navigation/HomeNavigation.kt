@@ -26,7 +26,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.ui.common.HomeAppBar
 import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen
+import com.restrusher.partypuzz.ui.views.game.FollowTheSpotScreen
 import com.restrusher.partypuzz.ui.views.game.GameScreen
+import com.restrusher.partypuzz.ui.views.game.MiniGame
 import com.restrusher.partypuzz.ui.views.gameConfig.ui.GameConfigScreen
 import com.restrusher.partypuzz.ui.views.gameLoading.LoadingScreen
 import com.restrusher.partypuzz.ui.views.home.HomeScreen
@@ -42,7 +44,8 @@ fun HomeNavigation(
     var appBarTitle by remember { mutableStateOf("") }
 
     val isFullScreenRoute = currentScreen?.hasRoute(LoadingScreen::class) == true ||
-            currentScreen?.hasRoute(GameScreen::class) == true
+            currentScreen?.hasRoute(GameScreen::class) == true ||
+            currentScreen?.hasRoute(FollowTheSpotRoute::class) == true
 
     Scaffold(
         contentWindowInsets = WindowInsets(0),
@@ -120,6 +123,32 @@ fun HomeNavigation(
                 composable<GameScreen> {
                     GameScreen(
                         onNavigateBack = { navController.popBackStack() },
+                        onNavigateToMiniGame = { miniGame, challenger, opponent ->
+                            when (miniGame) {
+                                MiniGame.FOLLOW_THE_SPOT -> navController.navigate(
+                                    FollowTheSpotRoute(
+                                        player1Name = challenger.nickName,
+                                        player1PhotoPath = challenger.photoPath,
+                                        player1AvatarName = challenger.avatarName,
+                                        player2Name = opponent.nickName,
+                                        player2PhotoPath = opponent.photoPath,
+                                        player2AvatarName = opponent.avatarName
+                                    )
+                                )
+                            }
+                        },
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                composable<FollowTheSpotRoute> {
+                    FollowTheSpotScreen(
+                        onGameFinished = { player1Score, player2Score ->
+                            navController.previousBackStackEntry?.savedStateHandle?.apply {
+                                set("mini_game_p1_score", player1Score)
+                                set("mini_game_p2_score", player2Score)
+                            }
+                            navController.popBackStack()
+                        },
                         modifier = Modifier.fillMaxSize()
                     )
                 }

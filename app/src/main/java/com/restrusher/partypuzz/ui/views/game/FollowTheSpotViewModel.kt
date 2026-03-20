@@ -1,7 +1,12 @@
 package com.restrusher.partypuzz.ui.views.game
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
+import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.Player
+import com.restrusher.partypuzz.navigation.FollowTheSpotRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -14,7 +19,9 @@ import javax.inject.Inject
 import kotlin.random.Random
 
 @HiltViewModel
-class FollowTheSpotViewModel @Inject constructor() : ViewModel() {
+class FollowTheSpotViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
     companion object {
         private const val GAME_DURATION_SECONDS = 15
@@ -26,7 +33,22 @@ class FollowTheSpotViewModel @Inject constructor() : ViewModel() {
     private var timerJob: Job? = null
 
     init {
-        startGame()
+        val route = savedStateHandle.toRoute<FollowTheSpotRoute>()
+        val player1 = Player(
+            id = 0,
+            nickName = route.player1Name,
+            gender = Gender.Unknown,
+            photoPath = route.player1PhotoPath,
+            avatarName = route.player1AvatarName
+        )
+        val player2 = Player(
+            id = 1,
+            nickName = route.player2Name,
+            gender = Gender.Unknown,
+            photoPath = route.player2PhotoPath,
+            avatarName = route.player2AvatarName
+        )
+        startGame(player1, player2)
     }
 
     fun onPlayer1SpotTapped() {
@@ -51,8 +73,10 @@ class FollowTheSpotViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    private fun startGame() {
+    private fun startGame(player1: Player, player2: Player) {
         _uiState.value = FollowTheSpotState(
+            player1 = player1,
+            player2 = player2,
             player1SpotNormX = Random.nextFloat(),
             player1SpotNormY = Random.nextFloat(),
             player2SpotNormX = Random.nextFloat(),

@@ -1,10 +1,12 @@
 package com.restrusher.partypuzz.ui.views.game
 
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
+import com.restrusher.partypuzz.data.models.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
@@ -12,6 +14,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -19,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameScreenViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     companion object {
@@ -27,6 +31,8 @@ class GameScreenViewModel @Inject constructor(
         private const val NAME_CYCLE_INTERVAL_MS = 300L
         private const val REVEAL_DURATION_MS = 1000L
         private const val STICKY_DARE_EXIT_DELAY_MS = 400L
+        private const val KEY_MINI_GAME_P1_SCORE = "mini_game_p1_score"
+        private const val KEY_MINI_GAME_P2_SCORE = "mini_game_p2_score"
     }
 
     private val _uiState = MutableStateFlow(
@@ -37,12 +43,29 @@ class GameScreenViewModel @Inject constructor(
     private var dealJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
 
+    init {
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow<Int?>(KEY_MINI_GAME_P1_SCORE, null)
+                .filterNotNull()
+                .collect { p1Score ->
+                    val p2Score = savedStateHandle.get<Int>(KEY_MINI_GAME_P2_SCORE)
+                        ?: return@collect
+                    handleMiniGameResult(p1Score, p2Score)
+                    savedStateHandle.remove<Int>(KEY_MINI_GAME_P1_SCORE)
+                    savedStateHandle.remove<Int>(KEY_MINI_GAME_P2_SCORE)
+                }
+        }
+    }
+
     fun onGameDealTapped() {
         val state = _uiState.value
         if (state.dealPhase != GameDealPhase.IDLE || state.players.isEmpty()) return
 
         val selectedPlayer = state.players.random()
-        val dealType = GameDealType.entries.random()
+        val availableDealTypes = GameDealType.entries.filter { type ->
+            if (type == GameDealType.MINI_GAME) state.players.size >= 2 else true
+        }
+        val dealType = availableDealTypes.random()
 
         dealJob?.cancel()
         dealJob = viewModelScope.launch {
@@ -72,7 +95,8 @@ class GameScreenViewModel @Inject constructor(
             delay(REVEAL_DURATION_MS)
 
             // Phase 4: Show challenge — load content based on deal type
-            val (challengeText, gkQuestion, pcText, durationLabel, durationSeconds) = buildChallengeContent(dealType)
+            val (challengeText, gkQuestion, pcText, durationLabel, durationSeconds, miniGame) =
+                buildChallengeContent(dealType)
 
             _uiState.update {
                 it.copy(
@@ -82,7 +106,8 @@ class GameScreenViewModel @Inject constructor(
                     generalKnowledgeQuestion = gkQuestion,
                     stickyDarePresentContinuous = pcText,
                     stickyDareDurationLabel = durationLabel,
-                    stickyDareDurationSeconds = durationSeconds
+                    stickyDareDurationSeconds = durationSeconds,
+                    miniGame = miniGame
                 )
             }
         }
@@ -100,6 +125,10 @@ class GameScreenViewModel @Inject constructor(
     fun onGeneralKnowledgeAnswered(option: Char) {
         if (_uiState.value.selectedAnswerOption != null) return
         _uiState.update { it.copy(selectedAnswerOption = option) }
+    }
+
+    fun onMiniGameOpponentSelected(opponent: Player) {
+        _uiState.update { it.copy(miniGameOpponent = opponent) }
     }
 
     fun onChallengeDismissed() {
@@ -140,10 +169,24 @@ class GameScreenViewModel @Inject constructor(
                     challengeText = null,
                     truthOrDareChoice = null,
                     generalKnowledgeQuestion = null,
-                    selectedAnswerOption = null
+                    selectedAnswerOption = null,
+                    miniGame = null,
+                    miniGameOpponent = null,
+                    miniGameResult = null
                 )
             }
         }
+    }
+
+    private fun handleMiniGameResult(player1Score: Int, player2Score: Int) {
+        val state = _uiState.value
+        val result = MiniGameResult(
+            player1Name = state.selectedPlayer?.nickName.orEmpty(),
+            player1Score = player1Score,
+            player2Name = state.miniGameOpponent?.nickName.orEmpty(),
+            player2Score = player2Score
+        )
+        _uiState.update { it.copy(miniGameResult = result) }
     }
 
     private fun startStickyDareTimer(dareId: String) {
@@ -181,18 +224,19 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-    // Returns (challengeText, gkQuestion, presentContinuous, durationLabel, durationSeconds)
+    // Returns (challengeText, gkQuestion, presentContinuous, durationLabel, durationSeconds, miniGame)
     private data class ChallengeContent(
         val challengeText: String?,
         val gkQuestion: GeneralKnowledgeQuestion?,
         val presentContinuous: String?,
         val durationLabel: String?,
-        val durationSeconds: Int?
+        val durationSeconds: Int?,
+        val miniGame: MiniGame?
     )
 
     private fun buildChallengeContent(dealType: GameDealType): ChallengeContent {
         return when (dealType) {
-            GameDealType.TRUTH_OR_DARE -> ChallengeContent(null, null, null, null, null)
+            GameDealType.TRUTH_OR_DARE -> ChallengeContent(null, null, null, null, null, null)
             GameDealType.STICKY_DARE -> {
                 val dares = context.resources.getStringArray(R.array.sticky_dares)
                 val presentContinuous = context.resources.getStringArray(R.array.sticky_dares_present_continuous)
@@ -204,7 +248,8 @@ class GameScreenViewModel @Inject constructor(
                     gkQuestion = null,
                     presentContinuous = presentContinuous[index],
                     durationLabel = durationLabels[index],
-                    durationSeconds = durationSeconds[index]
+                    durationSeconds = durationSeconds[index],
+                    miniGame = null
                 )
             }
             GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(
@@ -212,8 +257,22 @@ class GameScreenViewModel @Inject constructor(
                 gkQuestion = loadGkQuestions().randomOrNull(),
                 presentContinuous = null,
                 durationLabel = null,
-                durationSeconds = null
+                durationSeconds = null,
+                miniGame = null
             )
+            GameDealType.MINI_GAME -> {
+                val eligibleGames = MiniGame.entries.filter {
+                    _uiState.value.players.size >= it.minPlayers
+                }
+                ChallengeContent(
+                    challengeText = null,
+                    gkQuestion = null,
+                    presentContinuous = null,
+                    durationLabel = null,
+                    durationSeconds = null,
+                    miniGame = eligibleGames.randomOrNull()
+                )
+            }
         }
     }
 

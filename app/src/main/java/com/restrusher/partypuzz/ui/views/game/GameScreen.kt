@@ -45,6 +45,7 @@ import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 @Composable
 fun GameScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToMiniGame: (miniGame: MiniGame, challenger: Player, opponent: Player) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GameScreenViewModel = hiltViewModel()
 ) {
@@ -148,6 +149,14 @@ fun GameScreen(
                 onChallengeDismissed = viewModel::onChallengeDismissed,
                 onTruthOrDareChosen = viewModel::onTruthOrDareChosen,
                 onGeneralKnowledgeAnswered = viewModel::onGeneralKnowledgeAnswered,
+                onMiniGameOpponentSelected = { opponent ->
+                    viewModel.onMiniGameOpponentSelected(opponent)
+                    val miniGame = uiState.miniGame
+                    val challenger = uiState.selectedPlayer
+                    if (miniGame != null && challenger != null) {
+                        onNavigateToMiniGame(miniGame, challenger, opponent)
+                    }
+                },
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()

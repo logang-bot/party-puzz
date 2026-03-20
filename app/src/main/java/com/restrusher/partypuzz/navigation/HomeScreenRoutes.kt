@@ -20,3 +20,13 @@ data object LoadingScreen
 
 @Serializable
 data object GameScreen
+
+@Serializable
+data class FollowTheSpotRoute(
+    val player1Name: String,
+    val player1PhotoPath: String?,
+    val player1AvatarName: String?,
+    val player2Name: String,
+    val player2PhotoPath: String?,
+    val player2AvatarName: String?
+)
