@@ -12,6 +12,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
@@ -32,8 +33,10 @@ private const val ANIMATION_DURATION = 1000
 @Composable
 fun BlurredAnimatedText(
     text: String,
+    color: Color = Color.Unspecified,
     modifier: Modifier = Modifier
 ) {
+    val resolvedColor = if (color == Color.Unspecified) LocalContentColor.current else color
     val blurList = text.mapIndexed { index, character ->
         if(character == ' ') {
             remember {
@@ -66,7 +69,7 @@ fun BlurredAnimatedText(
         text.forEachIndexed { index, character ->
             Text(
                 text = character.toString(),
-                color = Color.White,
+                color = resolvedColor,
                 modifier = Modifier
                     .graphicsLayer {
                         if(character != ' ') {
@@ -80,7 +83,8 @@ fun BlurredAnimatedText(
                     .then(
                         if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
                             Modifier.fullContentBlur(
-                                blurRadius = { blurList[index].value.roundToInt() }
+                                blurRadius = { blurList[index].value.roundToInt() },
+                                color = resolvedColor
                             )
                         } else {
                             Modifier
