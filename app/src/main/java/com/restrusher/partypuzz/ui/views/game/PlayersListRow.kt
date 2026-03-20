@@ -3,6 +3,8 @@ package com.restrusher.partypuzz.ui.views.game
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -18,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -28,6 +31,7 @@ internal fun PlayersListRow(
     players: List<Player>,
     selectedPlayer: Player?,
     dealPhase: GameDealPhase,
+    onPlayerTapped: (Player) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -51,6 +55,7 @@ internal fun PlayersListRow(
             PlayerAvatarCard(
                 player = player,
                 isHighlighted = isHighlightActive && player == selectedPlayer,
+                onTapped = { onPlayerTapped(player) },
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .width(64.dp)
@@ -64,6 +69,7 @@ internal fun PlayersListRow(
 private fun PlayerAvatarCard(
     player: Player,
     isHighlighted: Boolean,
+    onTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val borderColor by animateColorAsState(
@@ -71,13 +77,16 @@ private fun PlayerAvatarCard(
         animationSpec = tween(300),
         label = "highlight border"
     )
+    val interactionSource = remember { MutableInteractionSource() }
 
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         shape = playerCardShape,
-        modifier = modifier.border(2.dp, borderColor, playerCardShape)
+        modifier = modifier
+            .border(2.dp, borderColor, playerCardShape)
+            .clickable(interactionSource = interactionSource, indication = null) { onTapped() }
     ) {
         PlayerPhoto(
             player = player,

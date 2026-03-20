@@ -24,10 +24,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,9 +46,29 @@ import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
+private data class OptionDef(@androidx.annotation.StringRes val labelRes: Int, val initialEnabled: Boolean)
+
+private val optionDefinitions = listOf(
+    OptionDef(R.string.save_stats, true),
+    OptionDef(R.string.bar_mode, false),
+    OptionDef(R.string.can_skip_questions, false),
+    OptionDef(R.string.unlimited_mode, false),
+    OptionDef(R.string.mini_games, false),
+    OptionDef(R.string.truth_or_dare, false),
+    OptionDef(R.string.general_culture, false),
+)
+
 @Composable
 fun OptionsContainer(modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
+
+    LaunchedEffect(Unit) {
+        GameOptionsSource.initialize(
+            optionDefinitions.map {
+                GameOptionsSource.GameOption(labelRes = it.labelRes, enabled = it.initialEnabled)
+            }
+        )
+    }
 
     Column(modifier = modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(10.dp))
@@ -57,13 +79,13 @@ fun OptionsContainer(modifier: Modifier = Modifier) {
                 .horizontalScroll(scrollState)
                 .padding(horizontal = 4.dp)
         ) {
-            OptionChip(stringResource(id = R.string.save_stats), true)
-            OptionChip(stringResource(id = R.string.bar_mode), false)
-            OptionChip(stringResource(id = R.string.can_skip_questions), false)
-            OptionChip(stringResource(id = R.string.unlimited_mode), false)
-            OptionChip(stringResource(id = R.string.mini_games), false)
-            OptionChip(stringResource(id = R.string.truth_or_dare), false)
-            OptionChip(stringResource(id = R.string.general_culture), false)
+            optionDefinitions.forEach { def ->
+                OptionChip(
+                    optionName = stringResource(def.labelRes),
+                    initialEnabled = def.initialEnabled,
+                    onToggled = { GameOptionsSource.toggle(def.labelRes) }
+                )
+            }
         }
         Spacer(modifier = Modifier.height(6.dp))
         val indicatorAlpha by animateFloatAsState(
@@ -111,7 +133,7 @@ private fun ScrollIndicator(
 
 @Composable
 fun OptionChip(
-    optionName: String, initialEnabled: Boolean = false, modifier: Modifier = Modifier
+    optionName: String, initialEnabled: Boolean = false, onToggled: () -> Unit = {}, modifier: Modifier = Modifier
 ) {
     var selected by remember { mutableStateOf(initialEnabled) }
     val interactionSource = remember { MutableInteractionSource() }
@@ -140,7 +162,10 @@ fun OptionChip(
             .clip(chipShape)
             .border(1.dp, borderColor, chipShape)
             .background(backgroundColor)
-            .clickable(interactionSource = interactionSource, indication = null) { selected = !selected }
+            .clickable(interactionSource = interactionSource, indication = null) {
+                selected = !selected
+                onToggled()
+            }
             .padding(vertical = 5.dp, horizontal = 10.dp)
     ) {
         if (selected) {

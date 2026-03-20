@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +26,7 @@ class GameScreenViewModel @Inject constructor(
         private const val ANIMATION_DURATION_MS = 5000L
         private const val NAME_CYCLE_INTERVAL_MS = 300L
         private const val REVEAL_DURATION_MS = 1000L
+        private const val STICKY_DARE_EXIT_DELAY_MS = 400L
     }
 
     private val _uiState = MutableStateFlow(
@@ -33,6 +35,7 @@ class GameScreenViewModel @Inject constructor(
     val uiState: StateFlow<GameScreenState> = _uiState.asStateFlow()
 
     private var dealJob: Job? = null
+    private val stickyDareJobs = mutableMapOf<String, Job>()
 
     fun onGameDealTapped() {
         val state = _uiState.value
@@ -68,21 +71,18 @@ class GameScreenViewModel @Inject constructor(
             _uiState.update { it.copy(dealPhase = GameDealPhase.PLAYER_PHOTO_REVEAL) }
             delay(REVEAL_DURATION_MS)
 
-            // Phase 4: Show challenge — content depends on deal type
-            val challengeText = if (dealType == GameDealType.STICKY_DARE) {
-                context.resources.getStringArray(R.array.sticky_dares).random()
-            } else null
-
-            val gkQuestion = if (dealType == GameDealType.GENERAL_KNOWLEDGE) {
-                loadGkQuestions().randomOrNull()
-            } else null
+            // Phase 4: Show challenge — load content based on deal type
+            val (challengeText, gkQuestion, pcText, durationLabel, durationSeconds) = buildChallengeContent(dealType)
 
             _uiState.update {
                 it.copy(
                     dealPhase = GameDealPhase.CHALLENGE_SHOWN,
                     dealType = dealType,
                     challengeText = challengeText,
-                    generalKnowledgeQuestion = gkQuestion
+                    generalKnowledgeQuestion = gkQuestion,
+                    stickyDarePresentContinuous = pcText,
+                    stickyDareDurationLabel = durationLabel,
+                    stickyDareDurationSeconds = durationSeconds
                 )
             }
         }
@@ -94,9 +94,7 @@ class GameScreenViewModel @Inject constructor(
             TruthOrDareChoice.TRUTH -> context.resources.getStringArray(R.array.truth_texts)
             TruthOrDareChoice.DARE -> context.resources.getStringArray(R.array.dare_texts)
         }
-        _uiState.update {
-            it.copy(truthOrDareChoice = choice, challengeText = texts.random())
-        }
+        _uiState.update { it.copy(truthOrDareChoice = choice, challengeText = texts.random()) }
     }
 
     fun onGeneralKnowledgeAnswered(option: Char) {
@@ -105,18 +103,116 @@ class GameScreenViewModel @Inject constructor(
     }
 
     fun onChallengeDismissed() {
-        if (!_uiState.value.isChallengeDismissible) return
-        dealJob?.cancel()
-        _uiState.update {
-            it.copy(
-                dealPhase = GameDealPhase.IDLE,
-                selectedPlayer = null,
-                animatingName = "",
-                dealType = null,
+        val state = _uiState.value
+        if (!state.isChallengeDismissible) return
+
+        if (state.dealType == GameDealType.STICKY_DARE) {
+            val dare = ActiveStickyDare(
+                id = UUID.randomUUID().toString(),
+                playerName = state.selectedPlayer?.nickName.orEmpty(),
+                presentContinuousText = state.stickyDarePresentContinuous.orEmpty(),
+                durationLabel = state.stickyDareDurationLabel.orEmpty(),
+                totalSeconds = state.stickyDareDurationSeconds ?: 60,
+                remainingSeconds = state.stickyDareDurationSeconds ?: 60
+            )
+            _uiState.update {
+                it.copy(
+                    activeStickyDares = it.activeStickyDares + dare,
+                    dealPhase = GameDealPhase.IDLE,
+                    selectedPlayer = null,
+                    animatingName = "",
+                    dealType = null,
+                    challengeText = null,
+                    stickyDarePresentContinuous = null,
+                    stickyDareDurationLabel = null,
+                    stickyDareDurationSeconds = null
+                )
+            }
+            startStickyDareTimer(dare.id)
+        } else {
+            dealJob?.cancel()
+            _uiState.update {
+                it.copy(
+                    dealPhase = GameDealPhase.IDLE,
+                    selectedPlayer = null,
+                    animatingName = "",
+                    dealType = null,
+                    challengeText = null,
+                    truthOrDareChoice = null,
+                    generalKnowledgeQuestion = null,
+                    selectedAnswerOption = null
+                )
+            }
+        }
+    }
+
+    private fun startStickyDareTimer(dareId: String) {
+        stickyDareJobs[dareId] = viewModelScope.launch {
+            while (true) {
+                delay(1000L)
+                _uiState.update { state ->
+                    state.copy(
+                        activeStickyDares = state.activeStickyDares.map { dare ->
+                            if (dare.id == dareId)
+                                dare.copy(remainingSeconds = (dare.remainingSeconds - 1).coerceAtLeast(0))
+                            else dare
+                        }
+                    )
+                }
+                val remaining = _uiState.value.activeStickyDares
+                    .find { it.id == dareId }?.remainingSeconds ?: break
+                if (remaining <= 0) {
+                    // Mark as completed to trigger exit animation, then remove
+                    _uiState.update { state ->
+                        state.copy(
+                            activeStickyDares = state.activeStickyDares.map { dare ->
+                                if (dare.id == dareId) dare.copy(isCompleted = true) else dare
+                            }
+                        )
+                    }
+                    delay(STICKY_DARE_EXIT_DELAY_MS)
+                    _uiState.update { state ->
+                        state.copy(activeStickyDares = state.activeStickyDares.filter { it.id != dareId })
+                    }
+                    break
+                }
+            }
+            stickyDareJobs.remove(dareId)
+        }
+    }
+
+    // Returns (challengeText, gkQuestion, presentContinuous, durationLabel, durationSeconds)
+    private data class ChallengeContent(
+        val challengeText: String?,
+        val gkQuestion: GeneralKnowledgeQuestion?,
+        val presentContinuous: String?,
+        val durationLabel: String?,
+        val durationSeconds: Int?
+    )
+
+    private fun buildChallengeContent(dealType: GameDealType): ChallengeContent {
+        return when (dealType) {
+            GameDealType.TRUTH_OR_DARE -> ChallengeContent(null, null, null, null, null)
+            GameDealType.STICKY_DARE -> {
+                val dares = context.resources.getStringArray(R.array.sticky_dares)
+                val presentContinuous = context.resources.getStringArray(R.array.sticky_dares_present_continuous)
+                val durationLabels = context.resources.getStringArray(R.array.sticky_dares_duration_labels)
+                val durationSeconds = context.resources.getIntArray(R.array.sticky_dares_duration_seconds)
+                val index = dares.indices.random()
+                ChallengeContent(
+                    challengeText = dares[index],
+                    gkQuestion = null,
+                    presentContinuous = presentContinuous[index],
+                    durationLabel = durationLabels[index],
+                    durationSeconds = durationSeconds[index]
+                )
+            }
+            GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(
                 challengeText = null,
-                truthOrDareChoice = null,
-                generalKnowledgeQuestion = null,
-                selectedAnswerOption = null
+                gkQuestion = loadGkQuestions().randomOrNull(),
+                presentContinuous = null,
+                durationLabel = null,
+                durationSeconds = null
             )
         }
     }
@@ -138,6 +234,7 @@ class GameScreenViewModel @Inject constructor(
 
     override fun onCleared() {
         dealJob?.cancel()
+        stickyDareJobs.values.forEach { it.cancel() }
         super.onCleared()
     }
 }

@@ -190,4 +190,29 @@
         <item>A</item>
     </string-array>
 
+    <!-- Sticky dare supplementary data (parallel arrays — indices must stay in sync with sticky_dares) -->
+    <string-array name="sticky_dares_present_continuous">
+        <item>talking with a Hispanic accent</item>
+        <item>ending every phrase with "oh, yeah"</item>
+        <item>continuing the party standing up</item>
+    </string-array>
+
+    <string-array name="sticky_dares_duration_labels">
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+    </string-array>
+
+    <integer-array name="sticky_dares_duration_seconds">
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+    </integer-array>
+
+    <!-- Game screen UI -->
+    <string name="game_configuration">Game Configuration</string>
+    <string name="active_dares_title">Active Dares</string>
+    <string name="no_active_dares">No active dares right now</string>
+    <string name="no_active_dares_for_player">No active dares for this player</string>
+
 </resources>

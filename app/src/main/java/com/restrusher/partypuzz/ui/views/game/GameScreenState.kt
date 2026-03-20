@@ -22,11 +22,20 @@ data class GameScreenState(
     val dealPhase: GameDealPhase = GameDealPhase.IDLE,
     val animatingName: String = "",
     val selectedPlayer: Player? = null,
+    // Current deal
     val dealType: GameDealType? = null,
     val challengeText: String? = null,
+    // Truth or dare
     val truthOrDareChoice: TruthOrDareChoice? = null,
+    // General knowledge
     val generalKnowledgeQuestion: GeneralKnowledgeQuestion? = null,
-    val selectedAnswerOption: Char? = null
+    val selectedAnswerOption: Char? = null,
+    // Sticky dare metadata (set alongside challengeText when dealType = STICKY_DARE)
+    val stickyDarePresentContinuous: String? = null,
+    val stickyDareDurationLabel: String? = null,
+    val stickyDareDurationSeconds: Int? = null,
+    // Active sticky dare timers
+    val activeStickyDares: List<ActiveStickyDare> = emptyList()
 ) {
     val isChallengeDismissible: Boolean
         get() = when (dealType) {

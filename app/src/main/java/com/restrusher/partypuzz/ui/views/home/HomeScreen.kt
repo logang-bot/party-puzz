@@ -114,8 +114,8 @@ fun SharedTransitionScope.HomeScreen(
                             .padding(20.dp),
                         onClick = onOpenDialog,
                         colors = ButtonDefaults.buttonColors(
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                            containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f)
+                            contentColor = MaterialTheme.colorScheme.onTertiary,
+                            containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
                         Text(
