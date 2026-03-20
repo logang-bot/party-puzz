@@ -70,6 +70,12 @@
     <string name="cancel">Cancel</string>
     <string name="game">Game</string>
     <string name="tap_to_play">Tap to play</string>
+    <string name="truth">Truth</string>
+    <string name="dare">Dare</string>
+    <string name="truth_or_dare_title">Truth or Dare?</string>
+    <string name="sticky_dare_title">Sticky Dare!</string>
+    <string name="general_knowledge_title">General Knowledge</string>
+    <string name="tap_to_dismiss">Tap to dismiss</string>
     <string name="exit_game_title">Exit game?</string>
     <string name="exit_game_message">Are you sure you want to exit the current game?</string>
     <string name="yes">Yes</string>
@@ -101,6 +107,87 @@
         <item>Do 100 squats</item>
         <item>Say yes to everything for the next 1 minute</item>
         <item>Keep your eyes closed until it\'s your go again</item>
+    </string-array>
+
+    <!-- Sticky dares -->
+    <string-array name="sticky_dares">
+        <item>For 1 minute the player must talk with an Hispanic accent</item>
+        <item>For 2 minutes the player must end every phrase with \"oh, yeah\"</item>
+        <item>For 5 minutes the player must continue the party standing up</item>
+    </string-array>
+
+    <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
+    <string-array name="gk_questions">
+        <item>How many planets are in the solar system?</item>
+        <item>What is the capital of France?</item>
+        <item>What is the largest ocean on Earth?</item>
+        <item>How many sides does a hexagon have?</item>
+        <item>What gas do plants absorb from the air?</item>
+        <item>Which planet is closest to the Sun?</item>
+        <item>How many legs does a spider have?</item>
+        <item>What is the hardest natural substance?</item>
+        <item>How many continents are there on Earth?</item>
+        <item>What color do you get mixing blue and yellow?</item>
+        <item>In which country was the Eiffel Tower built?</item>
+        <item>How many hours are in two days?</item>
+        <item>What is the fastest land animal?</item>
+        <item>Which is the smallest planet in the solar system?</item>
+        <item>How many strings does a standard guitar have?</item>
+    </string-array>
+
+    <string-array name="gk_options_a">
+        <item>8</item>
+        <item>London</item>
+        <item>Atlantic</item>
+        <item>5</item>
+        <item>Oxygen</item>
+        <item>Venus</item>
+        <item>6</item>
+        <item>Diamond</item>
+        <item>7</item>
+        <item>Green</item>
+        <item>Italy</item>
+        <item>36</item>
+        <item>Lion</item>
+        <item>Mercury</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="gk_options_b">
+        <item>9</item>
+        <item>Paris</item>
+        <item>Pacific</item>
+        <item>6</item>
+        <item>Carbon Dioxide</item>
+        <item>Mercury</item>
+        <item>8</item>
+        <item>Gold</item>
+        <item>6</item>
+        <item>Purple</item>
+        <item>France</item>
+        <item>48</item>
+        <item>Cheetah</item>
+        <item>Mars</item>
+        <item>7</item>
+    </string-array>
+
+    <!-- "A" or "B" — must match gk_questions order -->
+    <string-array name="gk_correct_options">
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
     </string-array>
 
 </resources>
