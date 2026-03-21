@@ -1,7 +1,6 @@
 package com.restrusher.partypuzz.ui.views.game
 
 import android.content.Context
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzz.R
@@ -14,7 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -22,8 +20,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GameScreenViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val savedStateHandle: SavedStateHandle
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     companion object {
@@ -31,8 +28,6 @@ class GameScreenViewModel @Inject constructor(
         private const val NAME_CYCLE_INTERVAL_MS = 300L
         private const val REVEAL_DURATION_MS = 1000L
         private const val STICKY_DARE_EXIT_DELAY_MS = 400L
-        private const val KEY_MINI_GAME_P1_SCORE = "mini_game_p1_score"
-        private const val KEY_MINI_GAME_P2_SCORE = "mini_game_p2_score"
     }
 
     private val _uiState = MutableStateFlow(
@@ -42,20 +37,6 @@ class GameScreenViewModel @Inject constructor(
 
     private var dealJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
-
-    init {
-        viewModelScope.launch {
-            savedStateHandle.getStateFlow<Int?>(KEY_MINI_GAME_P1_SCORE, null)
-                .filterNotNull()
-                .collect { p1Score ->
-                    val p2Score = savedStateHandle.get<Int>(KEY_MINI_GAME_P2_SCORE)
-                        ?: return@collect
-                    handleMiniGameResult(p1Score, p2Score)
-                    savedStateHandle.remove<Int>(KEY_MINI_GAME_P1_SCORE)
-                    savedStateHandle.remove<Int>(KEY_MINI_GAME_P2_SCORE)
-                }
-        }
-    }
 
     fun onGameDealTapped() {
         val state = _uiState.value
@@ -178,7 +159,7 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-    private fun handleMiniGameResult(player1Score: Int, player2Score: Int) {
+    fun onMiniGameResultReceived(player1Score: Int, player2Score: Int) {
         val state = _uiState.value
         val result = MiniGameResult(
             player1Name = state.selectedPlayer?.nickName.orEmpty(),

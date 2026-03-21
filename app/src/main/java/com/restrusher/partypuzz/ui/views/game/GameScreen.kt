@@ -26,10 +26,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.navigation.NavBackStackEntry
+import kotlinx.coroutines.flow.filterNotNull
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
@@ -42,6 +46,9 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 
+private const val KEY_MINI_GAME_P1_SCORE = "mini_game_p1_score"
+private const val KEY_MINI_GAME_P2_SCORE = "mini_game_p2_score"
+
 @Composable
 fun GameScreen(
     onNavigateBack: () -> Unit,
@@ -50,6 +57,20 @@ fun GameScreen(
     viewModel: GameScreenViewModel = hiltViewModel()
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
+    val backStackEntry = LocalViewModelStoreOwner.current as? NavBackStackEntry
+    LaunchedEffect(backStackEntry) {
+        backStackEntry?.savedStateHandle
+            ?.getStateFlow<Int?>(KEY_MINI_GAME_P1_SCORE, null)
+            ?.filterNotNull()
+            ?.collect { p1Score ->
+                val p2Score = backStackEntry.savedStateHandle
+                    .get<Int>(KEY_MINI_GAME_P2_SCORE) ?: return@collect
+                viewModel.onMiniGameResultReceived(p1Score, p2Score)
+                backStackEntry.savedStateHandle.remove<Int>(KEY_MINI_GAME_P1_SCORE)
+                backStackEntry.savedStateHandle.remove<Int>(KEY_MINI_GAME_P2_SCORE)
+            }
+    }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val backgroundGradient = rememberBackgroundGradient()
