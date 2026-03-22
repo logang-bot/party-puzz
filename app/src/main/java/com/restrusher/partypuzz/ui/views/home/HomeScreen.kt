@@ -8,6 +8,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.local.appData.appModels.GameMode
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -40,7 +41,7 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 fun SharedTransitionScope.HomeScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     uiState: HomeState,
-    onGameOptionSelected: (Int, Int, Int?) -> Unit,
+    onGameOptionSelected: (Int, Int, Int, Int?) -> Unit,
     onTogglePartySelection: () -> Unit,
     onOpenDialog: () -> Unit,
     onCloseDialog: () -> Unit,
@@ -75,21 +76,21 @@ fun SharedTransitionScope.HomeScreen(
                 HorizontalPager(
                     state = pagerState,
                     key = { uiState.gameModes[it].imageId },
-                    pageSize = PageSize.Fill,
+                    contentPadding = PaddingValues(horizontal = 40.dp),
+                    pageSpacing = 12.dp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) { index ->
                     GameModeCard(
                         animatedVisibilityScope = animatedVisibilityScope,
-                        onPlayClick = { name, image ->
+                        onPlayClick = { name, image, description ->
                             val partyId = if (uiState.isPartySelected) uiState.activeParty?.party?.id else null
-                            onGameOptionSelected(name, image, partyId)
+                            onGameOptionSelected(name, image, description, partyId)
                         },
                         gameMode = uiState.gameModes[index],
                         players = uiState.activePlayers,
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxHeight(0.6f)
-                            .padding(horizontal = 20.dp)
                     )
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -148,8 +149,16 @@ fun SharedTransitionScope.HomeScreen(
     }
 }
 
+private val previewGameModes = listOf(
+    GameMode(R.drawable.img_solo_mode_illustration, R.string.solo_game_mode, R.string.solo_description),
+    GameMode(R.drawable.img_solo_mode_illustration, R.string.solo_game_mode, R.string.solo_description),
+)
+
 @OptIn(ExperimentalSharedTransitionApi::class)
-@Preview
+@Preview(
+    showBackground = true,
+    device = "spec:width=360dp,height=800dp,dpi=420,orientation=portrait"
+)
 @Composable
 fun HomeScreenPreview() {
     PartyPuzzTheme {
@@ -157,8 +166,11 @@ fun HomeScreenPreview() {
             AnimatedVisibility(visible = true) {
                 HomeScreen(
                     animatedVisibilityScope = this,
-                    uiState = HomeState(),
-                    onGameOptionSelected = { _, _, _ -> },
+                    uiState = HomeState(
+                        isLoading = false,
+                        gameModes = previewGameModes
+                    ),
+                    onGameOptionSelected = { _, _, _, _ -> },
                     onTogglePartySelection = {},
                     onOpenDialog = {},
                     onCloseDialog = {},

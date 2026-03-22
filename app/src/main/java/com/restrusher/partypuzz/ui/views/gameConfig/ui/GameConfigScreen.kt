@@ -60,6 +60,7 @@ fun SharedTransitionScope.GameConfigScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     gameModeName: Int,
     gameModeImage: Int,
+    gameModeDescription: Int,
     onCreatePlayerClick: () -> Unit,
     onStartGameClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -90,7 +91,7 @@ fun SharedTransitionScope.GameConfigScreen(
                     style = MaterialTheme.typography.displayMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .sharedElement(state = rememberSharedContentState(key = "game/${gameModeName}"),
                             animatedVisibilityScope = animatedVisibilityScope,
@@ -115,7 +116,11 @@ fun SharedTransitionScope.GameConfigScreen(
                             })
                 )
             }
-            Text(text = stringResource(id = R.string.gather_your_friends_for_a_night_of_fun), style = MaterialTheme.typography.labelLarge)
+            Text(
+                text = stringResource(id = gameModeDescription),
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.fillMaxWidth()
+            )
             OptionsContainer()
             Spacer(modifier = Modifier.height(10.dp))
             PlayersContainer(
@@ -196,6 +201,7 @@ fun GameConfigScreenPreview() {
                     animatedVisibilityScope = this,
                     gameModeName = R.string.party_puzz_game_mode,
                     gameModeImage = R.drawable.img_partypuzz_mode_illustration,
+                    gameModeDescription = R.string.party_puzz_description,
                     onCreatePlayerClick = {},
                     onStartGameClick = {}
                 )

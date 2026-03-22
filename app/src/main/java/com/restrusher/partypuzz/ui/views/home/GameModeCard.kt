@@ -6,6 +6,11 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +24,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +54,7 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 @Composable
 fun SharedTransitionScope.GameModeCard(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onPlayClick: (Int, Int) -> Unit,
+    onPlayClick: (Int, Int, Int) -> Unit,
     gameMode: GameMode,
     players: List<PlayerEntity>,
     modifier: Modifier = Modifier
@@ -53,7 +63,7 @@ fun SharedTransitionScope.GameModeCard(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.1f))
-            .clickable { onPlayClick(gameMode.name, gameMode.imageId) }
+            .clickable { onPlayClick(gameMode.name, gameMode.imageId, gameMode.description) }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -89,57 +99,64 @@ fun SharedTransitionScope.GameModeCard(
                         boundsTransform = { _, _ -> tween(durationMillis = 400) }
                     )
                 )
-                Text(
-                    text = stringResource(id = gameMode.description),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Light
-                )
             }
 
             val prefix = stringResource(R.string.game_mode_tap_prefix)
             val modeName = stringResource(id = gameMode.name)
             val suffix = stringResource(R.string.game_mode_tap_suffix)
             val (displayedNames, remaining) = playerNamesSlice(players)
-            val andXMore = if (remaining > 0) stringResource(R.string.and_x_more, remaining) else null
-            val tapText = buildAnnotatedString {
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append("$prefix ")
-                }
-                withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.ExtraBold)) {
-                    append(modeName)
-                }
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(" $suffix")
-                }
-                if (displayedNames.isNotEmpty()) {
-                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(" with ")
-                    }
-                    displayedNames.forEachIndexed { index, name ->
-                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
-                            append(name)
-                        }
-                        if (index < displayedNames.lastIndex) append(", ")
-                    }
-                    if (andXMore != null) {
-                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
-                            append(" $andXMore")
-                        }
-                    }
+            // Preserve the last non-empty state so the exit animation fades out the full
+            // "with [names]" text rather than just the bare "with " word.
+            var lastNames by remember { mutableStateOf(displayedNames) }
+            var lastRemaining by remember { mutableIntStateOf(remaining) }
+            if (displayedNames.isNotEmpty()) {
+                lastNames = displayedNames
+                lastRemaining = remaining
+            }
+            val andXMore = if (lastRemaining > 0) stringResource(R.string.and_x_more, lastRemaining) else null
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("$prefix ") }
+                        withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.ExtraBold)) { append(modeName) }
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(" $suffix") }
+                    },
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.displaySmall,
+                    fontSize = 20.sp,
+                    lineHeight = 22.sp,
+                )
+                AnimatedVisibility(
+                    visible = displayedNames.isNotEmpty(),
+                    enter = expandVertically(animationSpec = tween(300), expandFrom = Top, clip = false) + fadeIn(tween(300)),
+                    exit = shrinkVertically(animationSpec = tween(200), shrinkTowards = Top, clip = false) + fadeOut(tween(200))
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("with ") }
+                            lastNames.forEachIndexed { index, name ->
+                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
+                                    append(name)
+                                }
+                                if (index < lastNames.lastIndex) append(", ")
+                            }
+                            if (andXMore != null) {
+                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
+                                    append(" $andXMore")
+                                }
+                            }
+                        },
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.displaySmall,
+                        fontSize = 20.sp,
+                        lineHeight = 22.sp,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 }
             }
-            Text(
-                text = tapText,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.displaySmall,
-                fontSize = 20.sp,
-                maxLines = 2,
-                lineHeight = 22.sp,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
-            )
         }
     }
 }
@@ -153,7 +170,7 @@ fun GameModeCardPreview() {
             AnimatedVisibility(visible = true) {
                 GameModeCard(
                     animatedVisibilityScope = this,
-                    onPlayClick = { _, _ -> },
+                    onPlayClick = { _, _, _ -> },
                     gameMode = GameMode(
                         R.drawable.img_solo_mode_illustration,
                         R.string.solo_game_mode,

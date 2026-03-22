@@ -79,8 +79,8 @@ fun HomeNavigation(
                     HomeScreen(
                         animatedVisibilityScope = this,
                         uiState = uiState,
-                        onGameOptionSelected = { name, image, partyId ->
-                            navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image, partyId = partyId))
+                        onGameOptionSelected = { name, image, description, partyId ->
+                            navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image, gameModeDescription = description, partyId = partyId))
                         },
                         onTogglePartySelection = viewModel::togglePartySelection,
                         onOpenDialog = viewModel::openDialog,
@@ -90,7 +90,9 @@ fun HomeNavigation(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
-                composable<GameConfigScreen> {
+                composable<GameConfigScreen>(
+                    exitTransition = { fadeOut(tween(300)) }
+                ) {
                     val args = it.toRoute<GameConfigScreen>()
                     GameConfigScreen(
                         setAppBarTitle = { title ->
@@ -99,6 +101,7 @@ fun HomeNavigation(
                         animatedVisibilityScope = this,
                         gameModeName = args.gameModeName,
                         gameModeImage = args.gameModeImage,
+                        gameModeDescription = args.gameModeDescription,
                         onCreatePlayerClick = {
                             navController.navigate(CreatePlayerScreen)
                         },
@@ -117,7 +120,10 @@ fun HomeNavigation(
                         navigateBack = { navController.popBackStack() }
                     )
                 }
-                composable<LoadingScreen> {
+                composable<LoadingScreen>(
+                    enterTransition = { slideInVertically(tween(400)) { it } + fadeIn(tween(400)) },
+                    exitTransition = { slideOutVertically(tween(300)) { -it } + fadeOut(tween(300)) }
+                ) {
                     LoadingScreen(
                         onLoadingComplete = {
                             navController.navigate(GameScreen) {

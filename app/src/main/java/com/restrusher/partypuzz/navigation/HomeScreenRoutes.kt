@@ -9,6 +9,7 @@ data object HomeScreen
 data class GameConfigScreen(
     val gameModeName: Int,
     val gameModeImage: Int,
+    val gameModeDescription: Int,
     val partyId: Int? = null
 )
 
