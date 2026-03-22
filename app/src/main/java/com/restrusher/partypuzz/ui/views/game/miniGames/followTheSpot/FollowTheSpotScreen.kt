@@ -90,6 +90,7 @@ internal fun FollowTheSpotContent(
                 spotNormX = uiState.player2SpotNormX,
                 spotNormY = uiState.player2SpotNormY,
                 isActive = uiState.isGameRunning,
+                dividerEdge = DividerEdge.Bottom,
                 onSpotTapped = onPlayer2SpotTapped,
                 modifier = Modifier
                     .weight(1f)
@@ -108,6 +109,7 @@ internal fun FollowTheSpotContent(
                 spotNormX = uiState.player1SpotNormX,
                 spotNormY = uiState.player1SpotNormY,
                 isActive = uiState.isGameRunning,
+                dividerEdge = DividerEdge.Top,
                 onSpotTapped = onPlayer1SpotTapped,
                 modifier = Modifier
                     .weight(1f)

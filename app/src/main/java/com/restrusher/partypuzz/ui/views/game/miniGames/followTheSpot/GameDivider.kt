@@ -81,7 +81,7 @@ internal fun GameDivider(
             modifier = Modifier
                 .fillMaxHeight()
                 .fillMaxWidth(animatedFraction)
-                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         )
 
         // "Tap to exit" text — fades in when game ends
