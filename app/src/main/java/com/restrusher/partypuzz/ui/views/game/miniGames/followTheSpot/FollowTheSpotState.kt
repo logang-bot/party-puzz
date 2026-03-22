@@ -12,5 +12,7 @@ data class FollowTheSpotState(
     val player1SpotNormY: Float = 0.5f,
     val player2SpotNormX: Float = 0.5f,
     val player2SpotNormY: Float = 0.5f,
-    val isGameRunning: Boolean = false
+    val isGameRunning: Boolean = false,
+    val isCountingDown: Boolean = false,
+    val countdownValue: Int = 3
 )

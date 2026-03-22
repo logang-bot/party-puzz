@@ -221,6 +221,7 @@
     <string name="tap_to_exit">Tap to exit</string>
     <string name="mini_game_winner">Winner: %1$s</string>
     <string name="mini_game_tie">It\'s a tie!</string>
+    <string name="ready">Ready</string>
     <string name="go">Go!</string>
     <string name="choose_opponent">Choose your opponent</string>
 

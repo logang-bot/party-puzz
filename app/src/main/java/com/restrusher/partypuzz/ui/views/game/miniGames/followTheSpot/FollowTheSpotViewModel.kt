@@ -25,11 +25,13 @@ class FollowTheSpotViewModel @Inject constructor(
 
     companion object {
         private const val GAME_DURATION_SECONDS = 15
+        private const val COUNTDOWN_START = 3
     }
 
     private val _uiState = MutableStateFlow(FollowTheSpotState())
     val uiState: StateFlow<FollowTheSpotState> = _uiState.asStateFlow()
 
+    private var countdownJob: Job? = null
     private var timerJob: Job? = null
 
     init {
@@ -48,7 +50,13 @@ class FollowTheSpotViewModel @Inject constructor(
             photoPath = route.player2PhotoPath,
             avatarName = route.player2AvatarName
         )
-        startGame(player1, player2)
+        _uiState.value = FollowTheSpotState(
+            player1 = player1,
+            player2 = player2,
+            isCountingDown = true,
+            countdownValue = COUNTDOWN_START
+        )
+        launchCountdown(player1, player2)
     }
 
     fun onPlayer1SpotTapped() {
@@ -73,16 +81,36 @@ class FollowTheSpotViewModel @Inject constructor(
         }
     }
 
+    private fun launchCountdown(player1: Player, player2: Player) {
+        countdownJob?.cancel()
+        countdownJob = viewModelScope.launch {
+            for (i in COUNTDOWN_START downTo 1) {
+                _uiState.update { it.copy(countdownValue = i) }
+                delay(1000L)
+            }
+            // Show "Go!" and freeze for 1 second before starting
+            _uiState.update { it.copy(countdownValue = 0) }
+            delay(1000L)
+            startGame(player1, player2)
+        }
+    }
+
     private fun startGame(player1: Player, player2: Player) {
-        _uiState.value = FollowTheSpotState(
-            player1 = player1,
-            player2 = player2,
-            player1SpotNormX = Random.nextFloat(),
-            player1SpotNormY = Random.nextFloat(),
-            player2SpotNormX = Random.nextFloat(),
-            player2SpotNormY = Random.nextFloat(),
-            isGameRunning = true
-        )
+        _uiState.update {
+            it.copy(
+                player1 = player1,
+                player2 = player2,
+                player1Score = 0,
+                player2Score = 0,
+                player1SpotNormX = Random.nextFloat(),
+                player1SpotNormY = Random.nextFloat(),
+                player2SpotNormX = Random.nextFloat(),
+                player2SpotNormY = Random.nextFloat(),
+                timeRemaining = GAME_DURATION_SECONDS,
+                isGameRunning = true,
+                isCountingDown = false
+            )
+        }
         launchTimer()
     }
 
@@ -100,6 +128,7 @@ class FollowTheSpotViewModel @Inject constructor(
     }
 
     override fun onCleared() {
+        countdownJob?.cancel()
         timerJob?.cancel()
         super.onCleared()
     }
