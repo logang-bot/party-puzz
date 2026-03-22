@@ -1,10 +1,13 @@
 package com.restrusher.partypuzz.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -50,7 +53,11 @@ fun HomeNavigation(
     Scaffold(
         contentWindowInsets = WindowInsets(0),
         topBar = {
-            if (!isFullScreenRoute) {
+            AnimatedVisibility(
+                visible = !isFullScreenRoute,
+                enter = slideInVertically(tween(300)) { -it } + fadeIn(tween(300)),
+                exit = slideOutVertically(tween(250)) { -it } + fadeOut(tween(200))
+            ) {
                 HomeAppBar(
                     title = appBarTitle,
                     currentDestination = currentScreen,

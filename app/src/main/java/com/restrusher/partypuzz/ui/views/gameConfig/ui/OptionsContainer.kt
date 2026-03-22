@@ -1,25 +1,19 @@
 package com.restrusher.partypuzz.ui.views.gameConfig.ui
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,35 +27,28 @@ import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSour
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
+import androidx.compose.foundation.layout.Row
 
 private data class OptionDef(@androidx.annotation.StringRes val labelRes: Int, val initialEnabled: Boolean)
 
 private val optionDefinitions = listOf(
-    OptionDef(R.string.save_stats, true),
-    OptionDef(R.string.bar_mode, false),
-    OptionDef(R.string.can_skip_questions, false),
-    OptionDef(R.string.unlimited_mode, false),
-    OptionDef(R.string.mini_games, false),
-    OptionDef(R.string.truth_or_dare, false),
-    OptionDef(R.string.general_culture, false),
+    OptionDef(R.string.truth_or_dare, true),
+    OptionDef(R.string.general_knowledge_title, true),
+    OptionDef(R.string.sticky_dares, true),
+    OptionDef(R.string.mini_games, true),
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OptionsContainer(modifier: Modifier = Modifier) {
-    val scrollState = rememberScrollState()
-
     LaunchedEffect(Unit) {
         GameOptionsSource.initialize(
             optionDefinitions.map {
@@ -70,64 +57,20 @@ fun OptionsContainer(modifier: Modifier = Modifier) {
         )
     }
 
-    Column(modifier = modifier.fillMaxWidth()) {
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(scrollState)
-                .padding(horizontal = 4.dp)
-        ) {
-            optionDefinitions.forEach { def ->
-                OptionChip(
-                    optionName = stringResource(def.labelRes),
-                    initialEnabled = def.initialEnabled,
-                    onToggled = { GameOptionsSource.toggle(def.labelRes) }
-                )
-            }
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp, horizontal = 4.dp)
+    ) {
+        optionDefinitions.forEach { def ->
+            OptionChip(
+                optionName = stringResource(def.labelRes),
+                initialEnabled = def.initialEnabled,
+                onToggled = { GameOptionsSource.toggle(def.labelRes) }
+            )
         }
-        Spacer(modifier = Modifier.height(6.dp))
-        val indicatorAlpha by animateFloatAsState(
-            targetValue = if (scrollState.isScrollInProgress) 1f else 0f,
-            animationSpec = tween(300),
-            label = "indicator alpha"
-        )
-        ScrollIndicator(
-            scrollValue = scrollState.value,
-            scrollMaxValue = scrollState.maxValue,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp)
-                .graphicsLayer { alpha = indicatorAlpha }
-        )
-    }
-}
-
-@Composable
-private fun ScrollIndicator(
-    scrollValue: Int,
-    scrollMaxValue: Int,
-    modifier: Modifier = Modifier
-) {
-    if (scrollMaxValue == 0) return
-
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val trackColor = MaterialTheme.colorScheme.surfaceVariant
-
-    Canvas(modifier = modifier.height(3.dp)) {
-        val trackWidth = size.width
-        val totalContentWidth = trackWidth + scrollMaxValue
-        val thumbWidth = trackWidth * (trackWidth / totalContentWidth)
-        val thumbOffset = (trackWidth - thumbWidth) * (scrollValue.toFloat() / scrollMaxValue)
-
-        drawRoundRect(color = trackColor, cornerRadius = CornerRadius(4f))
-        drawRoundRect(
-            color = primaryColor,
-            topLeft = Offset(thumbOffset, 0f),
-            size = Size(thumbWidth, size.height),
-            cornerRadius = CornerRadius(4f)
-        )
     }
 }
 
@@ -194,6 +137,6 @@ fun OptionsContainerPreview() {
 @Composable
 fun OptionChipPreview() {
     PartyPuzzTheme {
-        OptionChip(optionName = stringResource(id = R.string.bar_mode), initialEnabled = false)
+        OptionChip(optionName = stringResource(id = R.string.truth_or_dare), initialEnabled = true)
     }
 }

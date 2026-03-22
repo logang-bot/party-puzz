@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Player
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,7 +45,8 @@ class GameScreenViewModel @Inject constructor(
 
         val selectedPlayer = state.players.random()
         val availableDealTypes = GameDealType.entries.filter { type ->
-            if (type == GameDealType.MINI_GAME) state.players.size >= 2 else true
+            val playerCountOk = if (type == GameDealType.MINI_GAME) state.players.size >= 2 else true
+            playerCountOk && isDealTypeEnabled(type)
         }
         val dealType = availableDealTypes.random()
 
@@ -203,6 +205,16 @@ class GameScreenViewModel @Inject constructor(
             }
             stickyDareJobs.remove(dareId)
         }
+    }
+
+    private fun isDealTypeEnabled(dealType: GameDealType): Boolean {
+        val labelRes = when (dealType) {
+            GameDealType.TRUTH_OR_DARE -> R.string.truth_or_dare
+            GameDealType.GENERAL_KNOWLEDGE -> R.string.general_knowledge_title
+            GameDealType.STICKY_DARE -> R.string.sticky_dares
+            GameDealType.MINI_GAME -> R.string.mini_games
+        }
+        return GameOptionsSource.options.find { it.labelRes == labelRes }?.enabled ?: true
     }
 
     // Returns (challengeText, gkQuestion, presentContinuous, durationLabel, durationSeconds, miniGame)

@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import android.content.pm.ActivityInfo
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
@@ -124,7 +125,7 @@ fun SharedTransitionScope.GameConfigScreen(
         }
         StartGameButton(
             onClick = onStartGameClick,
-            enabled = GamePlayersList.PlayersList.isNotEmpty(),
+            enabled = GamePlayersList.PlayersList.isNotEmpty() && GameOptionsSource.options.any { it.enabled },
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceVariant)
@@ -165,7 +166,7 @@ fun StartGameButton(
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
-            .defaultMinSize(minHeight = 40.dp)
+            .defaultMinSize(minHeight = 50.dp)
             .background(color = bgColor, shape = shape)
             .clickable(
                 interactionSource = interactionSource,
