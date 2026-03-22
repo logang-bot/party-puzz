@@ -32,7 +32,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -464,86 +466,104 @@ private fun MiniGameChallengeContent(
 ) {
     val miniGame = uiState.miniGame ?: return
     val result = uiState.miniGameResult
+    var pendingOpponent by remember { mutableStateOf<Player?>(null) }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .padding(horizontal = 24.dp)
-            .padding(top = 32.dp, bottom = 24.dp)
-    ) {
-        Text(
-            text = stringResource(miniGame.nameRes),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.White.copy(alpha = 0.65f),
-            textAlign = TextAlign.Center
-        )
-
-        if (result == null) {
-            // ── Opponent selection ──────────────────────────────────────────
-            Spacer(Modifier.height(8.dp))
+    Box(modifier = modifier) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = if (result == null && pendingOpponent != null) 80.dp else 0.dp)
+        ) {
             Text(
-                text = uiState.selectedPlayer?.nickName.orEmpty(),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
+                text = stringResource(miniGame.nameRes),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White.copy(alpha = 0.65f),
                 textAlign = TextAlign.Center
             )
-            Spacer(Modifier.height(24.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp)
-            ) {
+
+            if (result == null) {
+                // ── Opponent selection ──────────────────────────────────────
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = uiState.selectedPlayer?.nickName.orEmpty(),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(24.dp))
+                Text(
+                    text = stringResource(R.string.choose_opponent),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Color.White.copy(alpha = 0.55f),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(8.dp))
                 val opponents = uiState.players.filter { it != uiState.selectedPlayer }
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(((opponents.size * 64) + ((opponents.size - 1) * 8)).coerceAtMost(300).dp)
                 ) {
                     items(opponents, key = { it.id }) { player ->
                         DealOptionButton(
                             text = player.nickName,
-                            onClick = { onOpponentSelected(player) },
+                            isSelected = player == pendingOpponent,
+                            onClick = { pendingOpponent = player },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
+            } else {
+                // ── Result summary ──────────────────────────────────────────
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = if (result.winner != null)
+                        stringResource(R.string.mini_game_winner, result.winner!!)
+                    else
+                        stringResource(R.string.mini_game_tie),
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = "${result.player1Name}:  ${result.player1Score}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "${result.player2Name}:  ${result.player2Score}",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.tap_to_dismiss),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.45f),
+                    textAlign = TextAlign.Center
+                )
             }
-        } else {
-            // ── Result summary ──────────────────────────────────────────────
-            Spacer(Modifier.height(24.dp))
-            Text(
-                text = "${result.player1Name}:  ${result.player1Score}",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                text = "${result.player2Name}:  ${result.player2Score}",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(20.dp))
-            Text(
-                text = if (result.winner != null)
-                    stringResource(R.string.mini_game_winner, result.winner!!)
-                else
-                    stringResource(R.string.mini_game_tie),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = 0.9f),
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.weight(1f))
-            Text(
-                text = stringResource(R.string.tap_to_dismiss),
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.45f),
-                textAlign = TextAlign.Center
+        }
+
+        if (result == null && pendingOpponent != null) {
+            DealOptionButton(
+                text = stringResource(R.string.go),
+                onClick = { onOpponentSelected(pendingOpponent!!) },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp)
             )
         }
     }
@@ -555,13 +575,14 @@ private fun MiniGameChallengeContent(
 private fun DealOptionButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSelected: Boolean = false
 ) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White.copy(alpha = 0.2f),
+            containerColor = Color.White.copy(alpha = if (isSelected) 0.4f else 0.2f),
             contentColor = Color.White
         ),
         modifier = modifier.height(56.dp)
