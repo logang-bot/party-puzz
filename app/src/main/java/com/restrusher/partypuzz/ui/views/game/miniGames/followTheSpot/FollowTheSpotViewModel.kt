@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.game
+package com.restrusher.partypuzz.ui.views.game.miniGames.followTheSpot
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

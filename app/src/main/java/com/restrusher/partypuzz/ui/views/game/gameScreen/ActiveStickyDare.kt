@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.game
+package com.restrusher.partypuzz.ui.views.game.gameScreen
 
 data class ActiveStickyDare(
     val id: String,

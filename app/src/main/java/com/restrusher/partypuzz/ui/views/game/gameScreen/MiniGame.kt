@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.game
+package com.restrusher.partypuzz.ui.views.game.gameScreen
 
 import androidx.annotation.StringRes
 import com.restrusher.partypuzz.R

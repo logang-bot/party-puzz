@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.game
+package com.restrusher.partypuzz.ui.views.game.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable

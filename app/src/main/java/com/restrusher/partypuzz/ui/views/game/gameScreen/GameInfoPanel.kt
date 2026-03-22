@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.game
+package com.restrusher.partypuzz.ui.views.game.gameScreen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.game
+package com.restrusher.partypuzz.ui.views.game.gameScreen
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler

@@ -1,4 +1,4 @@
-package com.restrusher.partypuzz.ui.views.game
+package com.restrusher.partypuzz.ui.views.game.miniGames.followTheSpot
 
 import com.restrusher.partypuzz.data.models.Player
 
