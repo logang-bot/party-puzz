@@ -10,6 +10,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -58,11 +60,15 @@ private val boundsTransform = BoundsTransform { _: Rect, _: Rect ->
 
 @Composable
 fun PlayerDataCard(
-    player: Player, modifier: Modifier = Modifier
+    player: Player,
+    onCardClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
 
     Card(
+        onClick = onCardClick,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
@@ -113,6 +119,23 @@ fun PlayerDataCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = colorResource(id = R.color.white)
+                )
+            }
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(4.dp)
+                    .size(20.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                    .clickable { onDeleteClick() }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_close),
+                    contentDescription = stringResource(id = R.string.close),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface),
+                    modifier = Modifier.size(12.dp)
                 )
             }
         }
@@ -169,6 +192,8 @@ fun PlayerDataCardPreview() {
     PartyPuzzTheme {
         PlayerDataCard(
             player = Player.getEmptyPlayer(),
+            onCardClick = {},
+            onDeleteClick = {},
             modifier = Modifier
                 .width(CARD_WIDTH)
                 .height(CARD_HEIGHT)

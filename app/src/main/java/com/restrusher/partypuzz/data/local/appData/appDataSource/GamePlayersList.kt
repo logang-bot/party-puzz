@@ -20,6 +20,15 @@ object GamePlayersList {
         }
     }
 
+    fun removePlayer(playerId: Int) {
+        PlayersList.removeIf { it.id == playerId }
+    }
+
+    fun updatePlayer(player: Player) {
+        val index = PlayersList.indexOfFirst { it.id == player.id }
+        if (index != -1) PlayersList[index] = player
+    }
+
     fun resetPlayersList() {
         PlayersList.clear()
         currentPartyId = null

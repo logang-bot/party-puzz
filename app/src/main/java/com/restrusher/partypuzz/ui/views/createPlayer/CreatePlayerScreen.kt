@@ -66,6 +66,7 @@ var permissionsToRequest = arrayOf(
 fun SharedTransitionScope.CreatePlayerScreen(
     setAppBarTitle: (String) -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    playerId: Int = -1,
     navigateBack: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: CreatePlayerViewModel = hiltViewModel()
@@ -113,7 +114,9 @@ fun SharedTransitionScope.CreatePlayerScreen(
         if (success) viewModel.onCapturedImage(uri)
     }
 
-    setAppBarTitle(stringResource(id = R.string.create_player))
+    setAppBarTitle(
+        stringResource(if (uiState.isEditMode) R.string.edit_player else R.string.create_player)
+    )
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -123,7 +126,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .sharedBounds(
-                    rememberSharedContentState(key = "bounds"),
+                    rememberSharedContentState(key = if (playerId == -1) "bounds" else "player_card_$playerId"),
                     animatedVisibilityScope = animatedVisibilityScope,
                     enter = fadeIn(
                         tween(
@@ -146,6 +149,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 capturedImageUri = uiState.capturedImageUri,
                 playerName = uiState.playerName,
                 avatarRes = uiState.randomAvatarRes,
+                existingPhotoPath = uiState.existingPhotoPath,
                 gender = uiState.gender,
                 onTakePicture = {
                     val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
@@ -177,7 +181,9 @@ fun SharedTransitionScope.CreatePlayerScreen(
                     .padding(horizontal = 24.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.confirm).uppercase(),
+                    text = stringResource(
+                        if (uiState.isEditMode) R.string.update else R.string.confirm
+                    ).uppercase(),
                     style = MaterialTheme.typography.headlineSmall
                 )
             }
@@ -231,7 +237,8 @@ fun PlayerFormContent(
     onPlayerNameChanged: (String) -> Unit,
     onGenerateRandomName: () -> Unit,
     onGenderSelected: (Gender) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    existingPhotoPath: String? = null,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -243,7 +250,7 @@ fun PlayerFormContent(
             generateRandomImageAction = onGenerateRandomImage,
             modifier = Modifier.padding(24.dp)
         )
-        EditPlayerCard(capturedImageUri, playerName, avatarRes = avatarRes)
+        EditPlayerCard(capturedImageUri, playerName, avatarRes = avatarRes, existingPhotoPath = existingPhotoPath)
         AnimatedVisibility(visible = playerName.isBlank()) {
             Text(
                 text = stringResource(R.string.name_is_required),

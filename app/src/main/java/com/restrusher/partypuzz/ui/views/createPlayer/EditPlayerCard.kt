@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.restrusher.partypuzz.R
+import java.io.File
 
 @Composable
 fun EditPlayerCard(
@@ -35,6 +36,7 @@ fun EditPlayerCard(
     playerName: String,
     modifier: Modifier = Modifier,
     avatarRes: Int? = null,
+    existingPhotoPath: String? = null,
 ) {
     Box(
         modifier = modifier
@@ -42,21 +44,22 @@ fun EditPlayerCard(
             .height(300.dp)
             .clip(RoundedCornerShape(70.dp))
     ) {
-        if (imageUri.path?.isNotEmpty() == true) {
-            AsyncImage(
+        when {
+            imageUri.path?.isNotEmpty() == true -> AsyncImage(
                 model = imageUri,
-                contentDescription = stringResource(
-                    id = R.string.player_avatar
-                ),
+                contentDescription = stringResource(id = R.string.player_avatar),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )
-        } else {
-            Image(
+            existingPhotoPath != null -> AsyncImage(
+                model = File(existingPhotoPath),
+                contentDescription = stringResource(id = R.string.player_avatar),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+            else -> Image(
                 painter = painterResource(id = avatarRes ?: R.drawable.img_dummy_avatar),
-                contentDescription = stringResource(
-                    id = R.string.player_avatar
-                ),
+                contentDescription = stringResource(id = R.string.player_avatar),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
             )

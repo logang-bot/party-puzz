@@ -9,5 +9,8 @@ data class CreatePlayerState(
     val gender: Gender = Gender.Unknown,
     val capturedImageUri: Uri = Uri.EMPTY,
     val randomAvatarRes: Int? = null,
+    val existingPhotoPath: String? = null,
     val isLoading: Boolean = false
-)
+) {
+    val isEditMode: Boolean get() = playerId != -1
+}

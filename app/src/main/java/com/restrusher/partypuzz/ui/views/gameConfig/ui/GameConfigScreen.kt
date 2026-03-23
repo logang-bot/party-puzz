@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,6 +35,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.restrusher.partypuzz.ui.views.gameConfig.GameConfigViewModel
@@ -62,17 +65,20 @@ fun SharedTransitionScope.GameConfigScreen(
     gameModeImage: Int,
     gameModeDescription: Int,
     onCreatePlayerClick: () -> Unit,
+    onEditPlayerClick: (Int) -> Unit,
     onStartGameClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GameConfigViewModel = hiltViewModel()
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val title = stringResource(id = R.string.prepare_your_party)
     LaunchedEffect(key1 = title) {
         delay(100)
         setAppBarTitle(title)
     }
-    Column(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
@@ -118,7 +124,8 @@ fun SharedTransitionScope.GameConfigScreen(
             }
             Text(
                 text = stringResource(id = gameModeDescription),
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.ExtraLight,
                 modifier = Modifier.fillMaxWidth()
             )
             OptionsContainer()
@@ -126,6 +133,8 @@ fun SharedTransitionScope.GameConfigScreen(
             PlayersContainer(
                 animatedVisibilityScope = animatedVisibilityScope,
                 onAddPlayerClick = onCreatePlayerClick,
+                onDeletePlayer = viewModel::deletePlayer,
+                onEditPlayer = { player -> onEditPlayerClick(player.id) },
                 modifier = Modifier.fillMaxWidth())
         }
         StartGameButton(
@@ -136,6 +145,17 @@ fun SharedTransitionScope.GameConfigScreen(
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .navigationBarsPadding()
                 .padding(10.dp))
+    }
+    if (uiState.isLoading) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    }
     }
 }
 
@@ -203,6 +223,7 @@ fun GameConfigScreenPreview() {
                     gameModeImage = R.drawable.img_partypuzz_mode_illustration,
                     gameModeDescription = R.string.party_puzz_description,
                     onCreatePlayerClick = {},
+                    onEditPlayerClick = {},
                     onStartGameClick = {}
                 )
             }

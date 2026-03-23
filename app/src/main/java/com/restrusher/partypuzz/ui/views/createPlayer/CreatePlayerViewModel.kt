@@ -3,8 +3,10 @@ package com.restrusher.partypuzz.ui.views.createPlayer
 import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.local.appData.appDataSource.WordBank
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
+import com.restrusher.partypuzz.navigation.CreatePlayerScreen as CreatePlayerRoute
 
 private const val MAX_RANDOM_AVATARS = 9
 
@@ -32,7 +35,8 @@ private const val MAX_RANDOM_AVATARS = 9
 class CreatePlayerViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val partyRepository: PartyRepository,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     val visiblePermissionDialogQueue = mutableStateListOf<String>()
@@ -43,6 +47,28 @@ class CreatePlayerViewModel @Inject constructor(
     private val _navigationEvents = Channel<Unit>()
     val navigationEvents = _navigationEvents.receiveAsFlow()
 
+    init {
+        val playerId = savedStateHandle.toRoute<CreatePlayerRoute>().playerId
+        if (playerId != -1) {
+            val player = GamePlayersList.PlayersList.firstOrNull { it.id == playerId }
+            if (player != null) {
+                val avatarRes = player.avatarName?.let {
+                    val resId = context.resources.getIdentifier(it, "drawable", context.packageName)
+                    if (resId != 0) resId else null
+                }
+                _uiState.update {
+                    it.copy(
+                        playerId = playerId,
+                        playerName = player.nickName,
+                        gender = player.gender,
+                        randomAvatarRes = avatarRes,
+                        existingPhotoPath = player.photoPath
+                    )
+                }
+            }
+        }
+    }
+
     fun onPlayerNameChanged(name: String) {
         _uiState.update { it.copy(playerName = name) }
     }
@@ -52,11 +78,11 @@ class CreatePlayerViewModel @Inject constructor(
     }
 
     fun onCapturedImage(uri: Uri) {
-        _uiState.update { it.copy(capturedImageUri = uri, randomAvatarRes = null) }
+        _uiState.update { it.copy(capturedImageUri = uri, randomAvatarRes = null, existingPhotoPath = null) }
     }
 
     fun onRandomAvatarRequested(resId: Int?) {
-        _uiState.update { it.copy(randomAvatarRes = resId, capturedImageUri = Uri.EMPTY) }
+        _uiState.update { it.copy(randomAvatarRes = resId, capturedImageUri = Uri.EMPTY, existingPhotoPath = null) }
     }
 
     fun randomAvatarIndex(): Int = (1..MAX_RANDOM_AVATARS).random()
@@ -73,6 +99,10 @@ class CreatePlayerViewModel @Inject constructor(
     }
 
     fun confirmPlayer() {
+        if (_uiState.value.isEditMode) updatePlayer() else createPlayer()
+    }
+
+    private fun createPlayer() {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true) }
 
@@ -104,6 +134,48 @@ class CreatePlayerViewModel @Inject constructor(
                 GamePlayersList.addPlayer(
                     Player(
                         id = playerId.toInt(),
+                        nickName = state.playerName,
+                        gender = state.gender,
+                        photoPath = photoPath,
+                        avatarName = avatarName
+                    )
+                )
+            }
+
+            _uiState.update { it.copy(isLoading = false) }
+            _navigationEvents.send(Unit)
+        }
+    }
+
+    private fun updatePlayer() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { it.copy(isLoading = true) }
+
+            val state = _uiState.value
+            val photoPath: String? = when {
+                state.capturedImageUri != Uri.EMPTY -> copyPhotoToFilesDir(state.capturedImageUri)
+                state.randomAvatarRes == null && state.existingPhotoPath != null -> state.existingPhotoPath
+                else -> null
+            }
+
+            val avatarName: String? = if (state.randomAvatarRes != null) {
+                context.resources.getResourceEntryName(state.randomAvatarRes)
+            } else null
+
+            playerRepository.editPlayer(
+                PlayerEntity(
+                    id = state.playerId,
+                    nickName = state.playerName,
+                    gender = state.gender,
+                    photoPath = photoPath,
+                    avatarName = avatarName
+                )
+            )
+
+            withContext(Dispatchers.Main) {
+                GamePlayersList.updatePlayer(
+                    Player(
+                        id = state.playerId,
                         nickName = state.playerName,
                         gender = state.gender,
                         photoPath = photoPath,

@@ -18,12 +18,12 @@ class PlayerRepositoryImpl(
         return playerLocalProxy.createPlayer(player)
     }
 
-    override suspend fun deletePlayer() {
-        TODO("Not yet implemented")
+    override suspend fun editPlayer(player: PlayerEntity) {
+        playerLocalProxy.updatePlayer(player)
     }
 
-    override suspend fun editPlayer() {
-        TODO("Not yet implemented")
+    override suspend fun deletePlayer(player: PlayerEntity) {
+        playerLocalProxy.deletePlayer(player)
     }
 
 }

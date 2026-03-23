@@ -8,6 +8,8 @@
     <!-- Navigation Routes Titles -->
     <string name="prepare_your_party">Prepare your Party</string>
     <string name="create_player">Create player</string>
+    <string name="edit_player">Edit player</string>
+    <string name="update">Update</string>
 
     <!-- Game Modes -->
     <string name="solo_game_mode">Solo</string>
@@ -66,6 +68,7 @@
     <string name="no_parties_yet">No parties created yet, start a game and enjoy</string>
     <string name="game_mode_tap_prefix">Tap to play on</string>
     <string name="game_mode_tap_suffix">mode</string>
+    <string name="with">with</string>
     <string name="and_x_more">and %1$d more</string>
     <string name="select_a_party">Select a party</string>
     <string name="cancel">Cancel</string>

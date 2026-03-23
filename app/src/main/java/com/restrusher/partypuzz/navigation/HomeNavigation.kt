@@ -28,7 +28,7 @@ import androidx.navigation.toRoute
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.ui.common.HomeAppBar
-import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen
+import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen as CreatePlayerScreenComposable
 import com.restrusher.partypuzz.ui.views.game.miniGames.followTheSpot.FollowTheSpotScreen
 import com.restrusher.partypuzz.ui.views.game.gameScreen.GameScreen
 import com.restrusher.partypuzz.ui.views.game.gameScreen.MiniGame
@@ -103,7 +103,10 @@ fun HomeNavigation(
                         gameModeImage = args.gameModeImage,
                         gameModeDescription = args.gameModeDescription,
                         onCreatePlayerClick = {
-                            navController.navigate(CreatePlayerScreen)
+                            navController.navigate(CreatePlayerScreen())
+                        },
+                        onEditPlayerClick = { playerId ->
+                            navController.navigate(CreatePlayerScreen(playerId = playerId))
                         },
                         onStartGameClick = {
                             navController.navigate(LoadingScreen)
@@ -112,11 +115,13 @@ fun HomeNavigation(
                     )
                 }
                 composable<CreatePlayerScreen> {
-                    CreatePlayerScreen(
+                    val playerId = it.toRoute<CreatePlayerScreen>().playerId
+                    CreatePlayerScreenComposable(
                         setAppBarTitle = { title ->
                             appBarTitle = title
                         },
                         animatedVisibilityScope = this,
+                        playerId = playerId,
                         navigateBack = { navController.popBackStack() }
                     )
                 }

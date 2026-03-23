@@ -14,4 +14,12 @@ class PlayerLocalProxy @Inject constructor(private val playerDao: PlayerDao) : P
     override suspend fun createPlayer(player: PlayerEntity): Long {
         return playerDao.insert(player)
     }
+
+    override suspend fun updatePlayer(player: PlayerEntity) {
+        playerDao.update(player)
+    }
+
+    override suspend fun deletePlayer(player: PlayerEntity) {
+        playerDao.delete(player)
+    }
 }

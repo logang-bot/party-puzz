@@ -1,16 +1,17 @@
 package com.restrusher.partypuzz.ui.views.home
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.ui.Alignment.Companion.Top
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,11 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -105,15 +102,8 @@ fun SharedTransitionScope.GameModeCard(
             val modeName = stringResource(id = gameMode.name)
             val suffix = stringResource(R.string.game_mode_tap_suffix)
             val (displayedNames, remaining) = playerNamesSlice(players)
-            // Preserve the last non-empty state so the exit animation fades out the full
-            // "with [names]" text rather than just the bare "with " word.
-            var lastNames by remember { mutableStateOf(displayedNames) }
-            var lastRemaining by remember { mutableIntStateOf(remaining) }
-            if (displayedNames.isNotEmpty()) {
-                lastNames = displayedNames
-                lastRemaining = remaining
-            }
-            val andXMore = if (lastRemaining > 0) stringResource(R.string.and_x_more, lastRemaining) else null
+            val namesState: Pair<List<String>, Int>? =
+                if (displayedNames.isNotEmpty()) Pair(displayedNames, remaining) else null
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
@@ -129,32 +119,39 @@ fun SharedTransitionScope.GameModeCard(
                     fontSize = 20.sp,
                     lineHeight = 22.sp,
                 )
-                AnimatedVisibility(
-                    visible = displayedNames.isNotEmpty(),
-                    enter = expandVertically(animationSpec = tween(300), expandFrom = Top, clip = false) + fadeIn(tween(300)),
-                    exit = shrinkVertically(animationSpec = tween(200), shrinkTowards = Top, clip = false) + fadeOut(tween(200))
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("with ") }
-                            lastNames.forEachIndexed { index, name ->
-                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
-                                    append(name)
+                AnimatedContent(
+                    targetState = namesState,
+                    transitionSpec = {
+                        (slideInVertically(tween(50)) { -it }) togetherWith
+                        (slideOutVertically(tween(50)) { it })
+                    },
+                    label = "playerNames"
+                ) { state ->
+                    if (state != null) {
+                        val withWord = stringResource(R.string.with)
+                        val andXMore = if (state.second > 0) stringResource(R.string.and_x_more, state.second) else null
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append("$withWord ") }
+                                state.first.forEachIndexed { index, name ->
+                                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
+                                        append(name)
+                                    }
+                                    if (index < state.first.lastIndex) append(", ")
                                 }
-                                if (index < lastNames.lastIndex) append(", ")
-                            }
-                            if (andXMore != null) {
-                                withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
-                                    append(" $andXMore")
+                                if (andXMore != null) {
+                                    withStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary, fontWeight = FontWeight.ExtraBold, fontStyle = FontStyle.Italic)) {
+                                        append(" $andXMore")
+                                    }
                                 }
-                            }
-                        },
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.displaySmall,
-                        fontSize = 20.sp,
-                        lineHeight = 22.sp,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                            },
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.displaySmall,
+                            fontSize = 20.sp,
+                            lineHeight = 22.sp,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 }
             }
         }
