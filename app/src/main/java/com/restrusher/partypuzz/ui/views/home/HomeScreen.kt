@@ -23,32 +23,32 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import android.content.pm.ActivityInfo
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
-import com.restrusher.partypuzz.data.local.appData.appModels.GameMode
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.HomeScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
-    uiState: HomeState,
     onGameOptionSelected: (Int, Int, Int, Int?) -> Unit,
-    onTogglePartySelection: () -> Unit,
-    onOpenDialog: () -> Unit,
-    onCloseDialog: () -> Unit,
-    onSelectDialogParty: (Int) -> Unit,
-    onConfirmPartySelection: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     Box(
         modifier = modifier
@@ -104,7 +104,7 @@ fun SharedTransitionScope.HomeScreen(
                     LastPartyCard(
                         party = uiState.activeParty!!,
                         isSelected = uiState.isPartySelected,
-                        onCardClick = onTogglePartySelection,
+                        onCardClick = viewModel::togglePartySelection,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp)
@@ -113,7 +113,7 @@ fun SharedTransitionScope.HomeScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(20.dp),
-                        onClick = onOpenDialog,
+                        onClick = viewModel::openDialog,
                         colors = ButtonDefaults.buttonColors(
                             contentColor = MaterialTheme.colorScheme.onTertiary,
                             containerColor = MaterialTheme.colorScheme.tertiary
@@ -129,9 +129,11 @@ fun SharedTransitionScope.HomeScreen(
                 } else {
                     Text(
                         text = stringResource(id = R.string.no_parties_yet),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Light,
-                        modifier = Modifier.padding(horizontal = 20.dp)
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontStyle = FontStyle.Italic,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                        modifier = Modifier.fillMaxWidth().padding(20.dp)
                     )
                 }
             }
@@ -141,18 +143,13 @@ fun SharedTransitionScope.HomeScreen(
             PartyPickerDialog(
                 allParties = uiState.allParties,
                 dialogPendingPartyId = uiState.dialogPendingPartyId,
-                onPartySelected = onSelectDialogParty,
-                onConfirm = onConfirmPartySelection,
-                onDismiss = onCloseDialog
+                onPartySelected = viewModel::selectDialogParty,
+                onConfirm = viewModel::confirmPartySelection,
+                onDismiss = viewModel::closeDialog
             )
         }
     }
 }
-
-private val previewGameModes = listOf(
-    GameMode(R.drawable.img_solo_mode_illustration, R.string.solo_game_mode, R.string.solo_description),
-    GameMode(R.drawable.img_solo_mode_illustration, R.string.solo_game_mode, R.string.solo_description),
-)
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Preview(
@@ -166,16 +163,7 @@ fun HomeScreenPreview() {
             AnimatedVisibility(visible = true) {
                 HomeScreen(
                     animatedVisibilityScope = this,
-                    uiState = HomeState(
-                        isLoading = false,
-                        gameModes = previewGameModes
-                    ),
-                    onGameOptionSelected = { _, _, _, _ -> },
-                    onTogglePartySelection = {},
-                    onOpenDialog = {},
-                    onCloseDialog = {},
-                    onSelectDialogParty = {},
-                    onConfirmPartySelection = {}
+                    onGameOptionSelected = { _, _, _, _ -> }
                 )
             }
         }

@@ -13,8 +13,10 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -179,12 +181,14 @@ fun LastPartyCard(
     if (showPlayersSheet) {
         ModalBottomSheet(
             onDismissRequest = { showPlayersSheet = false },
-            sheetState = sheetState
+            sheetState = sheetState,
+            windowInsets = WindowInsets(0)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
+                    .navigationBarsPadding()
                     .padding(bottom = 24.dp)
             ) {
                 Text(
@@ -257,8 +261,8 @@ fun LastPartyCard(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colorScheme.tertiary,
-                        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f)
+                        contentColor = MaterialTheme.colorScheme.onTertiary,
+                        containerColor = MaterialTheme.colorScheme.tertiary
                     )
                 ) {
                     Text(
