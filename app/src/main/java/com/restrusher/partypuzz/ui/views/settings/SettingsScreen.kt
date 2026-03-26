@@ -77,7 +77,10 @@ fun SettingsScreen(
             modifier = Modifier.clickable { viewModel.openThemeSheet() }
         )
 
-        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f),
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
 
         SettingsSectionHeader(title = stringResource(id = R.string.language))
 

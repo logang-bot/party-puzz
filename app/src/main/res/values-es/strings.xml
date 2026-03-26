@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PartyPuzz</string>
+
+    <!-- Navigation Routes -->
+    <string name="home_screen">HomeScreen</string>
+    <string name="game_config_screen">GameConfigScreen</string>
+
+    <!-- Navigation Routes Titles -->
+    <string name="prepare_your_party">Prepara tu Fiesta</string>
+    <string name="parties">Fiestas</string>
+    <string name="settings">Ajustes</string>
+    <string name="menu">Menú</string>
+    <string name="theme_color">Color del tema</string>
+    <string name="language">Idioma</string>
+    <string name="appearance">Apariencia</string>
+    <string name="system">Sistema</string>
+    <string name="light">Claro</string>
+    <string name="dark">Oscuro</string>
+    <string name="english">English</string>
+    <string name="spanish">Español</string>
+    <string name="select_theme">Seleccionar tema</string>
+    <string name="select_language">Seleccionar idioma</string>
+    <string name="create_player">Crear jugador</string>
+    <string name="edit_player">Editar jugador</string>
+    <string name="update">Actualizar</string>
+
+    <!-- Game Modes -->
+    <string name="solo_game_mode">Solo</string>
+    <string name="teams_game_mode">Equipos</string>
+    <string name="couples_game_mode">Parejas</string>
+    <string name="party_puzz_game_mode">Party Puzz</string>
+
+    <!-- Game Modes Descriptions -->
+    <string name="solo_description">Un modo estándar en el que cada miembro de la fiesta puede ganar o perder</string>
+    <string name="teams_description">Un modo para los que no pueden separarse demasiado tiempo</string>
+    <string name="couples_description">Refuerza tu amor con tu pareja jugando en equipo</string>
+    <string name="party_puzz_description">Es simple PartyPuzz… ¡disfruta!</string>
+
+    <string name="welcome">Bienvenido</string>
+    <string name="glad_to_have_you_back">Hola %1$s, nos alegra tenerte de vuelta. ¿Qué quieres jugar hoy?</string>
+
+    <!-- Image Descriptions -->
+    <string name="back_button">Atrás</string>
+    <string name="game_mode_image">Imagen del modo de juego</string>
+    <string name="player_avatar">Avatar del jugador</string>
+    <string name="player_gender">Género del jugador</string>
+    <string name="option_description">Descripción de la opción</string>
+    <string name="random_image">Imagen aleatoria</string>
+
+    <string name="lets_set_up_your_party">Vamos a preparar tu fiesta</string>
+    <string name="enter_the_players_name">Ingresa los nombres de los jugadores</string>
+    <string name="players_name">Nombre del jugador</string>
+    <string name="add_player">Agregar jugador</string>
+    <string name="add">Agregar</string>
+    <string name="customize_your_party">Personaliza tu fiesta</string>
+    <string name="bar_mode">Modo Bar</string>
+    <string name="can_skip_questions">Se pueden saltar preguntas</string>
+    <string name="unlimited_mode">Modo sin fin</string>
+    <string name="mini_games">Minijuegos</string>
+    <string name="truth_or_dare">Verdad o Reto</string>
+    <string name="general_culture">Cultura general</string>
+    <string name="sticky_dares">Retos pegajosos</string>
+    <string name="save_stats">Guardar estadísticas</string>
+    <string name="start_game">Iniciar juego</string>
+    <string name="generate_random_name">Generar nombre aleatorio</string>
+    <string name="generate_random_image">Generar imagen aleatoria</string>
+    <string name="take_photo">Tomar foto</string>
+    <string name="play">Jugar</string>
+    <string name="male">Hombre</string>
+    <string name="female">Mujer</string>
+    <string name="name_is_required">El nombre es obligatorio</string>
+    <string name="last_party">Última fiesta</string>
+    <string name="selected_party">Fiesta seleccionada</string>
+    <string name="close">Cerrar</string>
+    <string name="see">Ver</string>
+    <string name="players">Jugadores</string>
+    <string name="options">Opciones</string>
+    <string name="confirm">Confirmar</string>
+    <string name="gather_your_friends_for_a_night_of_fun">¡Reúne a tus amigos para una noche de diversión y competencia sana en nuestro nuevo modo Bar Brawl! Esta experiencia inmersiva te transportará a un bar virtual donde podrás retar a tus amigos a una variedad de juegos y desafíos.</string>
+    <string name="choose_a_different_party">Elegir otra fiesta</string>
+    <string name="no_parties_yet">Aún no has creado fiestas, inicia un juego y disfruta</string>
+    <string name="game_mode_tap_prefix">Toca para jugar en modo</string>
+    <string name="game_mode_tap_suffix"></string>
+    <string name="with">con</string>
+    <string name="and_x_more">y %1$d más</string>
+    <string name="select_a_party">Seleccionar una fiesta</string>
+    <string name="cancel">Cancelar</string>
+    <string name="game">Juego</string>
+    <string name="tap_to_play">Toca para jugar</string>
+    <string name="truth">Verdad</string>
+    <string name="dare">Reto</string>
+    <string name="truth_or_dare_title">¿Verdad o Reto?</string>
+    <string name="sticky_dare_title">¡Reto pegajoso!</string>
+    <string name="general_knowledge_title">Cultura general</string>
+    <string name="tap_to_dismiss">Toca para cerrar</string>
+    <string name="exit_game_title">¿Salir del juego?</string>
+    <string name="exit_game_message">¿Estás seguro de que quieres salir del juego actual?</string>
+    <string name="yes">Sí</string>
+    <string name="no">No</string>
+    <string name="ok">OK</string>
+
+    <!-- Permission Dialog -->
+    <string name="permission_required">Permiso requerido</string>
+    <string name="permission_grant">Conceder permiso</string>
+    <string name="camera_permission_rationale">Esta app necesita acceso a tu cámara para que tus amigos puedan verte la cara en cada turno</string>
+    <string name="camera_permission_permanently_declined">Parece que rechazaste el permiso de cámara permanentemente. Puedes ir a los ajustes de la app para concederlo.</string>
+
+    <!-- Loading Screen -->
+    <string-array name="loading_texts">
+        <item>Barajando el mazo\u2026</item>
+        <item>Calentando la fiesta\u2026</item>
+        <item>Tirando los dados\u2026</item>
+        <item>Arrancando la fiesta\u2026</item>
+        <item>Preparando tus preguntas\u2026</item>
+        <item>Configurando el juego\u2026</item>
+        <item>Cargando la diversión\u2026</item>
+        <item>Reuniendo a los jugadores\u2026</item>
+        <item>Mezclando las cosas\u2026</item>
+        <item>Casi listos para jugar\u2026</item>
+    </string-array>
+
+    <!-- Truth texts -->
+    <string-array name="truth_texts">
+        <item>¿Quién es la última persona que buscaste en redes sociales?</item>
+        <item>¿Cuál es tu línea roja en una relación?</item>
+        <item>¿Cuál es tu apodo más extraño?</item>
+    </string-array>
+
+    <!-- Dare texts -->
+    <string-array name="dare_texts">
+        <item>Haz 100 sentadillas</item>
+        <item>Di que sí a todo durante el próximo minuto</item>
+        <item>Mantén los ojos cerrados hasta que sea tu turno otra vez</item>
+    </string-array>
+
+    <!-- Sticky dares -->
+    <string-array name="sticky_dares">
+        <item>Durante 1 minuto el jugador debe hablar con acento argentino</item>
+        <item>Durante 2 minutos el jugador debe terminar cada frase con "¿o qué?"</item>
+        <item>Durante 5 minutos el jugador debe continuar la fiesta de pie</item>
+    </string-array>
+
+    <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
+    <string-array name="gk_questions">
+        <item>¿Cuántos planetas hay en el sistema solar?</item>
+        <item>¿Cuál es la capital de Francia?</item>
+        <item>¿Cuál es el océano más grande de la Tierra?</item>
+        <item>¿Cuántos lados tiene un hexágono?</item>
+        <item>¿Qué gas absorben las plantas del aire?</item>
+        <item>¿Qué planeta está más cerca del Sol?</item>
+        <item>¿Cuántas patas tiene una araña?</item>
+        <item>¿Cuál es la sustancia natural más dura?</item>
+        <item>¿Cuántos continentes hay en la Tierra?</item>
+        <item>¿Qué color obtienes al mezclar azul y amarillo?</item>
+        <item>¿En qué país se construyó la Torre Eiffel?</item>
+        <item>¿Cuántas horas hay en dos días?</item>
+        <item>¿Cuál es el animal terrestre más rápido?</item>
+        <item>¿Cuál es el planeta más pequeño del sistema solar?</item>
+        <item>¿Cuántas cuerdas tiene una guitarra estándar?</item>
+    </string-array>
+
+    <string-array name="gk_options_a">
+        <item>8</item>
+        <item>Londres</item>
+        <item>Atlántico</item>
+        <item>5</item>
+        <item>Oxígeno</item>
+        <item>Venus</item>
+        <item>6</item>
+        <item>Diamante</item>
+        <item>7</item>
+        <item>Verde</item>
+        <item>Italia</item>
+        <item>36</item>
+        <item>León</item>
+        <item>Mercurio</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="gk_options_b">
+        <item>9</item>
+        <item>París</item>
+        <item>Pacífico</item>
+        <item>6</item>
+        <item>Dióxido de carbono</item>
+        <item>Mercurio</item>
+        <item>8</item>
+        <item>Oro</item>
+        <item>6</item>
+        <item>Morado</item>
+        <item>Francia</item>
+        <item>48</item>
+        <item>Guepardo</item>
+        <item>Marte</item>
+        <item>7</item>
+    </string-array>
+
+    <!-- "A" or "B" — must match gk_questions order -->
+    <string-array name="gk_correct_options">
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
+    </string-array>
+
+    <!-- Sticky dare supplementary data (parallel arrays — indices must stay in sync with sticky_dares) -->
+    <string-array name="sticky_dares_present_continuous">
+        <item>hablando con acento argentino</item>
+        <item>terminando cada frase con "¿o qué?"</item>
+        <item>continuando la fiesta de pie</item>
+    </string-array>
+
+    <string-array name="sticky_dares_duration_labels">
+        <item>1 minuto</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+    </string-array>
+
+    <integer-array name="sticky_dares_duration_seconds">
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+    </integer-array>
+
+    <!-- Game screen UI -->
+    <string name="game_configuration">Configuración del juego</string>
+    <string name="active_dares_title">Retos activos</string>
+    <string name="no_active_dares">No hay retos activos ahora mismo</string>
+    <string name="no_active_dares_for_player">No hay retos activos para este jugador</string>
+
+    <!-- Mini-games -->
+    <string name="follow_the_spot">Sigue el punto</string>
+    <string name="tap_to_exit">Toca para salir</string>
+    <string name="mini_game_winner">Ganador: %1$s</string>
+    <string name="mini_game_tie">¡Empate!</string>
+    <string name="ready">Listo</string>
+    <string name="go">¡Ya!</string>
+    <string name="choose_opponent">Elige tu rival</string>
+
+</resources>

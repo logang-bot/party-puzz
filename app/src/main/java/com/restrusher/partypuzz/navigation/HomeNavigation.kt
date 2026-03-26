@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -72,9 +73,9 @@ fun HomeNavigation(
         gesturesEnabled = isHomeScreen,
         drawerContent = {
             ModalDrawerSheet {
-                Text(
-                    text = stringResource(id = R.string.app_name),
-                    style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
+                Image(
+                    painter = painterResource(id = R.drawable.img_partypuzz_logo),
+                    contentDescription = stringResource(id = R.string.app_name),
                     modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 16.dp)
                 )
                 NavigationDrawerItem(
