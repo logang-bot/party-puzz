@@ -1,0 +1,124 @@
+package com.restrusher.partypuzz.ui.views.partyDetail
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.restrusher.partypuzz.R
+
+@Composable
+fun PartyDetailScreen(
+    partyId: Int,
+    setAppBarTitle: (String) -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: PartyDetailViewModel = hiltViewModel()
+) {
+    val title = stringResource(id = R.string.party_detail)
+    LaunchedEffect(Unit) {
+        setAppBarTitle(title)
+        viewModel.loadParty(partyId)
+    }
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.navigateBack) {
+        if (uiState.navigateBack) navigateBack()
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primaryContainer,
+                        MaterialTheme.colorScheme.secondaryContainer,
+                        MaterialTheme.colorScheme.tertiaryContainer
+                    )
+                )
+            )
+    ) {
+        when {
+            uiState.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            uiState.party != null -> Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 16.dp)
+            ) {
+                PartyNameSection(
+                    name = uiState.party!!.party.name,
+                    isEditing = uiState.isEditing,
+                    editedName = uiState.editedName,
+                    onEditClick = viewModel::startEditing,
+                    onNameChange = viewModel::onNameChange,
+                    onSave = viewModel::savePartyName,
+                    onDiscard = viewModel::discardEditing,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                PartyPlayersGrid(
+                    players = uiState.party!!.players,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                DeletePartyButton(
+                    onClick = viewModel::showDeleteDialog,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+        if (uiState.isSaving || uiState.isDeleting) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+    }
+
+    if (uiState.showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = viewModel::dismissDeleteDialog,
+            title = { Text(text = stringResource(id = R.string.delete_party_title)) },
+            text = { Text(text = stringResource(id = R.string.delete_party_message)) },
+            confirmButton = {
+                TextButton(onClick = viewModel::confirmDelete) {
+                    Text(text = stringResource(id = R.string.yes))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::dismissDeleteDialog) {
+                    Text(text = stringResource(id = R.string.no))
+                }
+            }
+        )
+    }
+}

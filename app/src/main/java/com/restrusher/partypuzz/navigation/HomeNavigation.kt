@@ -47,6 +47,7 @@ import com.restrusher.partypuzz.ui.views.gameConfig.ui.GameConfigScreen
 import com.restrusher.partypuzz.ui.views.gameLoading.LoadingScreen
 import com.restrusher.partypuzz.ui.views.home.HomeScreen
 import com.restrusher.partypuzz.ui.views.parties.PartiesScreen
+import com.restrusher.partypuzz.ui.views.partyDetail.PartyDetailScreen
 import com.restrusher.partypuzz.ui.views.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
@@ -231,6 +232,18 @@ fun HomeNavigation(
                     composable<PartiesScreen> {
                         PartiesScreen(
                             setAppBarTitle = { title -> appBarTitle = title },
+                            onPartyClick = { partyId ->
+                                navController.navigate(PartyDetailScreen(partyId = partyId))
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    composable<PartyDetailScreen> {
+                        val partyId = it.toRoute<PartyDetailScreen>().partyId
+                        PartyDetailScreen(
+                            partyId = partyId,
+                            setAppBarTitle = { title -> appBarTitle = title },
+                            navigateBack = { navController.popBackStack() },
                             modifier = Modifier.fillMaxSize()
                         )
                     }

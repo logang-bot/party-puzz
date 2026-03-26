@@ -29,6 +29,9 @@ data object PartiesScreen
 data object SettingsScreen
 
 @Serializable
+data class PartyDetailScreen(val partyId: Int)
+
+@Serializable
 data class FollowTheSpotRoute(
     val player1Name: String,
     val player1PhotoPath: String?,

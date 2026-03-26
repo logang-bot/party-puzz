@@ -53,6 +53,14 @@ class GameConfigViewModel @Inject constructor(
         }
     }
 
+    fun onStartGame(onReady: () -> Unit) {
+        viewModelScope.launch {
+            val partyId = args.partyId
+            if (partyId != null) partyRepository.updateLastUsed(partyId)
+            onReady()
+        }
+    }
+
     fun deletePlayer(player: Player) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true) }

@@ -12,4 +12,9 @@ class PartyLocalProxy @Inject constructor(private val partyDao: PartyDao) : Part
     override fun getAllParties() = partyDao.getAllPartiesWithPlayers()
     override suspend fun getPartyById(partyId: Int) = partyDao.getPartyById(partyId)
     override suspend fun updateLastUsed(partyId: Int) = partyDao.updateLastUsed(partyId, System.currentTimeMillis())
+    override suspend fun updatePartyName(partyId: Int, name: String) = partyDao.updatePartyName(partyId, name)
+    override suspend fun deleteParty(partyId: Int) {
+        partyDao.deletePartyPlayerCrossRefs(partyId)
+        partyDao.deleteParty(partyId)
+    }
 }

@@ -9,4 +9,6 @@ interface PartyRepository {
     fun getAllParties(): Flow<List<PartyWithPlayers>>
     suspend fun getPartyById(partyId: Int): PartyWithPlayers?
     suspend fun updateLastUsed(partyId: Int)
+    suspend fun updatePartyName(partyId: Int, name: String)
+    suspend fun deleteParty(partyId: Int)
 }

@@ -5,9 +5,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -102,7 +104,8 @@ fun SettingsScreen(
     if (uiState.isThemeSheetOpen) {
         ModalBottomSheet(
             onDismissRequest = viewModel::closeThemeSheet,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            windowInsets = WindowInsets(0)
         ) {
             BottomSheetTitle(text = stringResource(id = R.string.select_theme))
             ThemeMode.entries.forEach { mode ->
@@ -112,14 +115,15 @@ fun SettingsScreen(
                     onClick = { viewModel.selectTheme(mode) }
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.navigationBarsPadding().height(16.dp))
         }
     }
 
     if (uiState.isLanguageSheetOpen) {
         ModalBottomSheet(
             onDismissRequest = viewModel::closeLanguageSheet,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            windowInsets = WindowInsets(0)
         ) {
             BottomSheetTitle(text = stringResource(id = R.string.select_language))
             // System always first, then remaining options alphabetically
@@ -132,7 +136,7 @@ fun SettingsScreen(
                     onClick = { viewModel.selectLanguage(language) }
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.navigationBarsPadding().height(16.dp))
         }
     }
 }

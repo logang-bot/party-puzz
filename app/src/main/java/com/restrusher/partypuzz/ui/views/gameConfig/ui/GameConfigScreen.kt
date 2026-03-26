@@ -138,7 +138,7 @@ fun SharedTransitionScope.GameConfigScreen(
                 modifier = Modifier.fillMaxWidth())
         }
         StartGameButton(
-            onClick = onStartGameClick,
+            onClick = { viewModel.onStartGame(onStartGameClick) },
             enabled = GamePlayersList.PlayersList.isNotEmpty() && GameOptionsSource.options.any { it.enabled },
             modifier = Modifier
                 .fillMaxWidth()

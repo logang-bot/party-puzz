@@ -28,4 +28,13 @@ interface PartyDao {
 
     @Query("UPDATE parties SET lastUsedAt = :timestamp WHERE id = :partyId")
     suspend fun updateLastUsed(partyId: Int, timestamp: Long)
+
+    @Query("UPDATE parties SET name = :name WHERE id = :partyId")
+    suspend fun updatePartyName(partyId: Int, name: String)
+
+    @Query("DELETE FROM parties WHERE id = :partyId")
+    suspend fun deleteParty(partyId: Int)
+
+    @Query("DELETE FROM party_player_cross_ref WHERE partyId = :partyId")
+    suspend fun deletePartyPlayerCrossRefs(partyId: Int)
 }

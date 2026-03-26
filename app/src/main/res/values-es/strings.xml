@@ -80,6 +80,15 @@
     <string name="gather_your_friends_for_a_night_of_fun">¡Reúne a tus amigos para una noche de diversión y competencia sana en nuestro nuevo modo Bar Brawl! Esta experiencia inmersiva te transportará a un bar virtual donde podrás retar a tus amigos a una variedad de juegos y desafíos.</string>
     <string name="choose_a_different_party">Elegir otra fiesta</string>
     <string name="no_parties_yet">Aún no has creado fiestas, inicia un juego y disfruta</string>
+    <string name="party_detail">Detalle de fiesta</string>
+    <string name="last_used">Último uso: %1$s</string>
+    <string name="created_on">Creada: %1$s</string>
+    <string name="edit_party_name">Editar nombre de fiesta</string>
+    <string name="save">Guardar</string>
+    <string name="discard">Descartar</string>
+    <string name="delete_party">Eliminar fiesta</string>
+    <string name="delete_party_title">¿Eliminar fiesta?</string>
+    <string name="delete_party_message">Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta fiesta?</string>
     <string name="game_mode_tap_prefix">Toca para jugar en modo</string>
     <string name="game_mode_tap_suffix"></string>
     <string name="with">con</string>
