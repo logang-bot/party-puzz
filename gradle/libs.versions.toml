@@ -1,7 +1,9 @@
 [versions]
 agp = "8.5.0"
+appcompat = "1.7.0"
 coilCompose = "3.0.4"
 coreSplashscreen = "1.0.0"
+datastorePreferences = "1.1.1"
 hiltAndroid = "2.51.1"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -18,7 +20,9 @@ composeAnimation = "1.7.2"
 ksp = "2.0.0-1.0.24"
 
 [libraries]
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }

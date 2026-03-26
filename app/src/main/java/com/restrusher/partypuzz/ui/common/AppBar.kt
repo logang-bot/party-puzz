@@ -3,7 +3,7 @@ package com.restrusher.partypuzz.ui.common
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,6 +28,7 @@ fun HomeAppBar(
     currentDestination: NavDestination?,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
+    onMenuClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val shouldShowLogo = currentDestination?.hasRoute(HomeScreen::class) ?: false
@@ -47,7 +48,14 @@ fun HomeAppBar(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         navigationIcon = {
-            if (canNavigateBack)
+            if (shouldShowLogo)
+                IconButton(onClick = onMenuClick) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = stringResource(id = R.string.menu)
+                    )
+                }
+            else if (canNavigateBack)
                 IconButton(onClick = navigateUp) {
                     Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(
                         id = R.string.back_button
@@ -65,6 +73,7 @@ fun HomeAppBarPreview() {
         title = "PartyPuzz",
         currentDestination = null,
         canNavigateBack = true,
-        navigateUp = { }
+        navigateUp = { },
+        onMenuClick = { }
     )
 }

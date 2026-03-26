@@ -23,6 +23,12 @@ data object LoadingScreen
 data object GameScreen
 
 @Serializable
+data object PartiesScreen
+
+@Serializable
+data object SettingsScreen
+
+@Serializable
 data class FollowTheSpotRoute(
     val player1Name: String,
     val player1PhotoPath: String?,
