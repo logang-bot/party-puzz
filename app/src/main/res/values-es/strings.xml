@@ -103,6 +103,7 @@
     <string name="sticky_dare_title">¡Reto pegajoso!</string>
     <string name="general_knowledge_title">Cultura general</string>
     <string name="tap_to_dismiss">Toca para cerrar</string>
+    <string name="cancel_dare">Cancelar reto</string>
     <string name="exit_game_title">¿Salir del juego?</string>
     <string name="exit_game_message">¿Estás seguro de que quieres salir del juego actual?</string>
     <string name="press_back_again_to_exit">Pulsa atrás de nuevo para salir</string>

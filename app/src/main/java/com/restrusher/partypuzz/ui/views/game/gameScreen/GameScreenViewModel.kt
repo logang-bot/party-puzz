@@ -191,6 +191,24 @@ class GameScreenViewModel @Inject constructor(
         _uiState.update { it.copy(miniGameResult = result) }
     }
 
+    fun cancelStickyDare(dareId: String) {
+        stickyDareJobs[dareId]?.cancel()
+        stickyDareJobs.remove(dareId)
+        viewModelScope.launch {
+            _uiState.update { state ->
+                state.copy(
+                    activeStickyDares = state.activeStickyDares.map { dare ->
+                        if (dare.id == dareId) dare.copy(isCompleted = true) else dare
+                    }
+                )
+            }
+            delay(STICKY_DARE_EXIT_DELAY_MS)
+            _uiState.update { state ->
+                state.copy(activeStickyDares = state.activeStickyDares.filter { it.id != dareId })
+            }
+        }
+    }
+
     private fun startStickyDareTimer(dareId: String) {
         stickyDareJobs[dareId] = viewModelScope.launch {
             while (true) {

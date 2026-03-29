@@ -12,10 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -23,19 +26,21 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.models.Player
-import com.restrusher.partypuzz.ui.common.BouncingDotsAnimation
+import com.restrusher.partypuzz.ui.common.ClockHandAnimation
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun StickyDaresBottomSheet(
     activeDares: List<ActiveStickyDare>,
     filterPlayer: Player?,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onCancelDare: (dareId: String) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val displayedDares = if (filterPlayer != null)
@@ -87,10 +92,9 @@ internal fun StickyDaresBottomSheet(
                                 .fillMaxWidth()
                                 .padding(vertical = 10.dp)
                         ) {
-                            // padding(top) gives the upward bounce (-5dp) room to render
-                            BouncingDotsAnimation(
+                            ClockHandAnimation(
                                 color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(top = 8.dp)
+                                modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(12.dp))
                             // weight(1f) so the text column expands and can wrap freely
@@ -113,10 +117,19 @@ internal fun StickyDaresBottomSheet(
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 text = dare.remainingSeconds.toRemainingTimeLabel(),
-                                style = MaterialTheme.typography.labelMedium,
-                                fontWeight = FontWeight.Medium,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.primary
                             )
+                            Spacer(Modifier.width(4.dp))
+                            IconButton(onClick = { onCancelDare(dare.id) }) {
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_close),
+                                    contentDescription = stringResource(R.string.cancel_dare),
+                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
                     }
                 }

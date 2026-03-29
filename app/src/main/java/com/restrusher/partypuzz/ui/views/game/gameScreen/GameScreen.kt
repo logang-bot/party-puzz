@@ -118,7 +118,8 @@ fun GameScreen(
             onDismiss = {
                 showDaresSheet = false
                 daresSheetPlayer = null
-            }
+            },
+            onCancelDare = viewModel::cancelStickyDare
         )
     }
 
@@ -196,6 +197,7 @@ fun GameScreen(
                 players = uiState.players,
                 selectedPlayer = uiState.selectedPlayer,
                 dealPhase = uiState.dealPhase,
+                activeStickyDares = uiState.activeStickyDares,
                 onPlayerTapped = { player ->
                     daresSheetPlayer = player
                     showDaresSheet = true
