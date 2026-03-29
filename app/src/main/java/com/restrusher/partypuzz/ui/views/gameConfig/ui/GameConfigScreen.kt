@@ -139,7 +139,7 @@ fun SharedTransitionScope.GameConfigScreen(
         }
         StartGameButton(
             onClick = { viewModel.onStartGame(onStartGameClick) },
-            enabled = GamePlayersList.PlayersList.isNotEmpty() && GameOptionsSource.options.any { it.enabled },
+            enabled = GamePlayersList.PlayersList.size >= 2 && GameOptionsSource.options.any { it.enabled },
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceVariant)

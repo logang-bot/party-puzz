@@ -62,21 +62,21 @@ class GameConfigViewModel @Inject constructor(
     }
 
     fun deletePlayer(player: Player) {
-        viewModelScope.launch(Dispatchers.IO) {
+        GamePlayersList.removePlayer(player.id)
+        viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
-            playerRepository.deletePlayer(
-                PlayerEntity(
-                    id = player.id,
-                    nickName = player.nickName,
-                    gender = player.gender,
-                    photoPath = player.photoPath,
-                    avatarName = player.avatarName
+            withContext(Dispatchers.IO) {
+                playerRepository.deletePlayer(
+                    PlayerEntity(
+                        id = player.id,
+                        nickName = player.nickName,
+                        gender = player.gender,
+                        photoPath = player.photoPath,
+                        avatarName = player.avatarName
+                    )
                 )
-            )
-            withContext(Dispatchers.Main) {
-                GamePlayersList.removePlayer(player.id)
-                _uiState.update { it.copy(isLoading = false) }
             }
+            _uiState.update { it.copy(isLoading = false) }
         }
     }
 }

@@ -42,18 +42,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.data.models.Player
+import com.restrusher.partypuzz.ui.common.BackPressToExit
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @Composable
 fun FollowTheSpotScreen(
     onGameFinished: (player1Score: Int, player2Score: Int) -> Unit,
+    onAbortGame: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: FollowTheSpotViewModel = hiltViewModel()
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    BackPressToExit(
+        warningMessage = stringResource(R.string.press_back_again_to_exit),
+        onExit = onAbortGame
+    )
 
     FollowTheSpotContent(
         uiState = uiState,

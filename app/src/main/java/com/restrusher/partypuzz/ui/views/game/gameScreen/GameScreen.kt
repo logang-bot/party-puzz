@@ -71,6 +71,15 @@ fun GameScreen(
                 backStackEntry.savedStateHandle.remove<Int>(KEY_MINI_GAME_P2_SCORE)
             }
     }
+    LaunchedEffect(backStackEntry) {
+        backStackEntry?.savedStateHandle
+            ?.getStateFlow<Boolean?>("mini_game_aborted", null)
+            ?.filterNotNull()
+            ?.collect {
+                viewModel.onMiniGameAborted()
+                backStackEntry.savedStateHandle.remove<Boolean>("mini_game_aborted")
+            }
+    }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val backgroundGradient = rememberBackgroundGradient()

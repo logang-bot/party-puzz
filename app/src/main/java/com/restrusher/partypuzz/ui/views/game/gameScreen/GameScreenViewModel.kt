@@ -161,6 +161,25 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
+    fun onMiniGameAborted() {
+        dealJob?.cancel()
+        _uiState.update {
+            it.copy(
+                dealPhase = GameDealPhase.IDLE,
+                selectedPlayer = null,
+                animatingName = "",
+                dealType = null,
+                challengeText = null,
+                truthOrDareChoice = null,
+                generalKnowledgeQuestion = null,
+                selectedAnswerOption = null,
+                miniGame = null,
+                miniGameOpponent = null,
+                miniGameResult = null
+            )
+        }
+    }
+
     fun onMiniGameResultReceived(player1Score: Int, player2Score: Int) {
         val state = _uiState.value
         val result = MiniGameResult(

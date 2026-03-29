@@ -226,6 +226,11 @@ fun HomeNavigation(
                                 }
                                 navController.popBackStack()
                             },
+                            onAbortGame = {
+                                navController.previousBackStackEntry?.savedStateHandle
+                                    ?.set("mini_game_aborted", true)
+                                navController.popBackStack()
+                            },
                             modifier = Modifier.fillMaxSize()
                         )
                     }

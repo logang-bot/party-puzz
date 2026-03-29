@@ -27,7 +27,7 @@ import com.restrusher.partypuzz.ui.common.loadingAnimations.BlurredAnimatedText
 import com.restrusher.partypuzz.ui.common.loadingAnimations.TripleOrbitLoadingAnimation
 import kotlinx.coroutines.delay
 
-private const val LOADING_DELAY_MS = 8000L
+private const val LOADING_DELAY_MS = 5000L
 private const val TEXT_REFRESH_INTERVAL_MS = 2000L
 
 @Composable
