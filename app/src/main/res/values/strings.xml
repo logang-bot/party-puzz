@@ -25,14 +25,24 @@
     <string name="update">Update</string>
 
     <!-- Game Modes -->
-    <string name="solo_game_mode">Solo</string>
-    <string name="teams_game_mode">Teams</string>
+    <string name="standard_game_mode">Standard</string>
+    <string name="bar_game_mode">Bar time</string>
     <string name="couples_game_mode">Couples</string>
     <string name="party_puzz_game_mode">Party Puzz</string>
 
+    <!-- Bar time event dialog -->
+    <string name="skip">Skip</string>
+    <string name="finish">Finish</string>
+    <string name="give">Give</string>
+    <string name="tap_to_continue">Tap to continue</string>
+    <string name="bar_event_title">Bar Event!</string>
+    <string name="bar_event_no_action">Nothing happens — carry on!</string>
+    <string name="bar_event_take_drinks">Take %1$d drink(s)!</string>
+    <string name="bar_event_give_drinks">Give %1$d drink(s) to %2$s!</string>
+
     <!-- Game Modes Descriptions -->
-    <string name="solo_description">An standard mode in which every party member can win or lose</string>
-    <string name="teams_description">A mode for those who cannot stay away from each other for too long </string>
+    <string name="standard_description">The classic mode where every player competes on their own — may the best one win!</string>
+    <string name="bar_description">A mode made for bar nights — grab your crew and compete in rounds of wild challenges!</string>
     <string name="couples_description">Reinforce your love with your couple playing as a team</string>
     <string name="party_puzz_description">It\'s simple PartyPuzz… enjoy!</string>
 

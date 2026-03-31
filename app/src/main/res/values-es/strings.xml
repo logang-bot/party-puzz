@@ -26,14 +26,24 @@
     <string name="update">Actualizar</string>
 
     <!-- Game Modes -->
-    <string name="solo_game_mode">Solo</string>
-    <string name="teams_game_mode">Equipos</string>
+    <string name="standard_game_mode">Estándar</string>
+    <string name="bar_game_mode">Bar time</string>
     <string name="couples_game_mode">Parejas</string>
     <string name="party_puzz_game_mode">Party Puzz</string>
 
+    <!-- Bar time event dialog -->
+    <string name="skip">Omitir</string>
+    <string name="finish">Finalizar</string>
+    <string name="give">Dar</string>
+    <string name="tap_to_continue">Toca para continuar</string>
+    <string name="bar_event_title">¡Evento de Bar!</string>
+    <string name="bar_event_no_action">¡Nada ocurre! — ¡Continuad!</string>
+    <string name="bar_event_take_drinks">¡Bebe %1$d trago(s)!</string>
+    <string name="bar_event_give_drinks">¡Da %1$d trago(s) a %2$s!</string>
+
     <!-- Game Modes Descriptions -->
-    <string name="solo_description">Un modo estándar en el que cada miembro de la fiesta puede ganar o perder</string>
-    <string name="teams_description">Un modo para los que no pueden separarse demasiado tiempo</string>
+    <string name="standard_description">El modo clásico donde cada jugador compite por su cuenta — ¡que gane el mejor!</string>
+    <string name="bar_description">Un modo hecho para noches de bar — ¡reúne a tu equipo y compite en rondas de locos desafíos!</string>
     <string name="couples_description">Refuerza tu amor con tu pareja jugando en equipo</string>
     <string name="party_puzz_description">Es simple PartyPuzz… ¡disfruta!</string>
 

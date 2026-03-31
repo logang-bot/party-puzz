@@ -11,6 +11,9 @@ object GameOptionsSource {
 
     val options: SnapshotStateList<GameOption> = mutableStateListOf()
 
+    // Set by GameConfigScreen before navigating to the game; read by GameScreenViewModel at init
+    var currentGameModeNameRes: Int? = null
+
     fun initialize(initial: List<GameOption>) {
         options.clear()
         options.addAll(initial)

@@ -6,9 +6,9 @@ import com.restrusher.partypuzz.data.local.appData.appModels.GameMode
 object GameModesDatasource {
     val gameModesList = listOf(
         GameMode(
-            R.drawable.img_solo_mode_illustration,
-            R.string.solo_game_mode,
-            R.string.solo_description
+            R.drawable.img_standard_illustration,
+            R.string.standard_game_mode,
+            R.string.standard_description
         ),
         GameMode(
             R.drawable.img_couples_mode_illustration,
@@ -16,9 +16,9 @@ object GameModesDatasource {
             R.string.couples_description
         ),
         GameMode(
-            R.drawable.img_teams_mode_illustration,
-            R.string.teams_game_mode,
-            R.string.teams_description
+            R.drawable.img_bar_mode_illustration,
+            R.string.bar_game_mode,
+            R.string.bar_description
         ),
         GameMode(
             R.drawable.img_partypuzz_mode_illustration,

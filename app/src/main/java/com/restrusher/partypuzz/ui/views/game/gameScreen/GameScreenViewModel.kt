@@ -32,7 +32,10 @@ class GameScreenViewModel @Inject constructor(
     }
 
     private val _uiState = MutableStateFlow(
-        GameScreenState(players = GamePlayersList.PlayersList.toList())
+        GameScreenState(
+            players = GamePlayersList.PlayersList.toList(),
+            barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.bar_game_mode)
+        )
     )
     val uiState: StateFlow<GameScreenState> = _uiState.asStateFlow()
 
@@ -114,9 +117,53 @@ class GameScreenViewModel @Inject constructor(
         _uiState.update { it.copy(miniGameOpponent = opponent) }
     }
 
+    fun onTruthOrDareSkipped() {
+        val state = _uiState.value
+        if (!state.barMode.isActive || state.truthOrDareChoice == null) return
+        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+    }
+
+    fun onStickyDareSkipped() {
+        val state = _uiState.value
+        if (!state.barMode.isActive || state.dealType != GameDealType.STICKY_DARE) return
+        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+    }
+
+    fun onMiniGameDealFinished() {
+        val state = _uiState.value
+        if (!state.barMode.isActive || state.miniGameResult == null) return
+        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+    }
+
+    fun onBarEventDismissed() {
+        dealJob?.cancel()
+        _uiState.update {
+            it.copy(
+                barMode = it.barMode.copy(activeEvent = null),
+                dealPhase = GameDealPhase.IDLE,
+                selectedPlayer = null,
+                animatingName = "",
+                dealType = null,
+                challengeText = null,
+                truthOrDareChoice = null,
+                generalKnowledgeQuestion = null,
+                selectedAnswerOption = null,
+                miniGame = null,
+                miniGameOpponent = null,
+                miniGameResult = null
+            )
+        }
+    }
+
     fun onChallengeDismissed() {
         val state = _uiState.value
         if (!state.isChallengeDismissible) return
+
+        // In bar mode, GK dismiss triggers a bar event instead of resetting immediately
+        if (state.barMode.isActive && state.dealType == GameDealType.GENERAL_KNOWLEDGE) {
+            _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+            return
+        }
 
         if (state.dealType == GameDealType.STICKY_DARE) {
             val dare = ActiveStickyDare(
@@ -242,6 +289,11 @@ class GameScreenViewModel @Inject constructor(
             }
             stickyDareJobs.remove(dareId)
         }
+    }
+
+    private fun triggerBarEvent(): BarEvent {
+        val state = _uiState.value
+        return BarModeState.triggerRandomEvent(state.players, state.selectedPlayer)
     }
 
     private fun isDealTypeEnabled(dealType: GameDealType): Boolean {

@@ -7,8 +7,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -25,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -169,9 +166,9 @@ fun GameModeCardPreview() {
                     animatedVisibilityScope = this,
                     onPlayClick = { _, _, _ -> },
                     gameMode = GameMode(
-                        R.drawable.img_solo_mode_illustration,
-                        R.string.solo_game_mode,
-                        R.string.solo_description
+                        R.drawable.img_standard_illustration,
+                        R.string.standard_game_mode,
+                        R.string.standard_description
                     ),
                     players = emptyList()
                 )

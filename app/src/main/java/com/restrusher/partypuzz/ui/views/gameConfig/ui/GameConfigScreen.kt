@@ -77,6 +77,9 @@ fun SharedTransitionScope.GameConfigScreen(
         delay(100)
         setAppBarTitle(title)
     }
+    LaunchedEffect(gameModeName) {
+        GameOptionsSource.currentGameModeNameRes = gameModeName
+    }
     Box(modifier = modifier.fillMaxSize()) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(

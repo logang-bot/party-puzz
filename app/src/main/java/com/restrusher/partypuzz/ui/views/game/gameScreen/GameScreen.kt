@@ -179,6 +179,9 @@ fun GameScreen(
                 onGameDealTapped = viewModel::onGameDealTapped,
                 onChallengeDismissed = viewModel::onChallengeDismissed,
                 onTruthOrDareChosen = viewModel::onTruthOrDareChosen,
+                onTruthOrDareSkipped = viewModel::onTruthOrDareSkipped,
+                onStickyDareSkipped = viewModel::onStickyDareSkipped,
+                onMiniGameDealFinished = viewModel::onMiniGameDealFinished,
                 onGeneralKnowledgeAnswered = viewModel::onGeneralKnowledgeAnswered,
                 onMiniGameOpponentSelected = { opponent ->
                     viewModel.onMiniGameOpponentSelected(opponent)
@@ -206,6 +209,21 @@ fun GameScreen(
                     .fillMaxWidth()
                     .height(100.dp)
             )
+        }
+
+        // Bar event dialog overlay
+        AnimatedVisibility(
+            visible = uiState.barMode.activeEvent != null,
+            enter = fadeIn(tween(250)),
+            exit = fadeOut(tween(200)),
+            modifier = Modifier.fillMaxSize()
+        ) {
+            uiState.barMode.activeEvent?.let { event ->
+                BarEventDialog(
+                    event = event,
+                    onDismiss = viewModel::onBarEventDismissed
+                )
+            }
         }
 
         // Info panel overlay — dismissed by tapping the backdrop

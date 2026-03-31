@@ -53,7 +53,9 @@ data class GameScreenState(
     // Mini-game
     val miniGame: MiniGame? = null,
     val miniGameOpponent: Player? = null,
-    val miniGameResult: MiniGameResult? = null
+    val miniGameResult: MiniGameResult? = null,
+    // Bar mode
+    val barMode: BarModeState = BarModeState()
 ) {
     val isChallengeDismissible: Boolean
         get() = when (dealType) {

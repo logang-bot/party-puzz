@@ -70,6 +70,9 @@ internal fun GameDealSection(
     onGameDealTapped: () -> Unit,
     onChallengeDismissed: () -> Unit,
     onTruthOrDareChosen: (TruthOrDareChoice) -> Unit,
+    onTruthOrDareSkipped: () -> Unit,
+    onStickyDareSkipped: () -> Unit,
+    onMiniGameDealFinished: () -> Unit,
     onGeneralKnowledgeAnswered: (Char) -> Unit,
     onMiniGameOpponentSelected: (Player) -> Unit,
     modifier: Modifier = Modifier
@@ -108,7 +111,9 @@ internal fun GameDealSection(
                     .clickable(
                         interactionSource = challengeInteractionSource,
                         indication = null,
-                        enabled = uiState.isChallengeDismissible
+                        enabled = uiState.isChallengeDismissible &&
+                                  uiState.barMode.activeEvent == null &&
+                                  !(uiState.barMode.isActive && uiState.dealType == GameDealType.MINI_GAME && uiState.miniGameResult != null)
                     ) { onChallengeDismissed() }
             ) {
                 // Blurred photo behind the card content
@@ -134,10 +139,12 @@ internal fun GameDealSection(
                     GameDealType.TRUTH_OR_DARE -> TruthOrDareChallengeContent(
                         uiState = uiState,
                         onTruthOrDareChosen = onTruthOrDareChosen,
+                        onSkipped = onTruthOrDareSkipped,
                         modifier = Modifier.fillMaxSize()
                     )
                     GameDealType.STICKY_DARE -> StickyDareChallengeContent(
                         uiState = uiState,
+                        onSkipped = onStickyDareSkipped,
                         modifier = Modifier.fillMaxSize()
                     )
                     GameDealType.GENERAL_KNOWLEDGE -> GeneralKnowledgeChallengeContent(
@@ -148,6 +155,7 @@ internal fun GameDealSection(
                     GameDealType.MINI_GAME -> MiniGameChallengeContent(
                         uiState = uiState,
                         onOpponentSelected = onMiniGameOpponentSelected,
+                        onFinished = onMiniGameDealFinished,
                         modifier = Modifier.fillMaxSize()
                     )
                     null -> Unit
@@ -226,6 +234,7 @@ private fun GameDealMainContent(
 private fun TruthOrDareChallengeContent(
     uiState: GameScreenState,
     onTruthOrDareChosen: (TruthOrDareChoice) -> Unit,
+    onSkipped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     FlipCard(
@@ -302,12 +311,20 @@ private fun TruthOrDareChallengeContent(
                         textAlign = TextAlign.Center
                     )
                     Spacer(Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.tap_to_dismiss),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.White.copy(alpha = 0.45f),
-                        textAlign = TextAlign.Center
-                    )
+                    if (uiState.barMode.isActive) {
+                        DealOptionButton(
+                            text = stringResource(R.string.skip),
+                            onClick = onSkipped,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.tap_to_dismiss),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.45f),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
                 uiState.selectedPlayer?.let { player ->
                     Text(
@@ -330,6 +347,7 @@ private fun TruthOrDareChallengeContent(
 @Composable
 private fun StickyDareChallengeContent(
     uiState: GameScreenState,
+    onSkipped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -362,6 +380,14 @@ private fun StickyDareChallengeContent(
                 color = Color.White.copy(alpha = 0.45f),
                 textAlign = TextAlign.Center
             )
+            if (uiState.barMode.isActive) {
+                Spacer(Modifier.height(12.dp))
+                DealOptionButton(
+                    text = stringResource(R.string.skip),
+                    onClick = onSkipped,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
         uiState.selectedPlayer?.let { player ->
             Text(
@@ -436,7 +462,9 @@ private fun GeneralKnowledgeChallengeContent(
             if (answered) {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = stringResource(R.string.tap_to_dismiss),
+                    text = stringResource(
+                        if (uiState.barMode.isActive) R.string.tap_to_continue else R.string.tap_to_dismiss
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.45f),
                     textAlign = TextAlign.Center
@@ -463,6 +491,7 @@ private fun GeneralKnowledgeChallengeContent(
 private fun MiniGameChallengeContent(
     uiState: GameScreenState,
     onOpponentSelected: (Player) -> Unit,
+    onFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val miniGame = uiState.miniGame ?: return
@@ -547,12 +576,20 @@ private fun MiniGameChallengeContent(
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.tap_to_dismiss),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.45f),
-                    textAlign = TextAlign.Center
-                )
+                if (uiState.barMode.isActive) {
+                    DealOptionButton(
+                        text = stringResource(R.string.finish),
+                        onClick = onFinished,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.tap_to_dismiss),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White.copy(alpha = 0.45f),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
 
