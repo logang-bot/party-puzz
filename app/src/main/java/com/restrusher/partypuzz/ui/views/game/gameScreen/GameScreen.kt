@@ -221,7 +221,8 @@ fun GameScreen(
             uiState.barMode.activeEvent?.let { event ->
                 BarEventDialog(
                     event = event,
-                    onDismiss = viewModel::onBarEventDismissed
+                    onDismiss = viewModel::onBarEventDismissed,
+                    onGiveDrinksTargetSelected = viewModel::onGiveDrinksTargetSelected
                 )
             }
         }

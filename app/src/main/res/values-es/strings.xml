@@ -40,6 +40,7 @@
     <string name="bar_event_no_action">¡Nada ocurre! — ¡Continuad!</string>
     <string name="bar_event_take_drinks">¡Bebe %1$d trago(s)!</string>
     <string name="bar_event_give_drinks">¡Da %1$d trago(s) a %2$s!</string>
+    <string name="bar_event_give_drinks_choose">¡Da %1$d trago(s) a:</string>
 
     <!-- Game Modes Descriptions -->
     <string name="standard_description">El modo clásico donde cada jugador compite por su cuenta — ¡que gane el mejor!</string>

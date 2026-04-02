@@ -1,11 +1,7 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,6 +41,7 @@ import com.restrusher.partypuzz.R
 internal fun BarEventDialog(
     event: BarEvent,
     onDismiss: () -> Unit,
+    onGiveDrinksTargetSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // Card spin-in on enter
@@ -55,17 +52,6 @@ internal fun BarEventDialog(
         label = "bar_event_card_rotation"
     )
     LaunchedEffect(Unit) { appeared = true }
-
-    // Illustration continuous slow spin
-    val infiniteTransition = rememberInfiniteTransition(label = "bar_event_img")
-    val imgRotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 4000, easing = LinearEasing)
-        ),
-        label = "img_spin"
-    )
 
     Box(
         contentAlignment = Alignment.Center,
@@ -101,7 +87,6 @@ internal fun BarEventDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(160.dp)
-                        .graphicsLayer { rotationZ = imgRotation }
                 )
                 Spacer(Modifier.height(20.dp))
                 when (event) {
@@ -110,6 +95,11 @@ internal fun BarEventDialog(
                         amount = event.amount,
                         targetPlayerName = event.targetPlayerName,
                         onDismiss = onDismiss
+                    )
+                    is BarEvent.GiveDrinksPickTarget -> GiveDrinksPickTargetContent(
+                        amount = event.amount,
+                        candidates = event.candidates,
+                        onTargetSelected = onGiveDrinksTargetSelected
                     )
                     is BarEvent.TakeDrinks -> TakeDrinksContent(
                         amount = event.amount,
@@ -125,9 +115,9 @@ internal fun BarEventDialog(
 private fun NoActionContent(onDismiss: () -> Unit) {
     Text(
         text = stringResource(R.string.bar_event_no_action),
-        style = MaterialTheme.typography.bodyLarge,
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+        style = MaterialTheme.typography.headlineMedium,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(24.dp))
     Button(
@@ -142,7 +132,7 @@ private fun NoActionContent(onDismiss: () -> Unit) {
 private fun TakeDrinksContent(amount: Int, onDismiss: () -> Unit) {
     Text(
         text = stringResource(R.string.bar_event_take_drinks, amount),
-        style = MaterialTheme.typography.headlineLarge,
+        style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center
     )
@@ -163,7 +153,7 @@ private fun GiveDrinksContent(
 ) {
     Text(
         text = stringResource(R.string.bar_event_give_drinks, amount, targetPlayerName),
-        style = MaterialTheme.typography.headlineLarge,
+        style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center
     )
@@ -173,5 +163,29 @@ private fun GiveDrinksContent(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(text = stringResource(R.string.ok))
+    }
+}
+
+@Composable
+private fun GiveDrinksPickTargetContent(
+    amount: Int,
+    candidates: List<String>,
+    onTargetSelected: (String) -> Unit
+) {
+    Text(
+        text = stringResource(R.string.bar_event_give_drinks_choose, amount),
+        style = MaterialTheme.typography.headlineMedium,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(16.dp))
+    candidates.forEach { name ->
+        Button(
+            onClick = { onTargetSelected(name) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = name)
+        }
+        Spacer(Modifier.height(8.dp))
     }
 }

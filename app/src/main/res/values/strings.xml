@@ -39,6 +39,7 @@
     <string name="bar_event_no_action">Nothing happens — carry on!</string>
     <string name="bar_event_take_drinks">Take %1$d drink(s)!</string>
     <string name="bar_event_give_drinks">Give %1$d drink(s) to %2$s!</string>
+    <string name="bar_event_give_drinks_choose">Give %1$d drink(s) to:</string>
 
     <!-- Game Modes Descriptions -->
     <string name="standard_description">The classic mode where every player competes on their own — may the best one win!</string>

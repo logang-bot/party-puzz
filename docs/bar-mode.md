@@ -21,20 +21,24 @@ barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.
 | Event | What happens |
 |---|---|
 | `NoAction` | Nothing — the player taps OK and the next deal begins |
-| `GiveDrinks(amount, targetPlayerName)` | The active player must give the displayed number of drinks to the named player. It's the active player's call to enforce it. |
+| `GiveDrinks(amount, targetPlayerName)` | The active player must give the displayed number of drinks to the named player. |
+| `GiveDrinksPickTarget(amount, candidates)` | Like `GiveDrinks` but the target has not been decided yet — the dialog shows a list of players to pick from. Tapping a name resolves to a `GiveDrinks` event. |
 | `TakeDrinks(amount)` | The active player must drink the displayed amount |
 
-Both `amount` and `targetPlayerName` in `GiveDrinks` are randomised at trigger time inside `BarModeState.triggerRandomEvent()` — the dialog is purely informational, there are no interactive pickers.
+Events are **not randomly drawn** — each deal type produces a deterministic event based on the outcome:
 
-Events are drawn by `BarModeState.triggerRandomEvent(players, currentPlayer)`:
+| Deal type | Outcome | Event |
+|---|---|---|
+| Truth or Dare | Skip tapped | `TakeDrinks(1–5)` |
+| Sticky Dare | Skip tapped | `TakeDrinks(1–5)` |
+| Sticky Dare | Running dare cancelled | `TakeDrinks(1–5)` |
+| General Knowledge | Wrong answer | `TakeDrinks(1–5)` |
+| General Knowledge | Correct answer | `GiveDrinksPickTarget(1–5, otherPlayers)` |
+| Mini-game | Current player wins | `GiveDrinks(1–5, opponentName)` |
+| Mini-game | Tie | `NoAction` |
+| Mini-game | Current player loses | `TakeDrinks(1–5)` |
 
-```
-40 %  →  NoAction
-30 %  →  GiveDrinks  (amount = random 1–5, target = random other player)
-30 %  →  TakeDrinks  (amount = random 1–5)
-```
-
-`triggerRandomEvent` receives the current player list and the active player so it can exclude the active player from the target pool. If no valid target exists (should not happen in practice — the game requires ≥ 2 players), it falls back to `NoAction`.
+`amount` is always randomised 1–5 at trigger time. `BarModeState` exposes three factory methods used by the ViewModel: `takeDrinksEvent()`, `giveDrinksEvent(targetName)`, and `giveDrinksPickTargetEvent(players, currentPlayer)`.
 
 ---
 
@@ -44,10 +48,10 @@ Bar mode modifies how each deal type ends. The table below shows what changes co
 
 | Deal type | Standard dismissal | Bar mode change |
 |---|---|---|
-| **Truth or Dare** | Tap card after choice → deal resets | A **Skip** button appears on the back face of the flip card. Tapping it triggers a bar event. The normal card tap still resets without an event (the challenge was completed). |
-| **General Knowledge** | Tap card after answering → deal resets | The card tap now triggers a bar event instead of resetting immediately. The tap hint changes to "Tap to continue". |
-| **Sticky Dare** | Tap card → creates sticky dare + deal resets | A **Skip** button appears alongside the normal "Tap to dismiss" hint. Tapping Skip triggers a bar event and skips the sticky dare (the timer is **not** started). The normal card tap still creates the sticky dare as usual. |
-| **Mini-game** | Tap card after results → deal resets | The "Tap to dismiss" hint is replaced by a **Finish** button. Tapping it triggers a bar event. The card tap is disabled in bar mode once results are shown, forcing use of Finish. |
+| **Truth or Dare** | Tap card after choice → deal resets | A **Skip** button appears on the back face of the flip card. Tapping it fires `TakeDrinks`. The normal card tap still resets without an event (challenge completed). |
+| **General Knowledge** | Tap card after answering → deal resets | The card tap fires a bar event: `TakeDrinks` for a wrong answer, `GiveDrinksPickTarget` for a correct answer. The tap hint changes to "Tap to continue". |
+| **Sticky Dare** | Tap card → creates sticky dare + deal resets | A **Skip** button appears alongside the "Tap to dismiss" hint. Tapping Skip fires `TakeDrinks` and skips the dare (timer **not** started). Cancelling an already-running sticky dare also fires `TakeDrinks`. The normal card tap creates the dare as usual. |
+| **Mini-game** | Tap card after results → deal resets | The "Tap to dismiss" hint is replaced by a **Finish** button. Tapping it fires `GiveDrinks(opponent)` if the current player won, `TakeDrinks` if they lost, or `NoAction` on a tie. The card tap is disabled in bar mode once results are shown. |
 
 ### Skip / Finish button placement
 
@@ -86,33 +90,40 @@ The dialog is an overlay composable (`BarEventDialog`) shown inside `GameScreen`
 
 ```
 "Bar Event!"  ← headlineMedium, bold
-[img_bar_mode_illustration]  ← 160 dp, continuously rotating (4 s / full turn)
+[img_bar_mode_illustration]  ← 160 dp, static
 [event-specific content]
 ```
 
-**Card entry animation:** the card spins from 720° to 0° (`tween` 800 ms, `FastOutSlowInEasing`) driven by `animateFloatAsState` with a `LaunchedEffect(Unit)` trigger.
+**Card entry animation:** the card spins from 720° to 0° (`tween` 800 ms, `FastOutSlowInEasing`) driven by `animateFloatAsState` with a `LaunchedEffect(Unit)` trigger. The illustration is static (no continuous rotation).
 
 ### Content per event type
 
 **NoAction**
 ```
-"Nothing happens — carry on!"
+"Nothing happens — carry on!"    ← headlineMedium, bold
 [OK]
 ```
 
 **TakeDrinks**
 ```
-"Take X drink(s)!"    ← headlineLarge, bold; X = amount
+"Take X drink(s)!"    ← headlineMedium, bold; X = amount
 [OK]
 ```
 
 **GiveDrinks**
 ```
-"Give X drink(s) to PlayerName!"    ← headlineLarge, bold
+"Give X drink(s) to PlayerName!"    ← headlineMedium, bold
 [OK]
 ```
 
-Both the amount and the target player are randomised at trigger time and carried inside the `GiveDrinks` event object. The dialog is read-only — the active player just confirms.
+**GiveDrinksPickTarget** *(shown before target is selected)*
+```
+"Give X drink(s) to:"    ← headlineMedium, bold
+[PlayerA]
+[PlayerB]
+…
+```
+Tapping a player button calls `onGiveDrinksTargetSelected(name)` on the ViewModel, which transitions the active event to `GiveDrinks(amount, name)` and the dialog updates to the standard `GiveDrinks` view with an OK button.
 
 ---
 
@@ -144,17 +155,19 @@ This pattern is intended to scale: when other modes (Couples, PartyPuzz) gain th
 
 ### ViewModel responsibilities
 
-The ViewModel does not contain event generation logic — it delegates entirely to `BarModeState.triggerRandomEvent()`. Its bar-mode-specific surface area is:
+The ViewModel delegates event construction to `BarModeState` factory methods. Its bar-mode-specific surface area is:
 
-| Method | When called |
-|---|---|
-| `onTruthOrDareSkipped()` | Skip button on T/D back face |
-| `onStickyDareSkipped()` | Skip button on Sticky Dare card |
-| `onMiniGameDealFinished()` | Finish button on mini-game results |
-| `onBarEventDismissed()` | Any dismiss action inside `BarEventDialog` |
-| `onChallengeDismissed()` (modified) | For GK only: triggers event instead of resetting |
+| Method | When called | Event produced |
+|---|---|---|
+| `onTruthOrDareSkipped()` | Skip button on T/D back face | `TakeDrinks` |
+| `onStickyDareSkipped()` | Skip button on Sticky Dare card | `TakeDrinks` |
+| `cancelStickyDare(id)` (modified) | Cancel button in dares sheet | `TakeDrinks` (bar mode only, after dare removed) |
+| `onMiniGameDealFinished()` | Finish button on mini-game results | `GiveDrinks` / `TakeDrinks` / `NoAction` based on winner |
+| `onChallengeDismissed()` (modified) | GK card tap after answer | `GiveDrinksPickTarget` (correct) / `TakeDrinks` (wrong) |
+| `onGiveDrinksTargetSelected(name)` | Player button in pick-target dialog | transitions `GiveDrinksPickTarget` → `GiveDrinks` |
+| `onBarEventDismissed()` | OK button inside `BarEventDialog` | clears event, resets deal to IDLE |
 
-Each of the first four methods guards on `barMode.isActive` and exits early when bar mode is off, making them no-ops in other game modes.
+Each trigger method guards on `barMode.isActive` and exits early when bar mode is off.
 
 ---
 
@@ -182,6 +195,7 @@ Each of the first four methods guards on `barMode.isActive` and exits early when
 | `bar_event_no_action` | `"Nothing happens — carry on!"` |
 | `bar_event_take_drinks` | `"Take %1$d drink(s)!"` |
 | `bar_event_give_drinks` | `"Give %1$d drink(s) to %2$s!"` (`%1$d` = amount, `%2$s` = target player name) |
+| `bar_event_give_drinks_choose` | `"Give %1$d drink(s) to:"` — header for the pick-target variant |
 | `skip` | `"Skip"` |
 | `finish` | `"Finish"` |
 | `give` | `"Give"` |

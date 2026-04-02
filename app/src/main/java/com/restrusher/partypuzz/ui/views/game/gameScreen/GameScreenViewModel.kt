@@ -120,19 +120,41 @@ class GameScreenViewModel @Inject constructor(
     fun onTruthOrDareSkipped() {
         val state = _uiState.value
         if (!state.barMode.isActive || state.truthOrDareChoice == null) return
-        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = BarModeState.takeDrinksEvent())) }
     }
 
     fun onStickyDareSkipped() {
         val state = _uiState.value
         if (!state.barMode.isActive || state.dealType != GameDealType.STICKY_DARE) return
-        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = BarModeState.takeDrinksEvent())) }
     }
 
     fun onMiniGameDealFinished() {
         val state = _uiState.value
         if (!state.barMode.isActive || state.miniGameResult == null) return
-        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+        val result = state.miniGameResult
+        val event: BarEvent = when (result.winner) {
+            state.selectedPlayer?.nickName -> BarModeState.giveDrinksEvent(
+                targetPlayerName = state.miniGameOpponent?.nickName.orEmpty()
+            )
+            null -> BarEvent.NoAction
+            else -> BarModeState.takeDrinksEvent()
+        }
+        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = event)) }
+    }
+
+    fun onGiveDrinksTargetSelected(targetName: String) {
+        val currentEvent = _uiState.value.barMode.activeEvent as? BarEvent.GiveDrinksPickTarget ?: return
+        _uiState.update {
+            it.copy(
+                barMode = it.barMode.copy(
+                    activeEvent = BarEvent.GiveDrinks(
+                        amount = currentEvent.amount,
+                        targetPlayerName = targetName
+                    )
+                )
+            )
+        }
     }
 
     fun onBarEventDismissed() {
@@ -159,9 +181,16 @@ class GameScreenViewModel @Inject constructor(
         val state = _uiState.value
         if (!state.isChallengeDismissible) return
 
-        // In bar mode, GK dismiss triggers a bar event instead of resetting immediately
+        // In bar mode, GK dismiss triggers a bar event based on whether the answer was correct
         if (state.barMode.isActive && state.dealType == GameDealType.GENERAL_KNOWLEDGE) {
-            _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = triggerBarEvent())) }
+            val question = state.generalKnowledgeQuestion
+            val isCorrect = question != null && state.selectedAnswerOption == question.correctOption
+            val event: BarEvent = if (isCorrect) {
+                BarModeState.giveDrinksPickTargetEvent(state.players, state.selectedPlayer)
+            } else {
+                BarModeState.takeDrinksEvent()
+            }
+            _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = event)) }
             return
         }
 
@@ -241,6 +270,7 @@ class GameScreenViewModel @Inject constructor(
     fun cancelStickyDare(dareId: String) {
         stickyDareJobs[dareId]?.cancel()
         stickyDareJobs.remove(dareId)
+        val barModeActive = _uiState.value.barMode.isActive
         viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(
@@ -252,6 +282,9 @@ class GameScreenViewModel @Inject constructor(
             delay(STICKY_DARE_EXIT_DELAY_MS)
             _uiState.update { state ->
                 state.copy(activeStickyDares = state.activeStickyDares.filter { it.id != dareId })
+            }
+            if (barModeActive) {
+                _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = BarModeState.takeDrinksEvent())) }
             }
         }
     }
@@ -289,11 +322,6 @@ class GameScreenViewModel @Inject constructor(
             }
             stickyDareJobs.remove(dareId)
         }
-    }
-
-    private fun triggerBarEvent(): BarEvent {
-        val state = _uiState.value
-        return BarModeState.triggerRandomEvent(state.players, state.selectedPlayer)
     }
 
     private fun isDealTypeEnabled(dealType: GameDealType): Boolean {

@@ -7,21 +7,20 @@ data class BarModeState(
     val activeEvent: BarEvent? = null
 ) {
     companion object {
-        fun triggerRandomEvent(players: List<Player>, currentPlayer: Player?): BarEvent {
-            val roll = (1..10).random()
-            return when {
-                roll <= 4 -> BarEvent.NoAction
-                roll <= 7 -> {
-                    val target = players
-                        .filter { it.id != currentPlayer?.id }
-                        .randomOrNull() ?: return BarEvent.NoAction
-                    BarEvent.GiveDrinks(
-                        amount = (1..5).random(),
-                        targetPlayerName = target.nickName
-                    )
-                }
-                else -> BarEvent.TakeDrinks(amount = (1..5).random())
-            }
+        fun takeDrinksEvent(): BarEvent.TakeDrinks =
+            BarEvent.TakeDrinks(amount = (1..5).random())
+
+        fun giveDrinksEvent(targetPlayerName: String): BarEvent.GiveDrinks =
+            BarEvent.GiveDrinks(amount = (1..5).random(), targetPlayerName = targetPlayerName)
+
+        fun giveDrinksPickTargetEvent(
+            players: List<Player>,
+            currentPlayer: Player?
+        ): BarEvent.GiveDrinksPickTarget {
+            val candidates = players
+                .filter { it.id != currentPlayer?.id }
+                .map { it.nickName }
+            return BarEvent.GiveDrinksPickTarget(amount = (1..5).random(), candidates = candidates)
         }
     }
 }
