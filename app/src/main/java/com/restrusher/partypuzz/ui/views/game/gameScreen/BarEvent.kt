@@ -6,3 +6,11 @@ sealed class BarEvent {
     data class GiveDrinksPickTarget(val amount: Int, val candidates: List<String>) : BarEvent()
     data class TakeDrinks(val amount: Int) : BarEvent()
 }
+
+val BarEvent.category: EventCategory
+    get() = when (this) {
+        is BarEvent.TakeDrinks -> EventCategory.PUNISHMENT
+        is BarEvent.NoAction,
+        is BarEvent.GiveDrinks,
+        is BarEvent.GiveDrinksPickTarget -> EventCategory.REWARD
+    }

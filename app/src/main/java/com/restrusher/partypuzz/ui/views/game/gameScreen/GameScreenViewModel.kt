@@ -137,6 +137,7 @@ class GameScreenViewModel @Inject constructor(
     fun onMiniGameDealFinished() {
         if (_uiState.value.miniGameResult == null) return
         _uiState.update { modeHandler.applyMiniGameResult(it) }
+        if (!_uiState.value.hasActiveModeEvent) resetDeal()
     }
 
     fun onGiveDrinksTargetSelected(targetName: String) {

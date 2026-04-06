@@ -18,30 +18,31 @@ couplesMode = CouplesModeState(isActive = GameOptionsSource.currentGameModeNameR
 
 ## Event types
 
-| Event | What happens |
-|---|---|
-| `GiveAKiss` | The active player can give a kiss to whoever they choose |
-| `ChoseKissers` | The active player chooses who the kissers will be |
-| `MakeALoveDeclaration(targetPlayerName)` | The active player must make a love declaration to a player chosen by the CPU |
-| `ActOfLove(requesterPlayerName)` | The active player must do whatever a player chosen by the CPU tells them to |
-| `ChoseLovers` | The active player chooses who will make a love declaration |
+| Event | Category | What happens |
+|---|---|---|
+| `GiveAKiss` | Reward | The active player can give a kiss to whoever they choose |
+| `ChoseKissers` | Reward | The active player chooses who the kissers will be |
+| `ChoseLovers` | Reward | The active player chooses who will make a love declaration |
+| `MakeALoveDeclaration(targetPlayerName)` | Punishment | The active player must make a love declaration to a player chosen by the CPU |
+| `ActOfLove(requesterPlayerName)` | Punishment | The active player must do whatever a player chosen by the CPU tells them to |
 
-Events fall into two categories:
+Each event carries its category as an extension property (`val CouplesEvent.category: EventCategory`) — see [game-mode-handler.md](game-mode-handler.md).
 
-- **Punishment** (`MakeALoveDeclaration`, `ActOfLove`) — triggered when the player fails or skips a challenge. The target / requester is selected randomly by the CPU from all other players at trigger time.
-- **Reward** (`GiveAKiss`, `ChoseKissers`, `ChoseLovers`) — triggered when the player succeeds at a challenge.
+- **Punishment** events are triggered when the player fails or skips a challenge. The target / requester is selected randomly by the CPU from all other players at trigger time.
+- **Reward** events are triggered when the player succeeds at a challenge.
 
 The outcome → event mapping:
 
-| Deal type | Outcome | Event |
-|---|---|---|
-| Truth or Dare | Skip tapped (after choosing) | `MakeALoveDeclaration` or `ActOfLove` (random) |
-| Sticky Dare | Skip tapped | `MakeALoveDeclaration` or `ActOfLove` (random) |
-| Sticky Dare | Running dare cancelled | `MakeALoveDeclaration` or `ActOfLove` (random, target = dare's player) |
-| General Knowledge | Wrong answer | `MakeALoveDeclaration` or `ActOfLove` (random) |
-| General Knowledge | Correct answer | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
-| Mini-game | Current player wins | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
-| Mini-game | Tie or current player loses | No event |
+| Deal type | Outcome | Category | Event |
+|---|---|---|---|
+| Truth or Dare | Skip tapped (after choosing) | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
+| Sticky Dare | Skip tapped | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
+| Sticky Dare | Running dare cancelled | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random, target = dare's player) |
+| General Knowledge | Wrong answer | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
+| General Knowledge | Correct answer | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
+| Mini-game | Current player wins | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
+| Mini-game | Current player loses | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
+| Mini-game | Tie | — | No event |
 
 `CouplesModeState` exposes two factory methods used by `CouplesModeHandler`: `punishmentEvent(players, currentPlayer)` and `rewardEvent()`.
 
@@ -56,7 +57,7 @@ Couples mode modifies how each deal type ends. The table below shows what change
 | **Truth or Dare** | Tap card after choice → deal resets | A **Skip** button appears on the back face of the flip card. Tapping it fires a punishment event. The normal card tap still resets without an event (challenge completed). |
 | **General Knowledge** | Tap card after answering → deal resets | The card tap fires a couples event: punishment for a wrong answer, reward for a correct answer. The tap hint changes to "Tap to continue". |
 | **Sticky Dare** | Tap card → creates sticky dare + deal resets | A **Skip** button appears alongside the "Tap to dismiss" hint. Tapping Skip fires a punishment event and skips the dare (timer **not** started). Cancelling an already-running sticky dare also fires a punishment event targeted at the dare's original player. The normal card tap creates the dare as usual. |
-| **Mini-game** | Tap card after results → deal resets | The "Tap to dismiss" hint is replaced by a **Finish** button. Tapping it fires a reward event if the current player won; no event on a tie or loss. |
+| **Mini-game** | Tap card after results → deal resets | The "Tap to dismiss" hint is replaced by a **Finish** button. Tapping it fires a reward event if the current player won, a punishment event if they lost, or resets the deal silently on a tie. |
 
 ### Skip / Finish button placement
 
@@ -83,7 +84,7 @@ onModeEventDismissed()
 activeEvent = null  +  deal resets to IDLE
 ```
 
-The challenge card is non-interactive while `couplesMode.activeEvent` is set (`enabled = … && couplesMode.activeEvent == null`), preventing double-triggering.
+The challenge card is non-interactive while any mode event is set (`enabled = … && !uiState.hasActiveModeEvent`), preventing double-triggering. The card tap is also disabled during mini-game result display when a mode is active (`!uiState.isModeActive` guard).
 
 ---
 
@@ -175,7 +176,7 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 | `onTruthOrDareSkipped()` | Skip button on T/D back face | punishment event |
 | `onStickyDareSkipped()` | Skip button on Sticky Dare card | punishment event |
 | `cancelStickyDare(id)` (modified) | Cancel button in dares sheet | punishment event (dare's player as target) |
-| `onMiniGameDealFinished()` | Finish button on mini-game results | reward event if current player won; nothing otherwise |
+| `onMiniGameDealFinished()` | Finish button on mini-game results | reward (win) / punishment (loss) / silent reset (tie) |
 | `onChallengeDismissed()` (modified) | GK card tap after answer | reward (correct) or punishment (wrong) |
 | `onModeEventDismissed()` | OK button inside `CouplesEventDialog` | clears event, resets deal to IDLE |
 

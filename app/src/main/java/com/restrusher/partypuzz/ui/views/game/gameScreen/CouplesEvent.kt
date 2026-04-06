@@ -7,3 +7,12 @@ sealed class CouplesEvent {
     data class ActOfLove(val requesterPlayerName: String) : CouplesEvent()
     data object ChoseLovers : CouplesEvent()
 }
+
+val CouplesEvent.category: EventCategory
+    get() = when (this) {
+        is CouplesEvent.MakeALoveDeclaration,
+        is CouplesEvent.ActOfLove -> EventCategory.PUNISHMENT
+        is CouplesEvent.GiveAKiss,
+        is CouplesEvent.ChoseKissers,
+        is CouplesEvent.ChoseLovers -> EventCategory.REWARD
+    }

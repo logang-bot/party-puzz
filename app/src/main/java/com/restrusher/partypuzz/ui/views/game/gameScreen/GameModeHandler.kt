@@ -2,6 +2,8 @@ package com.restrusher.partypuzz.ui.views.game.gameScreen
 
 import com.restrusher.partypuzz.data.models.Player
 
+enum class EventCategory { REWARD, PUNISHMENT }
+
 internal interface GameModeHandler {
     fun applyPunishment(state: GameScreenState, currentPlayer: Player?): GameScreenState
     fun applyReward(state: GameScreenState): GameScreenState
@@ -56,8 +58,11 @@ internal class CouplesModeHandler : GameModeHandler {
 
     override fun applyMiniGameResult(state: GameScreenState): GameScreenState {
         val result = state.miniGameResult ?: return state
-        if (result.winner != state.selectedPlayer?.nickName) return state
-        return state.copy(couplesMode = state.couplesMode.copy(activeEvent = CouplesModeState.rewardEvent()))
+        return when (result.winner) {
+            state.selectedPlayer?.nickName -> applyReward(state)
+            null -> state
+            else -> applyPunishment(state, state.selectedPlayer)
+        }
     }
 
     override fun clearEvent(state: GameScreenState) =

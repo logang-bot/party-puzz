@@ -19,6 +19,30 @@ This block appeared at five different trigger points. Each new game mode would h
 
 ---
 
+## Event categories
+
+All events across all game modes are classified as either a **reward** or a **punishment**:
+
+```kotlin
+enum class EventCategory { REWARD, PUNISHMENT }
+```
+
+The category is exposed as an extension property on each sealed event class:
+
+```kotlin
+val BarEvent.category: EventCategory get() = when (this) { … }
+val CouplesEvent.category: EventCategory get() = when (this) { … }
+```
+
+This keeps the data class definitions clean (no extra constructor params) while giving the compiler exhaustiveness checking — adding a new event subclass without updating the extension is a compile error.
+
+| Mode | Reward events | Punishment events |
+|---|---|---|
+| Bar Time | `NoAction`, `GiveDrinks`, `GiveDrinksPickTarget` | `TakeDrinks` |
+| Couples | `GiveAKiss`, `ChoseKissers`, `ChoseLovers` | `MakeALoveDeclaration`, `ActOfLove` |
+
+---
+
 ## Interface
 
 ```kotlin
@@ -36,7 +60,7 @@ All methods are pure state transformers — they receive the current `GameScreen
 |---|---|---|
 | `applyPunishment(state, currentPlayer)` | Player skips or fails a challenge | Sets the active mode event to a punishment; `currentPlayer` identifies who to exclude from target selection |
 | `applyReward(state)` | Player succeeds at a challenge | Sets the active mode event to a reward |
-| `applyMiniGameResult(state)` | Finish button tapped on mini-game results | Applies the appropriate event based on `state.miniGameResult` |
+| `applyMiniGameResult(state)` | Finish button tapped on mini-game results | Winner → reward; loser → punishment; tie → state unchanged (ViewModel calls `resetDeal()`) |
 | `clearEvent(state)` | User taps OK in the mode event dialog | Clears the active mode event field; the ViewModel then resets the deal to IDLE |
 
 ---
@@ -67,7 +91,7 @@ private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameMo
 
 ## Adding a new game mode
 
-1. Create `XxxEvent.kt` — sealed class defining the mode's event types
+1. Create `XxxEvent.kt` — sealed class defining the mode's event types, plus a `val XxxEvent.category: EventCategory` extension property covering every subclass
 2. Create `XxxModeState.kt` — state data class (`isActive`, `activeEvent: XxxEvent?`) with factory methods in `companion object`
 3. Create `XxxModeHandler` in `GameModeHandler.kt` implementing `GameModeHandler`
 4. Add `R.string.xxx_game_mode -> XxxModeHandler()` to the `when` in `GameScreenViewModel`

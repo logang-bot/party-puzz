@@ -18,12 +18,14 @@ barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.
 
 ## Event types
 
-| Event | What happens |
-|---|---|
-| `NoAction` | Nothing — the player taps OK and the next deal begins |
-| `GiveDrinks(amount, targetPlayerName)` | The active player must give the displayed number of drinks to the named player. |
-| `GiveDrinksPickTarget(amount, candidates)` | Like `GiveDrinks` but the target has not been decided yet — the dialog shows a list of players to pick from. Tapping a name resolves to a `GiveDrinks` event. |
-| `TakeDrinks(amount)` | The active player must drink the displayed amount |
+| Event | Category | What happens |
+|---|---|---|
+| `NoAction` | Reward | Nothing — the player taps OK and the next deal begins |
+| `GiveDrinks(amount, targetPlayerName)` | Reward | The active player must give the displayed number of drinks to the named player |
+| `GiveDrinksPickTarget(amount, candidates)` | Reward | Like `GiveDrinks` but the target has not been decided yet — the dialog shows a list of players to pick from. Tapping a name resolves to a `GiveDrinks` event. |
+| `TakeDrinks(amount)` | Punishment | The active player must drink the displayed amount |
+
+Each event carries its category as an extension property (`val BarEvent.category: EventCategory`) — see [game-mode-handler.md](game-mode-handler.md).
 
 Events are **not randomly drawn** — each deal type produces a deterministic event based on the outcome:
 
@@ -78,7 +80,7 @@ onModeEventDismissed()
 activeEvent = null  +  deal resets to IDLE
 ```
 
-The challenge card is non-interactive while `activeBarEvent` is set (`enabled = … && barMode.activeEvent == null`), preventing double-triggering.
+The challenge card is non-interactive while any mode event is set (`enabled = … && !uiState.hasActiveModeEvent`), preventing double-triggering. The card tap is also disabled during mini-game result display when a mode is active (`!uiState.isModeActive` guard).
 
 ---
 
