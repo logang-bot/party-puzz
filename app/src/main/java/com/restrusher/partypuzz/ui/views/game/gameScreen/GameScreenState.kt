@@ -55,8 +55,16 @@ data class GameScreenState(
     val miniGameOpponent: Player? = null,
     val miniGameResult: MiniGameResult? = null,
     // Bar mode
-    val barMode: BarModeState = BarModeState()
+    val barMode: BarModeState = BarModeState(),
+    // Couples mode
+    val couplesMode: CouplesModeState = CouplesModeState()
 ) {
+    val isModeActive: Boolean
+        get() = barMode.isActive || couplesMode.isActive
+
+    val hasActiveModeEvent: Boolean
+        get() = barMode.activeEvent != null || couplesMode.activeEvent != null
+
     val isChallengeDismissible: Boolean
         get() = when (dealType) {
             GameDealType.TRUTH_OR_DARE -> truthOrDareChoice != null

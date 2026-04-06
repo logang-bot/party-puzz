@@ -31,10 +31,17 @@ class GameScreenViewModel @Inject constructor(
         private const val STICKY_DARE_EXIT_DELAY_MS = 400L
     }
 
+    private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameModeNameRes) {
+        R.string.bar_game_mode -> BarModeHandler()
+        R.string.couples_game_mode -> CouplesModeHandler()
+        else -> NoOpModeHandler()
+    }
+
     private val _uiState = MutableStateFlow(
         GameScreenState(
             players = GamePlayersList.PlayersList.toList(),
-            barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.bar_game_mode)
+            barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.bar_game_mode),
+            couplesMode = CouplesModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.couples_game_mode)
         )
     )
     val uiState: StateFlow<GameScreenState> = _uiState.asStateFlow()
@@ -118,29 +125,18 @@ class GameScreenViewModel @Inject constructor(
     }
 
     fun onTruthOrDareSkipped() {
-        val state = _uiState.value
-        if (!state.barMode.isActive || state.truthOrDareChoice == null) return
-        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = BarModeState.takeDrinksEvent())) }
+        if (_uiState.value.truthOrDareChoice == null) return
+        _uiState.update { modeHandler.applyPunishment(it, it.selectedPlayer) }
     }
 
     fun onStickyDareSkipped() {
-        val state = _uiState.value
-        if (!state.barMode.isActive || state.dealType != GameDealType.STICKY_DARE) return
-        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = BarModeState.takeDrinksEvent())) }
+        if (_uiState.value.dealType != GameDealType.STICKY_DARE) return
+        _uiState.update { modeHandler.applyPunishment(it, it.selectedPlayer) }
     }
 
     fun onMiniGameDealFinished() {
-        val state = _uiState.value
-        if (!state.barMode.isActive || state.miniGameResult == null) return
-        val result = state.miniGameResult
-        val event: BarEvent = when (result.winner) {
-            state.selectedPlayer?.nickName -> BarModeState.giveDrinksEvent(
-                targetPlayerName = state.miniGameOpponent?.nickName.orEmpty()
-            )
-            null -> BarEvent.NoAction
-            else -> BarModeState.takeDrinksEvent()
-        }
-        _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = event)) }
+        if (_uiState.value.miniGameResult == null) return
+        _uiState.update { modeHandler.applyMiniGameResult(it) }
     }
 
     fun onGiveDrinksTargetSelected(targetName: String) {
@@ -157,40 +153,22 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-    fun onBarEventDismissed() {
+    fun onModeEventDismissed() {
         dealJob?.cancel()
-        _uiState.update {
-            it.copy(
-                barMode = it.barMode.copy(activeEvent = null),
-                dealPhase = GameDealPhase.IDLE,
-                selectedPlayer = null,
-                animatingName = "",
-                dealType = null,
-                challengeText = null,
-                truthOrDareChoice = null,
-                generalKnowledgeQuestion = null,
-                selectedAnswerOption = null,
-                miniGame = null,
-                miniGameOpponent = null,
-                miniGameResult = null
-            )
-        }
+        _uiState.update { resetDealState(modeHandler.clearEvent(it)) }
     }
 
     fun onChallengeDismissed() {
         val state = _uiState.value
         if (!state.isChallengeDismissible) return
 
-        // In bar mode, GK dismiss triggers a bar event based on whether the answer was correct
-        if (state.barMode.isActive && state.dealType == GameDealType.GENERAL_KNOWLEDGE) {
-            val question = state.generalKnowledgeQuestion
-            val isCorrect = question != null && state.selectedAnswerOption == question.correctOption
-            val event: BarEvent = if (isCorrect) {
-                BarModeState.giveDrinksPickTargetEvent(state.players, state.selectedPlayer)
-            } else {
-                BarModeState.takeDrinksEvent()
+        if (state.dealType == GameDealType.GENERAL_KNOWLEDGE) {
+            val isCorrect = state.generalKnowledgeQuestion != null &&
+                    state.selectedAnswerOption == state.generalKnowledgeQuestion.correctOption
+            _uiState.update {
+                if (isCorrect) modeHandler.applyReward(it)
+                else modeHandler.applyPunishment(it, it.selectedPlayer)
             }
-            _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = event)) }
             return
         }
 
@@ -218,43 +196,11 @@ class GameScreenViewModel @Inject constructor(
             }
             startStickyDareTimer(dare.id)
         } else {
-            dealJob?.cancel()
-            _uiState.update {
-                it.copy(
-                    dealPhase = GameDealPhase.IDLE,
-                    selectedPlayer = null,
-                    animatingName = "",
-                    dealType = null,
-                    challengeText = null,
-                    truthOrDareChoice = null,
-                    generalKnowledgeQuestion = null,
-                    selectedAnswerOption = null,
-                    miniGame = null,
-                    miniGameOpponent = null,
-                    miniGameResult = null
-                )
-            }
+            resetDeal()
         }
     }
 
-    fun onMiniGameAborted() {
-        dealJob?.cancel()
-        _uiState.update {
-            it.copy(
-                dealPhase = GameDealPhase.IDLE,
-                selectedPlayer = null,
-                animatingName = "",
-                dealType = null,
-                challengeText = null,
-                truthOrDareChoice = null,
-                generalKnowledgeQuestion = null,
-                selectedAnswerOption = null,
-                miniGame = null,
-                miniGameOpponent = null,
-                miniGameResult = null
-            )
-        }
-    }
+    fun onMiniGameAborted() = resetDeal()
 
     fun onMiniGameResultReceived(player1Score: Int, player2Score: Int) {
         val state = _uiState.value
@@ -270,24 +216,40 @@ class GameScreenViewModel @Inject constructor(
     fun cancelStickyDare(dareId: String) {
         stickyDareJobs[dareId]?.cancel()
         stickyDareJobs.remove(dareId)
-        val barModeActive = _uiState.value.barMode.isActive
+        val dare = _uiState.value.activeStickyDares.find { it.id == dareId }
         viewModelScope.launch {
-            _uiState.update { state ->
-                state.copy(
-                    activeStickyDares = state.activeStickyDares.map { dare ->
-                        if (dare.id == dareId) dare.copy(isCompleted = true) else dare
-                    }
-                )
+            _uiState.update { s ->
+                s.copy(activeStickyDares = s.activeStickyDares.map { d ->
+                    if (d.id == dareId) d.copy(isCompleted = true) else d
+                })
             }
             delay(STICKY_DARE_EXIT_DELAY_MS)
-            _uiState.update { state ->
-                state.copy(activeStickyDares = state.activeStickyDares.filter { it.id != dareId })
+            _uiState.update { s ->
+                s.copy(activeStickyDares = s.activeStickyDares.filter { it.id != dareId })
             }
-            if (barModeActive) {
-                _uiState.update { it.copy(barMode = it.barMode.copy(activeEvent = BarModeState.takeDrinksEvent())) }
-            }
+            val darePlayer = _uiState.value.players.find { it.nickName == dare?.playerName }
+            _uiState.update { modeHandler.applyPunishment(it, darePlayer) }
         }
     }
+
+    private fun resetDeal() {
+        dealJob?.cancel()
+        _uiState.update { resetDealState(it) }
+    }
+
+    private fun resetDealState(state: GameScreenState) = state.copy(
+        dealPhase = GameDealPhase.IDLE,
+        selectedPlayer = null,
+        animatingName = "",
+        dealType = null,
+        challengeText = null,
+        truthOrDareChoice = null,
+        generalKnowledgeQuestion = null,
+        selectedAnswerOption = null,
+        miniGame = null,
+        miniGameOpponent = null,
+        miniGameResult = null
+    )
 
     private fun startStickyDareTimer(dareId: String) {
         stickyDareJobs[dareId] = viewModelScope.launch {
@@ -305,7 +267,6 @@ class GameScreenViewModel @Inject constructor(
                 val remaining = _uiState.value.activeStickyDares
                     .find { it.id == dareId }?.remainingSeconds ?: break
                 if (remaining <= 0) {
-                    // Mark as completed to trigger exit animation, then remove
                     _uiState.update { state ->
                         state.copy(
                             activeStickyDares = state.activeStickyDares.map { dare ->

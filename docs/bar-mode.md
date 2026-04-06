@@ -73,7 +73,7 @@ BarModeState.activeEvent set  ──▶  bar event dialog appears on top
       │
 user resolves event (OK / Give)
       │
-onBarEventDismissed()
+onModeEventDismissed()
       │
 activeEvent = null  +  deal resets to IDLE
 ```
@@ -165,9 +165,9 @@ The ViewModel delegates event construction to `BarModeState` factory methods. It
 | `onMiniGameDealFinished()` | Finish button on mini-game results | `GiveDrinks` / `TakeDrinks` / `NoAction` based on winner |
 | `onChallengeDismissed()` (modified) | GK card tap after answer | `GiveDrinksPickTarget` (correct) / `TakeDrinks` (wrong) |
 | `onGiveDrinksTargetSelected(name)` | Player button in pick-target dialog | transitions `GiveDrinksPickTarget` → `GiveDrinks` |
-| `onBarEventDismissed()` | OK button inside `BarEventDialog` | clears event, resets deal to IDLE |
+| `onModeEventDismissed()` | OK button inside `BarEventDialog` | clears event via handler, resets deal to IDLE |
 
-Each trigger method guards on `barMode.isActive` and exits early when bar mode is off.
+Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-mode-handler.md](game-mode-handler.md).
 
 ---
 
@@ -179,7 +179,7 @@ Each trigger method guards on `barMode.isActive` and exits early when bar mode i
 | `BarModeState.kt` | State data class + `triggerRandomEvent()` logic |
 | `BarEventDialog.kt` | Dialog composable: scrim, rotating card entry animation, per-event content |
 | `GameScreenState.kt` | Holds `val barMode: BarModeState` |
-| `GameScreenViewModel.kt` | Event handler methods; reads `barMode.isActive` as a guard |
+| `GameScreenViewModel.kt` | Delegates event logic to `BarModeHandler` via `GameModeHandler` |
 | `GameDealSection.kt` | Skip / Finish buttons; GK tap hint; challenge card enabled guard |
 | `GameScreen.kt` | Shows `BarEventDialog` overlay; passes new callbacks to `GameDealSection` |
 | `GameOptionsSource.kt` | `currentGameModeNameRes: Int?` — bridge between `GameConfigScreen` and the ViewModel |

@@ -112,8 +112,8 @@ internal fun GameDealSection(
                         interactionSource = challengeInteractionSource,
                         indication = null,
                         enabled = uiState.isChallengeDismissible &&
-                                  uiState.barMode.activeEvent == null &&
-                                  !(uiState.barMode.isActive && uiState.dealType == GameDealType.MINI_GAME && uiState.miniGameResult != null)
+                                  !uiState.hasActiveModeEvent &&
+                                  !(uiState.isModeActive && uiState.dealType == GameDealType.MINI_GAME && uiState.miniGameResult != null)
                     ) { onChallengeDismissed() }
             ) {
                 // Blurred photo behind the card content
@@ -311,7 +311,7 @@ private fun TruthOrDareChallengeContent(
                         textAlign = TextAlign.Center
                     )
                     Spacer(Modifier.height(16.dp))
-                    if (uiState.barMode.isActive) {
+                    if (uiState.isModeActive) {
                         DealOptionButton(
                             text = stringResource(R.string.skip),
                             onClick = onSkipped,
@@ -380,7 +380,7 @@ private fun StickyDareChallengeContent(
                 color = Color.White.copy(alpha = 0.45f),
                 textAlign = TextAlign.Center
             )
-            if (uiState.barMode.isActive) {
+            if (uiState.isModeActive) {
                 Spacer(Modifier.height(12.dp))
                 DealOptionButton(
                     text = stringResource(R.string.skip),
@@ -463,7 +463,7 @@ private fun GeneralKnowledgeChallengeContent(
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = stringResource(
-                        if (uiState.barMode.isActive) R.string.tap_to_continue else R.string.tap_to_dismiss
+                        if (uiState.isModeActive) R.string.tap_to_continue else R.string.tap_to_dismiss
                     ),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.45f),
@@ -576,7 +576,7 @@ private fun MiniGameChallengeContent(
                     textAlign = TextAlign.Center
                 )
                 Spacer(Modifier.height(16.dp))
-                if (uiState.barMode.isActive) {
+                if (uiState.isModeActive) {
                     DealOptionButton(
                         text = stringResource(R.string.finish),
                         onClick = onFinished,

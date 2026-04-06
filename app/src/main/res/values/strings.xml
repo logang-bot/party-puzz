@@ -41,6 +41,14 @@
     <string name="bar_event_give_drinks">Give %1$d drink(s) to %2$s!</string>
     <string name="bar_event_give_drinks_choose">Give %1$d drink(s) to:</string>
 
+    <!-- Couples mode event dialog -->
+    <string name="couples_event_title">Couples Event!</string>
+    <string name="couples_event_give_a_kiss">You can give a kiss to whoever you choose!</string>
+    <string name="couples_event_chose_kissers">You choose who the kissers will be!</string>
+    <string name="couples_event_make_love_declaration">Make a love declaration to %1$s!</string>
+    <string name="couples_event_act_of_love">Do whatever %1$s tells you to do!</string>
+    <string name="couples_event_chose_lovers">You choose who will make a love declaration!</string>
+
     <!-- Game Modes Descriptions -->
     <string name="standard_description">The classic mode where every player competes on their own — may the best one win!</string>
     <string name="bar_description">A mode made for bar nights — grab your crew and compete in rounds of wild challenges!</string>
