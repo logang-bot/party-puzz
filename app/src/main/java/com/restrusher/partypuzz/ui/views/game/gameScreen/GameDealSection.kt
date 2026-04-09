@@ -9,8 +9,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -118,10 +121,19 @@ internal fun GameDealSection(
                     .clickable(
                         interactionSource = challengeInteractionSource,
                         indication = null,
-                        enabled = uiState.isChallengeDismissible &&
-                                  !uiState.hasActiveModeEvent &&
-                                  !(uiState.isModeActive && uiState.dealType == GameDealType.MINI_GAME && uiState.miniGameResult != null)
-                    ) { onChallengeDismissed() }
+                        enabled = run {
+                            val barEvent = uiState.barMode.activeEvent
+                            val isTapDismissibleBarEvent = barEvent != null && barEvent !is BarEvent.GiveDrinksPickTarget
+                            isTapDismissibleBarEvent ||
+                            (uiState.isChallengeDismissible &&
+                             !uiState.hasActiveModeEvent &&
+                             !(uiState.isModeActive && uiState.dealType == GameDealType.MINI_GAME && uiState.miniGameResult != null))
+                        }
+                    ) {
+                        val barEvent = uiState.barMode.activeEvent
+                        if (barEvent != null && barEvent !is BarEvent.GiveDrinksPickTarget) onModeEventDismissed()
+                        else onChallengeDismissed()
+                    }
             ) {
                 // Blurred photo behind the card content
                 uiState.selectedPlayer?.let { player ->
@@ -214,7 +226,10 @@ private fun GameDealMainContent(
 
                 CardContent.CYCLING_NAMES -> AnimatedContent(
                     targetState = uiState.animatingName,
-                    transitionSpec = { fadeIn(tween(200)) togetherWith fadeOut(tween(200)) },
+                    transitionSpec = {
+                        (slideInVertically(tween(220)) { -it } + fadeIn(tween(220))) togetherWith
+                        (slideOutVertically(tween(220)) { it } + fadeOut(tween(220)))
+                    },
                     label = "cycling name"
                 ) { name ->
                     Text(
@@ -703,9 +718,9 @@ private fun ModeEventChallengeContent(
     val barEvent = uiState.barMode.activeEvent
     val couplesEvent = uiState.couplesMode.activeEvent
 
-    val titleRes = if (barEvent != null) R.string.bar_event_title else R.string.couples_event_title
-    val imageRes = if (barEvent != null) R.drawable.img_bar_mode_illustration
-                   else R.drawable.img_couples_mode_illustration
+    if (barEvent == null && couplesEvent == null) return
+
+    val titleRes = if (couplesEvent != null) R.string.couples_event_title else R.string.bar_event_title
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -722,14 +737,25 @@ private fun ModeEventChallengeContent(
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(16.dp))
-        Image(
-            painter = painterResource(imageRes),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(160.dp)
-        )
+        when {
+            barEvent is BarEvent.TakeDrinks -> DrinksFillIndicator(amount = barEvent.amount)
+            barEvent != null -> Icon(
+                painter = painterResource(R.drawable.ic_sports_bar),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+            )
+            couplesEvent != null -> Image(
+                painter = painterResource(R.drawable.img_couples_mode_illustration),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+            )
+        }
         Spacer(Modifier.height(20.dp))
         if (barEvent != null) {
             BarEventContent(
@@ -759,10 +785,11 @@ private fun BarEventContent(
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(24.dp))
-            DealOptionButton(
-                text = stringResource(R.string.ok),
-                onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = stringResource(R.string.tap_to_dismiss),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.45f),
+                textAlign = TextAlign.Center
             )
         }
         is BarEvent.GiveDrinks -> {
@@ -774,10 +801,11 @@ private fun BarEventContent(
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(24.dp))
-            DealOptionButton(
-                text = stringResource(R.string.ok),
-                onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = stringResource(R.string.tap_to_dismiss),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.45f),
+                textAlign = TextAlign.Center
             )
         }
         is BarEvent.GiveDrinksPickTarget -> {
@@ -807,10 +835,11 @@ private fun BarEventContent(
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(24.dp))
-            DealOptionButton(
-                text = stringResource(R.string.ok),
-                onClick = onDismiss,
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = stringResource(R.string.tap_to_dismiss),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.White.copy(alpha = 0.45f),
+                textAlign = TextAlign.Center
             )
         }
     }
