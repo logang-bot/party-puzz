@@ -41,6 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.InterestedIn
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.common.BackPressToExit
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
@@ -236,8 +237,8 @@ private fun CountdownOverlay(
 
 // ─── Previews ─────────────────────────────────────────────────────────────────
 
-private val previewPlayer1 = Player(id = 1, nickName = "Alice", gender = Gender.Female)
-private val previewPlayer2 = Player(id = 2, nickName = "Bob", gender = Gender.Male)
+private val previewPlayer1 = Player(id = 1, nickName = "Alice", gender = Gender.Female, interestedIn = InterestedIn.Man)
+private val previewPlayer2 = Player(id = 2, nickName = "Bob", gender = Gender.Male, interestedIn = InterestedIn.Woman)
 
 @Preview(
     name = "Screen – countdown",

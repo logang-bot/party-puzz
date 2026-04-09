@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.InterestedIn
 import android.content.pm.ActivityInfo
 import androidx.compose.ui.Modifier
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
@@ -151,6 +154,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 avatarRes = uiState.randomAvatarRes,
                 existingPhotoPath = uiState.existingPhotoPath,
                 gender = uiState.gender,
+                interestedIn = uiState.interestedIn,
                 onTakePicture = {
                     val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
                         context, Manifest.permission.CAMERA
@@ -170,12 +174,13 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 },
                 onPlayerNameChanged = viewModel::onPlayerNameChanged,
                 onGenerateRandomName = { viewModel.onPlayerNameChanged(viewModel.generateRandomName()) },
-                onGenderSelected = viewModel::onGenderSelected
+                onGenderSelected = viewModel::onGenderSelected,
+                onInterestedInSelected = viewModel::onInterestedInSelected
             )
 
             Button(
                 onClick = { viewModel.confirmPlayer() },
-                enabled = uiState.playerName.isNotBlank(),
+                enabled = uiState.playerName.isNotBlank() && uiState.interestedIn != null,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
@@ -231,19 +236,23 @@ fun PlayerFormContent(
     capturedImageUri: Uri,
     playerName: String,
     avatarRes: Int?,
-    gender: Gender,
+    gender: Gender?,
+    interestedIn: InterestedIn?,
     onTakePicture: () -> Unit,
     onGenerateRandomImage: () -> Unit,
     onPlayerNameChanged: (String) -> Unit,
     onGenerateRandomName: () -> Unit,
     onGenderSelected: (Gender) -> Unit,
+    onInterestedInSelected: (InterestedIn) -> Unit,
     modifier: Modifier = Modifier,
     existingPhotoPath: String? = null,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
     ) {
         ImageOptionsContainer(
             takePictureAction = onTakePicture,
@@ -277,6 +286,13 @@ fun PlayerFormContent(
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
         )
+        InterestedInOptionsContainer(
+            selectedInterestedIn = interestedIn,
+            onInterestedInSelected = onInterestedInSelected,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
+        )
     }
 }
 
@@ -288,12 +304,14 @@ fun PlayerFormContentPreview() {
             capturedImageUri = Uri.EMPTY,
             playerName = "Alex",
             avatarRes = null,
-            gender = Gender.Unknown,
+            gender = null,
+            interestedIn = null,
             onTakePicture = {},
             onGenerateRandomImage = {},
             onPlayerNameChanged = {},
             onGenerateRandomName = {},
-            onGenderSelected = {}
+            onGenderSelected = {},
+            onInterestedInSelected = {}
         )
     }
 }

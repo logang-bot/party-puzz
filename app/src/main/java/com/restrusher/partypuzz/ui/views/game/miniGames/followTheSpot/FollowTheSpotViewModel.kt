@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.InterestedIn
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.navigation.FollowTheSpotRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,6 +41,7 @@ class FollowTheSpotViewModel @Inject constructor(
             id = 0,
             nickName = route.player1Name,
             gender = Gender.Unknown,
+            interestedIn = InterestedIn.Man,
             photoPath = route.player1PhotoPath,
             avatarName = route.player1AvatarName
         )
@@ -47,6 +49,7 @@ class FollowTheSpotViewModel @Inject constructor(
             id = 1,
             nickName = route.player2Name,
             gender = Gender.Unknown,
+            interestedIn = InterestedIn.Man,
             photoPath = route.player2PhotoPath,
             avatarName = route.player2AvatarName
         )

@@ -14,7 +14,7 @@ import kotlinx.coroutines.internal.synchronized
 
 @Database(
     entities = [PlayerEntity::class, PartyEntity::class, PartyPlayerCrossRef::class],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 abstract class PartyPuzzDatabase : RoomDatabase() {

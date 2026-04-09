@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.InterestedIn
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import com.restrusher.partypuzz.ui.views.game.common.PlayerPhoto
@@ -183,8 +184,8 @@ internal fun GameDivider(
 
 // ─── Previews ─────────────────────────────────────────────────────────────────
 
-private val previewPlayer1 = Player(id = 1, nickName = "Alice", gender = Gender.Female)
-private val previewPlayer2 = Player(id = 2, nickName = "Bob", gender = Gender.Male)
+private val previewPlayer1 = Player(id = 1, nickName = "Alice", gender = Gender.Female, interestedIn = InterestedIn.Man)
+private val previewPlayer2 = Player(id = 2, nickName = "Bob", gender = Gender.Male, interestedIn = InterestedIn.Woman)
 
 @Preview(name = "GameDivider – running", showBackground = true, widthDp = 360, heightDp = 80)
 @Composable

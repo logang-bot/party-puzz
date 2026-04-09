@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,7 +26,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +44,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -75,6 +80,8 @@ internal fun GameDealSection(
     onMiniGameDealFinished: () -> Unit,
     onGeneralKnowledgeAnswered: (Char) -> Unit,
     onMiniGameOpponentSelected: (Player) -> Unit,
+    onModeEventDismissed: () -> Unit,
+    onGiveDrinksTargetSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val mainInteractionSource = remember { MutableInteractionSource() }
@@ -135,31 +142,45 @@ internal fun GameDealSection(
                         .background(Color.Black.copy(alpha = 0.62f))
                 )
 
-                when (uiState.dealType) {
-                    GameDealType.TRUTH_OR_DARE -> TruthOrDareChallengeContent(
-                        uiState = uiState,
-                        onTruthOrDareChosen = onTruthOrDareChosen,
-                        onSkipped = onTruthOrDareSkipped,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    GameDealType.STICKY_DARE -> StickyDareChallengeContent(
-                        uiState = uiState,
-                        onSkipped = onStickyDareSkipped,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    GameDealType.GENERAL_KNOWLEDGE -> GeneralKnowledgeChallengeContent(
-                        uiState = uiState,
-                        onAnswerSelected = onGeneralKnowledgeAnswered,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    GameDealType.MINI_GAME -> MiniGameChallengeContent(
-                        uiState = uiState,
-                        onOpponentSelected = onMiniGameOpponentSelected,
-                        onFinished = onMiniGameDealFinished,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                    null -> Unit
-                }
+                FlipCard(
+                    isFlipped = uiState.hasActiveModeEvent,
+                    modifier = Modifier.fillMaxSize(),
+                    front = {
+                        when (uiState.dealType) {
+                            GameDealType.TRUTH_OR_DARE -> TruthOrDareChallengeContent(
+                                uiState = uiState,
+                                onTruthOrDareChosen = onTruthOrDareChosen,
+                                onSkipped = onTruthOrDareSkipped,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            GameDealType.STICKY_DARE -> StickyDareChallengeContent(
+                                uiState = uiState,
+                                onSkipped = onStickyDareSkipped,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            GameDealType.GENERAL_KNOWLEDGE -> GeneralKnowledgeChallengeContent(
+                                uiState = uiState,
+                                onAnswerSelected = onGeneralKnowledgeAnswered,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            GameDealType.MINI_GAME -> MiniGameChallengeContent(
+                                uiState = uiState,
+                                onOpponentSelected = onMiniGameOpponentSelected,
+                                onFinished = onMiniGameDealFinished,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            null -> Unit
+                        }
+                    },
+                    back = {
+                        ModeEventChallengeContent(
+                            uiState = uiState,
+                            onDismiss = onModeEventDismissed,
+                            onGiveDrinksTargetSelected = onGiveDrinksTargetSelected,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                )
             }
         }
     }
@@ -668,6 +689,158 @@ private fun AnswerOptionButton(
             textAlign = TextAlign.Center
         )
     }
+}
+
+// ─── Mode event challenge content ─────────────────────────────────────────────
+
+@Composable
+private fun ModeEventChallengeContent(
+    uiState: GameScreenState,
+    onDismiss: () -> Unit,
+    onGiveDrinksTargetSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val barEvent = uiState.barMode.activeEvent
+    val couplesEvent = uiState.couplesMode.activeEvent
+
+    val titleRes = if (barEvent != null) R.string.bar_event_title else R.string.couples_event_title
+    val imageRes = if (barEvent != null) R.drawable.img_bar_mode_illustration
+                   else R.drawable.img_couples_mode_illustration
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 24.dp)
+    ) {
+        Text(
+            text = stringResource(titleRes),
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(16.dp))
+        Image(
+            painter = painterResource(imageRes),
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(160.dp)
+        )
+        Spacer(Modifier.height(20.dp))
+        if (barEvent != null) {
+            BarEventContent(
+                event = barEvent,
+                onDismiss = onDismiss,
+                onGiveDrinksTargetSelected = onGiveDrinksTargetSelected
+            )
+        } else if (couplesEvent != null) {
+            CouplesEventContent(event = couplesEvent, onDismiss = onDismiss)
+        }
+    }
+}
+
+@Composable
+private fun BarEventContent(
+    event: BarEvent,
+    onDismiss: () -> Unit,
+    onGiveDrinksTargetSelected: (String) -> Unit
+) {
+    when (event) {
+        is BarEvent.NoAction -> {
+            Text(
+                text = stringResource(R.string.bar_event_no_action),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(24.dp))
+            DealOptionButton(
+                text = stringResource(R.string.ok),
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        is BarEvent.GiveDrinks -> {
+            Text(
+                text = stringResource(R.string.bar_event_give_drinks, event.amount, event.targetPlayerName),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(24.dp))
+            DealOptionButton(
+                text = stringResource(R.string.ok),
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        is BarEvent.GiveDrinksPickTarget -> {
+            Text(
+                text = stringResource(R.string.bar_event_give_drinks_choose, event.amount),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(16.dp))
+            event.candidates.forEach { name ->
+                DealOptionButton(
+                    text = name,
+                    onClick = { onGiveDrinksTargetSelected(name) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+        }
+        is BarEvent.TakeDrinks -> {
+            Text(
+                text = stringResource(R.string.bar_event_take_drinks, event.amount),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(24.dp))
+            DealOptionButton(
+                text = stringResource(R.string.ok),
+                onClick = onDismiss,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun CouplesEventContent(
+    event: CouplesEvent,
+    onDismiss: () -> Unit
+) {
+    val message = when (event) {
+        is CouplesEvent.GiveAKiss -> stringResource(R.string.couples_event_give_a_kiss)
+        is CouplesEvent.ChoseKissers -> stringResource(R.string.couples_event_chose_kissers)
+        is CouplesEvent.MakeALoveDeclaration -> stringResource(R.string.couples_event_make_love_declaration, event.targetPlayerName)
+        is CouplesEvent.ActOfLove -> stringResource(R.string.couples_event_act_of_love, event.requesterPlayerName)
+        is CouplesEvent.ChoseLovers -> stringResource(R.string.couples_event_chose_lovers)
+    }
+    Text(
+        text = message,
+        style = MaterialTheme.typography.headlineMedium,
+        fontWeight = FontWeight.Bold,
+        color = Color.White,
+        textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(24.dp))
+    DealOptionButton(
+        text = stringResource(R.string.ok),
+        onClick = onDismiss,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 // ─── Flip card ────────────────────────────────────────────────────────────────

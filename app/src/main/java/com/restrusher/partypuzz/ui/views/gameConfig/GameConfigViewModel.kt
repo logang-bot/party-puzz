@@ -44,6 +44,7 @@ class GameConfigViewModel @Inject constructor(
                             id = entity.id,
                             nickName = entity.nickName,
                             gender = entity.gender,
+                            interestedIn = entity.interestedIn,
                             photoPath = entity.photoPath,
                             avatarName = entity.avatarName
                         )
@@ -71,6 +72,7 @@ class GameConfigViewModel @Inject constructor(
                         id = player.id,
                         nickName = player.nickName,
                         gender = player.gender,
+                        interestedIn = player.interestedIn,
                         photoPath = player.photoPath,
                         avatarName = player.avatarName
                     )

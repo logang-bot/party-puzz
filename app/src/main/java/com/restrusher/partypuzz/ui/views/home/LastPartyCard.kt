@@ -54,6 +54,7 @@ import com.restrusher.partypuzz.data.local.entities.PartyEntity
 import com.restrusher.partypuzz.data.local.entities.PartyWithPlayers
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.InterestedIn
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import java.io.File
 
@@ -283,10 +284,10 @@ fun LastPartyCardPreview() {
         val fakeParty = PartyWithPlayers(
             party = PartyEntity(id = 1, name = "Friday Party"),
             players = listOf(
-                PlayerEntity(id = 1, nickName = "Laura", gender = Gender.Female),
-                PlayerEntity(id = 2, nickName = "John", gender = Gender.Male),
-                PlayerEntity(id = 3, nickName = "Clara", gender = Gender.Female),
-                PlayerEntity(id = 4, nickName = "Chris", gender = Gender.Male),
+                PlayerEntity(id = 1, nickName = "Laura", gender = Gender.Female, interestedIn = InterestedIn.Man),
+                PlayerEntity(id = 2, nickName = "John", gender = Gender.Male, interestedIn = InterestedIn.Woman),
+                PlayerEntity(id = 3, nickName = "Clara", gender = Gender.Female, interestedIn = InterestedIn.Man),
+                PlayerEntity(id = 4, nickName = "Chris", gender = Gender.Male, interestedIn = InterestedIn.Woman),
             )
         )
         LastPartyCard(

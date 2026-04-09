@@ -191,6 +191,8 @@ fun GameScreen(
                         onNavigateToMiniGame(miniGame, challenger, opponent)
                     }
                 },
+                onModeEventDismissed = viewModel::onModeEventDismissed,
+                onGiveDrinksTargetSelected = viewModel::onGiveDrinksTargetSelected,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -209,37 +211,6 @@ fun GameScreen(
                     .fillMaxWidth()
                     .height(100.dp)
             )
-        }
-
-        // Bar event dialog overlay
-        AnimatedVisibility(
-            visible = uiState.barMode.activeEvent != null,
-            enter = fadeIn(tween(250)),
-            exit = fadeOut(tween(200)),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            uiState.barMode.activeEvent?.let { event ->
-                BarEventDialog(
-                    event = event,
-                    onDismiss = viewModel::onModeEventDismissed,
-                    onGiveDrinksTargetSelected = viewModel::onGiveDrinksTargetSelected
-                )
-            }
-        }
-
-        // Couples event dialog overlay
-        AnimatedVisibility(
-            visible = uiState.couplesMode.activeEvent != null,
-            enter = fadeIn(tween(250)),
-            exit = fadeOut(tween(200)),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            uiState.couplesMode.activeEvent?.let { event ->
-                CouplesEventDialog(
-                    event = event,
-                    onDismiss = viewModel::onModeEventDismissed
-                )
-            }
         }
 
         // Info panel overlay — dismissed by tapping the backdrop

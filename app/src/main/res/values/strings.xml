@@ -87,6 +87,10 @@
     <string name="play">Play</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
+    <string name="man">Man</string>
+    <string name="woman">Woman</string>
+    <string name="both">Both</string>
+    <string name="interested_in">Interested in</string>
     <string name="name_is_required">Name is required</string>
     <string name="last_party">Last party</string>
     <string name="selected_party">Selected party</string>

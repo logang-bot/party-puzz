@@ -1,5 +1,7 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
+import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.InterestedIn
 import com.restrusher.partypuzz.data.models.Player
 
 data class CouplesModeState(
@@ -8,11 +10,23 @@ data class CouplesModeState(
 ) {
     companion object {
         fun punishmentEvent(players: List<Player>, currentPlayer: Player?): CouplesEvent {
-            val target = players
-                .filter { it.id != currentPlayer?.id }
-                .randomOrNull()
-                ?.nickName
-                .orEmpty()
+            val others = players.filter { it.id != currentPlayer?.id }
+
+            val interestedMatches = if (currentPlayer == null) {
+                others
+            } else {
+                others.filter { target ->
+                    target.gender == Gender.Unknown || when (currentPlayer.interestedIn) {
+                        InterestedIn.Man -> target.gender == Gender.Male
+                        InterestedIn.Woman -> target.gender == Gender.Female
+                        InterestedIn.Both -> true
+                    }
+                }
+            }
+
+            val pool = interestedMatches.ifEmpty { others }
+            val target = pool.randomOrNull()?.nickName.orEmpty()
+
             return if ((0..1).random() == 0) {
                 CouplesEvent.MakeALoveDeclaration(targetPlayerName = target)
             } else {

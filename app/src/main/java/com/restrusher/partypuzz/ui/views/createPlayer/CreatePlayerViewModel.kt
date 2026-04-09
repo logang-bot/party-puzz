@@ -11,6 +11,7 @@ import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.local.appData.appDataSource.WordBank
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.data.models.Gender
+import com.restrusher.partypuzz.data.models.InterestedIn
 import com.restrusher.partypuzz.data.repositories.interfaces.PartyRepository
 import com.restrusher.partypuzz.data.repositories.interfaces.PlayerRepository
 import com.restrusher.partypuzz.data.models.Player
@@ -61,6 +62,7 @@ class CreatePlayerViewModel @Inject constructor(
                         playerId = playerId,
                         playerName = player.nickName,
                         gender = player.gender,
+                        interestedIn = player.interestedIn,
                         randomAvatarRes = avatarRes,
                         existingPhotoPath = player.photoPath
                     )
@@ -75,6 +77,10 @@ class CreatePlayerViewModel @Inject constructor(
 
     fun onGenderSelected(gender: Gender) {
         _uiState.update { it.copy(gender = gender) }
+    }
+
+    fun onInterestedInSelected(interestedIn: InterestedIn) {
+        _uiState.update { it.copy(interestedIn = interestedIn) }
     }
 
     fun onCapturedImage(uri: Uri) {
@@ -118,7 +124,8 @@ class CreatePlayerViewModel @Inject constructor(
             val playerId = playerRepository.createPlayer(
                 PlayerEntity(
                     nickName = state.playerName,
-                    gender = state.gender,
+                    gender = state.gender ?: Gender.Unknown,
+                    interestedIn = state.interestedIn!!,
                     photoPath = photoPath,
                     avatarName = avatarName
                 )
@@ -135,7 +142,8 @@ class CreatePlayerViewModel @Inject constructor(
                     Player(
                         id = playerId.toInt(),
                         nickName = state.playerName,
-                        gender = state.gender,
+                        gender = state.gender ?: Gender.Unknown,
+                        interestedIn = state.interestedIn!!,
                         photoPath = photoPath,
                         avatarName = avatarName
                     )
@@ -166,7 +174,8 @@ class CreatePlayerViewModel @Inject constructor(
                 PlayerEntity(
                     id = state.playerId,
                     nickName = state.playerName,
-                    gender = state.gender,
+                    gender = state.gender ?: Gender.Unknown,
+                    interestedIn = state.interestedIn!!,
                     photoPath = photoPath,
                     avatarName = avatarName
                 )
@@ -177,7 +186,8 @@ class CreatePlayerViewModel @Inject constructor(
                     Player(
                         id = state.playerId,
                         nickName = state.playerName,
-                        gender = state.gender,
+                        gender = state.gender ?: Gender.Unknown,
+                        interestedIn = state.interestedIn!!,
                         photoPath = photoPath,
                         avatarName = avatarName
                     )
