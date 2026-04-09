@@ -28,7 +28,7 @@ couplesMode = CouplesModeState(isActive = GameOptionsSource.currentGameModeNameR
 
 Each event carries its category as an extension property (`val CouplesEvent.category: EventCategory`) — see [game-mode-handler.md](game-mode-handler.md).
 
-- **Punishment** events are triggered when the player fails or skips a challenge. The target / requester is selected randomly by the CPU from all other players at trigger time.
+- **Punishment** events are triggered when the player fails or skips a challenge. The target / requester is selected by the CPU from other players according to the **interest-match** rules described below.
 - **Reward** events are triggered when the player succeeds at a challenge.
 
 The outcome → event mapping:
@@ -45,6 +45,33 @@ The outcome → event mapping:
 | Mini-game | Tie | — | No event |
 
 `CouplesModeState` exposes two factory methods used by `CouplesModeHandler`: `punishmentEvent(players, currentPlayer)` and `rewardEvent()`.
+
+---
+
+## Punishment target selection (interest-match)
+
+For `MakeALoveDeclaration` and `ActOfLove` the CPU picks the target / requester from a filtered candidate pool based on the current player's `interestedIn` field and the target candidate's `gender` field.
+
+### Compatibility rule
+
+A candidate is **compatible** with the current player when:
+
+| Candidate's `gender` | `currentPlayer.interestedIn` | Compatible? |
+|---|---|---|
+| `Unknown` | any | ✓ always (Unknown gender qualifies for any match) |
+| `Male` | `Man` | ✓ |
+| `Male` | `Woman` | ✗ |
+| `Male` | `Both` | ✓ |
+| `Female` | `Woman` | ✓ |
+| `Female` | `Man` | ✗ |
+| `Female` | `Both` | ✓ |
+
+### Selection algorithm (`CouplesModeState.punishmentEvent`)
+
+1. Build `others` — all players except the current player.
+2. Build `interestedMatches` — filter `others` by the compatibility rule above.
+3. If `interestedMatches` is empty (edge case: no player of the relevant gender exists), fall back to `others` so the game is never stuck.
+4. Pick a random player from the resulting pool; use their `nickName` as the event parameter.
 
 ---
 
@@ -152,6 +179,8 @@ data class CouplesModeState(
     val activeEvent: CouplesEvent? = null
 ) {
     companion object {
+        // Selects target using interest-match logic; falls back to any other player
+        // if no compatible match exists.
         fun punishmentEvent(players: List<Player>, currentPlayer: Player?): CouplesEvent { … }
         fun rewardEvent(): CouplesEvent { … }
     }

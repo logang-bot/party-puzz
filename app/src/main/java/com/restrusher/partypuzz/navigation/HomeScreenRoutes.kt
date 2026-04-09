@@ -14,7 +14,7 @@ data class GameConfigScreen(
 )
 
 @Serializable
-data class CreatePlayerScreen(val playerId: Int = -1)
+data class CreatePlayerScreen(val playerId: Int = -1, val isCouplesMode: Boolean = false)
 
 @Serializable
 data object LoadingScreen

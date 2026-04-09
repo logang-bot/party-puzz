@@ -12,7 +12,8 @@ data class CreatePlayerState(
     val capturedImageUri: Uri = Uri.EMPTY,
     val randomAvatarRes: Int? = null,
     val existingPhotoPath: String? = null,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isCouplesMode: Boolean = false
 ) {
     val isEditMode: Boolean get() = playerId != -1
 }

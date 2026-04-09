@@ -36,8 +36,8 @@ data class CouplesModeState(
 
         fun rewardEvent(): CouplesEvent = when ((0..2).random()) {
             0 -> CouplesEvent.GiveAKiss
-            1 -> CouplesEvent.ChoseKissers
-            else -> CouplesEvent.ChoseLovers
+            1 -> CouplesEvent.ChooseKissers
+            else -> CouplesEvent.ChooseLovers
         }
     }
 }

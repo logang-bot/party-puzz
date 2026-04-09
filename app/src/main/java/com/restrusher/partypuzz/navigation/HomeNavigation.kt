@@ -162,10 +162,10 @@ fun HomeNavigation(
                             gameModeImage = args.gameModeImage,
                             gameModeDescription = args.gameModeDescription,
                             onCreatePlayerClick = {
-                                navController.navigate(CreatePlayerScreen())
+                                navController.navigate(CreatePlayerScreen(isCouplesMode = args.gameModeName == R.string.couples_game_mode))
                             },
                             onEditPlayerClick = { playerId ->
-                                navController.navigate(CreatePlayerScreen(playerId = playerId))
+                                navController.navigate(CreatePlayerScreen(playerId = playerId, isCouplesMode = args.gameModeName == R.string.couples_game_mode))
                             },
                             onStartGameClick = {
                                 navController.navigate(LoadingScreen)
@@ -197,7 +197,9 @@ fun HomeNavigation(
                             modifier = Modifier.fillMaxSize()
                         )
                     }
-                    composable<GameScreen> {
+                    composable<GameScreen>(
+                        enterTransition = { slideInVertically(tween(400)) { it } + fadeIn(tween(400)) }
+                    ) {
                         GameScreen(
                             onNavigateBack = { navController.popBackStack() },
                             onNavigateToMiniGame = { miniGame, challenger, opponent ->

@@ -28,7 +28,8 @@ players added during the current game session.
 |---|---|---|
 | `id` | `Int` (PK, autoGenerate) | Unique player ID |
 | `nickName` | `String` | Display name |
-| `gender` | `Gender` | Enum: `Male`, `Female`, `Unknown` (default: `Unknown`) |
+| `gender` | `Gender` | Enum: `Male`, `Female`, `Unknown`. Optional — defaults to `Unknown` when the user leaves the selector blank. |
+| `interestedIn` | `InterestedIn` | Enum: `Man`, `Woman`, `Both`. In Couples mode the user must pick a value (Confirm is disabled until chosen). In all other modes the selector is hidden and `Both` is saved automatically. |
 | `photoPath` | `String?` | Absolute path to camera photo copied into `filesDir/player_photos/` |
 | `avatarName` | `String?` | Drawable resource entry name, e.g. `img_dummy_avatar_3` |
 
@@ -133,6 +134,24 @@ Runs on `Dispatchers.IO` inside `viewModelScope`:
 - Confirm button `onClick` calls `viewModel.confirmPlayer()`.
 - Screen wrapped in a `Box`; when `uiState.isLoading` is `true`, a semi-transparent black overlay
   with a `CircularProgressIndicator` is shown on top.
+- `PlayerFormContent`'s inner `Column` uses `verticalScroll` to handle overflow on small screens.
+
+### Selectors in `PlayerFormContent`
+
+| Composable | File | Behaviour |
+|---|---|---|
+| `GenderOptionsContainer` | `GenderOptionsContainer.kt` | Two-button row (Male / Female) using `ic_male` / `ic_female`. **Couples mode only** — hidden otherwise; `Gender.Unknown` is saved automatically. |
+| `InterestedInOptionsContainer` | `GenderOptionsContainer.kt` | Three-button row (Man / Woman / Both) using `ic_man` / `ic_woman` / `ic_wc`. **Couples mode only** — hidden otherwise; `InterestedIn.Both` is saved automatically. |
+
+Both selectors accept a nullable selected value (`Gender?` and `InterestedIn?`) so the UI can represent the "not yet chosen" state without a sentinel value. Visibility is controlled by `AnimatedVisibility(visible = isCouplesMode)`.
+
+### Game-mode-aware field visibility
+
+`isCouplesMode` is threaded from the navigation route through to the ViewModel and UI:
+
+1. **Route** — `CreatePlayerScreen(isCouplesMode: Boolean = false)` carries the flag. `HomeNavigation` sets it to `true` only when `gameModeName == R.string.couples_game_mode`.
+2. **ViewModel** — reads `isCouplesMode` from `SavedStateHandle` in `init`. When `false`, `gender` is initialised to `Gender.Unknown` and `interestedIn` to `InterestedIn.Both` so the Confirm button is immediately enabled once the player has a name.
+3. **UI** — `PlayerFormContent` wraps `GenderOptionsContainer` and `InterestedInOptionsContainer` in `AnimatedVisibility(visible = isCouplesMode)`. In non-couples modes the selectors are never shown and the pre-set defaults are saved transparently.
 
 ---
 
@@ -142,3 +161,6 @@ Runs on `Dispatchers.IO` inside `viewModelScope`:
 |---|---|
 | 1 | Initial schema (`players` table) |
 | 2 | Added `parties` and `party_player_cross_ref` tables; added `photoPath`/`avatarName` columns to `players`. `fallbackToDestructiveMigration` handles the upgrade. |
+| 3 | Added bar mode support (no schema change to `players`). |
+| 4 | Added `interestedIn: InterestedIn` column to `players`. |
+| 5 | Both `gender` and `interestedIn` columns present on `players`; `gender` is optional (`Unknown` default), `interestedIn` is required. |

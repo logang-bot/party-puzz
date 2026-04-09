@@ -823,10 +823,10 @@ private fun CouplesEventContent(
 ) {
     val message = when (event) {
         is CouplesEvent.GiveAKiss -> stringResource(R.string.couples_event_give_a_kiss)
-        is CouplesEvent.ChoseKissers -> stringResource(R.string.couples_event_chose_kissers)
+        is CouplesEvent.ChooseKissers -> stringResource(R.string.couples_event_chose_kissers)
         is CouplesEvent.MakeALoveDeclaration -> stringResource(R.string.couples_event_make_love_declaration, event.targetPlayerName)
         is CouplesEvent.ActOfLove -> stringResource(R.string.couples_event_act_of_love, event.requesterPlayerName)
-        is CouplesEvent.ChoseLovers -> stringResource(R.string.couples_event_chose_lovers)
+        is CouplesEvent.ChooseLovers -> stringResource(R.string.couples_event_chose_lovers)
     }
     Text(
         text = message,

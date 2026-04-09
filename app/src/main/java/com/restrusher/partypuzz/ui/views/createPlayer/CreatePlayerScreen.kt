@@ -155,6 +155,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 existingPhotoPath = uiState.existingPhotoPath,
                 gender = uiState.gender,
                 interestedIn = uiState.interestedIn,
+                isCouplesMode = uiState.isCouplesMode,
                 onTakePicture = {
                     val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
                         context, Manifest.permission.CAMERA
@@ -244,6 +245,7 @@ fun PlayerFormContent(
     onGenerateRandomName: () -> Unit,
     onGenderSelected: (Gender) -> Unit,
     onInterestedInSelected: (InterestedIn) -> Unit,
+    isCouplesMode: Boolean,
     modifier: Modifier = Modifier,
     existingPhotoPath: String? = null,
 ) {
@@ -279,20 +281,24 @@ fun PlayerFormContent(
                 .fillMaxWidth()
                 .padding(24.dp)
         )
-        GenderOptionsContainer(
-            selectedGender = gender,
-            onGenderSelected = onGenderSelected,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        )
-        InterestedInOptionsContainer(
-            selectedInterestedIn = interestedIn,
-            onInterestedInSelected = onInterestedInSelected,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
-        )
+        AnimatedVisibility(visible = isCouplesMode) {
+            GenderOptionsContainer(
+                selectedGender = gender,
+                onGenderSelected = onGenderSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            )
+        }
+        AnimatedVisibility(visible = isCouplesMode) {
+            InterestedInOptionsContainer(
+                selectedInterestedIn = interestedIn,
+                onInterestedInSelected = onInterestedInSelected,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
+            )
+        }
     }
 }
 
@@ -306,6 +312,7 @@ fun PlayerFormContentPreview() {
             avatarRes = null,
             gender = null,
             interestedIn = null,
+            isCouplesMode = false,
             onTakePicture = {},
             onGenerateRandomImage = {},
             onPlayerNameChanged = {},

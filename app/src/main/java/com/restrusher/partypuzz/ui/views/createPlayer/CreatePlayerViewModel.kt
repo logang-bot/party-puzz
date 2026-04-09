@@ -49,7 +49,16 @@ class CreatePlayerViewModel @Inject constructor(
     val navigationEvents = _navigationEvents.receiveAsFlow()
 
     init {
-        val playerId = savedStateHandle.toRoute<CreatePlayerRoute>().playerId
+        val route = savedStateHandle.toRoute<CreatePlayerRoute>()
+        val playerId = route.playerId
+        val isCouplesMode = route.isCouplesMode
+        _uiState.update {
+            it.copy(
+                isCouplesMode = isCouplesMode,
+                interestedIn = if (!isCouplesMode) InterestedIn.Both else null,
+                gender = if (!isCouplesMode) Gender.Unknown else null
+            )
+        }
         if (playerId != -1) {
             val player = GamePlayersList.PlayersList.firstOrNull { it.id == playerId }
             if (player != null) {
@@ -61,8 +70,8 @@ class CreatePlayerViewModel @Inject constructor(
                     it.copy(
                         playerId = playerId,
                         playerName = player.nickName,
-                        gender = player.gender,
-                        interestedIn = player.interestedIn,
+                        gender = if (isCouplesMode) player.gender else Gender.Unknown,
+                        interestedIn = if (isCouplesMode) player.interestedIn else InterestedIn.Both,
                         randomAvatarRes = avatarRes,
                         existingPhotoPath = player.photoPath
                     )

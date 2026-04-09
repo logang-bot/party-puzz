@@ -12,7 +12,7 @@ Navigation uses Jetpack Navigation Compose with **type-safe serializable routes*
 |---|---|---|
 | `HomeScreen` | `data object` | — |
 | `GameConfigScreen` | `data class` | `gameModeName: Int`, `gameModeImage: Int`, `gameModeDescription: Int`, `partyId: Int?` |
-| `CreatePlayerScreen` | `data class` | `playerId: Int = -1` (default = no player, i.e. create mode) |
+| `CreatePlayerScreen` | `data class` | `playerId: Int = -1` (default = create mode), `isCouplesMode: Boolean = false` |
 | `LoadingScreen` | `data object` | — |
 | `GameScreen` | `data object` | — |
 | `FollowTheSpotRoute` | `data class` | `player1Name`, `player1PhotoPath?`, `player1AvatarName?`, `player2Name`, `player2PhotoPath?`, `player2AvatarName?` |
