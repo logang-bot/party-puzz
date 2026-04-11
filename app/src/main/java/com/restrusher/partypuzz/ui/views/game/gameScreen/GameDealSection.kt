@@ -36,7 +36,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,6 +87,8 @@ internal fun GameDealSection(
     onMiniGameOpponentSelected: (Player) -> Unit,
     onModeEventDismissed: () -> Unit,
     onGiveDrinksTargetSelected: (String) -> Unit,
+    onCameraRequested: () -> Unit,
+    onCameraRequestDismissed: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val mainInteractionSource = remember { MutableInteractionSource() }
@@ -194,6 +198,39 @@ internal fun GameDealSection(
                             uiState = uiState,
                             onDismiss = onModeEventDismissed,
                             onGiveDrinksTargetSelected = onGiveDrinksTargetSelected,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                )
+            }
+        }
+
+        // Camera request card — slides in after a dare or mode event, then flips to reveal content
+        val cameraInteractionSource = remember { MutableInteractionSource() }
+        AnimatedVisibility(
+            visible = uiState.showCameraRequest,
+            enter = scaleIn(tween(350), initialScale = 0.85f) + fadeIn(tween(300)),
+            exit = scaleOut(tween(300), targetScale = 0.85f) + fadeOut(tween(250))
+        ) {
+            var isCameraCardFlipped by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) { isCameraCardFlipped = true }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(glassCardShape)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .clickable(
+                        interactionSource = cameraInteractionSource,
+                        indication = null
+                    ) { onCameraRequestDismissed() }
+            ) {
+                FlipCard(
+                    isFlipped = isCameraCardFlipped,
+                    modifier = Modifier.fillMaxSize(),
+                    front = {},
+                    back = {
+                        CameraRequestContent(
+                            onCameraRequested = onCameraRequested,
                             modifier = Modifier.fillMaxSize()
                         )
                     }
@@ -875,6 +912,63 @@ private fun CouplesEventContent(
         color = Color.White.copy(alpha = 0.45f),
         textAlign = TextAlign.Center
     )
+}
+
+// ─── Camera request content ───────────────────────────────────────────────────
+
+@Composable
+private fun CameraRequestContent(
+    onCameraRequested: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier.padding(horizontal = 32.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.camera_request_title),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.camera_request_subtitle),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(40.dp))
+        Button(
+            onClick = onCameraRequested,
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_camera),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(
+                    text = stringResource(R.string.camera_request_button),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = stringResource(R.string.tap_to_dismiss),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 // ─── Flip card ────────────────────────────────────────────────────────────────

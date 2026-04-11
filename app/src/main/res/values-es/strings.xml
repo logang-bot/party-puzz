@@ -109,6 +109,12 @@
     <string name="edit_party_name">Editar nombre de fiesta</string>
     <string name="save">Guardar</string>
     <string name="discard">Descartar</string>
+    <string name="camera_request_title">Congela este momento para siempre</string>
+    <string name="camera_request_subtitle">Algunos recuerdos merecen quedarse — toma una foto antes de que se pierda.</string>
+    <string name="camera_request_button">Tomar una foto</string>
+    <string name="party_album_title">Álbum de fotos</string>
+    <string name="party_album_empty">Aún no hay fotos. ¡Juega una sesión para capturar momentos!</string>
+    <string name="grant_camera_permission">Permitir cámara para capturar momentos de la fiesta</string>
     <string name="delete_party">Eliminar fiesta</string>
     <string name="delete_party_title">¿Eliminar fiesta?</string>
     <string name="delete_party_message">Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta fiesta?</string>

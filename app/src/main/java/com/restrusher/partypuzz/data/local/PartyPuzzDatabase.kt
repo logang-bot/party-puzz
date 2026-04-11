@@ -5,22 +5,25 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.restrusher.partypuzz.data.local.dao.PartyDao
+import com.restrusher.partypuzz.data.local.dao.PartyPhotoDao
 import com.restrusher.partypuzz.data.local.dao.PlayerDao
 import com.restrusher.partypuzz.data.local.entities.PartyEntity
+import com.restrusher.partypuzz.data.local.entities.PartyPhotoEntity
 import com.restrusher.partypuzz.data.local.entities.PartyPlayerCrossRef
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
 @Database(
-    entities = [PlayerEntity::class, PartyEntity::class, PartyPlayerCrossRef::class],
-    version = 5,
+    entities = [PlayerEntity::class, PartyEntity::class, PartyPlayerCrossRef::class, PartyPhotoEntity::class],
+    version = 6,
     exportSchema = false
 )
 abstract class PartyPuzzDatabase : RoomDatabase() {
 
     abstract fun playerDao(): PlayerDao
     abstract fun partyDao(): PartyDao
+    abstract fun partyPhotoDao(): PartyPhotoDao
 
     companion object {
         @Volatile

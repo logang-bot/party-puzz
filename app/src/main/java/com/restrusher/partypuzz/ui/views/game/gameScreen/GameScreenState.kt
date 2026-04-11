@@ -57,7 +57,10 @@ data class GameScreenState(
     // Bar mode
     val barMode: BarModeState = BarModeState(),
     // Couples mode
-    val couplesMode: CouplesModeState = CouplesModeState()
+    val couplesMode: CouplesModeState = CouplesModeState(),
+    // Camera request — decided at CHALLENGE_SHOWN, consumed after dare or mode event dismissal
+    val pendingCameraRequest: Boolean = false,
+    val showCameraRequest: Boolean = false
 ) {
     val isModeActive: Boolean
         get() = barMode.isActive || couplesMode.isActive

@@ -108,6 +108,12 @@
     <string name="edit_party_name">Edit party name</string>
     <string name="save">Save</string>
     <string name="discard">Discard</string>
+    <string name="camera_request_title">Freeze this moment forever</string>
+    <string name="camera_request_subtitle">Some memories are worth keeping — take a photo before it slips away.</string>
+    <string name="camera_request_button">Take a photo</string>
+    <string name="party_album_title">Photo Album</string>
+    <string name="party_album_empty">No photos yet. Play a game session to capture moments!</string>
+    <string name="grant_camera_permission">Allow camera to capture party moments</string>
     <string name="delete_party">Delete party</string>
     <string name="delete_party_title">Delete party?</string>
     <string name="delete_party_message">This action cannot be undone. Are you sure you want to delete this party?</string>

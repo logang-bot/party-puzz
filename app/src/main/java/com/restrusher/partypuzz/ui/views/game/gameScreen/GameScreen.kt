@@ -1,7 +1,12 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
+import android.Manifest
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -31,12 +36,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
 import kotlinx.coroutines.flow.filterNotNull
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -45,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
+import java.io.File
 
 private const val KEY_MINI_GAME_P1_SCORE = "mini_game_p1_score"
 private const val KEY_MINI_GAME_P2_SCORE = "mini_game_p2_score"
@@ -58,6 +66,7 @@ fun GameScreen(
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
+    val context = LocalContext.current
     val backStackEntry = LocalViewModelStoreOwner.current as? NavBackStackEntry
     LaunchedEffect(backStackEntry) {
         backStackEntry?.savedStateHandle
@@ -83,6 +92,15 @@ fun GameScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val backgroundGradient = rememberBackgroundGradient()
+
+    val cameraUri = remember {
+        val tempFile = File.createTempFile("party_photo_${System.currentTimeMillis()}", ".jpg", context.cacheDir)
+            .apply { createNewFile(); deleteOnExit() }
+        FileProvider.getUriForFile(context.applicationContext, "${context.packageName}.provider", tempFile)
+    }
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) viewModel.onPhotoCaptured(cameraUri) else viewModel.onCameraRequestDismissed()
+    }
 
     var showExitDialog by remember { mutableStateOf(false) }
     var showInfoPanel by remember { mutableStateOf(false) }
@@ -193,6 +211,13 @@ fun GameScreen(
                 },
                 onModeEventDismissed = viewModel::onModeEventDismissed,
                 onGiveDrinksTargetSelected = viewModel::onGiveDrinksTargetSelected,
+                onCameraRequested = {
+                    val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+                            PackageManager.PERMISSION_GRANTED
+                    if (granted) cameraLauncher.launch(cameraUri)
+                    else viewModel.onCameraRequestDismissed()
+                },
+                onCameraRequestDismissed = viewModel::onCameraRequestDismissed,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()

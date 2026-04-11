@@ -1,9 +1,12 @@
 package com.restrusher.partypuzz.di
 
+import com.restrusher.partypuzz.data.proxies.PartyPhotoProxy
 import com.restrusher.partypuzz.data.proxies.PartyProxy
 import com.restrusher.partypuzz.data.proxies.PlayerProxy
+import com.restrusher.partypuzz.data.repositories.PartyPhotoRepositoryImpl
 import com.restrusher.partypuzz.data.repositories.PartyRepositoryImpl
 import com.restrusher.partypuzz.data.repositories.PlayerRepositoryImpl
+import com.restrusher.partypuzz.data.repositories.interfaces.PartyPhotoRepository
 import com.restrusher.partypuzz.data.repositories.interfaces.PartyRepository
 import com.restrusher.partypuzz.data.repositories.interfaces.PlayerRepository
 import dagger.Module
@@ -26,5 +29,11 @@ object RepositoryModule {
     @Singleton
     fun providePartyRepository(@DatabaseProxy partyProxy: PartyProxy): PartyRepository {
         return PartyRepositoryImpl(partyProxy)
+    }
+
+    @Provides
+    @Singleton
+    fun providePartyPhotoRepository(@DatabaseProxy partyPhotoProxy: PartyPhotoProxy): PartyPhotoRepository {
+        return PartyPhotoRepositoryImpl(partyPhotoProxy)
     }
 }

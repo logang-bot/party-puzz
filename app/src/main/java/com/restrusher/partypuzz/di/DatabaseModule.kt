@@ -3,6 +3,7 @@ package com.restrusher.partypuzz.di
 import android.content.Context
 import com.restrusher.partypuzz.data.local.PartyPuzzDatabase
 import com.restrusher.partypuzz.data.local.dao.PartyDao
+import com.restrusher.partypuzz.data.local.dao.PartyPhotoDao
 import com.restrusher.partypuzz.data.local.dao.PlayerDao
 import dagger.Module
 import dagger.Provides
@@ -22,6 +23,11 @@ object DatabaseModule {
     @Provides
     fun providePartyDao(database: PartyPuzzDatabase): PartyDao {
         return database.partyDao()
+    }
+
+    @Provides
+    fun providePartyPhotoDao(database: PartyPuzzDatabase): PartyPhotoDao {
+        return database.partyPhotoDao()
     }
 
     @Provides

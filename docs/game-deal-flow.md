@@ -11,7 +11,16 @@ IDLE ──tap──▶ ANIMATING ──5 s──▶ PLAYER_NAME_REVEAL ──1 
                                                                                                     │
                                                                                             user dismisses
                                                                                                     │
-                                                                                                  IDLE
+                                                                                    ┌───────────────┴───────────────┐
+                                                                              pendingCameraRequest             no pending
+                                                                              == true                          camera
+                                                                                    │                               │
+                                                                             CHALLENGE_SHOWN                      IDLE
+                                                                          (camera card on top)
+                                                                                    │
+                                                                          photo taken or skipped
+                                                                                    │
+                                                                                  IDLE
 ```
 
 | Phase | What the main card shows | Duration |
@@ -23,6 +32,8 @@ IDLE ──tap──▶ ANIMATING ──5 s──▶ PLAYER_NAME_REVEAL ──1 
 | `CHALLENGE_SHOWN` | Challenge overlay (deal-type-specific) | Until dismissed |
 
 > The selected player and deal type are both decided **before** the animation starts; the cycling is purely cosmetic.
+
+> When `pendingCameraRequest` is true, `dealPhase` stays at `CHALLENGE_SHOWN` after the challenge/event is dismissed. The camera request card slides in on top of the (still-visible) challenge card. The deal only resets to `IDLE` once the camera interaction resolves. See [photo-album.md](photo-album.md) for full details.
 
 ---
 
@@ -163,6 +174,8 @@ All three deal types share the same card container:
 | `stickyDareDurationSeconds` | `Int?` | Duration in seconds; copied into `ActiveStickyDare` on dismissal |
 | `activeStickyDares` | `List<ActiveStickyDare>` | All currently running sticky dare timers |
 | `isChallengeDismissible` | `Boolean` (computed) | `true` when tapping the card should return to IDLE |
+| `pendingCameraRequest` | `Boolean` | Rolled at `CHALLENGE_SHOWN`; signals that a camera card should follow this deal's final dismissal |
+| `showCameraRequest` | `Boolean` | `true` while the camera request card overlay is visible |
 
 ### `ActiveStickyDare` fields
 
@@ -194,3 +207,9 @@ All three deal types share the same card container:
 | `BouncingDotsAnimation.kt` (`ui/common`) | Reusable 3-dot bouncing animation composable |
 | `GameOptionsSource.kt` (`data/local/…`) | In-memory singleton for selected game options; written by `OptionsContainer`, read by `GameInfoPanel` |
 | `res/values/strings.xml` | All localizable challenge strings (truth, dare, sticky dares + parallel arrays, GK questions) |
+
+---
+
+## Related
+
+- [photo-album.md](photo-album.md) — Camera request card, photo storage, and party album

@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.local.entities.PartyPhotoEntity
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import java.io.File
 
@@ -155,6 +158,62 @@ fun PartyPlayersGrid(
                     style = MaterialTheme.typography.bodySmall,
                     fontWeight = FontWeight.Light
                 )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun PartyPhotoAlbumSection(
+    photos: List<PartyPhotoEntity>,
+    hasCameraPermission: Boolean,
+    onRequestPermission: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(id = R.string.party_album_title),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        if (!hasCameraPermission) {
+            Button(
+                onClick = onRequestPermission,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_camera),
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = stringResource(id = R.string.grant_camera_permission))
+            }
+        } else if (photos.isEmpty()) {
+            Text(
+                text = stringResource(id = R.string.party_album_empty),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            )
+        } else {
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                photos.forEach { photo ->
+                    AsyncImage(
+                        model = ImageRequest.Builder(context).data(File(photo.photoPath)).build(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(96.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                    )
+                }
             }
         }
     }

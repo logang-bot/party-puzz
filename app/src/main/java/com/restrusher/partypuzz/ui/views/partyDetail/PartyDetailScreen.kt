@@ -1,5 +1,9 @@
 package com.restrusher.partypuzz.ui.views.partyDetail
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,12 +22,17 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
@@ -36,6 +45,17 @@ fun PartyDetailScreen(
     modifier: Modifier = Modifier,
     viewModel: PartyDetailViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+    var hasCameraPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+                    PackageManager.PERMISSION_GRANTED
+        )
+    }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> hasCameraPermission = granted }
+
     val title = stringResource(id = R.string.party_detail)
     LaunchedEffect(Unit) {
         setAppBarTitle(title)
@@ -82,6 +102,13 @@ fun PartyDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 PartyPlayersGrid(
                     players = uiState.party!!.players,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                PartyPhotoAlbumSection(
+                    photos = uiState.photos,
+                    hasCameraPermission = hasCameraPermission,
+                    onRequestPermission = { permissionLauncher.launch(Manifest.permission.CAMERA) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(32.dp))

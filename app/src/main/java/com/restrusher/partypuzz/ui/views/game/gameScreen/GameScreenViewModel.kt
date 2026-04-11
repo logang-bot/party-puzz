@@ -1,14 +1,17 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Player
+import com.restrusher.partypuzz.data.repositories.interfaces.PartyPhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,12 +19,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class GameScreenViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val partyPhotoRepository: PartyPhotoRepository
 ) : ViewModel() {
 
     companion object {
@@ -29,7 +36,10 @@ class GameScreenViewModel @Inject constructor(
         private const val NAME_CYCLE_INTERVAL_MS = 300L
         private const val REVEAL_DURATION_MS = 1000L
         private const val STICKY_DARE_EXIT_DELAY_MS = 400L
+        private const val CAMERA_TRIGGER_PROBABILITY = 0.33
     }
+
+    private val currentPartyId: Int? = GamePlayersList.currentPartyId
 
     private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameModeNameRes) {
         R.string.bar_game_mode -> BarModeHandler()
@@ -103,7 +113,9 @@ class GameScreenViewModel @Inject constructor(
                     stickyDarePresentContinuous = pcText,
                     stickyDareDurationLabel = durationLabel,
                     stickyDareDurationSeconds = durationSeconds,
-                    miniGame = miniGame
+                    miniGame = miniGame,
+                    pendingCameraRequest = currentPartyId != null &&
+                            Random.nextDouble() < CAMERA_TRIGGER_PROBABILITY
                 )
             }
         }
@@ -159,7 +171,13 @@ class GameScreenViewModel @Inject constructor(
 
     fun onModeEventDismissed() {
         dealJob?.cancel()
-        _uiState.update { resetDealState(modeHandler.clearEvent(it)) }
+        if (_uiState.value.pendingCameraRequest) {
+            _uiState.update {
+                modeHandler.clearEvent(it).copy(showCameraRequest = true, pendingCameraRequest = false)
+            }
+        } else {
+            _uiState.update { resetDealState(modeHandler.clearEvent(it)) }
+        }
     }
 
     fun onChallengeDismissed() {
@@ -200,7 +218,38 @@ class GameScreenViewModel @Inject constructor(
             }
             startStickyDareTimer(dare.id)
         } else {
-            resetDeal()
+            val isDare = state.dealType == GameDealType.TRUTH_OR_DARE &&
+                    state.truthOrDareChoice == TruthOrDareChoice.DARE
+            if (isDare && state.pendingCameraRequest) {
+                _uiState.update { it.copy(showCameraRequest = true, pendingCameraRequest = false) }
+            } else {
+                resetDeal()
+            }
+        }
+    }
+
+    fun onCameraRequestDismissed() {
+        dealJob?.cancel()
+        _uiState.update { resetDealState(it) }
+    }
+
+    fun onPhotoCaptured(uri: Uri) {
+        val partyId = currentPartyId ?: run {
+            dealJob?.cancel()
+            _uiState.update { resetDealState(it) }
+            return
+        }
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val dir = File(context.filesDir, "party_photos/$partyId").also { it.mkdirs() }
+                val dest = File(dir, "photo_${System.currentTimeMillis()}.jpg")
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    dest.outputStream().use { output -> input.copyTo(output) }
+                }
+                partyPhotoRepository.addPhoto(partyId, dest.absolutePath)
+            }
+            dealJob?.cancel()
+            _uiState.update { resetDealState(it) }
         }
     }
 
@@ -252,7 +301,9 @@ class GameScreenViewModel @Inject constructor(
         selectedAnswerOption = null,
         miniGame = null,
         miniGameOpponent = null,
-        miniGameResult = null
+        miniGameResult = null,
+        pendingCameraRequest = false,
+        showCameraRequest = false
     )
 
     private fun startStickyDareTimer(dareId: String) {

@@ -4,7 +4,13 @@
 
 Runtime permission requests follow an MVVM pattern: the **ViewModel** owns the permission dialog queue state, and the **Composable screen** handles the Android system interactions (launching the permission request and showing the dialog).
 
-Currently only `CAMERA` is requested, triggered when the user taps "Take Photo" in `CreatePlayerScreen`.
+`CAMERA` is the only permission currently requested. It is used in two places:
+
+| Location | Pattern | Purpose |
+|---|---|---|
+| `CreatePlayerScreen` | Full dialog queue flow (see below) | Take a player profile photo |
+| `GameScreen` | Silent inline check (see below) | Capture a party album photo during a game session |
+| `PartyDetailScreen` | `RequestPermission` launcher | Grant camera access to enable the in-game photo feature |
 
 ---
 
@@ -112,6 +118,49 @@ dialogQueue
 ```
 
 `shouldShowRequestPermissionRationale()` returns `false` both before the permission has ever been requested **and** after the user has permanently declined it. The dialog is only shown after a failed request (i.e., when the queue is non-empty), so `false` at that point reliably means permanent denial.
+
+---
+
+---
+
+## In-Game Camera Check (`GameScreen`)
+
+The game screen uses a simpler, silent permission check — no dialog queue, no rationale. The check happens at the exact moment the user taps "Take a photo" on the camera request card:
+
+```
+User taps "Take a photo" (onCameraRequested callback)
+    │
+    ├─ CAMERA granted?  ──Yes──►  cameraLauncher.launch(uri)
+    │
+    └─ No  ──────────────────►  viewModel.onCameraRequestDismissed()
+                                    (camera card dismissed silently, deal resets)
+```
+
+This is intentional: the camera request card is an **opportunistic** prompt. If the permission is missing the moment is simply skipped rather than interrupting the game with a permission dialog. Users who want the feature can grant the permission from `PartyDetailScreen`.
+
+**Launchers in `GameScreen`:**
+
+```
+cameraUri       →  FileProvider URI for a temp file in cacheDir
+cameraLauncher  →  TakePicture contract
+                       success  →  viewModel.onPhotoCaptured(uri)
+                       failure  →  viewModel.onCameraRequestDismissed()
+```
+
+---
+
+## PartyDetailScreen Permission Grant
+
+`PartyDetailScreen` shows the photo album section. If the camera permission is not yet granted, a button is shown instead of the album:
+
+```
+hasCameraPermission == false
+    └─ Button: "Allow camera to capture party moments"
+            └─ permissionLauncher.launch(Manifest.permission.CAMERA)
+                    └─ result updates hasCameraPermission local state
+```
+
+`hasCameraPermission` is a local `var` initialised with `ContextCompat.checkSelfPermission` on first composition. No ViewModel involvement — the permission state only affects which UI variant is shown.
 
 ---
 
