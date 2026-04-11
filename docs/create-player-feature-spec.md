@@ -110,6 +110,25 @@ CreatePlayerScreen
 
 ---
 
+## Random Name Generator
+
+`CreatePlayerViewModel.generateRandomName()` produces a 2- or 3-word name by combining entries from two string-array resources:
+
+| Resource | Content |
+|---|---|
+| `R.array.name_adjectives` | 30 adjectives |
+| `R.array.name_nouns` | 30 nouns |
+
+Both arrays are defined in `res/values/strings.xml` (English) and `res/values-es/strings.xml` (Spanish). The Spanish variants are **not** literal translations — they use culturally Hispanic adjectives and food/cultural nouns to produce names that feel natural in that context.
+
+The arrays are read at call time via `context.resources.getStringArray(...)`, so the result is always in the active locale. There is no hardcoded word list in Kotlin.
+
+**Output format:**
+- 2-word (50 % probability): `[adjective] [noun]`
+- 3-word (50 % probability): `[adjective] [adjective] [noun]`
+
+---
+
 ## ViewModel: `confirmPlayer()`
 
 Runs on `Dispatchers.IO` inside `viewModelScope`:

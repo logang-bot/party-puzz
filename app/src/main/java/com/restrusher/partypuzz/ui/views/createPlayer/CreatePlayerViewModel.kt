@@ -7,8 +7,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
-import com.restrusher.partypuzz.data.local.appData.appDataSource.WordBank
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.data.models.InterestedIn
@@ -103,13 +103,15 @@ class CreatePlayerViewModel @Inject constructor(
     fun randomAvatarIndex(): Int = (1..MAX_RANDOM_AVATARS).random()
 
     fun generateRandomName(): String {
+        val adjectives = context.resources.getStringArray(R.array.name_adjectives)
+        val nouns = context.resources.getStringArray(R.array.name_nouns)
         val wordCount = (2..3).random()
-        val adj = WordBank.adjectives.random()
-        val noun = WordBank.nouns.random()
+        val adj = adjectives.random()
+        val noun = nouns.random()
         return if (wordCount == 2) {
             "$adj $noun"
         } else {
-            "${WordBank.adjectives.random()} $adj $noun"
+            "${adjectives.random()} $adj $noun"
         }
     }
 

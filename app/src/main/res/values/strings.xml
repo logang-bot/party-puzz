@@ -158,6 +158,23 @@
         <item>Who\'s the last person you searched on social media</item>
         <item>What\'s your relationship dealbreaker</item>
         <item>What\'s your most bizarre nickname</item>
+        <item>What\'s the most embarrassing thing you\'ve done in public</item>
+        <item>Have you ever pretended to be sick to avoid someone</item>
+        <item>What\'s the worst lie you\'ve ever told</item>
+        <item>Have you ever stood someone up on a date</item>
+        <item>What\'s the most childish thing you still do</item>
+        <item>Who in this room would you swap lives with</item>
+        <item>What\'s the most ridiculous thing you\'ve ever cried about</item>
+        <item>Have you ever cheated in a game</item>
+        <item>What\'s the most embarrassing thing on your phone right now</item>
+        <item>What\'s the strangest thing you\'ve ever eaten</item>
+        <item>Have you ever ghosted someone — why</item>
+        <item>What\'s your biggest irrational fear</item>
+        <item>Have you ever sent a message to the wrong person</item>
+        <item>What\'s the worst gift you\'ve ever received</item>
+        <item>What\'s something you pretend to understand but have no clue about</item>
+        <item>What\'s the most money you\'ve wasted on something stupid</item>
+        <item>Who was your most awkward kiss</item>
     </string-array>
 
     <!-- Dare texts -->
@@ -165,6 +182,35 @@
         <item>Do 100 squats</item>
         <item>Say yes to everything for the next 1 minute</item>
         <item>Keep your eyes closed until it\'s your go again</item>
+        <item>Do your best impression of someone in the room</item>
+        <item>Let the group go through your phone for 30 seconds</item>
+        <item>Text your crush right now — the group chooses the message</item>
+        <item>Do your best catwalk across the room</item>
+        <item>Call someone in your contacts and sing them Happy Birthday</item>
+        <item>Do 20 push-ups right now</item>
+        <item>Eat something spicy without making a face</item>
+        <item>Dance non-stop for 30 seconds</item>
+        <item>Send a voice note to the last person you texted saying you miss them</item>
+        <item>Let the group pick a nickname for you that you must use all night</item>
+        <item>Do your best robot dance</item>
+        <item>Let the player to your right post whatever they want on your Instagram story</item>
+        <item>Show the group the last photo in your camera roll</item>
+        <item>Do your best impression of a baby throwing a tantrum</item>
+        <item>Say the alphabet backwards as fast as you can</item>
+        <item>Do 10 jumping jacks right now</item>
+        <item>Take a selfie with the person to your left and send it to someone in your contacts</item>
+        <item>Do your best celebrity impression — the group guesses who</item>
+        <item>Show the group your most recent chat conversation</item>
+        <item>Try to lick your elbow</item>
+        <item>Do your best evil laugh</item>
+        <item>Let someone write something on your forehead with a marker</item>
+        <item>Smell the shoes of the person to your right</item>
+        <item>Do your best slow-motion running scene across the room</item>
+        <item>Drink from your cup without using your hands</item>
+        <item>Act like a dog for 30 seconds</item>
+        <item>Show the group your top 3 most played songs right now</item>
+        <item>Do a handstand — or attempt one</item>
+        <item>Do your best impression of a news anchor reporting on this party</item>
     </string-array>
 
     <!-- Sticky dares -->
@@ -172,6 +218,15 @@
         <item>For 1 minute the player must talk with an Hispanic accent</item>
         <item>For 2 minutes the player must end every phrase with \"oh, yeah\"</item>
         <item>For 5 minutes the player must continue the party standing up</item>
+        <item>For 3 minutes the player must talk in a funny accent</item>
+        <item>For 2 minutes the player must speak only in whispers</item>
+        <item>For 5 minutes the player must talk in third person</item>
+        <item>For 3 minutes the player must respond to everything with a question</item>
+        <item>For 2 minutes the player must speak in a robot voice</item>
+        <item>For 3 minutes the player must narrate everything they do like a sports commentator</item>
+        <item>For 5 minutes the player must start every sentence with "Actually…"</item>
+        <item>For 2 minutes the player must give a thumbs up every time someone speaks</item>
+        <item>For 2 minutes the player must communicate using only hand gestures</item>
     </string-array>
 
     <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
@@ -253,18 +308,45 @@
         <item>talking with a Hispanic accent</item>
         <item>ending every phrase with "oh, yeah"</item>
         <item>continuing the party standing up</item>
+        <item>talking in a funny accent</item>
+        <item>speaking only in whispers</item>
+        <item>talking in third person</item>
+        <item>responding to everything with a question</item>
+        <item>speaking in a robot voice</item>
+        <item>narrating everything like a sports commentator</item>
+        <item>starting every sentence with "Actually…"</item>
+        <item>giving a thumbs up every time someone speaks</item>
+        <item>communicating using only hand gestures</item>
     </string-array>
 
     <string-array name="sticky_dares_duration_labels">
         <item>1 minute</item>
         <item>2 minutes</item>
         <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>2 minutes</item>
+        <item>2 minutes</item>
     </string-array>
 
     <integer-array name="sticky_dares_duration_seconds">
         <item>60</item>
         <item>120</item>
         <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>120</item>
     </integer-array>
 
     <!-- Game screen UI -->
@@ -281,5 +363,72 @@
     <string name="ready">Ready</string>
     <string name="go">Go!</string>
     <string name="choose_opponent">Choose your opponent</string>
+
+    <!-- Name generator word bank -->
+    <string-array name="name_adjectives">
+        <item>Funky</item>
+        <item>Wobbly</item>
+        <item>Sneaky</item>
+        <item>Grumpy</item>
+        <item>Dizzy</item>
+        <item>Fluffy</item>
+        <item>Spiky</item>
+        <item>Chunky</item>
+        <item>Wiggly</item>
+        <item>Sassy</item>
+        <item>Clumsy</item>
+        <item>Bouncy</item>
+        <item>Goofy</item>
+        <item>Zesty</item>
+        <item>Soggy</item>
+        <item>Wacky</item>
+        <item>Sparkly</item>
+        <item>Prickly</item>
+        <item>Jumpy</item>
+        <item>Slimy</item>
+        <item>Fuzzy</item>
+        <item>Cranky</item>
+        <item>Loopy</item>
+        <item>Snazzy</item>
+        <item>Pudgy</item>
+        <item>Quirky</item>
+        <item>Zippy</item>
+        <item>Flaky</item>
+        <item>Spooky</item>
+        <item>Cheesy</item>
+    </string-array>
+
+    <string-array name="name_nouns">
+        <item>Penguin</item>
+        <item>Noodle</item>
+        <item>Banana</item>
+        <item>Pickle</item>
+        <item>Waffle</item>
+        <item>Burrito</item>
+        <item>Platypus</item>
+        <item>Unicorn</item>
+        <item>Taco</item>
+        <item>Muffin</item>
+        <item>Panda</item>
+        <item>Flamingo</item>
+        <item>Narwhal</item>
+        <item>Pretzel</item>
+        <item>Avocado</item>
+        <item>Llama</item>
+        <item>Goblin</item>
+        <item>Donut</item>
+        <item>Sloth</item>
+        <item>Gecko</item>
+        <item>Nugget</item>
+        <item>Walrus</item>
+        <item>Hamster</item>
+        <item>Pigeon</item>
+        <item>Raccoon</item>
+        <item>Capybara</item>
+        <item>Alpaca</item>
+        <item>Biscuit</item>
+        <item>Salamander</item>
+        <item>Mongoose</item>
+    </string-array>
 
 </resources>

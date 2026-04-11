@@ -42,6 +42,14 @@
     <string name="bar_event_give_drinks">¡Da %1$d trago(s) a %2$s!</string>
     <string name="bar_event_give_drinks_choose">¡Da %1$d trago(s) a:</string>
 
+    <!-- Couples mode event dialog -->
+    <string name="couples_event_title">¡Evento de Parejas!</string>
+    <string name="couples_event_give_a_kiss">¡Puedes darle un beso a quien tú elijas!</string>
+    <string name="couples_event_chose_kissers">¡Tú decides quiénes se besan!</string>
+    <string name="couples_event_make_love_declaration">¡Hazle una declaración de amor a %1$s!</string>
+    <string name="couples_event_act_of_love">¡Haz lo que %1$s te diga!</string>
+    <string name="couples_event_chose_lovers">¡Tú decides quién hace la declaración de amor!</string>
+
     <!-- Game Modes Descriptions -->
     <string name="standard_description">El modo clásico donde cada jugador compite por su cuenta — ¡que gane el mejor!</string>
     <string name="bar_description">Un modo hecho para noches de bar — ¡reúne a tu equipo y compite en rondas de locos desafíos!</string>
@@ -80,6 +88,10 @@
     <string name="play">Jugar</string>
     <string name="male">Hombre</string>
     <string name="female">Mujer</string>
+    <string name="man">Hombre</string>
+    <string name="woman">Mujer</string>
+    <string name="both">Ambos</string>
+    <string name="interested_in">Le interesa</string>
     <string name="name_is_required">El nombre es obligatorio</string>
     <string name="last_party">Última fiesta</string>
     <string name="selected_party">Fiesta seleccionada</string>
@@ -147,6 +159,23 @@
         <item>¿Quién es la última persona que buscaste en redes sociales?</item>
         <item>¿Cuál es tu línea roja en una relación?</item>
         <item>¿Cuál es tu apodo más extraño?</item>
+        <item>¿Cuál es la cosa más vergonzosa que has hecho en público?</item>
+        <item>¿Alguna vez fingiste estar enfermo para evitar a alguien?</item>
+        <item>¿Cuál es la peor mentira que has dicho?</item>
+        <item>¿Alguna vez dejaste a alguien plantado?</item>
+        <item>¿Cuál es la cosa más infantil que todavía haces?</item>
+        <item>¿Con quién de los que están aquí cambiarías tu vida?</item>
+        <item>¿Por qué cosa más ridícula has llorado?</item>
+        <item>¿Alguna vez has hecho trampa en un juego?</item>
+        <item>¿Cuál es lo más comprometedor que tienes en el teléfono ahora mismo?</item>
+        <item>¿Cuál es la cosa más rara que has comido?</item>
+        <item>¿Alguna vez le hiciste ghosting a alguien — por qué?</item>
+        <item>¿Cuál es tu mayor miedo irracional?</item>
+        <item>¿Alguna vez enviaste un mensaje al contacto equivocado?</item>
+        <item>¿Cuál es el peor regalo que has recibido?</item>
+        <item>¿De qué cosa aparentas saber pero no tienes ni idea?</item>
+        <item>¿En qué cosa más tonta has gastado dinero?</item>
+        <item>¿Quién fue tu beso más incómodo?</item>
     </string-array>
 
     <!-- Dare texts -->
@@ -154,6 +183,35 @@
         <item>Haz 100 sentadillas</item>
         <item>Di que sí a todo durante el próximo minuto</item>
         <item>Mantén los ojos cerrados hasta que sea tu turno otra vez</item>
+        <item>Imita a alguien del grupo y que todos adivinen quién es</item>
+        <item>Deja que el grupo vea tu teléfono durante 30 segundos</item>
+        <item>Mándale un mensaje a tu crush ahora — el grupo elige qué decir</item>
+        <item>Haz tu mejor desfile de modas por el cuarto</item>
+        <item>Llama a alguien de tus contactos y cántale el cumpleaños feliz</item>
+        <item>Haz 20 flexiones ahora mismo</item>
+        <item>Come algo picoso sin hacer ninguna cara</item>
+        <item>Baila sin parar durante 30 segundos</item>
+        <item>Mándale un audio al último contacto con el que chateaste diciéndole que lo extrañas</item>
+        <item>Deja que el grupo te elija un apodo que debes usar toda la noche</item>
+        <item>Haz tu mejor baile de robot</item>
+        <item>Deja que el jugador a tu derecha ponga lo que quiera en tu historia de Instagram</item>
+        <item>Muéstrale al grupo la última foto de tu galería</item>
+        <item>Imita a un bebé haciendo una rabieta</item>
+        <item>Di el abecedario al revés lo más rápido que puedas</item>
+        <item>Haz 10 sentadillas con salto ahora mismo</item>
+        <item>Tómate una selfie con la persona a tu izquierda y mándasela a alguien de tus contactos</item>
+        <item>Imita a tu famoso favorito — el grupo adivina quién es</item>
+        <item>Muéstrale al grupo tu conversación más reciente en el teléfono</item>
+        <item>Intenta lamerte el codo</item>
+        <item>Haz tu mejor carcajada malvada</item>
+        <item>Deja que alguien del grupo te escriba algo en la frente con un marcador</item>
+        <item>Huélele los zapatos a la persona a tu derecha</item>
+        <item>Haz tu mejor escena de corrida a cámara lenta por el cuarto</item>
+        <item>Bebe de tu vaso sin usar las manos</item>
+        <item>Actúa como un perro durante 30 segundos</item>
+        <item>Muéstrale al grupo tus 3 canciones más escuchadas ahora mismo</item>
+        <item>Intenta hacer un paro de manos</item>
+        <item>Imita a un presentador de noticias cubriendo esta fiesta</item>
     </string-array>
 
     <!-- Sticky dares -->
@@ -161,6 +219,15 @@
         <item>Durante 1 minuto el jugador debe hablar con acento argentino</item>
         <item>Durante 2 minutos el jugador debe terminar cada frase con "¿o qué?"</item>
         <item>Durante 5 minutos el jugador debe continuar la fiesta de pie</item>
+        <item>Durante 3 minutos el jugador debe hablar con acento extranjero</item>
+        <item>Durante 2 minutos el jugador debe hablar solo en susurros</item>
+        <item>Durante 5 minutos el jugador debe hablar en tercera persona</item>
+        <item>Durante 3 minutos el jugador debe responder todo con una pregunta</item>
+        <item>Durante 2 minutos el jugador debe hablar con voz de robot</item>
+        <item>Durante 3 minutos el jugador debe narrar todo lo que hace como comentarista deportivo</item>
+        <item>Durante 5 minutos el jugador debe empezar cada frase con "La verdad es que…"</item>
+        <item>Durante 2 minutos el jugador debe hacer un pulgar arriba cada vez que alguien habla</item>
+        <item>Durante 2 minutos el jugador debe comunicarse solo con gestos</item>
     </string-array>
 
     <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
@@ -242,18 +309,45 @@
         <item>hablando con acento argentino</item>
         <item>terminando cada frase con "¿o qué?"</item>
         <item>continuando la fiesta de pie</item>
+        <item>hablando con acento extranjero</item>
+        <item>hablando solo en susurros</item>
+        <item>hablando en tercera persona</item>
+        <item>respondiendo todo con una pregunta</item>
+        <item>hablando con voz de robot</item>
+        <item>narrando todo como comentarista deportivo</item>
+        <item>empezando cada frase con "La verdad es que…"</item>
+        <item>haciendo un pulgar arriba cada vez que alguien habla</item>
+        <item>comunicándose solo con gestos</item>
     </string-array>
 
     <string-array name="sticky_dares_duration_labels">
         <item>1 minuto</item>
         <item>2 minutos</item>
         <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>5 minutos</item>
+        <item>2 minutos</item>
+        <item>2 minutos</item>
     </string-array>
 
     <integer-array name="sticky_dares_duration_seconds">
         <item>60</item>
         <item>120</item>
         <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>120</item>
     </integer-array>
 
     <!-- Game screen UI -->
@@ -270,5 +364,72 @@
     <string name="ready">Listo</string>
     <string name="go">¡Ya!</string>
     <string name="choose_opponent">Elige tu rival</string>
+
+    <!-- Name generator word bank -->
+    <string-array name="name_adjectives">
+        <item>Picoso</item>
+        <item>Chismoso</item>
+        <item>Fregón</item>
+        <item>Sangrón</item>
+        <item>Jalado</item>
+        <item>Prendido</item>
+        <item>Acelerado</item>
+        <item>Bocón</item>
+        <item>Lambón</item>
+        <item>Chistoso</item>
+        <item>Naco</item>
+        <item>Pícaro</item>
+        <item>Mañoso</item>
+        <item>Chancletero</item>
+        <item>Cotorro</item>
+        <item>Bravucón</item>
+        <item>Berrinchudo</item>
+        <item>Tramposo</item>
+        <item>Pelado</item>
+        <item>Cucú</item>
+        <item>Desmadroso</item>
+        <item>Sobrado</item>
+        <item>Suertudo</item>
+        <item>Latoso</item>
+        <item>Gritón</item>
+        <item>Dormilón</item>
+        <item>Comelón</item>
+        <item>Parrandero</item>
+        <item>Travieso</item>
+        <item>Borrachín</item>
+    </string-array>
+
+    <string-array name="name_nouns">
+        <item>Tamal</item>
+        <item>Elote</item>
+        <item>Pozole</item>
+        <item>Chicharrón</item>
+        <item>Esquite</item>
+        <item>Churro</item>
+        <item>Atole</item>
+        <item>Quesillo</item>
+        <item>Piñata</item>
+        <item>Telenovela</item>
+        <item>Cumbia</item>
+        <item>Mariachi</item>
+        <item>Pulque</item>
+        <item>Guacamole</item>
+        <item>Chancla</item>
+        <item>Tortilla</item>
+        <item>Michelada</item>
+        <item>Tequila</item>
+        <item>Ceviche</item>
+        <item>Empanada</item>
+        <item>Arepa</item>
+        <item>Vallenato</item>
+        <item>Sombrero</item>
+        <item>Tlacoyo</item>
+        <item>Mole</item>
+        <item>Tepache</item>
+        <item>Mezcal</item>
+        <item>Chela</item>
+        <item>Charro</item>
+        <item>Raspado</item>
+    </string-array>
 
 </resources>
