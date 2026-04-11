@@ -26,7 +26,15 @@ couplesMode = CouplesModeState(isActive = GameOptionsSource.currentGameModeNameR
 | `MakeALoveDeclaration(targetPlayerName)` | Punishment | The active player must make a love declaration to a player chosen by the CPU |
 | `ActOfLove(requesterPlayerName)` | Punishment | The active player must do whatever a player chosen by the CPU tells them to |
 
-Each event carries its category as an extension property (`val CouplesEvent.category: EventCategory`) — see [game-mode-handler.md](game-mode-handler.md).
+Each event carries its category as an extension property (`val CouplesEvent.category: EventCategory`) and a dedicated image resource (`val CouplesEvent.imageRes: Int`) — see [game-mode-handler.md](game-mode-handler.md).
+
+| Event | Image resource |
+|---|---|
+| `GiveAKiss` | `img_kiss` |
+| `ChooseKissers` | `img_choose_kissers` |
+| `MakeALoveDeclaration` | `img_love_declaration` |
+| `ActOfLove` | `img_love_act` |
+| `ChooseLovers` | `img_lovers` |
 
 - **Punishment** events are triggered when the player fails or skips a challenge. The target / requester is selected by the CPU from other players according to the **interest-match** rules described below.
 - **Reward** events are triggered when the player succeeds at a challenge.
@@ -101,17 +109,17 @@ challenge shown
       │
 user taps Skip / Finish / card (GK only)
       │
-CouplesModeState.activeEvent set  ──▶  couples event dialog appears on top
+CouplesModeState.activeEvent set  ──▶  couples event shown on top (card flips)
       │                                 challenge card remains visible behind
       │
-user taps OK
+user taps anywhere on the card
       │
 onModeEventDismissed()
       │
 activeEvent = null  +  deal resets to IDLE
 ```
 
-The challenge card is non-interactive while any mode event is set (`enabled = … && !uiState.hasActiveModeEvent`), preventing double-triggering. The card tap is also disabled during mini-game result display when a mode is active (`!uiState.isModeActive` guard).
+The challenge card re-enables tapping when a couples event is active (same pattern as bar events): `isTapDismissibleCouplesEvent = couplesMode.activeEvent != null` is ORed into the `enabled` condition, and the click handler calls `onModeEventDismissed()` for that branch. The card tap is also disabled during mini-game result display when a mode is active (`!uiState.isModeActive` guard).
 
 ---
 
@@ -123,45 +131,50 @@ The dialog is an overlay composable (`CouplesEventDialog`) shown inside `GameScr
 
 ```
 "Couples Event!"  ← headlineMedium, bold
-[img_couples_mode_illustration]  ← 160 dp, static
+[event-specific image]  ← 160 dp, ContentScale.Fit (see imageRes table above)
 [event message]  ← headlineMedium, bold
-[OK]
+"Tap to dismiss"  ← bodySmall, 45 % white
 ```
 
 **Card entry animation:** the card spins from 720° to 0° (`tween` 800 ms, `FastOutSlowInEasing`) driven by `animateFloatAsState` with a `LaunchedEffect(Unit)` trigger.
 
-All five event types show a single informational message and an OK button — there are no interactive pickers. The active player and the rest of the party act on the message themselves.
+All five event types show a single informational message — there are no interactive pickers. The user taps anywhere on the card to dismiss. The active player and the rest of the party act on the message themselves.
 
 ### Content per event type
 
 **GiveAKiss**
 ```
+[img_kiss]
 "You can give a kiss to whoever you choose!"
-[OK]
+"Tap to dismiss"
 ```
 
-**ChoseKissers**
+**ChooseKissers**
 ```
+[img_choose_kissers]
 "You choose who the kissers will be!"
-[OK]
+"Tap to dismiss"
 ```
 
 **MakeALoveDeclaration**
 ```
+[img_love_declaration]
 "Make a love declaration to PlayerName!"    ← PlayerName chosen by CPU
-[OK]
+"Tap to dismiss"
 ```
 
 **ActOfLove**
 ```
+[img_love_act]
 "Do whatever PlayerName tells you to do!"    ← PlayerName chosen by CPU
-[OK]
+"Tap to dismiss"
 ```
 
-**ChoseLovers**
+**ChooseLovers**
 ```
+[img_lovers]
 "You choose who will make a love declaration!"
-[OK]
+"Tap to dismiss"
 ```
 
 ---
@@ -207,7 +220,7 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 | `cancelStickyDare(id)` (modified) | Cancel button in dares sheet | punishment event (dare's player as target) |
 | `onMiniGameDealFinished()` | Finish button on mini-game results | reward (win) / punishment (loss) / silent reset (tie) |
 | `onChallengeDismissed()` (modified) | GK card tap after answer | reward (correct) or punishment (wrong) |
-| `onModeEventDismissed()` | OK button inside `CouplesEventDialog` | clears event, resets deal to IDLE |
+| `onModeEventDismissed()` | Tap anywhere on the card while a couples event is active | clears event, resets deal to IDLE |
 
 ---
 
@@ -215,7 +228,7 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 
 | File | Role |
 |---|---|
-| `CouplesEvent.kt` | Sealed class: `GiveAKiss`, `ChoseKissers`, `MakeALoveDeclaration`, `ActOfLove`, `ChoseLovers` |
+| `CouplesEvent.kt` | Sealed class + `imageRes` / `category` extension properties |
 | `CouplesModeState.kt` | State data class + `punishmentEvent()` / `rewardEvent()` factory methods |
 | `CouplesEventDialog.kt` | Dialog composable: scrim, rotating card entry animation, per-event message |
 | `GameModeHandler.kt` | `CouplesModeHandler` implementation — all event construction logic |

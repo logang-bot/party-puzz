@@ -69,9 +69,10 @@ All methods are pure state transformers — they receive the current `GameScreen
 
 | Class | Active for | Behaviour |
 |---|---|---|
-| `NoOpModeHandler` | Standard, Party Puzz | All methods return `state` unchanged — no events fire |
+| `NoOpModeHandler` | Standard | All methods return `state` unchanged — no events fire |
 | `BarModeHandler` | Bar Time | Produces `TakeDrinks` / `GiveDrinks` / `GiveDrinksPickTarget` / `NoAction` |
 | `CouplesModeHandler` | Couples | Produces `MakeALoveDeclaration` / `ActOfLove` / `GiveAKiss` / `ChoseKissers` / `ChoseLovers` |
+| `PartyPuzzModeHandler` | Party Puzz | Randomly delegates to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler` on each trigger; `clearEvent` clears both sub-mode events |
 
 ---
 
@@ -81,9 +82,10 @@ The handler is chosen once at ViewModel initialisation and never changes during 
 
 ```kotlin
 private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameModeNameRes) {
-    R.string.bar_game_mode     -> BarModeHandler()
-    R.string.couples_game_mode -> CouplesModeHandler()
-    else                       -> NoOpModeHandler()
+    R.string.bar_game_mode        -> BarModeHandler()
+    R.string.couples_game_mode    -> CouplesModeHandler()
+    R.string.party_puzz_game_mode -> PartyPuzzModeHandler()
+    else                          -> NoOpModeHandler()
 }
 ```
 

@@ -34,14 +34,17 @@ class GameScreenViewModel @Inject constructor(
     private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameModeNameRes) {
         R.string.bar_game_mode -> BarModeHandler()
         R.string.couples_game_mode -> CouplesModeHandler()
+        R.string.party_puzz_game_mode -> PartyPuzzModeHandler()
         else -> NoOpModeHandler()
     }
+
+    private val isPartyPuzzMode = GameOptionsSource.currentGameModeNameRes == R.string.party_puzz_game_mode
 
     private val _uiState = MutableStateFlow(
         GameScreenState(
             players = GamePlayersList.PlayersList.toList(),
-            barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.bar_game_mode),
-            couplesMode = CouplesModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.couples_game_mode)
+            barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.bar_game_mode || isPartyPuzzMode),
+            couplesMode = CouplesModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.string.couples_game_mode || isPartyPuzzMode)
         )
     )
     val uiState: StateFlow<GameScreenState> = _uiState.asStateFlow()

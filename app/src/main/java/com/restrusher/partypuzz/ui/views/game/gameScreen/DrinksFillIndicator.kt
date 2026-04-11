@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
 
 private val BeerIconSize = 280.dp
-private val ArrowSize = 36.dp
+private val ArrowSize = 66.dp
 private val FillColor = Color(0xFFFFA726)
 private const val MaxDrinks = 5
 

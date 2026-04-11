@@ -68,3 +68,21 @@ internal class CouplesModeHandler : GameModeHandler {
     override fun clearEvent(state: GameScreenState) =
         state.copy(couplesMode = state.couplesMode.copy(activeEvent = null))
 }
+
+internal class PartyPuzzModeHandler : GameModeHandler {
+    private val handlers = listOf(BarModeHandler(), CouplesModeHandler(), NoOpModeHandler())
+
+    override fun applyPunishment(state: GameScreenState, currentPlayer: Player?) =
+        handlers.random().applyPunishment(state, currentPlayer)
+
+    override fun applyReward(state: GameScreenState) =
+        handlers.random().applyReward(state)
+
+    override fun applyMiniGameResult(state: GameScreenState) =
+        handlers.random().applyMiniGameResult(state)
+
+    override fun clearEvent(state: GameScreenState) = state.copy(
+        barMode = state.barMode.copy(activeEvent = null),
+        couplesMode = state.couplesMode.copy(activeEvent = null)
+    )
+}

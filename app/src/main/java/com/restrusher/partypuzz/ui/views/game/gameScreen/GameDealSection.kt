@@ -124,15 +124,20 @@ internal fun GameDealSection(
                         enabled = run {
                             val barEvent = uiState.barMode.activeEvent
                             val isTapDismissibleBarEvent = barEvent != null && barEvent !is BarEvent.GiveDrinksPickTarget
+                            val isTapDismissibleCouplesEvent = uiState.couplesMode.activeEvent != null
                             isTapDismissibleBarEvent ||
+                            isTapDismissibleCouplesEvent ||
                             (uiState.isChallengeDismissible &&
                              !uiState.hasActiveModeEvent &&
                              !(uiState.isModeActive && uiState.dealType == GameDealType.MINI_GAME && uiState.miniGameResult != null))
                         }
                     ) {
                         val barEvent = uiState.barMode.activeEvent
-                        if (barEvent != null && barEvent !is BarEvent.GiveDrinksPickTarget) onModeEventDismissed()
-                        else onChallengeDismissed()
+                        when {
+                            barEvent != null && barEvent !is BarEvent.GiveDrinksPickTarget -> onModeEventDismissed()
+                            uiState.couplesMode.activeEvent != null -> onModeEventDismissed()
+                            else -> onChallengeDismissed()
+                        }
                     }
             ) {
                 // Blurred photo behind the card content
@@ -748,7 +753,7 @@ private fun ModeEventChallengeContent(
                     .height(160.dp)
             )
             couplesEvent != null -> Image(
-                painter = painterResource(R.drawable.img_couples_mode_illustration),
+                painter = painterResource(couplesEvent.imageRes),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
@@ -764,7 +769,7 @@ private fun ModeEventChallengeContent(
                 onGiveDrinksTargetSelected = onGiveDrinksTargetSelected
             )
         } else if (couplesEvent != null) {
-            CouplesEventContent(event = couplesEvent, onDismiss = onDismiss)
+            CouplesEventContent(event = couplesEvent)
         }
     }
 }
@@ -847,8 +852,7 @@ private fun BarEventContent(
 
 @Composable
 private fun CouplesEventContent(
-    event: CouplesEvent,
-    onDismiss: () -> Unit
+    event: CouplesEvent
 ) {
     val message = when (event) {
         is CouplesEvent.GiveAKiss -> stringResource(R.string.couples_event_give_a_kiss)
@@ -865,10 +869,11 @@ private fun CouplesEventContent(
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(24.dp))
-    DealOptionButton(
-        text = stringResource(R.string.ok),
-        onClick = onDismiss,
-        modifier = Modifier.fillMaxWidth()
+    Text(
+        text = stringResource(R.string.tap_to_dismiss),
+        style = MaterialTheme.typography.bodySmall,
+        color = Color.White.copy(alpha = 0.45f),
+        textAlign = TextAlign.Center
     )
 }
 
