@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -169,6 +170,7 @@ fun PartyPhotoAlbumSection(
     photos: List<PartyPhotoEntity>,
     hasCameraPermission: Boolean,
     onRequestPermission: () -> Unit,
+    onPhotoClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -204,7 +206,7 @@ fun PartyPhotoAlbumSection(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                photos.forEach { photo ->
+                photos.forEachIndexed { index, photo ->
                     AsyncImage(
                         model = ImageRequest.Builder(context).data(File(photo.photoPath)).build(),
                         contentDescription = null,
@@ -212,6 +214,7 @@ fun PartyPhotoAlbumSection(
                         modifier = Modifier
                             .size(96.dp)
                             .clip(RoundedCornerShape(8.dp))
+                            .clickable { onPhotoClick(index) }
                     )
                 }
             }

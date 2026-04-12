@@ -115,6 +115,10 @@
     <string name="party_album_title">Álbum de fotos</string>
     <string name="party_album_empty">Aún no hay fotos. ¡Juega una sesión para capturar momentos!</string>
     <string name="grant_camera_permission">Permitir cámara para capturar momentos de la fiesta</string>
+    <string name="photo_options">Opciones de foto</string>
+    <string name="download_photo">Guardar</string>
+    <string name="download_success">Guardada en tu galería</string>
+    <string name="download_failed">No se pudo guardar la foto</string>
     <string name="delete_party">Eliminar fiesta</string>
     <string name="delete_party_title">¿Eliminar fiesta?</string>
     <string name="delete_party_message">Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta fiesta?</string>

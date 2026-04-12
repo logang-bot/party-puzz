@@ -114,6 +114,10 @@
     <string name="party_album_title">Photo Album</string>
     <string name="party_album_empty">No photos yet. Play a game session to capture moments!</string>
     <string name="grant_camera_permission">Allow camera to capture party moments</string>
+    <string name="photo_options">Photo options</string>
+    <string name="download_photo">Save</string>
+    <string name="download_success">Saved to your gallery</string>
+    <string name="download_failed">Couldn\'t save the photo</string>
     <string name="delete_party">Delete party</string>
     <string name="delete_party_title">Delete party?</string>
     <string name="delete_party_message">This action cannot be undone. Are you sure you want to delete this party?</string>

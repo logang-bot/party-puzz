@@ -4,13 +4,14 @@
 
 Runtime permission requests follow an MVVM pattern: the **ViewModel** owns the permission dialog queue state, and the **Composable screen** handles the Android system interactions (launching the permission request and showing the dialog).
 
-`CAMERA` is the only permission currently requested. It is used in two places:
+Two permissions are currently requested at runtime:
 
-| Location | Pattern | Purpose |
-|---|---|---|
-| `CreatePlayerScreen` | Full dialog queue flow (see below) | Take a player profile photo |
-| `GameScreen` | Silent inline check (see below) | Capture a party album photo during a game session |
-| `PartyDetailScreen` | `RequestPermission` launcher | Grant camera access to enable the in-game photo feature |
+| Permission | API scope | Location | Pattern | Purpose |
+|---|---|---|---|---|
+| `CAMERA` | All | `CreatePlayerScreen` | Full dialog queue flow (see below) | Take a player profile photo |
+| `CAMERA` | All | `GameScreen` | Silent inline check (see below) | Capture a party album photo during a game session |
+| `CAMERA` | All | `PartyDetailScreen` | `RequestPermission` launcher | Grant camera access to enable the in-game photo feature |
+| `WRITE_EXTERNAL_STORAGE` | API ≤ 28 only | `PartyDetailScreen` | `RequestPermission` launcher + pending-path pattern | Save a photo to the device gallery from the photo viewer |
 
 ---
 
@@ -161,6 +162,36 @@ hasCameraPermission == false
 ```
 
 `hasCameraPermission` is a local `var` initialised with `ContextCompat.checkSelfPermission` on first composition. No ViewModel involvement — the permission state only affects which UI variant is shown.
+
+---
+
+---
+
+## Gallery Save Permission (`PartyDetailScreen`)
+
+Saving a photo to the device gallery from the photo viewer requires `WRITE_EXTERNAL_STORAGE` on **API 24–28** only. On API 29+ (scoped storage), `MediaStore` writes require no permission.
+
+The permission is declared in `AndroidManifest.xml` with `android:maxSdkVersion="28"` so it is never requested on modern devices.
+
+### Runtime flow (API 24–28 only)
+
+```
+User taps "Save" in PhotoViewerDialog
+    │
+    ├─ API >= 29  ──────────────────────────────►  viewModel.downloadPhoto(path)
+    │
+    └─ API < 29
+            │
+            ├─ WRITE_EXTERNAL_STORAGE granted?  ──Yes──►  viewModel.downloadPhoto(path)
+            │
+            └─ No  ──►  pendingDownloadPath = path
+                        writePermissionLauncher.launch(WRITE_EXTERNAL_STORAGE)
+                                │
+                                └─ granted  ──►  viewModel.downloadPhoto(pendingDownloadPath)
+                                   denied   ──►  pendingDownloadPath = null  (silent no-op)
+```
+
+`pendingDownloadPath` is a local `var` in `PartyDetailScreen` that holds the photo path across the permission request so the download can be retried automatically on grant.
 
 ---
 

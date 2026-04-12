@@ -204,6 +204,7 @@ hasCameraPermission == true  &&  photos.isEmpty()
 
 hasCameraPermission == true  &&  photos non-empty
     └─ FlowRow of 96 dp × 96 dp thumbnails (8 dp gap), loaded with Coil 3
+           └─ each thumbnail is tappable → opens PhotoViewerDialog at that index
 ```
 
 Permission state is a local `var hasCameraPermission` checked with `ContextCompat.checkSelfPermission` on first composition and updated by the `RequestPermission` launcher result.
@@ -211,6 +212,66 @@ Permission state is a local `var hasCameraPermission` checked with `ContextCompa
 ### Photo observation
 
 `PartyDetailViewModel` observes `partyPhotoRepository.getPhotosForParty(partyId)` as a `Flow`, updating `PartyDetailState.photos` in real time. Photos appear in the album without requiring a screen refresh.
+
+---
+
+## Photo Viewer
+
+Tapping any thumbnail opens a full-screen `PhotoViewerDialog` that lets the user browse all album photos and save individual ones to the device gallery.
+
+### Structure
+
+```
+PhotoViewerDialog  (Dialog — separate Android window, full screen)
+    ├─ PhotoPager          HorizontalPager, swipe left/right to navigate
+    ├─ PhotoViewerTopBar   overlay at the top
+    │       ├─ Close button (left)
+    │       └─ DropdownMenu "⋮" (right)
+    │               └─ "Save"  ──►  onDownload(currentPhotoPath)
+    └─ SnackbarHost        overlay at the bottom, shows save result
+```
+
+> `PhotoViewerDialog` creates its own Android window via `Dialog`. The `SnackbarHost` is placed inside that same window — this is required because a `SnackbarHost` on the screen behind the dialog would never be visible.
+
+### Navigation
+
+`HorizontalPager` (`rememberPagerState(initialPage = tappedIndex)`) handles swipe navigation. The initial page is the index of the thumbnail the user tapped.
+
+### Save to gallery
+
+Triggered from the three-dot menu → "Save". The save runs on `Dispatchers.IO` in the ViewModel:
+
+| API level | Mechanism |
+|---|---|
+| API 29+ (Q+) | `MediaStore` scoped storage — no extra permission needed. Photos are saved to `Pictures/PartyPuzz/`. `IS_PENDING` flag is set during write and cleared on success. |
+| API 24–28 | `MediaStore.Images.Media.EXTERNAL_CONTENT_URI` — requires `WRITE_EXTERNAL_STORAGE` runtime permission (see *Permission Handling*). |
+
+**Result feedback** — `downloadResult: DownloadResult?` in `PartyDetailState`:
+
+| Value | Snackbar message |
+|---|---|
+| `DownloadResult.SUCCESS` | "Saved to your gallery" |
+| `DownloadResult.FAILURE` | "Couldn't save the photo" |
+
+A `LaunchedEffect(downloadResult)` inside `PhotoViewerDialog` observes the value, calls `snackbarHostState.showSnackbar(message)`, then calls `onDownloadResultConsumed()` to reset the state to `null`.
+
+### State fields
+
+New fields added to `PartyDetailState`:
+
+| Field | Type | Purpose |
+|---|---|---|
+| `viewerPhotoIndex` | `Int?` | Non-null while the viewer is open; value is the initial pager page |
+| `downloadResult` | `DownloadResult?` | Set by `downloadPhoto()`; consumed by the dialog snackbar |
+
+### ViewModel methods
+
+| Method | Action |
+|---|---|
+| `openPhotoViewer(index)` | Sets `viewerPhotoIndex = index` |
+| `closePhotoViewer()` | Sets `viewerPhotoIndex = null` |
+| `downloadPhoto(photoPath)` | Saves file via MediaStore; updates `downloadResult` |
+| `clearDownloadResult()` | Resets `downloadResult` to `null` after snackbar is shown |
 
 ---
 
@@ -241,10 +302,11 @@ When the user confirms party deletion in `PartyDetailViewModel.confirmDelete()`:
 | `GameScreenViewModel.kt` | Roll logic, trigger points, photo file copy + DB insert |
 | `GameDealSection.kt` | `CameraRequestContent` composable; camera request `AnimatedVisibility` layer |
 | `GameScreen.kt` | `FileProvider` URI setup, `TakePicture` launcher, permission check on button tap |
-| `PartyDetailState.kt` | `photos: List<PartyPhotoEntity>` field |
-| `PartyDetailViewModel.kt` | Photo Flow observation; file + record cleanup on delete |
-| `PartyDetailScreen.kt` | Permission launcher, `PartyPhotoAlbumSection` usage |
+| `PartyDetailState.kt` | `photos`, `viewerPhotoIndex`, `downloadResult` fields; `DownloadResult` enum |
+| `PartyDetailViewModel.kt` | Photo Flow observation; viewer state; download logic; file + record cleanup on delete |
+| `PartyDetailScreen.kt` | Permission launchers, `PartyPhotoAlbumSection` and `PhotoViewerDialog` usage |
 | `PartyDetailComponents.kt` | `PartyPhotoAlbumSection` composable |
+| `PhotoViewerDialog.kt` | `PhotoViewerDialog`, `PhotoPager`, `PhotoViewerTopBar` composables |
 
 ---
 
@@ -258,3 +320,8 @@ When the user confirms party deletion in `PartyDetailViewModel.confirmDelete()`:
 | `party_album_title` | Section heading in `PartyDetailScreen` |
 | `party_album_empty` | Empty-state copy when no photos exist |
 | `grant_camera_permission` | Button label when camera permission is not yet granted |
+| `close` | Content description for the viewer close button |
+| `photo_options` | Content description for the three-dot menu button |
+| `download_photo` | "Save" — menu item label |
+| `download_success` | "Saved to your gallery" — snackbar on success |
+| `download_failed` | "Couldn't save the photo" — snackbar on failure |

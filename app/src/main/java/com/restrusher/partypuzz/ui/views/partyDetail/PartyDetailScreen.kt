@@ -2,6 +2,7 @@ package com.restrusher.partypuzz.ui.views.partyDetail
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -56,6 +57,14 @@ fun PartyDetailScreen(
         ActivityResultContracts.RequestPermission()
     ) { granted -> hasCameraPermission = granted }
 
+    var pendingDownloadPath by remember { mutableStateOf<String?>(null) }
+    val writePermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) pendingDownloadPath?.let { viewModel.downloadPhoto(it) }
+        pendingDownloadPath = null
+    }
+
     val title = stringResource(id = R.string.party_detail)
     LaunchedEffect(Unit) {
         setAppBarTitle(title)
@@ -109,6 +118,7 @@ fun PartyDetailScreen(
                     photos = uiState.photos,
                     hasCameraPermission = hasCameraPermission,
                     onRequestPermission = { permissionLauncher.launch(Manifest.permission.CAMERA) },
+                    onPhotoClick = viewModel::openPhotoViewer,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(32.dp))
@@ -129,6 +139,26 @@ fun PartyDetailScreen(
                 CircularProgressIndicator()
             }
         }
+    }
+
+    uiState.viewerPhotoIndex?.let { index ->
+        PhotoViewerDialog(
+            photos = uiState.photos,
+            initialIndex = index,
+            downloadResult = uiState.downloadResult,
+            onDismiss = viewModel::closePhotoViewer,
+            onDownloadResultConsumed = viewModel::clearDownloadResult,
+            onDownload = { photoPath ->
+                val needsPermission = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                if (needsPermission) {
+                    pendingDownloadPath = photoPath
+                    writePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                } else {
+                    viewModel.downloadPhoto(photoPath)
+                }
+            }
+        )
     }
 
     if (uiState.showDeleteDialog) {

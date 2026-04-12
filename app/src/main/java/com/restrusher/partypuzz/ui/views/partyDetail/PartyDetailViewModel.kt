@@ -1,10 +1,16 @@
 package com.restrusher.partypuzz.ui.views.partyDetail
 
+import android.content.ContentValues
+import android.content.Context
+import android.os.Build
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzz.data.repositories.interfaces.PartyPhotoRepository
 import com.restrusher.partypuzz.data.repositories.interfaces.PartyRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PartyDetailViewModel @Inject constructor(
     private val partyRepository: PartyRepository,
-    private val partyPhotoRepository: PartyPhotoRepository
+    private val partyPhotoRepository: PartyPhotoRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(PartyDetailState())
@@ -57,6 +64,43 @@ class PartyDetailViewModel @Inject constructor(
             _uiState.update { it.copy(party = updated, isSaving = false, isEditing = false, editedName = "") }
         }
     }
+
+    fun openPhotoViewer(index: Int) = _uiState.update { it.copy(viewerPhotoIndex = index) }
+    fun closePhotoViewer() = _uiState.update { it.copy(viewerPhotoIndex = null) }
+
+    fun downloadPhoto(photoPath: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val result = runCatching {
+                val sourceFile = File(photoPath)
+                check(sourceFile.exists())
+                val filename = "PartyPuzz_${System.currentTimeMillis()}.jpg"
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Images.Media.DISPLAY_NAME, filename)
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(MediaStore.Images.Media.RELATIVE_PATH, "${Environment.DIRECTORY_PICTURES}/PartyPuzz")
+                        put(MediaStore.Images.Media.IS_PENDING, 1)
+                    }
+                }
+                val resolver = context.contentResolver
+                val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    resolver.insert(MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY), contentValues)
+                } else {
+                    resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                } ?: error("Failed to create MediaStore entry")
+                resolver.openOutputStream(uri)?.use { out -> sourceFile.inputStream().copyTo(out) }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    contentValues.clear()
+                    contentValues.put(MediaStore.Images.Media.IS_PENDING, 0)
+                    resolver.update(uri, contentValues, null, null)
+                }
+            }
+            val downloadResult = if (result.isSuccess) DownloadResult.SUCCESS else DownloadResult.FAILURE
+            _uiState.update { it.copy(downloadResult = downloadResult) }
+        }
+    }
+
+    fun clearDownloadResult() = _uiState.update { it.copy(downloadResult = null) }
 
     fun showDeleteDialog() = _uiState.update { it.copy(showDeleteDialog = true) }
 
