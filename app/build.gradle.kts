@@ -25,12 +25,30 @@ android {
     }
 
     buildTypes {
+        // TODO: These are Google's official test IDs — safe for development only.
+        //       Never use test IDs in a production build.
+        debug {
+            buildConfigField("String", "BANNER_AD_UNIT_ID", "\"ca-app-pub-3940256099942544/6300978111\"")
+            buildConfigField("String", "INTERSTITIAL_AD_UNIT_ID", "\"ca-app-pub-3940256099942544/1033173712\"")
+            buildConfigField("String", "REWARDED_AD_UNIT_ID", "\"ca-app-pub-3940256099942544/5224354917\"")
+            buildConfigField("String", "ADMOB_APP_ID", "\"ca-app-pub-3940256099942544~3347511713\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // TODO: Replace ALL four values below with your real AdMob IDs before publishing.
+            //       Steps:
+            //       1. Create an AdMob account at https://admob.google.com
+            //       2. Register the app (Android, package: com.restrusher.partypuzz) to get the App ID
+            //       3. Create 3 ad units (Banner, Interstitial, Rewarded) to get their unit IDs
+            //       4. Also update the APPLICATION_ID meta-data value in AndroidManifest.xml
+            buildConfigField("String", "BANNER_AD_UNIT_ID", "\"REPLACE_WITH_REAL_BANNER_ID\"")
+            buildConfigField("String", "INTERSTITIAL_AD_UNIT_ID", "\"REPLACE_WITH_REAL_INTERSTITIAL_ID\"")
+            buildConfigField("String", "REWARDED_AD_UNIT_ID", "\"REPLACE_WITH_REAL_REWARDED_ID\"")
+            buildConfigField("String", "ADMOB_APP_ID", "\"REPLACE_WITH_REAL_APP_ID\"")
         }
     }
     compileOptions {
@@ -88,6 +106,9 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+
+    // AdMob
+    implementation(libs.play.services.ads)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

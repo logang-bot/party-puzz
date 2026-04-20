@@ -1,5 +1,6 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
+import android.app.Activity
 import android.Manifest
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -118,7 +119,7 @@ fun GameScreen(
             confirmButton = {
                 TextButton(onClick = {
                     showExitDialog = false
-                    onNavigateBack()
+                    viewModel.showInterstitial(context as Activity) { onNavigateBack() }
                 }) { Text(text = stringResource(id = R.string.yes)) }
             },
             dismissButton = {

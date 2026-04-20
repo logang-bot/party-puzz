@@ -1,5 +1,6 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
+import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSour
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzz.data.models.Player
 import com.restrusher.partypuzz.data.repositories.interfaces.PartyPhotoRepository
+import com.restrusher.partypuzz.ui.common.ads.InterstitialAdManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +30,8 @@ import kotlin.random.Random
 @HiltViewModel
 class GameScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val partyPhotoRepository: PartyPhotoRepository
+    private val partyPhotoRepository: PartyPhotoRepository,
+    private val interstitialAdManager: InterstitialAdManager
 ) : ViewModel() {
 
     companion object {
@@ -61,6 +64,10 @@ class GameScreenViewModel @Inject constructor(
 
     private var dealJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
+
+    fun showInterstitial(activity: Activity, onDone: () -> Unit) {
+        interstitialAdManager.showAd(activity, onDone)
+    }
 
     fun onGameDealTapped() {
         val state = _uiState.value
@@ -141,11 +148,15 @@ class GameScreenViewModel @Inject constructor(
 
     fun onTruthOrDareSkipped() {
         if (_uiState.value.truthOrDareChoice == null) return
+        // TODO: Wire up RewardedAdManager here — show a rewarded ad before applying the punishment.
+        //       If the user watches the ad to completion (onRewarded fires), grant the skip for free.
+        //       If the ad is dismissed early or unavailable, apply the punishment as usual.
         _uiState.update { modeHandler.applyPunishment(it, it.selectedPlayer) }
     }
 
     fun onStickyDareSkipped() {
         if (_uiState.value.dealType != GameDealType.STICKY_DARE) return
+        // TODO: Wire up RewardedAdManager here — same pattern as onTruthOrDareSkipped above.
         _uiState.update { modeHandler.applyPunishment(it, it.selectedPlayer) }
     }
 

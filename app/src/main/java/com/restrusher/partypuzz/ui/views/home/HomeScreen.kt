@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.ui.common.ads.BannerAdView
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -148,6 +149,12 @@ fun SharedTransitionScope.HomeScreen(
                 onDismiss = viewModel::closeDialog
             )
         }
+
+        BannerAdView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+        )
     }
 }
 
