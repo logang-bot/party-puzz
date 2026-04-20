@@ -25,7 +25,7 @@ class FollowTheSpotViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val GAME_DURATION_SECONDS = 10
+        const val GAME_DURATION_SECONDS = 10
         private const val COUNTDOWN_START = 3
     }
 
@@ -124,9 +124,13 @@ class FollowTheSpotViewModel @Inject constructor(
             while (remaining > 0) {
                 delay(1000L)
                 remaining--
-                _uiState.update { it.copy(timeRemaining = remaining) }
+                _uiState.update {
+                    it.copy(
+                        timeRemaining = remaining,
+                        isGameRunning = remaining > 0
+                    )
+                }
             }
-            _uiState.update { it.copy(isGameRunning = false) }
         }
     }
 

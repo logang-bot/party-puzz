@@ -1,5 +1,6 @@
 package com.restrusher.partypuzz.ui.views.game.miniGames.followTheSpot
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -21,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,17 +49,26 @@ internal fun GameDivider(
     player1Score: Int,
     player2Score: Int,
     timeRemaining: Int,
-    totalDuration: Int = 15,
+    totalDuration: Int,
     isGameRunning: Boolean,
     onExitTapped: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timerFraction = if (totalDuration > 0) maxOf(0f, (timeRemaining - 1) / totalDuration.toFloat()) else 0f
-    val animatedFraction by animateFloatAsState(
-        targetValue = timerFraction,
-        animationSpec = tween(durationMillis = 1000, easing = LinearEasing),
-        label = "timerProgress"
-    )
+    val timerAnimatable = remember {
+        Animatable(if (totalDuration > 0) timeRemaining / totalDuration.toFloat() else 0f)
+    }
+    LaunchedEffect(timeRemaining, isGameRunning) {
+        if (!isGameRunning || totalDuration <= 0) {
+            timerAnimatable.snapTo(0f)
+        } else {
+            timerAnimatable.snapTo(timeRemaining / totalDuration.toFloat())
+            timerAnimatable.animateTo(
+                targetValue = maxOf(0f, (timeRemaining - 1) / totalDuration.toFloat()),
+                animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
+            )
+        }
+    }
+    val animatedFraction = timerAnimatable.value
     val tapToExitAlpha by animateFloatAsState(
         targetValue = if (!isGameRunning) 1f else 0f,
         animationSpec = tween(durationMillis = 600),
@@ -197,6 +208,7 @@ private fun GameDividerRunningPreview() {
             player1Score = 3,
             player2Score = 5,
             timeRemaining = 8,
+            totalDuration = FollowTheSpotViewModel.GAME_DURATION_SECONDS,
             isGameRunning = true,
             onExitTapped = {}
         )
@@ -213,6 +225,7 @@ private fun GameDividerTapToExitPreview() {
             player1Score = 7,
             player2Score = 4,
             timeRemaining = 0,
+            totalDuration = FollowTheSpotViewModel.GAME_DURATION_SECONDS,
             isGameRunning = false,
             onExitTapped = {}
         )

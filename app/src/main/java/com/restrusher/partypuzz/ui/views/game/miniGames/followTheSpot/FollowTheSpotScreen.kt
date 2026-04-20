@@ -93,6 +93,7 @@ internal fun FollowTheSpotContent(
                 player1Score = uiState.player1Score,
                 player2Score = uiState.player2Score,
                 timeRemaining = uiState.timeRemaining,
+                totalDuration = uiState.totalDuration,
                 isGameRunning = uiState.isGameRunning,
                 onExitTapped = { onGameFinished(uiState.player1Score, uiState.player2Score) }
             )
