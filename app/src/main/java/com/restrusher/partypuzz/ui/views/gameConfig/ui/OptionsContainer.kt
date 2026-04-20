@@ -10,6 +10,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,8 +34,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
-import androidx.compose.foundation.layout.Row
 
 private data class OptionDef(@androidx.annotation.StringRes val labelRes: Int, val initialEnabled: Boolean)
 
@@ -43,7 +43,7 @@ private val optionDefinitions = listOf(
     OptionDef(R.string.truth_or_dare, true),
     OptionDef(R.string.general_knowledge_title, true),
     OptionDef(R.string.sticky_dares, true),
-    OptionDef(R.string.mini_games, true),
+    OptionDef(R.string.mini_games, false),
 )
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -65,11 +65,19 @@ fun OptionsContainer(modifier: Modifier = Modifier) {
             .padding(vertical = 10.dp, horizontal = 4.dp)
     ) {
         optionDefinitions.forEach { def ->
-            OptionChip(
-                optionName = stringResource(def.labelRes),
-                initialEnabled = def.initialEnabled,
-                onToggled = { GameOptionsSource.toggle(def.labelRes) }
-            )
+            if (def.labelRes == R.string.mini_games) {
+                MiniGamesOptionChip(
+                    optionName = stringResource(def.labelRes),
+                    initialEnabled = def.initialEnabled,
+                    onToggled = { GameOptionsSource.toggle(def.labelRes) }
+                )
+            } else {
+                OptionChip(
+                    optionName = stringResource(def.labelRes),
+                    initialEnabled = def.initialEnabled,
+                    onToggled = { GameOptionsSource.toggle(def.labelRes) }
+                )
+            }
         }
     }
 }

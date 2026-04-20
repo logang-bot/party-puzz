@@ -25,7 +25,7 @@ class FollowTheSpotViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val GAME_DURATION_SECONDS = 15
+        private const val GAME_DURATION_SECONDS = 10
         private const val COUNTDOWN_START = 3
     }
 

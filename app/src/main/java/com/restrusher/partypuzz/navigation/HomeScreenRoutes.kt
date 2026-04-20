@@ -40,3 +40,6 @@ data class FollowTheSpotRoute(
     val player2PhotoPath: String?,
     val player2AvatarName: String?
 )
+
+@Serializable
+data object HotPotatoRoute

@@ -65,6 +65,7 @@ internal fun GameDealSection(
     onMiniGameDealFinished: () -> Unit,
     onGeneralKnowledgeAnswered: (Char) -> Unit,
     onMiniGameOpponentSelected: (Player) -> Unit,
+    onGlobalMiniGameStarted: () -> Unit,
     onModeEventDismissed: () -> Unit,
     onGiveDrinksTargetSelected: (String) -> Unit,
     onCameraRequested: () -> Unit,
@@ -167,6 +168,7 @@ internal fun GameDealSection(
                             GameDealType.MINI_GAME -> MiniGameChallengeContent(
                                 uiState = uiState,
                                 onOpponentSelected = onMiniGameOpponentSelected,
+                                onGlobalMiniGameStarted = onGlobalMiniGameStarted,
                                 onFinished = onMiniGameDealFinished,
                                 modifier = Modifier.fillMaxSize()
                             )

@@ -61,6 +61,7 @@ private const val KEY_MINI_GAME_P2_SCORE = "mini_game_p2_score"
 fun GameScreen(
     onNavigateBack: () -> Unit,
     onNavigateToMiniGame: (miniGame: MiniGame, challenger: Player, opponent: Player) -> Unit,
+    onNavigateToGlobalMiniGame: (miniGame: MiniGame) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GameScreenViewModel = hiltViewModel()
 ) {
@@ -87,6 +88,15 @@ fun GameScreen(
             ?.collect {
                 viewModel.onMiniGameAborted()
                 backStackEntry.savedStateHandle.remove<Boolean>("mini_game_aborted")
+            }
+    }
+    LaunchedEffect(backStackEntry) {
+        backStackEntry?.savedStateHandle
+            ?.getStateFlow<String?>("hot_potato_loser", null)
+            ?.filterNotNull()
+            ?.collect { loserName ->
+                viewModel.onHotPotatoResultReceived(loserName)
+                backStackEntry.savedStateHandle.remove<String>("hot_potato_loser")
             }
     }
 
@@ -208,6 +218,10 @@ fun GameScreen(
                     if (miniGame != null && challenger != null) {
                         onNavigateToMiniGame(miniGame, challenger, opponent)
                     }
+                },
+                onGlobalMiniGameStarted = {
+                    val miniGame = uiState.miniGame
+                    if (miniGame != null) onNavigateToGlobalMiniGame(miniGame)
                 },
                 onModeEventDismissed = viewModel::onModeEventDismissed,
                 onGiveDrinksTargetSelected = viewModel::onGiveDrinksTargetSelected,

@@ -7,7 +7,7 @@ data class FollowTheSpotState(
     val player2: Player? = null,
     val player1Score: Int = 0,
     val player2Score: Int = 0,
-    val timeRemaining: Int = 15,
+    val timeRemaining: Int = 10,
     val player1SpotNormX: Float = 0.5f,
     val player1SpotNormY: Float = 0.5f,
     val player2SpotNormX: Float = 0.5f,

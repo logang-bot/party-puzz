@@ -37,6 +37,7 @@ import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 internal fun MiniGameChallengeContent(
     uiState: GameScreenState,
     onOpponentSelected: (Player) -> Unit,
+    onGlobalMiniGameStarted: () -> Unit,
     onFinished: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -51,7 +52,7 @@ internal fun MiniGameChallengeContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
-                .padding(bottom = if (result == null && pendingOpponent != null) 80.dp else 0.dp)
+                .padding(bottom = if (!miniGame.isGlobal && result == null && pendingOpponent != null) 80.dp else 0.dp)
         ) {
             Text(
                 text = stringResource(miniGame.nameRes),
@@ -60,22 +61,31 @@ internal fun MiniGameChallengeContent(
                 color = Color.White.copy(alpha = 0.65f),
                 textAlign = TextAlign.Center
             )
-            if (result == null) {
-                OpponentSelectionContent(
+            when {
+                miniGame.isGlobal -> GlobalMiniGameContent()
+                result == null -> OpponentSelectionContent(
                     uiState = uiState,
                     pendingOpponent = pendingOpponent,
                     onPendingOpponentChanged = { pendingOpponent = it }
                 )
-            } else {
-                MiniGameResultContent(
+                else -> MiniGameResultContent(
                     result = result,
                     isModeActive = uiState.isModeActive,
                     onFinished = onFinished
                 )
             }
         }
-        if (result == null && pendingOpponent != null) {
-            DealOptionButton(
+        when {
+            miniGame.isGlobal -> DealOptionButton(
+                text = stringResource(R.string.start),
+                onClick = onGlobalMiniGameStarted,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp)
+            )
+            result == null && pendingOpponent != null -> DealOptionButton(
                 text = stringResource(R.string.go),
                 onClick = { onOpponentSelected(pendingOpponent!!) },
                 modifier = Modifier
@@ -86,6 +96,18 @@ internal fun MiniGameChallengeContent(
             )
         }
     }
+}
+
+@Composable
+private fun GlobalMiniGameContent() {
+    Spacer(Modifier.height(16.dp))
+    Text(
+        text = stringResource(R.string.hot_potato_global_description),
+        style = MaterialTheme.typography.bodyLarge,
+        color = Color.White.copy(alpha = 0.80f),
+        textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(80.dp))
 }
 
 @Composable
@@ -190,6 +212,7 @@ private fun MiniGameSelectionLightPreview() {
                     players = listOf(previewPlayer1, previewPlayer2, previewPlayer3),
                     miniGame = MiniGame.FOLLOW_THE_SPOT
                 ),
+                onGlobalMiniGameStarted = {},
                 onOpponentSelected = {},
                 onFinished = {},
                 modifier = Modifier.fillMaxSize()
@@ -215,6 +238,7 @@ private fun MiniGameResultDarkPreview() {
                         player2Score = 1
                     )
                 ),
+                onGlobalMiniGameStarted = {},
                 onOpponentSelected = {},
                 onFinished = {},
                 modifier = Modifier.fillMaxSize()

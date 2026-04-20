@@ -16,6 +16,7 @@ Navigation uses Jetpack Navigation Compose with **type-safe serializable routes*
 | `LoadingScreen` | `data object` | — |
 | `GameScreen` | `data object` | — |
 | `FollowTheSpotRoute` | `data class` | `player1Name`, `player1PhotoPath?`, `player1AvatarName?`, `player2Name`, `player2PhotoPath?`, `player2AvatarName?` |
+| `HotPotatoRoute` | `data object` | — (ViewModel reads all players from `GamePlayersList` directly) |
 
 ---
 
@@ -28,8 +29,10 @@ HomeScreen
             ├─► CreatePlayerScreen(playerId)  (edit existing player)
             └─► LoadingScreen
                     └─► GameScreen  (LoadingScreen popped from back stack)
-                            └─► FollowTheSpotRoute  (mini-game)
-                                    └─► back to GameScreen  (with scores via SavedStateHandle)
+                            ├─► FollowTheSpotRoute  (2-player mini-game)
+                            │       └─► back to GameScreen  (p1Score, p2Score via SavedStateHandle)
+                            └─► HotPotatoRoute  (global mini-game)
+                                    └─► back to GameScreen  (loserName via SavedStateHandle)
 ```
 
 ---
@@ -40,12 +43,13 @@ HomeScreen
 
 ```kotlin
 val isFullScreenRoute =
-    currentScreen?.hasRoute(LoadingScreen::class) == true ||
-    currentScreen?.hasRoute(GameScreen::class)    == true ||
-    currentScreen?.hasRoute(FollowTheSpotRoute::class) == true
+    currentScreen?.hasRoute(LoadingScreen::class)     == true ||
+    currentScreen?.hasRoute(GameScreen::class)        == true ||
+    currentScreen?.hasRoute(FollowTheSpotRoute::class) == true ||
+    currentScreen?.hasRoute(HotPotatoRoute::class)    == true
 ```
 
-- **Full-screen routes** (`LoadingScreen`, `GameScreen`, `FollowTheSpotRoute`): app bar is hidden with a slide-up + fade-out exit animation.
+- **Full-screen routes** (`LoadingScreen`, `GameScreen`, `FollowTheSpotRoute`, `HotPotatoRoute`): app bar is hidden with a slide-up + fade-out exit animation.
 - **All other routes**: app bar is visible with a slide-down + fade-in enter animation.
 
 The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. Screens that need a title call the `setAppBarTitle` lambda passed to them (e.g. `GameConfigScreen`, `CreatePlayerScreen`).
@@ -66,6 +70,7 @@ The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. 
 
 - **`LoadingScreen → GameScreen`**: `LoadingScreen` is popped inclusively on navigation to `GameScreen`, so the user cannot navigate back to it.
 - **`FollowTheSpotRoute → GameScreen`**: mini-game results (`mini_game_p1_score`, `mini_game_p2_score`) are written to the previous back stack entry's `SavedStateHandle` before calling `popBackStack()`.
+- **`HotPotatoRoute → GameScreen`**: the loser's name (`hot_potato_loser`) is written to `SavedStateHandle`. A dedicated `LaunchedEffect` in `GameScreen` reads it and calls `viewModel.onHotPotatoResultReceived(loserName)`. No `MiniGameResult` is shown on the challenge card — punishment is applied directly via the mode handler.
 
 ---
 

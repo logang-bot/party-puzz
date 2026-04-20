@@ -41,6 +41,7 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.common.HomeAppBar
 import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen as CreatePlayerScreenComposable
 import com.restrusher.partypuzz.ui.views.game.miniGames.followTheSpot.FollowTheSpotScreen
+import com.restrusher.partypuzz.ui.views.game.miniGames.hotPotato.HotPotatoScreen
 import com.restrusher.partypuzz.ui.views.game.gameScreen.GameScreen
 import com.restrusher.partypuzz.ui.views.game.gameScreen.MiniGame
 import com.restrusher.partypuzz.ui.views.gameConfig.ui.GameConfigScreen
@@ -62,7 +63,8 @@ fun HomeNavigation(
 
     val isFullScreenRoute = currentScreen?.hasRoute(LoadingScreen::class) == true ||
             currentScreen?.hasRoute(GameScreen::class) == true ||
-            currentScreen?.hasRoute(FollowTheSpotRoute::class) == true
+            currentScreen?.hasRoute(FollowTheSpotRoute::class) == true ||
+            currentScreen?.hasRoute(HotPotatoRoute::class) == true
 
     val isHomeScreen = currentScreen?.hasRoute(HomeScreen::class) == true
 
@@ -214,6 +216,13 @@ fun HomeNavigation(
                                             player2AvatarName = opponent.avatarName
                                         )
                                     )
+                                    else -> Unit
+                                }
+                            },
+                            onNavigateToGlobalMiniGame = { miniGame ->
+                                when (miniGame) {
+                                    MiniGame.HOT_POTATO -> navController.navigate(HotPotatoRoute)
+                                    else -> Unit
                                 }
                             },
                             modifier = Modifier.fillMaxSize()
@@ -226,6 +235,21 @@ fun HomeNavigation(
                                     set("mini_game_p1_score", player1Score)
                                     set("mini_game_p2_score", player2Score)
                                 }
+                                navController.popBackStack()
+                            },
+                            onAbortGame = {
+                                navController.previousBackStackEntry?.savedStateHandle
+                                    ?.set("mini_game_aborted", true)
+                                navController.popBackStack()
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    composable<HotPotatoRoute> {
+                        HotPotatoScreen(
+                            onGameFinished = { loserName ->
+                                navController.previousBackStackEntry?.savedStateHandle
+                                    ?.set("hot_potato_loser", loserName)
                                 navController.popBackStack()
                             },
                             onAbortGame = {
