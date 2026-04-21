@@ -1,6 +1,7 @@
 package com.restrusher.partypuzz.ui.views.game.miniGames.hotPotato
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -57,12 +58,12 @@ internal fun HotPotatoHolderCard(
             uiState.isGameRunning -> AnimatedContent(
                 targetState = uiState.currentHolderIndex,
                 transitionSpec = {
-                    // New holder rises from below and scales up from "next" size
-                    (slideInVertically(tween(380)) { it } +
-                     scaleIn(tween(380), initialScale = 0.45f) +
-                     fadeIn(tween(250))) togetherWith
-                    // Old holder slides up and out
-                    (slideOutVertically(tween(300)) { -it } + fadeOut(tween(200)))
+                    // Next holder flies up from its preview position (small, lower) to main spot
+                    (slideInVertically(tween(450, easing = FastOutSlowInEasing)) { (it * 0.45f).toInt() } +
+                     scaleIn(tween(450, easing = FastOutSlowInEasing), initialScale = 0.33f) +
+                     fadeIn(tween(200))) togetherWith
+                    // Current holder exits with a quick slide up
+                    (slideOutVertically(tween(260)) { -(it * 0.4f).toInt() } + fadeOut(tween(180)))
                 },
                 contentAlignment = Alignment.Center,
                 label = "holderTransition"
@@ -96,7 +97,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(8.dp))
-    Text(text = "\uD83E\uDD54", fontSize = 48.sp, textAlign = TextAlign.Center)
+    Text(text = "🥔", fontSize = 48.sp, textAlign = TextAlign.Center)
     Spacer(Modifier.height(16.dp))
     Text(
         text = stringResource(R.string.hot_potato_tap_to_pass),
@@ -130,13 +131,14 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
 
 @Composable
 private fun LoserContent(loser: Player?) {
-    Text(text = "\uD83D\uDCA5", fontSize = 64.sp, textAlign = TextAlign.Center)
+    val onError = MaterialTheme.colorScheme.onError
+    Text(text = "💥", fontSize = 64.sp, textAlign = TextAlign.Center)
     Spacer(Modifier.height(16.dp))
     Text(
         text = stringResource(R.string.hot_potato_boom),
         style = MaterialTheme.typography.displayMedium,
         fontWeight = FontWeight.Bold,
-        color = Color.White,
+        color = onError,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(8.dp))
@@ -144,21 +146,21 @@ private fun LoserContent(loser: Player?) {
         text = loser?.nickName.orEmpty(),
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
-        color = Color.White,
+        color = onError,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(4.dp))
     Text(
         text = stringResource(R.string.hot_potato_loser_label),
         style = MaterialTheme.typography.bodyLarge,
-        color = Color.White.copy(alpha = 0.80f),
+        color = onError.copy(alpha = 0.80f),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(24.dp))
     Text(
         text = stringResource(R.string.tap_to_dismiss),
         style = MaterialTheme.typography.bodySmall,
-        color = Color.White.copy(alpha = 0.45f),
+        color = onError.copy(alpha = 0.55f),
         textAlign = TextAlign.Center
     )
 }

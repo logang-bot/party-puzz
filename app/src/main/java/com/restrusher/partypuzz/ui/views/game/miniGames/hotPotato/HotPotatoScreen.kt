@@ -8,13 +8,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,6 +22,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,11 +97,44 @@ internal fun HotPotatoContent(
         animationSpec = tween(durationMillis = 500),
         label = "bgAlpha"
     )
+    val errorColor = MaterialTheme.colorScheme.error
+    val errorAlpha by animateFloatAsState(
+        targetValue = if (uiState.loserIndex != null) 1f else 0f,
+        animationSpec = tween(durationMillis = 500),
+        label = "errorAlpha"
+    )
 
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(bgColor.copy(alpha = bgAlpha))
+            .drawBehind {
+                if (errorAlpha > 0f) {
+                    drawRect(color = errorColor.copy(alpha = errorAlpha))
+                }
+                if (bgAlpha > 0f) {
+                    val color = bgColor.copy(alpha = bgAlpha)
+                    val edgeW = size.width * 0.08f
+                    val edgeH = size.height * 0.04f
+                    drawRect(
+                        brush = Brush.horizontalGradient(listOf(color, Color.Transparent), 0f, edgeW),
+                        size = Size(edgeW, size.height)
+                    )
+                    drawRect(
+                        brush = Brush.horizontalGradient(listOf(Color.Transparent, color), size.width - edgeW, size.width),
+                        topLeft = Offset(size.width - edgeW, 0f),
+                        size = Size(edgeW, size.height)
+                    )
+                    drawRect(
+                        brush = Brush.verticalGradient(listOf(color, Color.Transparent), 0f, edgeH),
+                        size = Size(size.width, edgeH)
+                    )
+                    drawRect(
+                        brush = Brush.verticalGradient(listOf(Color.Transparent, color), size.height - edgeH, size.height),
+                        topLeft = Offset(0f, size.height - edgeH),
+                        size = Size(size.width, edgeH)
+                    )
+                }
+            }
             .clickable(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
