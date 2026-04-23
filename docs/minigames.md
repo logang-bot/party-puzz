@@ -13,6 +13,7 @@ Defined in `MiniGame.kt`. Each entry declares:
 | Property | Type | Purpose |
 |---|---|---|
 | `nameRes` | `@StringRes Int` | Displayed in the challenge card and result UI |
+| `descriptionRes` | `@StringRes Int` | Short one-sentence blurb shown on the deal card (above the opponent selector for two-player games; as the main body for global games) |
 | `minPlayers` | `Int` | Minimum players required for this mini-game to be eligible in a deal |
 | `isGlobal` | `Boolean` | `true` = all players participate; `false` = challenger vs selected opponent |
 
@@ -32,9 +33,17 @@ Current entries:
 
 ### Two-player vs Global flow
 
+Both flows funnel through the same `miniGameResult` state on `GameScreenState` and are dismissed by the same `onMiniGameDealFinished` trigger. `MiniGameResult` is a sealed interface with one variant per result shape:
+
+```kotlin
+sealed interface MiniGameResult
+data class ScoredMiniGameResult(p1Name, p1Score, p2Name, p2Score) : MiniGameResult
+data class LoserMiniGameResult(loserName) : MiniGameResult
+```
+
 **Two-player (`isGlobal = false`):**
 ```
-MiniGameChallengeContent shows opponent list
+MiniGameChallengeContent shows description + opponent list
          │
   user selects opponent
          │
@@ -49,12 +58,18 @@ MiniGameChallengeContent shows opponent list
          │
   GameScreen reads scores → onMiniGameResultReceived(p1, p2)
          │
-  MiniGameResult shown on challenge card → mode handler applies reward/punishment
+  ScoredMiniGameResult stored in state.miniGameResult
+         │
+  ScoredResultContent panel shown on challenge card
+         │
+  user taps Finish (mode active) or the card (standard) → onMiniGameDealFinished()
+         │
+  modeHandler.applyMiniGameResult → reward / punishment / no-op + deal reset
 ```
 
 **Global (`isGlobal = true`):**
 ```
-MiniGameChallengeContent shows global description + Start button
+MiniGameChallengeContent shows large title + "Everyone plays!" + description + Start button
          │
   "Start" tapped → onGlobalMiniGameStarted()
          │
@@ -66,11 +81,48 @@ MiniGameChallengeContent shows global description + Start button
          │
   GameScreen reads loserName → onHotPotatoResultReceived(loserName)
          │
-  Mode handler applies punishment to the loser; deal resets to IDLE
-  (or challenge card flips to show mode event if in Bar / Couples mode)
+  LoserMiniGameResult stored in state.miniGameResult
+         │
+  LoserResultContent panel shown on challenge card (shows "Loser: <name>")
+         │
+  user taps Finish (mode active) or the card (standard) → onMiniGameDealFinished()
+         │
+  modeHandler.applyMiniGameResult → punishment for the loser + deal reset
+  (in Bar / Couples / Party Puzz the card flips to the mode event first)
 ```
 
-> Global mini-games bypass `MiniGameResult` — there is no winner/loser score card shown on the `GameScreen` challenge card. The result is shown entirely on the mini-game's own screen.
+Global and two-player mini-games share the same state field, the same result-panel scaffolding (`MiniGameChallengeContent`), and the same dismiss trigger (`onMiniGameDealFinished`). The two variants of `MiniGameResult` differ only in which payload they carry and in how each mode handler decides who to punish or reward (see [game-mode-handler.md](game-mode-handler.md)).
+
+---
+
+## Challenge-card presentation
+
+`MiniGameChallengeContent` is the single composable that renders everything the mini-game needs on the challenge card — before, during navigation, and after the result comes back. Its layout reacts to two flags:
+
+| Flag | Meaning |
+|---|---|
+| `result == null` | Pre-game state: show the description body + the Start / Go affordance |
+| `miniGame.isGlobal` | Drives header size and the "Everyone plays!" subtitle |
+
+**Header treatment** (`MiniGameHeader`):
+
+| Situation | Treatment |
+|---|---|
+| Global mini-game, no result yet | `headlineLarge` bold title + `titleMedium` "Everyone plays!" subtitle (resource: `mini_game_everyone_plays`) |
+| Two-player mini-game, no result yet | Small `titleMedium` title (same styling the result panel uses) |
+| Any mini-game with a result set | Small `titleMedium` title — the result text takes visual priority |
+
+**Body (result == null):**
+
+- Global: `GlobalMiniGameContent` — renders `stringResource(miniGame.descriptionRes)` and a bottom-anchored `Start` button.
+- Two-player: `OpponentSelectionContent` — renders the description, the selected (current) player's name, and a list of opponent buttons. The `Go` button appears anchored at the bottom once an opponent is picked.
+
+**Body (result set):**
+
+- `ScoredMiniGameResult` → `ScoredResultContent` (winner / tie headline + both scores)
+- `LoserMiniGameResult` → `LoserResultContent` (`"Loser: <name>"` headline; resource: `mini_game_loser`)
+
+Both result panels end with `ResultDismissAction`, which swaps between a `Finish` button (when any game mode is active) and a "Tap to dismiss" hint (Standard mode).
 
 ---
 
@@ -128,7 +180,7 @@ A 2-player reaction game. Both players hold the phone at opposite ends. A spot a
 
 ### Result
 
-`onGameFinished(player1Score, player2Score)` writes both scores to `SavedStateHandle`. `GameScreenViewModel.onMiniGameResultReceived` constructs a `MiniGameResult` and the mode handler applies reward or punishment.
+`onGameFinished(player1Score, player2Score)` writes both scores to `SavedStateHandle`. `GameScreenViewModel.onMiniGameResultReceived` constructs a `ScoredMiniGameResult` and stores it in `miniGameResult`; when the user dismisses the result panel, `onMiniGameDealFinished()` calls `modeHandler.applyMiniGameResult` which resolves winner → reward, loser → punishment, tie → no event.
 
 ### Key files
 
@@ -157,8 +209,8 @@ A global mini-game (all registered players participate). The phone represents th
 - The player physically passes the phone; the new holder taps anywhere to advance to their name.
 - A cycling border animation (same 4 pastel colours, 600 ms per step) runs while active.
 - When the hidden timer fires: `isGameRunning = false`, `loserIndex` set → BOOM screen shown.
-- BOOM screen: 💥 emoji, loser name, drink prompt, "Tap to dismiss".
-- On dismiss: `onGameFinished(loserName)` → returns to `GameScreen`.
+- BOOM screen: 💥 emoji, "BOOM!" headline, "Tap to dismiss" hint. The loser's name and the drink prompt are intentionally **not** shown here — the result panel back on `GameScreen` owns that presentation.
+- On dismiss: `onGameFinished(loserName)` → returns to `GameScreen`, which shows the `LoserResultContent` panel (and the mode event, if applicable).
 
 ### Hidden timer
 
@@ -187,18 +239,20 @@ The timer value is intentionally **never shown** to players.
 
 ### Result passing
 
-Unlike 2-player mini-games, Hot Potato does not use `MiniGameResult`. The loser name is passed back via `SavedStateHandle`:
+Hot Potato uses the same `MiniGameResult` plumbing as Follow The Spot, but packaged as `LoserMiniGameResult(loserName)`. The loser name is handed back via `SavedStateHandle`:
 
 ```
 onGameFinished(loserName)
     → savedStateHandle["hot_potato_loser"] = loserName
     → GameScreen LaunchedEffect picks up the value
     → viewModel.onHotPotatoResultReceived(loserName)
-    → modeHandler.applyPunishment(state, loserPlayer)
-    → if no mode event pending → resetDeal()
+    → state.miniGameResult = LoserMiniGameResult(loserName)
+    → MiniGameChallengeContent renders LoserResultContent panel
+    → user taps Finish (mode active) / card (standard) → onMiniGameDealFinished()
+    → modeHandler.applyMiniGameResult(state) → punishment event (if any) + deal reset
 ```
 
-In Bar Time / Couples / Party Puzz modes the challenge card flips to show the punishment event before resetting.
+In Bar Time / Couples / Party Puzz modes the challenge card flips to show the punishment event before resetting; in Standard mode the deal resets silently.
 
 ### Key files
 
@@ -215,7 +269,7 @@ In Bar Time / Couples / Party Puzz modes the challenge card flips to show the pu
 
 ## Adding a New Mini-Game
 
-1. Add an entry to `MiniGame.kt` with `nameRes`, `minPlayers`, and `isGlobal`.
+1. Add an entry to `MiniGame.kt` with `nameRes`, `descriptionRes`, `minPlayers`, and `isGlobal`.
 2. Create a `miniGames/<name>/` package with `<Name>State.kt`, `<Name>ViewModel.kt`, `<Name>Screen.kt`.
 3. Add a `@Serializable` route to `HomeScreenRoutes.kt`:
    - Two-player: `data class` carrying player display info.
@@ -225,9 +279,34 @@ In Bar Time / Couples / Party Puzz modes the challenge card flips to show the pu
    - Add a `composable<XxxRoute>` block that handles `onGameFinished` / `onAbortGame`.
    - Wire navigation in `onNavigateToMiniGame` (two-player) or `onNavigateToGlobalMiniGame` (global).
 5. In `GameScreen.kt`, handle the new result key in a `LaunchedEffect` if the global pattern is used.
-6. In `GameScreenViewModel.kt`, add a result handler function if needed.
-7. Add string resources to `values/strings.xml` and `values-es/strings.xml`.
+6. In `GameScreenViewModel.kt`, add a result handler that stores an appropriate `MiniGameResult` variant (`ScoredMiniGameResult` or `LoserMiniGameResult`) — reuse existing variants when possible so each mode handler's `applyMiniGameResult` keeps a flat `when` on the sealed interface.
+7. Add string resources to `values/strings.xml` and `values-es/strings.xml` — at minimum `<name>_description` for the deal card.
 8. Use `MiniGameCountdownOverlay` for the pre-game countdown.
+
+---
+
+## String resources
+
+| Key | EN value |
+|---|---|
+| `follow_the_spot` | `"Follow the spot"` |
+| `follow_the_spot_description` | `"Chase the moving spot and tap it — whoever lands the most hits in 10 seconds wins."` |
+| `hot_potato` | `"Hot potato"` |
+| `hot_potato_description` | `"Pass the phone around — whoever's holding it when it explodes has to drink."` |
+| `hot_potato_tap_to_pass` | `"Tap to pass!"` |
+| `hot_potato_next` | `"Next"` |
+| `hot_potato_boom` | `"BOOM!"` |
+| `mini_game_everyone_plays` | `"Everyone plays!"` |
+| `mini_game_winner` | `"Winner: %1$s"` |
+| `mini_game_tie` | `"It's a tie!"` |
+| `mini_game_loser` | `"Loser: %1$s"` |
+| `choose_opponent` | `"Choose an opponent"` |
+| `start` | `"Start"` |
+| `go` | `"Go!"` |
+| `finish` | `"Finish"` |
+| `tap_to_dismiss` | `"Tap to dismiss"` |
+
+All keys have matching `values-es/strings.xml` entries.
 
 ---
 

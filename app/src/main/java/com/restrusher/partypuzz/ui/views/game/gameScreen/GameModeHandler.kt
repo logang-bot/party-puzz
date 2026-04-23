@@ -30,13 +30,16 @@ internal class BarModeHandler : GameModeHandler {
         )
 
     override fun applyMiniGameResult(state: GameScreenState): GameScreenState {
-        val result = state.miniGameResult ?: return state
-        val event: BarEvent = when (result.winner) {
-            state.selectedPlayer?.nickName -> BarModeState.giveDrinksEvent(
-                targetPlayerName = state.miniGameOpponent?.nickName.orEmpty()
-            )
-            null -> BarEvent.NoAction
-            else -> BarModeState.takeDrinksEvent()
+        val event: BarEvent = when (val result = state.miniGameResult) {
+            is ScoredMiniGameResult -> when (result.winner) {
+                state.selectedPlayer?.nickName -> BarModeState.giveDrinksEvent(
+                    targetPlayerName = state.miniGameOpponent?.nickName.orEmpty()
+                )
+                null -> BarEvent.NoAction
+                else -> BarModeState.takeDrinksEvent()
+            }
+            is LoserMiniGameResult -> BarModeState.takeDrinksEvent()
+            null -> return state
         }
         return state.copy(barMode = state.barMode.copy(activeEvent = event))
     }
@@ -57,11 +60,17 @@ internal class CouplesModeHandler : GameModeHandler {
         state.copy(couplesMode = state.couplesMode.copy(activeEvent = CouplesModeState.rewardEvent()))
 
     override fun applyMiniGameResult(state: GameScreenState): GameScreenState {
-        val result = state.miniGameResult ?: return state
-        return when (result.winner) {
-            state.selectedPlayer?.nickName -> applyReward(state)
+        return when (val result = state.miniGameResult) {
+            is ScoredMiniGameResult -> when (result.winner) {
+                state.selectedPlayer?.nickName -> applyReward(state)
+                null -> state
+                else -> applyPunishment(state, state.selectedPlayer)
+            }
+            is LoserMiniGameResult -> {
+                val loser = state.players.find { it.nickName == result.loserName }
+                applyPunishment(state, loser)
+            }
             null -> state
-            else -> applyPunishment(state, state.selectedPlayer)
         }
     }
 

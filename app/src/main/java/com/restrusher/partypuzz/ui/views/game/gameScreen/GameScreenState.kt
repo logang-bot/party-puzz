@@ -17,12 +17,14 @@ data class GeneralKnowledgeQuestion(
     val correctOption: Char
 )
 
-data class MiniGameResult(
+sealed interface MiniGameResult
+
+data class ScoredMiniGameResult(
     val player1Name: String,
     val player1Score: Int,
     val player2Name: String,
     val player2Score: Int
-) {
+) : MiniGameResult {
     val winner: String?
         get() = when {
             player1Score > player2Score -> player1Name
@@ -30,6 +32,10 @@ data class MiniGameResult(
             else -> null
         }
 }
+
+data class LoserMiniGameResult(
+    val loserName: String
+) : MiniGameResult
 
 data class GameScreenState(
     val players: List<Player> = emptyList(),

@@ -58,8 +58,14 @@ internal fun ModeEventChallengeContent(
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(16.dp))
+        val drinksAmount = when (barEvent) {
+            is BarEvent.TakeDrinks -> barEvent.amount
+            is BarEvent.GiveDrinks -> barEvent.amount
+            is BarEvent.GiveDrinksPickTarget -> barEvent.amount
+            else -> null
+        }
         when {
-            barEvent is BarEvent.TakeDrinks -> DrinksFillIndicator(amount = barEvent.amount)
+            drinksAmount != null -> DrinksFillIndicator(amount = drinksAmount)
             barEvent != null -> Icon(
                 painter = painterResource(R.drawable.ic_sports_bar),
                 contentDescription = null,

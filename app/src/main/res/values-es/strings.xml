@@ -368,17 +368,19 @@
 
     <!-- Mini-games -->
     <string name="follow_the_spot">Sigue el punto</string>
+    <string name="follow_the_spot_description">¡Persigue el punto y tócalo! Gana quien consiga más toques en 10 segundos.</string>
     <string name="hot_potato">Papa Caliente</string>
-    <string name="hot_potato_global_description">¡Todos participan! Pasa el teléfono — quien lo tenga cuando explote tiene que beber.</string>
+    <string name="hot_potato_description">Pasa el teléfono — quien lo tenga cuando explote tiene que beber.</string>
     <string name="hot_potato_tap_to_pass">¡Toca para pasar!</string>
     <string name="hot_potato_next">El siguiente</string>
     <string name="hot_potato_waiting">Esperando…</string>
     <string name="hot_potato_boom">¡BOOM!</string>
-    <string name="hot_potato_loser_label">¡Tienes la papa — toma tu trago!</string>
     <string name="start">Empezar</string>
     <string name="tap_to_exit">Toca para salir</string>
     <string name="mini_game_winner">Ganador: %1$s</string>
+    <string name="mini_game_loser">Perdedor: %1$s</string>
     <string name="mini_game_tie">¡Empate!</string>
+    <string name="mini_game_everyone_plays">¡Todos juegan!</string>
     <string name="ready">Listo</string>
     <string name="go">¡Ya!</string>
     <string name="choose_opponent">Elige tu rival</string>

@@ -45,6 +45,10 @@ internal fun MiniGameChallengeContent(
     val result = uiState.miniGameResult
     var pendingOpponent by remember { mutableStateOf<Player?>(null) }
 
+    val bottomButtonVisible = result == null &&
+            (miniGame.isGlobal || pendingOpponent != null)
+    val useLargeHeader = result == null && miniGame.isGlobal
+
     Box(modifier = modifier) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -52,57 +56,93 @@ internal fun MiniGameChallengeContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 24.dp)
-                .padding(bottom = if (!miniGame.isGlobal && result == null && pendingOpponent != null) 80.dp else 0.dp)
+                .padding(bottom = if (bottomButtonVisible) 80.dp else 0.dp)
         ) {
-            Text(
-                text = stringResource(miniGame.nameRes),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = 0.65f),
-                textAlign = TextAlign.Center
-            )
-            when {
-                miniGame.isGlobal -> GlobalMiniGameContent()
-                result == null -> OpponentSelectionContent(
-                    uiState = uiState,
-                    pendingOpponent = pendingOpponent,
-                    onPendingOpponentChanged = { pendingOpponent = it }
-                )
-                else -> MiniGameResultContent(
+            MiniGameHeader(miniGame = miniGame, isLarge = useLargeHeader)
+            when (result) {
+                is ScoredMiniGameResult -> ScoredResultContent(
                     result = result,
                     isModeActive = uiState.isModeActive,
                     onFinished = onFinished
                 )
+                is LoserMiniGameResult -> LoserResultContent(
+                    result = result,
+                    isModeActive = uiState.isModeActive,
+                    onFinished = onFinished
+                )
+                null -> if (miniGame.isGlobal) {
+                    GlobalMiniGameContent(miniGame = miniGame)
+                } else {
+                    OpponentSelectionContent(
+                        miniGame = miniGame,
+                        uiState = uiState,
+                        pendingOpponent = pendingOpponent,
+                        onPendingOpponentChanged = { pendingOpponent = it }
+                    )
+                }
             }
         }
-        when {
-            miniGame.isGlobal -> DealOptionButton(
-                text = stringResource(R.string.start),
-                onClick = onGlobalMiniGameStarted,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 24.dp)
-            )
-            result == null && pendingOpponent != null -> DealOptionButton(
-                text = stringResource(R.string.go),
-                onClick = { onOpponentSelected(pendingOpponent!!) },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 24.dp)
-            )
+        if (result == null) {
+            when {
+                miniGame.isGlobal -> DealOptionButton(
+                    text = stringResource(R.string.start),
+                    onClick = onGlobalMiniGameStarted,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 24.dp)
+                )
+                pendingOpponent != null -> DealOptionButton(
+                    text = stringResource(R.string.go),
+                    onClick = { onOpponentSelected(pendingOpponent!!) },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 24.dp)
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun GlobalMiniGameContent() {
+private fun MiniGameHeader(miniGame: MiniGame, isLarge: Boolean) {
+    if (isLarge) {
+        Text(
+            text = stringResource(miniGame.nameRes),
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            textAlign = TextAlign.Center
+        )
+        if (miniGame.isGlobal) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.mini_game_everyone_plays),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
+                color = Color.White.copy(alpha = 0.75f),
+                textAlign = TextAlign.Center
+            )
+        }
+    } else {
+        Text(
+            text = stringResource(miniGame.nameRes),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White.copy(alpha = 0.65f),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Composable
+private fun GlobalMiniGameContent(miniGame: MiniGame) {
     Spacer(Modifier.height(16.dp))
     Text(
-        text = stringResource(R.string.hot_potato_global_description),
+        text = stringResource(miniGame.descriptionRes),
         style = MaterialTheme.typography.bodyLarge,
         color = Color.White.copy(alpha = 0.80f),
         textAlign = TextAlign.Center
@@ -112,11 +152,19 @@ private fun GlobalMiniGameContent() {
 
 @Composable
 private fun OpponentSelectionContent(
+    miniGame: MiniGame,
     uiState: GameScreenState,
     pendingOpponent: Player?,
     onPendingOpponentChanged: (Player) -> Unit
 ) {
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(12.dp))
+    Text(
+        text = stringResource(miniGame.descriptionRes),
+        style = MaterialTheme.typography.bodyMedium,
+        color = Color.White.copy(alpha = 0.75f),
+        textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(16.dp))
     Text(
         text = uiState.selectedPlayer?.nickName.orEmpty(),
         style = MaterialTheme.typography.headlineMedium,
@@ -124,7 +172,7 @@ private fun OpponentSelectionContent(
         color = Color.White,
         textAlign = TextAlign.Center
     )
-    Spacer(Modifier.height(24.dp))
+    Spacer(Modifier.height(16.dp))
     Text(
         text = stringResource(R.string.choose_opponent),
         style = MaterialTheme.typography.labelMedium,
@@ -151,8 +199,8 @@ private fun OpponentSelectionContent(
 }
 
 @Composable
-private fun MiniGameResultContent(
-    result: MiniGameResult,
+private fun ScoredResultContent(
+    result: ScoredMiniGameResult,
     isModeActive: Boolean,
     onFinished: () -> Unit
 ) {
@@ -181,6 +229,29 @@ private fun MiniGameResultContent(
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(16.dp))
+    ResultDismissAction(isModeActive = isModeActive, onFinished = onFinished)
+}
+
+@Composable
+private fun LoserResultContent(
+    result: LoserMiniGameResult,
+    isModeActive: Boolean,
+    onFinished: () -> Unit
+) {
+    Spacer(Modifier.height(16.dp))
+    Text(
+        text = stringResource(R.string.mini_game_loser, result.loserName),
+        style = MaterialTheme.typography.displaySmall,
+        fontWeight = FontWeight.Bold,
+        color = Color.White,
+        textAlign = TextAlign.Center
+    )
+    Spacer(Modifier.height(16.dp))
+    ResultDismissAction(isModeActive = isModeActive, onFinished = onFinished)
+}
+
+@Composable
+private fun ResultDismissAction(isModeActive: Boolean, onFinished: () -> Unit) {
     if (isModeActive) {
         DealOptionButton(
             text = stringResource(R.string.finish),
@@ -231,12 +302,33 @@ private fun MiniGameResultDarkPreview() {
                     selectedPlayer = previewPlayer1,
                     players = listOf(previewPlayer1, previewPlayer2),
                     miniGame = MiniGame.FOLLOW_THE_SPOT,
-                    miniGameResult = MiniGameResult(
+                    miniGameResult = ScoredMiniGameResult(
                         player1Name = "Alice",
                         player1Score = 3,
                         player2Name = "Bob",
                         player2Score = 1
                     )
+                ),
+                onGlobalMiniGameStarted = {},
+                onOpponentSelected = {},
+                onFinished = {},
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Preview(name = "MiniGame – hot potato loser – Dark", showBackground = true, widthDp = 360, heightDp = 500)
+@Composable
+private fun MiniGameHotPotatoLoserDarkPreview() {
+    PartyPuzzTheme(themeMode = ThemeMode.DARK) {
+        Box(Modifier.background(Color(0xFF162447)).fillMaxSize()) {
+            MiniGameChallengeContent(
+                uiState = GameScreenState(
+                    selectedPlayer = previewPlayer1,
+                    players = listOf(previewPlayer1, previewPlayer2, previewPlayer3),
+                    miniGame = MiniGame.HOT_POTATO,
+                    miniGameResult = LoserMiniGameResult(loserName = "Carol")
                 ),
                 onGlobalMiniGameStarted = {},
                 onOpponentSelected = {},

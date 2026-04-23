@@ -36,9 +36,10 @@ Events are **not randomly drawn** — each deal type produces a deterministic ev
 | Sticky Dare | Running dare cancelled | `TakeDrinks(1–5)` |
 | General Knowledge | Wrong answer | `TakeDrinks(1–5)` |
 | General Knowledge | Correct answer | `GiveDrinksPickTarget(1–5, otherPlayers)` |
-| Mini-game | Current player wins | `GiveDrinks(1–5, opponentName)` |
-| Mini-game | Tie | `NoAction` |
-| Mini-game | Current player loses | `TakeDrinks(1–5)` |
+| Mini-game (two-player) | Current player wins | `GiveDrinks(1–5, opponentName)` |
+| Mini-game (two-player) | Tie | `NoAction` |
+| Mini-game (two-player) | Current player loses | `TakeDrinks(1–5)` |
+| Mini-game (global) | A single loser identified | `TakeDrinks(1–5)` (punishment applied to the loser) |
 
 `amount` is always randomised 1–5 at trigger time. `BarModeState` exposes three factory methods used by the ViewModel: `takeDrinksEvent()`, `giveDrinksEvent(targetName)`, and `giveDrinksPickTargetEvent(players, currentPlayer)`.
 
@@ -91,41 +92,57 @@ The dialog is an overlay composable (`BarEventDialog`) shown inside `GameScreen`
 **Layout (top to bottom inside the card):**
 
 ```
-"Bar Event!"  ← headlineMedium, bold
-[img_bar_mode_illustration]  ← 160 dp, static
+"Bar Event!"  ← headlineLarge, bold
+[visual]  ← DrinksFillIndicator for any drink-amount event, otherwise static bar icon
 [event-specific content]
 ```
 
-**Card entry animation:** the card spins from 720° to 0° (`tween` 800 ms, `FastOutSlowInEasing`) driven by `animateFloatAsState` with a `LaunchedEffect(Unit)` trigger. The illustration is static (no continuous rotation).
+**Card entry animation:** the card spins from 720° to 0° (`tween` 800 ms, `FastOutSlowInEasing`) driven by `animateFloatAsState` with a `LaunchedEffect(Unit)` trigger. The visual is static (no continuous rotation).
+
+### The visual slot
+
+`ModeEventChallengeContent` picks the visual based on the event kind:
+
+| Event kind | Visual |
+|---|---|
+| Any event carrying an `amount` (`TakeDrinks`, `GiveDrinks`, `GiveDrinksPickTarget`) | `DrinksFillIndicator(amount)` — animated arrow + progressively filling beer icon |
+| `NoAction` | Static `ic_sports_bar` icon |
+| (Couples event branch) | Static `couplesEvent.imageRes` image |
+
+This means every drink-amount variant shares the same animated indicator — `GiveDrinks` and `GiveDrinksPickTarget` look and behave like `TakeDrinks` above the message line. Previously `GiveDrinks`/`GiveDrinksPickTarget` fell through to the static bar icon; they are now unified with the animated indicator so the player can see at a glance how many drinks are involved.
 
 ### Content per event type
 
 **NoAction**
 ```
+[ic_sports_bar]
 "Nothing happens — carry on!"    ← headlineMedium, bold
-[OK]
+"Tap to dismiss"
 ```
 
 **TakeDrinks**
 ```
-"Take X drink(s)!"    ← headlineMedium, bold; X = amount
-[OK]
+[DrinksFillIndicator(amount)]
+"Take X drink(s)!"    ← headlineMedium, bold
+"Tap to dismiss"
 ```
 
 **GiveDrinks**
 ```
+[DrinksFillIndicator(amount)]
 "Give X drink(s) to PlayerName!"    ← headlineMedium, bold
-[OK]
+"Tap to dismiss"
 ```
 
 **GiveDrinksPickTarget** *(shown before target is selected)*
 ```
+[DrinksFillIndicator(amount)]
 "Give X drink(s) to:"    ← headlineMedium, bold
 [PlayerA]
 [PlayerB]
 …
 ```
-Tapping a player button calls `onGiveDrinksTargetSelected(name)` on the ViewModel, which transitions the active event to `GiveDrinks(amount, name)` and the dialog updates to the standard `GiveDrinks` view with an OK button.
+Tapping a player button calls `onGiveDrinksTargetSelected(name)` on the ViewModel, which transitions the active event to `GiveDrinks(amount, name)` and the dialog updates to the standard `GiveDrinks` view.
 
 ---
 

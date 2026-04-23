@@ -60,8 +60,39 @@ All methods are pure state transformers — they receive the current `GameScreen
 |---|---|---|
 | `applyPunishment(state, currentPlayer)` | Player skips or fails a challenge | Sets the active mode event to a punishment; `currentPlayer` identifies who to exclude from target selection |
 | `applyReward(state)` | Player succeeds at a challenge | Sets the active mode event to a reward |
-| `applyMiniGameResult(state)` | Finish button tapped on mini-game results | Winner → reward; loser → punishment; tie → state unchanged (ViewModel calls `resetDeal()`) |
+| `applyMiniGameResult(state)` | Finish button tapped on mini-game results | Branches on `state.miniGameResult` (see below). Tie / no result → state unchanged, ViewModel then calls `resetDeal()` |
 | `clearEvent(state)` | User taps OK in the mode event dialog | Clears the active mode event field; the ViewModel then resets the deal to IDLE |
+
+### `MiniGameResult` sealed interface
+
+Both two-player and global mini-games funnel their outcome through the same state field (`GameScreenState.miniGameResult`) using a sealed interface:
+
+```kotlin
+sealed interface MiniGameResult
+
+data class ScoredMiniGameResult(
+    val player1Name: String,
+    val player1Score: Int,
+    val player2Name: String,
+    val player2Score: Int
+) : MiniGameResult {
+    val winner: String? // p1 / p2 name, or null on a tie
+}
+
+data class LoserMiniGameResult(val loserName: String) : MiniGameResult
+```
+
+`applyMiniGameResult` pattern-matches on the variant:
+
+| Variant | Bar / Couples / Party Puzz behaviour |
+|---|---|
+| `ScoredMiniGameResult` with `winner == selectedPlayer.nickName` | Reward the current player (Bar: `GiveDrinks(opponent)`; Couples: random reward) |
+| `ScoredMiniGameResult` with `winner == null` (tie) | No event — `applyMiniGameResult` returns state unchanged; ViewModel falls through to `resetDeal()` |
+| `ScoredMiniGameResult` with `winner == opponent` | Punish the current player (Bar: `TakeDrinks`; Couples: punishment against the current player) |
+| `LoserMiniGameResult` | Punish the named loser (Bar: `TakeDrinks`; Couples: punishment against the loser — `state.players.find { it.nickName == loserName }`) |
+| `null` | State returned unchanged (defensive no-op) |
+
+Adding a new mini-game usually means reusing one of the two variants; only introduce a new `MiniGameResult` subtype if its payload is genuinely different, since every handler's `applyMiniGameResult` must exhaustively cover the sealed hierarchy.
 
 ---
 

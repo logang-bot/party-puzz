@@ -71,9 +71,12 @@ The triggers are identical to those of Bar Time and Couples mode — because Par
 | Sticky Dare | Running dare cancelled | Bar punishment / Couples punishment / nothing |
 | General Knowledge | Wrong answer | Bar punishment / Couples punishment / nothing |
 | General Knowledge | Correct answer | Bar reward / Couples reward / nothing |
-| Mini-game | Win | Bar reward / Couples reward / nothing |
-| Mini-game | Loss | Bar punishment / Couples punishment / nothing |
-| Mini-game | Tie | nothing (all handlers return state unchanged on tie) |
+| Mini-game (two-player) | Win | Bar reward / Couples reward / nothing |
+| Mini-game (two-player) | Loss | Bar punishment / Couples punishment / nothing |
+| Mini-game (two-player) | Tie | nothing (all handlers return state unchanged on tie) |
+| Mini-game (global) | A single loser identified | Bar punishment on the loser / Couples punishment on the loser / nothing |
+
+Global mini-game results reach Party Puzz through the same random delegation as every other trigger — `applyMiniGameResult` is dispatched to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler`, and each of those branches on the `LoserMiniGameResult` variant to decide who the punishment falls on (the loser rather than the current player). See [game-mode-handler.md](game-mode-handler.md) for the `MiniGameResult` sealed interface.
 
 ---
 

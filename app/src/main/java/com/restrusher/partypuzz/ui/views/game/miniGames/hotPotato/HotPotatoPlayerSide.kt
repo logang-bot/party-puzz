@@ -52,7 +52,7 @@ internal fun HotPotatoHolderCard(
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(32.dp)
             ) {
-                LoserContent(loser = uiState.loser)
+                LoserContent()
             }
 
             uiState.isGameRunning -> AnimatedContent(
@@ -130,7 +130,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
 }
 
 @Composable
-private fun LoserContent(loser: Player?) {
+private fun LoserContent() {
     val onError = MaterialTheme.colorScheme.onError
     Text(text = "💥", fontSize = 64.sp, textAlign = TextAlign.Center)
     Spacer(Modifier.height(16.dp))
@@ -139,21 +139,6 @@ private fun LoserContent(loser: Player?) {
         style = MaterialTheme.typography.displayMedium,
         fontWeight = FontWeight.Bold,
         color = onError,
-        textAlign = TextAlign.Center
-    )
-    Spacer(Modifier.height(8.dp))
-    Text(
-        text = loser?.nickName.orEmpty(),
-        style = MaterialTheme.typography.headlineMedium,
-        fontWeight = FontWeight.Bold,
-        color = onError,
-        textAlign = TextAlign.Center
-    )
-    Spacer(Modifier.height(4.dp))
-    Text(
-        text = stringResource(R.string.hot_potato_loser_label),
-        style = MaterialTheme.typography.bodyLarge,
-        color = onError.copy(alpha = 0.80f),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(24.dp))

@@ -48,9 +48,10 @@ The outcome → event mapping:
 | Sticky Dare | Running dare cancelled | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random, target = dare's player) |
 | General Knowledge | Wrong answer | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
 | General Knowledge | Correct answer | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
-| Mini-game | Current player wins | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
-| Mini-game | Current player loses | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
-| Mini-game | Tie | — | No event |
+| Mini-game (two-player) | Current player wins | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
+| Mini-game (two-player) | Current player loses | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
+| Mini-game (two-player) | Tie | — | No event |
+| Mini-game (global) | A single loser identified | Punishment | `MakeALoveDeclaration` or `ActOfLove`, targeting the loser (looked up in `players` by `nickName`) |
 
 `CouplesModeState` exposes two factory methods used by `CouplesModeHandler`: `punishmentEvent(players, currentPlayer)` and `rewardEvent()`.
 

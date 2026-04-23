@@ -256,14 +256,12 @@ class GameScreenViewModel @Inject constructor(
     fun onMiniGameAborted() = resetDeal()
 
     fun onHotPotatoResultReceived(loserName: String) {
-        val loserPlayer = _uiState.value.players.find { it.nickName == loserName }
-        _uiState.update { modeHandler.applyPunishment(it, loserPlayer) }
-        if (!_uiState.value.hasActiveModeEvent) resetDeal()
+        _uiState.update { it.copy(miniGameResult = LoserMiniGameResult(loserName = loserName)) }
     }
 
     fun onMiniGameResultReceived(player1Score: Int, player2Score: Int) {
         val state = _uiState.value
-        val result = MiniGameResult(
+        val result = ScoredMiniGameResult(
             player1Name = state.selectedPlayer?.nickName.orEmpty(),
             player1Score = player1Score,
             player2Name = state.miniGameOpponent?.nickName.orEmpty(),
