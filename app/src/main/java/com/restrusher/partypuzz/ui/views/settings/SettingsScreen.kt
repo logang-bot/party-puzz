@@ -1,44 +1,43 @@
 package com.restrusher.partypuzz.ui.views.settings
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.preferences.AppLanguage
 import com.restrusher.partypuzz.data.preferences.ThemeMode
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     setAppBarTitle: (String) -> Unit,
@@ -102,41 +101,37 @@ fun SettingsScreen(
     }
 
     if (uiState.isThemeSheetOpen) {
-        ModalBottomSheet(
-            onDismissRequest = viewModel::closeThemeSheet,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            windowInsets = WindowInsets(0)
+        SettingsOptionsDialog(
+            title = stringResource(id = R.string.select_theme),
+            onDismiss = viewModel::closeThemeSheet
         ) {
-            BottomSheetTitle(text = stringResource(id = R.string.select_theme))
             ThemeMode.entries.forEach { mode ->
-                OptionRow(
+                OptionRowWithIcon(
                     label = mode.toDisplayString(),
+                    iconRes = mode.toDisplayIconRes(),
                     selected = mode == uiState.themeMode,
                     onClick = { viewModel.selectTheme(mode) }
                 )
             }
-            Spacer(modifier = Modifier.navigationBarsPadding().height(16.dp))
         }
     }
 
     if (uiState.isLanguageSheetOpen) {
-        ModalBottomSheet(
-            onDismissRequest = viewModel::closeLanguageSheet,
-            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            windowInsets = WindowInsets(0)
+        val languageOptions = listOf(AppLanguage.SYSTEM) +
+                AppLanguage.entries.filter { it != AppLanguage.SYSTEM }
+        SettingsOptionsDialog(
+            title = stringResource(id = R.string.select_language),
+            onDismiss = viewModel::closeLanguageSheet
         ) {
-            BottomSheetTitle(text = stringResource(id = R.string.select_language))
-            // System always first, then remaining options alphabetically
-            val languageOptions = listOf(AppLanguage.SYSTEM) +
-                    AppLanguage.entries.filter { it != AppLanguage.SYSTEM }
             languageOptions.forEach { language ->
-                OptionRow(
+                OptionRowWithIcon(
                     label = language.toDisplayString(),
+                    iconRes = language.toDisplayIconRes(),
                     selected = language == uiState.appLanguage,
-                    onClick = { viewModel.selectLanguage(language) }
+                    onClick = { viewModel.selectLanguage(language) },
+                    tintIcon = false
                 )
             }
-            Spacer(modifier = Modifier.navigationBarsPadding().height(16.dp))
         }
     }
 }
@@ -153,38 +148,88 @@ private fun SettingsSectionHeader(title: String) {
 }
 
 @Composable
-private fun BottomSheetTitle(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-    )
+private fun SettingsOptionsDialog(
+    title: String,
+    onDismiss: () -> Unit,
+    content: @Composable () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(20.dp)) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                content()
+            }
+        }
+    }
 }
 
 @Composable
-private fun OptionRow(
+private fun OptionRowWithIcon(
     label: String,
+    @DrawableRes iconRes: Int,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    tintIcon: Boolean = true
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
+            .clip(RoundedCornerShape(8.dp))
+            .background(
+                if (selected) MaterialTheme.colorScheme.primaryContainer
+                else Color.Transparent
+            )
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick
+        Icon(
+            painter = painterResource(id = iconRes),
+            contentDescription = null,
+            tint = if (!tintIcon) Color.Unspecified
+            else if (selected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = label,
             style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(start = 8.dp)
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 12.dp)
         )
+        if (selected) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_check),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
     }
+}
+
+@DrawableRes
+private fun ThemeMode.toDisplayIconRes(): Int = when (this) {
+    ThemeMode.SYSTEM -> R.drawable.ic_theme_auto
+    ThemeMode.LIGHT -> R.drawable.ic_light_mode
+    ThemeMode.DARK -> R.drawable.ic_dark_mode
+}
+
+@DrawableRes
+private fun AppLanguage.toDisplayIconRes(): Int = when (this) {
+    AppLanguage.SYSTEM -> R.drawable.ic_flag_system
+    AppLanguage.ENGLISH -> R.drawable.ic_flag_us
+    AppLanguage.SPANISH -> R.drawable.ic_flag_es
 }
 
 @Composable
