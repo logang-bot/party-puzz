@@ -3,8 +3,10 @@ package com.restrusher.partypuzz.ui.views.createPlayer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,13 +54,18 @@ fun NameOptionsContainer(
             modifier = Modifier.weight(1f)
         )
         VerticalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f))
-        Image(
-            painter = painterResource(R.drawable.ic_random),
-            contentDescription = stringResource(R.string.generate_random_name),
-            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
+        Box(
+            contentAlignment = Alignment.Center,
             modifier = Modifier
+                .fillMaxHeight()
                 .clickable(onClick = onGenerateRandomName)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        )
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_random),
+                contentDescription = stringResource(R.string.generate_random_name),
+                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
+            )
+        }
     }
 }

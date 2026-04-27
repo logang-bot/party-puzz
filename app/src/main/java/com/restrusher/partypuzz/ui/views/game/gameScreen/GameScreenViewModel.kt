@@ -191,6 +191,7 @@ class GameScreenViewModel @Inject constructor(
                 if (isCorrect) modeHandler.applyReward(it)
                 else modeHandler.applyPunishment(it, it.selectedPlayer)
             }
+            if (!_uiState.value.hasActiveModeEvent) resetDeal()
             return
         }
 
