@@ -129,7 +129,7 @@ fun SettingsScreen(
                     iconRes = language.toDisplayIconRes(),
                     selected = language == uiState.appLanguage,
                     onClick = { viewModel.selectLanguage(language) },
-                    tintIcon = false
+                    tintIcon = language == AppLanguage.SYSTEM
                 )
             }
         }
