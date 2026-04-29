@@ -54,7 +54,7 @@ fun LoadingScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
             .navigationBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,7 +66,7 @@ fun LoadingScreen(
         Spacer(modifier = Modifier.height(24.dp))
         BlurredAnimatedText(
             text = loadingTexts[currentTextIndex],
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }

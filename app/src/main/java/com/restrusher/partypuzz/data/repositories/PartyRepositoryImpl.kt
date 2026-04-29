@@ -17,7 +17,8 @@ class PartyRepositoryImpl(@DatabaseProxy private val proxy: PartyProxy) : PartyR
 
     override suspend fun getPartyById(partyId: Int) = proxy.getPartyById(partyId)
 
-    override suspend fun updateLastUsed(partyId: Int) = proxy.updateLastUsed(partyId)
+    override suspend fun updateLastUsed(partyId: Int, gameModeNameRes: Int) =
+        proxy.updateLastUsed(partyId, gameModeNameRes)
     override suspend fun updatePartyName(partyId: Int, name: String) = proxy.updatePartyName(partyId, name)
     override suspend fun deleteParty(partyId: Int) = proxy.deleteParty(partyId)
 }

@@ -1,7 +1,10 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzz.R
@@ -23,7 +26,6 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
 class GameScreenViewModel @Inject constructor(
@@ -32,11 +34,11 @@ class GameScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val ANIMATION_DURATION_MS = 5000L
+        private const val ANIMATION_DURATION_MS = 2500L
         private const val NAME_CYCLE_INTERVAL_MS = 300L
-        private const val REVEAL_DURATION_MS = 1000L
+        private const val NAME_REVEAL_DURATION_MS = 1500L
+        private const val PHOTO_REVEAL_DURATION_MS = 400L
         private const val STICKY_DARE_EXIT_DELAY_MS = 400L
-        private const val CAMERA_TRIGGER_PROBABILITY = 0.33
     }
 
     private val currentPartyId: Int? = GamePlayersList.currentPartyId
@@ -62,11 +64,19 @@ class GameScreenViewModel @Inject constructor(
     private var dealJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
 
+    // Round-based player selection: each player plays once per round before any repeats
+    private val roundQueue = mutableListOf<Player>()
+
+    private fun nextPlayerInRound(players: List<Player>): Player {
+        if (roundQueue.isEmpty()) roundQueue.addAll(players.shuffled())
+        return roundQueue.removeFirst()
+    }
+
     fun onGameDealTapped() {
         val state = _uiState.value
         if (state.dealPhase != GameDealPhase.IDLE || state.players.isEmpty()) return
 
-        val selectedPlayer = state.players.random()
+        val selectedPlayer = nextPlayerInRound(state.players)
         val availableDealTypes = GameDealType.entries.filter { type ->
             val playerCountOk = if (type == GameDealType.MINI_GAME) state.players.size >= 2 else true
             playerCountOk && isDealTypeEnabled(type)
@@ -94,15 +104,15 @@ class GameScreenViewModel @Inject constructor(
                     animatingName = ""
                 )
             }
-            delay(REVEAL_DURATION_MS)
+            delay(NAME_REVEAL_DURATION_MS)
 
             // Phase 3: Reveal selected player's photo
             _uiState.update { it.copy(dealPhase = GameDealPhase.PLAYER_PHOTO_REVEAL) }
-            delay(REVEAL_DURATION_MS)
+            delay(PHOTO_REVEAL_DURATION_MS)
 
             // Phase 4: Show challenge — load content based on deal type
             val (challengeText, gkQuestion, pcText, durationLabel, durationSeconds, miniGame) =
-                buildChallengeContent(dealType)
+                buildChallengeContent(dealType, selectedPlayer.nickName, _uiState.value.activeStickyDares)
 
             _uiState.update {
                 it.copy(
@@ -115,7 +125,7 @@ class GameScreenViewModel @Inject constructor(
                     stickyDareDurationSeconds = durationSeconds,
                     miniGame = miniGame,
                     pendingCameraRequest = currentPartyId != null &&
-                            Random.nextDouble() < CAMERA_TRIGGER_PROBABILITY
+                            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                 )
             }
         }
@@ -204,18 +214,31 @@ class GameScreenViewModel @Inject constructor(
                 totalSeconds = state.stickyDareDurationSeconds ?: 60,
                 remainingSeconds = state.stickyDareDurationSeconds ?: 60
             )
-            _uiState.update {
-                it.copy(
-                    activeStickyDares = it.activeStickyDares + dare,
-                    dealPhase = GameDealPhase.IDLE,
-                    selectedPlayer = null,
-                    animatingName = "",
-                    dealType = null,
-                    challengeText = null,
-                    stickyDarePresentContinuous = null,
-                    stickyDareDurationLabel = null,
-                    stickyDareDurationSeconds = null
-                )
+            if (state.pendingCameraRequest) {
+                _uiState.update {
+                    it.copy(
+                        activeStickyDares = it.activeStickyDares + dare,
+                        showCameraRequest = true,
+                        pendingCameraRequest = false,
+                        stickyDarePresentContinuous = null,
+                        stickyDareDurationLabel = null,
+                        stickyDareDurationSeconds = null
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        activeStickyDares = it.activeStickyDares + dare,
+                        dealPhase = GameDealPhase.IDLE,
+                        selectedPlayer = null,
+                        animatingName = "",
+                        dealType = null,
+                        challengeText = null,
+                        stickyDarePresentContinuous = null,
+                        stickyDareDurationLabel = null,
+                        stickyDareDurationSeconds = null
+                    )
+                }
             }
             startStickyDareTimer(dare.id)
         } else {
@@ -260,13 +283,18 @@ class GameScreenViewModel @Inject constructor(
         _uiState.update { it.copy(miniGameResult = LoserMiniGameResult(loserName = loserName)) }
     }
 
+    fun onSimonSaysResultReceived(loserName: String) {
+        _uiState.update { it.copy(miniGameResult = LoserMiniGameResult(loserName = loserName)) }
+    }
+
     fun onMiniGameResultReceived(player1Score: Int, player2Score: Int) {
         val state = _uiState.value
         val result = ScoredMiniGameResult(
             player1Name = state.selectedPlayer?.nickName.orEmpty(),
             player1Score = player1Score,
             player2Name = state.miniGameOpponent?.nickName.orEmpty(),
-            player2Score = player2Score
+            player2Score = player2Score,
+            showScoreDetails = state.miniGame != MiniGame.TAP_WAR
         )
         _uiState.update { it.copy(miniGameResult = result) }
     }
@@ -365,7 +393,11 @@ class GameScreenViewModel @Inject constructor(
         val miniGame: MiniGame?
     )
 
-    private fun buildChallengeContent(dealType: GameDealType): ChallengeContent {
+    private fun buildChallengeContent(
+        dealType: GameDealType,
+        playerName: String = "",
+        activeStickyDares: List<ActiveStickyDare> = emptyList()
+    ): ChallengeContent {
         return when (dealType) {
             GameDealType.TRUTH_OR_DARE -> ChallengeContent(null, null, null, null, null, null)
             GameDealType.STICKY_DARE -> {
@@ -373,7 +405,12 @@ class GameScreenViewModel @Inject constructor(
                 val presentContinuous = context.resources.getStringArray(R.array.sticky_dares_present_continuous)
                 val durationLabels = context.resources.getStringArray(R.array.sticky_dares_duration_labels)
                 val durationSeconds = context.resources.getIntArray(R.array.sticky_dares_duration_seconds)
-                val index = dares.indices.random()
+                val activePcTexts = activeStickyDares
+                    .filter { it.playerName == playerName && !it.isCompleted }
+                    .map { it.presentContinuousText }
+                    .toSet()
+                val eligibleIndices = dares.indices.filter { presentContinuous[it] !in activePcTexts }
+                val index = (if (eligibleIndices.isNotEmpty()) eligibleIndices else dares.indices.toList()).random()
                 ChallengeContent(
                     challengeText = dares[index],
                     gkQuestion = null,

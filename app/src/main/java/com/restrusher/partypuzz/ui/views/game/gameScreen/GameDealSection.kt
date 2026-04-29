@@ -7,8 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,7 +14,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -248,32 +245,12 @@ private fun GameDealMainContent(
                     textAlign = TextAlign.Center
                 )
 
-                CardContent.CYCLING_NAMES -> AnimatedContent(
-                    targetState = uiState.animatingName,
-                    transitionSpec = {
-                        (slideInVertically(tween(220)) { -it } + fadeIn(tween(220))) togetherWith
-                        (slideOutVertically(tween(220)) { it } + fadeOut(tween(220)))
-                    },
-                    label = "cycling name"
-                ) { name ->
-                    Text(
-                        text = name,
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 24.dp)
-                    )
-                }
+                CardContent.CYCLING_NAMES -> DepartureBoardNameContent()
 
                 CardContent.PLAYER_NAME -> uiState.selectedPlayer?.let { player ->
-                    Text(
-                        text = player.nickName,
-                        style = MaterialTheme.typography.displayMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(horizontal = 24.dp)
+                    LetterCascadeNameContent(
+                        names = listOf(player.nickName),
+                        loop = false
                     )
                 }
 
@@ -287,3 +264,4 @@ private fun GameDealMainContent(
         }
     }
 }
+

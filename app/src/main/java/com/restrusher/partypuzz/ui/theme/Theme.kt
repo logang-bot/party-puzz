@@ -7,8 +7,10 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -242,6 +244,8 @@ private val highContrastDarkColorScheme = darkColorScheme(
     surfaceContainerHighest = surfaceContainerHighestDarkHighContrast,
 )
 
+val LocalDarkTheme = staticCompositionLocalOf { false }
+
 @Immutable
 data class ColorFamily(
     val color: Color,
@@ -276,9 +280,11 @@ fun PartyPuzzTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = if (darkTheme) darkScheme else lightScheme,
-        typography = AppTypography,
-        content = content
-    )
+    CompositionLocalProvider(LocalDarkTheme provides darkTheme) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) darkScheme else lightScheme,
+            typography = AppTypography,
+            content = content
+        )
+    }
 }

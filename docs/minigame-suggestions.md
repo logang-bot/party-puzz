@@ -4,21 +4,7 @@ Candidate mini-games for future implementation. All are designed for a drunk par
 
 Each entry includes a rough implementation difficulty and which architectural pattern it would follow (see [minigames.md](minigames.md)).
 
----
-
-## Tap War
-
-**Type:** Two-player | **Difficulty:** Low
-
-Two players sit on opposite halves of the phone (portrait, split-screen — same layout as Follow the Spot). A horizontal tug-of-war bar starts centered. Each tap on your side pushes the bar toward the opponent's edge. The player whose side the bar crosses first loses.
-
-**Why it fits:** Nearly identical structure to Follow the Spot (`SpotBoard`-style split). The bar position is a single `Float` in `[0, 1]` updated on each tap. No timer needed — the game ends as soon as one side wins.
-
-**Result:** Standard `p1Score / p2Score` via `SavedStateHandle` (1 / 0 or 0 / 1).
-
-**New UI needed:**
-- Animated progress bar replacing the spot circles
-- Real-time score/position display in the divider strip
+> **Implemented:** Tap War and Simon Says have been built and are no longer listed here. See [minigames.md](minigames.md) for their full documentation.
 
 ---
 
@@ -37,24 +23,6 @@ Players hold the phone as still as possible for a fixed duration (e.g. 10 s). Th
 - In global mode: pass the phone around at the end, each player holds it for ~3 s; scores compared.
 
 **Result:** Standard scores or global result pattern depending on chosen mode type.
-
----
-
-## Simon Says
-
-**Type:** Two-player or global | **Difficulty:** Medium
-
-A sequence of 4 coloured buttons is shown and highlighted one at a time. Players must tap the same sequence. Each round extends the sequence by one. First player to fail the sequence loses.
-
-**Why it fits:** A classic drinking game — the longer the game goes, the harder it gets, which pairs well with increasing intoxication.
-
-**Implementation notes:**
-- State holds `sequence: List<Int>` (0–3, mapped to colours) and `playerInputIndex`.
-- Highlight a button: `animateColorAsState` on each button.
-- On each tap: compare against `sequence[playerInputIndex]`; advance or trigger failure.
-- In two-player mode: alternate turns; in global mode: players pass the phone each round.
-
-**Result:** Standard scores.
 
 ---
 
@@ -149,14 +117,14 @@ A category is displayed (e.g. "European countries"). Players take turns verbally
 
 ## Priority Recommendation
 
-For the next mini-game to implement after Hot Potato:
+For the next mini-game to implement:
 
 | Priority | Game | Reason |
 |---|---|---|
-| 1 | **Tap War** | Lowest effort — reuses Follow the Spot's split-screen architecture |
-| 2 | **Never Have I Ever** | Single composable + a string array |
-| 3 | **Categories** | Same simplicity; adds a pass-the-phone mechanic without any scoring complexity |
-| 4 | **Steady Hands** | Unique differentiator; requires accelerometer work but no complex UI |
+| 1 | **Never Have I Ever** | Single composable + a string array — minimal effort |
+| 2 | **Categories** | Same simplicity; adds a pass-the-phone mechanic without scoring complexity |
+| 3 | **Steady Hands** | Unique differentiator; requires accelerometer work but no complex UI |
+| 4 | **Most Likely To** | High social entertainment; no scoring needed |
 
 ---
 
