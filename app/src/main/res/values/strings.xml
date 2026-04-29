@@ -24,6 +24,12 @@
     <string name="edit_player">Edit player</string>
     <string name="update">Update</string>
 
+    <!-- Home Screen -->
+    <string name="tonight_mode">TONIGHT\'S MODE</string>
+    <string name="whats_the">What\'s the</string>
+    <string name="vibe">vibe?</string>
+    <string name="card_mode_label">MODE</string>
+
     <!-- Game Modes -->
     <string name="standard_game_mode">Standard</string>
     <string name="bar_game_mode">Bar time</string>
