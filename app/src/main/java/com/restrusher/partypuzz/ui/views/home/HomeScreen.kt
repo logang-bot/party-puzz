@@ -33,7 +33,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -59,15 +58,6 @@ fun SharedTransitionScope.HomeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        MaterialTheme.colorScheme.secondaryContainer,
-                        MaterialTheme.colorScheme.background
-                    )
-                )
-            )
     ) {
         if (uiState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -82,17 +72,12 @@ fun SharedTransitionScope.HomeScreen(
                         color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
                     )
                     Text(
-                        text = stringResource(R.string.whats_the),
-                        style = MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    Text(
-                        text = stringResource(R.string.vibe),
+                        text = "${stringResource(R.string.whats_the)} ${stringResource(R.string.vibe)}",
                         style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
                         fontStyle = FontStyle.Italic,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
+                        maxLines = 1
                     )
                 }
                 HorizontalPager(

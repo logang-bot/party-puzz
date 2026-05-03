@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -80,15 +79,6 @@ fun PartyDetailScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        MaterialTheme.colorScheme.secondaryContainer,
-                        MaterialTheme.colorScheme.tertiaryContainer
-                    )
-                )
-            )
     ) {
         when {
             uiState.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

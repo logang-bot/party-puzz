@@ -9,7 +9,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,8 +35,24 @@ import androidx.compose.ui.Alignment
 import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.data.models.InterestedIn
 import android.content.pm.ActivityInfo
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -118,16 +132,13 @@ fun SharedTransitionScope.CreatePlayerScreen(
     }
 
     setAppBarTitle(
-        stringResource(if (uiState.isEditMode) R.string.edit_player else R.string.create_player)
+        stringResource(if (uiState.isEditMode) R.string.edit_player else R.string.new_player)
     )
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .sharedBounds(
                     rememberSharedContentState(key = if (playerId == -1) "bounds" else "player_card_$playerId"),
                     animatedVisibilityScope = animatedVisibilityScope,
@@ -176,23 +187,19 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 onPlayerNameChanged = viewModel::onPlayerNameChanged,
                 onGenerateRandomName = { viewModel.onPlayerNameChanged(viewModel.generateRandomName()) },
                 onGenderSelected = viewModel::onGenderSelected,
-                onInterestedInSelected = viewModel::onInterestedInSelected
+                onInterestedInSelected = viewModel::onInterestedInSelected,
+                modifier = Modifier.weight(1f)
             )
 
-            Button(
+            ConfirmButton(
                 onClick = { viewModel.confirmPlayer() },
                 enabled = uiState.playerName.isNotBlank() && uiState.interestedIn != null,
+                isEditMode = uiState.isEditMode,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-            ) {
-                Text(
-                    text = stringResource(
-                        if (uiState.isEditMode) R.string.update else R.string.confirm
-                    ).uppercase(),
-                    style = MaterialTheme.typography.headlineSmall
-                )
-            }
+                    .navigationBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
+            )
         }
 
         if (uiState.isLoading) {
@@ -250,53 +257,124 @@ fun PlayerFormContent(
     existingPhotoPath: String? = null,
 ) {
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
     ) {
+        StepLabel(stringResource(R.string.step_pick_face))
         ImageOptionsContainer(
+            capturedImageUri = capturedImageUri,
             takePictureAction = onTakePicture,
             generateRandomImageAction = onGenerateRandomImage,
-            modifier = Modifier.padding(24.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         )
-        EditPlayerCard(capturedImageUri, playerName, avatarRes = avatarRes, existingPhotoPath = existingPhotoPath)
-        AnimatedVisibility(visible = playerName.isBlank()) {
-            Text(
-                text = stringResource(R.string.name_is_required),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, top = 6.dp)
-            )
-        }
+        Spacer(modifier = Modifier.height(8.dp))
+        EditPlayerCard(
+            imageUri = capturedImageUri,
+            avatarRes = avatarRes,
+            existingPhotoPath = existingPhotoPath,
+            onShuffleClick = onGenerateRandomImage,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        StepLabel(stringResource(R.string.step_pick_name))
         NameOptionsContainer(
             value = playerName,
             onValueChanged = onPlayerNameChanged,
             onGenerateRandomName = onGenerateRandomName,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(24.dp)
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+        )
+        Text(
+            text = stringResource(R.string.name_auto_generated_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp)
         )
         AnimatedVisibility(visible = isCouplesMode) {
             GenderOptionsContainer(
                 selectedGender = gender,
                 onGenderSelected = onGenderSelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
             )
         }
         AnimatedVisibility(visible = isCouplesMode) {
             InterestedInOptionsContainer(
                 selectedInterestedIn = interestedIn,
                 onInterestedInSelected = onInterestedInSelected,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
+                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun StepLabel(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text.uppercase(),
+        style = MaterialTheme.typography.labelSmall,
+        letterSpacing = 1.5.sp,
+        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+        textAlign = TextAlign.Center,
+        modifier = modifier.fillMaxWidth().padding(vertical = 6.dp)
+    )
+}
+
+@Composable
+private fun ConfirmButton(
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    isEditMode: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val primary = MaterialTheme.colorScheme.primary
+    val onPrimary = MaterialTheme.colorScheme.onPrimary
+    val disabledBg = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+    val disabledText = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+    val animatedBgColor by animateColorAsState(
+        targetValue = if (isPressed) onPrimary else primary,
+        animationSpec = tween(300), label = "bg"
+    )
+    val animatedTextColor by animateColorAsState(
+        targetValue = if (isPressed) primary else onPrimary,
+        animationSpec = tween(300), label = "text"
+    )
+    val bgColor = if (enabled) animatedBgColor else disabledBg
+    val textColor = if (enabled) animatedTextColor else disabledText
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .defaultMinSize(minHeight = 52.dp)
+            .background(color = bgColor, shape = RoundedCornerShape(50))
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                enabled = enabled,
+                onClick = onClick
+            )
+            .padding(horizontal = 24.dp, vertical = 8.dp)
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_check),
+                contentDescription = null,
+                tint = textColor,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(
+                    if (isEditMode) R.string.update else R.string.add_to_the_party
+                ).uppercase(),
+                fontWeight = FontWeight.Bold,
+                color = textColor
             )
         }
     }

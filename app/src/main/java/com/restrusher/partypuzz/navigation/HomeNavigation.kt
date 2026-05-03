@@ -12,11 +12,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
@@ -38,6 +43,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.ui.theme.appBackground
 import com.restrusher.partypuzz.ui.common.HomeAppBar
 import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen as CreatePlayerScreenComposable
 import com.restrusher.partypuzz.ui.views.game.miniGames.followTheSpot.FollowTheSpotScreen
@@ -70,16 +76,39 @@ fun HomeNavigation(
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val drawerItemColors = NavigationDrawerItemDefaults.colors(
+        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+        unselectedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+        selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+        selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+    )
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         gesturesEnabled = isHomeScreen,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(
+                drawerContainerColor = MaterialTheme.colorScheme.background,
+                windowInsets = WindowInsets(0)
+            ) {
                 Image(
                     painter = painterResource(id = R.drawable.img_partypuzz_logo),
                     contentDescription = stringResource(id = R.string.app_name),
-                    modifier = Modifier.padding(start = 28.dp, top = 24.dp, bottom = 16.dp)
+                    modifier = Modifier
+                        .statusBarsPadding()
+                        .padding(start = 28.dp, top = 24.dp, bottom = 24.dp)
+                )
+                NavigationDrawerItem(
+                    icon = {
+                        Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
+                    },
+                    label = { Text(text = stringResource(id = R.string.play)) },
+                    selected = isHomeScreen,
+                    onClick = { scope.launch { drawerState.close() } },
+                    colors = drawerItemColors,
+                    modifier = Modifier.padding(horizontal = 12.dp)
                 )
                 NavigationDrawerItem(
                     icon = {
@@ -96,6 +125,7 @@ fun HomeNavigation(
                             launchSingleTop = true
                         }
                     },
+                    colors = drawerItemColors,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
                 NavigationDrawerItem(
@@ -113,13 +143,16 @@ fun HomeNavigation(
                             launchSingleTop = true
                         }
                     },
+                    colors = drawerItemColors,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
             }
         }
     ) {
         Scaffold(
+            containerColor = androidx.compose.ui.graphics.Color.Transparent,
             contentWindowInsets = WindowInsets(0),
+            modifier = Modifier.fillMaxSize().appBackground(),
             topBar = {
                 AnimatedVisibility(
                     visible = !isFullScreenRoute,

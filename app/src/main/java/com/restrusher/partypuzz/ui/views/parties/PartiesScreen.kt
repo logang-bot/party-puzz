@@ -1,6 +1,5 @@
 package com.restrusher.partypuzz.ui.views.parties
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +15,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -40,15 +38,6 @@ fun PartiesScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        MaterialTheme.colorScheme.secondaryContainer,
-                        MaterialTheme.colorScheme.tertiaryContainer
-                    )
-                )
-            )
     ) {
         when {
             uiState.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))

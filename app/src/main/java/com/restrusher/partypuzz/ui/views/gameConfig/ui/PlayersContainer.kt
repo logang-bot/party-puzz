@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,8 +71,15 @@ fun SharedTransitionScope.PlayersContainer(
     }
 
     Column(modifier) {
-        Text(text = stringResource(id = R.string.players), style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            GameConfigSectionLabel(text = stringResource(id = R.string.players))
+            Text(
+                text = " · ${GamePlayersList.PlayersList.size} ${stringResource(R.string.added)}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalArrangement = Arrangement.spacedBy(5.dp),

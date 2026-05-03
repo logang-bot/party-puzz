@@ -25,6 +25,12 @@
     <string name="edit_player">Editar jugador</string>
     <string name="update">Actualizar</string>
 
+    <!-- Home Screen -->
+    <string name="tonight_mode">MODO DE ESTA NOCHE</string>
+    <string name="whats_the">¿Cuál es</string>
+    <string name="vibe">el ambiente?</string>
+    <string name="card_mode_label">MODO</string>
+
     <!-- Game Modes -->
     <string name="standard_game_mode">Estándar</string>
     <string name="bar_game_mode">Bar time</string>
@@ -73,6 +79,11 @@
     <string name="add_player">Agregar jugador</string>
     <string name="add">Agregar</string>
     <string name="customize_your_party">Personaliza tu fiesta</string>
+    <string name="mode_selected">Modo seleccionado</string>
+    <string name="question_categories">Categorías de preguntas</string>
+    <string name="added">añadidos</string>
+    <string name="start_the_party">Comenzar la fiesta</string>
+    <string name="mini_games_hint">El teléfono pasa de jugador en jugador — ponlo sobre la mesa con la pantalla hacia arriba. Toca para cambiar la pregunta y pásalo.</string>
     <string name="bar_mode">Modo Bar</string>
     <string name="can_skip_questions">Se pueden saltar preguntas</string>
     <string name="unlimited_mode">Modo sin fin</string>
@@ -100,6 +111,12 @@
     <string name="players">Jugadores</string>
     <string name="options">Opciones</string>
     <string name="confirm">Confirmar</string>
+    <string name="new_player">Nuevo jugador</string>
+    <string name="step_pick_face">Paso 01 · Elige tu cara</string>
+    <string name="step_pick_name">Paso 02 · Elige tu nombre</string>
+    <string name="generated">Generada</string>
+    <string name="add_to_the_party">Añadir a la fiesta</string>
+    <string name="name_auto_generated_hint">Los nombres se generan de un mazo de adjetivos ligeramente absurdos. Puedes editar lo que quieras.</string>
     <string name="gather_your_friends_for_a_night_of_fun">¡Reúne a tus amigos para una noche de diversión y competencia sana en nuestro nuevo modo Bar Brawl! Esta experiencia inmersiva te transportará a un bar virtual donde podrás retar a tus amigos a una variedad de juegos y desafíos.</string>
     <string name="choose_a_different_party">Elegir otra fiesta</string>
     <string name="no_parties_yet">Aún no has creado fiestas, inicia un juego y disfruta</string>

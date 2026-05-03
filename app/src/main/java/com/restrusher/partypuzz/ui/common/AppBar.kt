@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -40,8 +41,9 @@ fun HomeAppBar(
             if (!shouldShowLogo)
                 Text(text = title, color = MaterialTheme.colorScheme.onPrimaryContainer)
         },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent
         ),
         navigationIcon = {
             if (shouldShowLogo)

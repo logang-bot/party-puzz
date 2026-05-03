@@ -78,6 +78,11 @@
     <string name="add_player">Add player</string>
     <string name="add">Add</string>
     <string name="customize_your_party">Customize your party</string>
+    <string name="mode_selected">Mode selected</string>
+    <string name="question_categories">Question categories</string>
+    <string name="added">added</string>
+    <string name="start_the_party">Start the party</string>
+    <string name="mini_games_hint">The phone passes between players each turn — set it on the table, screen up. Tap to flip the prompt, hand it on.</string>
     <string name="bar_mode">Bar Mode</string>
     <string name="can_skip_questions">Can skip questions</string>
     <string name="unlimited_mode">No-end mode</string>
@@ -105,6 +110,12 @@
     <string name="players">Players</string>
     <string name="options">Options</string>
     <string name="confirm">Confirm</string>
+    <string name="new_player">New player</string>
+    <string name="step_pick_face">Step 01 · Pick your face</string>
+    <string name="step_pick_name">Step 02 · Pick your name</string>
+    <string name="generated">Generated</string>
+    <string name="add_to_the_party">Add to the party</string>
+    <string name="name_auto_generated_hint">Names are auto-generated from a deck of mildly stupid adjectives. You can edit anything.</string>
     <string name="gather_your_friends_for_a_night_of_fun">Gather your friends for a night of fun and friendly competition in our new Bar Brawl game mode! This immersive experience will transport you to a virtual bar where you can challenge your friends to a variety of drinking games and challenges.</string>
     <string name="choose_a_different_party">Choose a different party</string>
     <string name="no_parties_yet">No parties created yet, start a game and enjoy</string>

@@ -3,6 +3,7 @@ package com.restrusher.partypuzz.ui.views.settings
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,13 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,12 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -52,51 +54,24 @@ fun SettingsScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        MaterialTheme.colorScheme.secondaryContainer,
-                        MaterialTheme.colorScheme.tertiaryContainer
-                    )
-                )
-            )
     ) {
         SettingsSectionHeader(title = stringResource(id = R.string.appearance))
 
-        ListItem(
-            headlineContent = { Text(text = stringResource(id = R.string.theme_color)) },
-            supportingContent = { Text(text = uiState.themeMode.toDisplayString()) },
-            leadingContent = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_outline_settings),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-            modifier = Modifier.clickable { viewModel.openThemeSheet() }
+        SettingsRow(
+            title = stringResource(id = R.string.theme_color),
+            subtitle = uiState.themeMode.toDisplayString(),
+            iconRes = R.drawable.ic_dark_mode,
+            onClick = viewModel::openThemeSheet
         )
 
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.2f),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
+        Spacer(modifier = Modifier.height(8.dp))
         SettingsSectionHeader(title = stringResource(id = R.string.language))
 
-        ListItem(
-            headlineContent = { Text(text = stringResource(id = R.string.language)) },
-            supportingContent = { Text(text = uiState.appLanguage.toDisplayString()) },
-            leadingContent = {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_outline_mood),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-            modifier = Modifier.clickable { viewModel.openLanguageSheet() }
+        SettingsRow(
+            title = stringResource(id = R.string.language),
+            subtitle = uiState.appLanguage.toDisplayString(),
+            iconRes = R.drawable.ic_flag_system,
+            onClick = viewModel::openLanguageSheet
         )
     }
 
@@ -139,12 +114,64 @@ fun SettingsScreen(
 @Composable
 private fun SettingsSectionHeader(title: String) {
     Text(
-        text = title,
-        style = MaterialTheme.typography.labelLarge,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.padding(start = 16.dp, top = 20.dp, bottom = 4.dp)
+        text = title.uppercase(),
+        style = MaterialTheme.typography.labelSmall,
+        letterSpacing = 1.5.sp,
+        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+        modifier = Modifier.padding(start = 16.dp, top = 28.dp, bottom = 6.dp)
     )
+}
+
+@Composable
+private fun SettingsRow(
+    title: String,
+    subtitle: String,
+    @DrawableRes iconRes: Int,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primaryContainer)
+        ) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+            )
+        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+            modifier = Modifier.size(20.dp)
+        )
+    }
 }
 
 @Composable
