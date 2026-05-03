@@ -15,5 +15,7 @@ data class PartyWithPlayers(
             entityColumn = "playerId"
         )
     )
-    val players: List<PlayerEntity>
+    val players: List<PlayerEntity>,
+    @Relation(parentColumn = "id", entityColumn = "partyId")
+    val photos: List<PartyPhotoEntity>
 )

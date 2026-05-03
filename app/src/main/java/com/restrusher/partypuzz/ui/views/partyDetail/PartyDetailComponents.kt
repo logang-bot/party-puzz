@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +30,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,19 +38,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.entities.PartyPhotoEntity
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun PartyNameSection(
     name: String,
+    gameModeName: String?,
+    displayDate: Long,
     isEditing: Boolean,
     editedName: String,
     onEditClick: () -> Unit,
@@ -58,7 +66,19 @@ fun PartyNameSection(
     onDiscard: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val dateText = remember(displayDate) {
+        SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).format(Date(displayDate))
+    }
+    val headerText = if (gameModeName != null) "${gameModeName.uppercase()} · $dateText" else dateText.uppercase()
+
     Column(modifier = modifier) {
+        Text(
+            text = headerText,
+            style = MaterialTheme.typography.labelSmall,
+            letterSpacing = 1.5.sp,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -74,14 +94,19 @@ fun PartyNameSection(
                         value = editedName,
                         onValueChange = onNameChange,
                         singleLine = true,
-                        textStyle = MaterialTheme.typography.titleLarge,
+                        textStyle = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontStyle = FontStyle.Italic
+                        ),
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
                     Text(
                         text = name,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,
+                        fontStyle = FontStyle.Italic,
+                        color = MaterialTheme.colorScheme.onBackground,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -97,20 +122,51 @@ fun PartyNameSection(
                 }
             }
         }
-
         AnimatedVisibility(visible = isEditing) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                Button(onClick = onSave) {
-                    Text(text = stringResource(id = R.string.save))
-                }
-                OutlinedButton(onClick = onDiscard) {
-                    Text(text = stringResource(id = R.string.discard))
-                }
+                Button(onClick = onSave) { Text(text = stringResource(id = R.string.save)) }
+                OutlinedButton(onClick = onDiscard) { Text(text = stringResource(id = R.string.discard)) }
             }
         }
+    }
+}
+
+@Composable
+fun StatCardRow(
+    playerCount: Int,
+    photoCount: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = modifier) {
+        StatCard(count = playerCount, label = stringResource(R.string.players_label), modifier = Modifier.weight(1f))
+        StatCard(count = photoCount, label = stringResource(R.string.photos_label), modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
+private fun StatCard(count: Int, label: String, modifier: Modifier = Modifier) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.06f))
+            .padding(vertical = 16.dp)
+    ) {
+        Text(
+            text = count.toString(),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Text(
+            text = label.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            letterSpacing = 1.5.sp,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+        )
     }
 }
 
@@ -121,44 +177,56 @@ fun PartyPlayersGrid(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-    ) {
-        players.forEach { player ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                when {
-                    player.photoPath != null -> AsyncImage(
-                        model = ImageRequest.Builder(context).data(File(player.photoPath)).build(),
-                        contentDescription = stringResource(id = R.string.player_avatar),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.width(64.dp).height(64.dp).clip(CircleShape)
-                    )
-                    player.avatarName != null -> {
-                        val resId = context.resources.getIdentifier(
-                            player.avatarName, "drawable", context.packageName
-                        )
-                        Image(
-                            painter = painterResource(id = if (resId != 0) resId else R.drawable.img_dummy_avatar),
+    Column(modifier = modifier) {
+        Text(
+            text = stringResource(R.string.cast),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            players.forEach { player ->
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    val avatarModifier = Modifier
+                        .size(72.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                    when {
+                        player.photoPath != null -> AsyncImage(
+                            model = ImageRequest.Builder(context).data(File(player.photoPath)).build(),
                             contentDescription = stringResource(id = R.string.player_avatar),
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.width(64.dp).height(64.dp).clip(CircleShape)
+                            modifier = avatarModifier
+                        )
+                        player.avatarName != null -> {
+                            val resId = context.resources.getIdentifier(
+                                player.avatarName, "drawable", context.packageName
+                            )
+                            Image(
+                                painter = painterResource(id = if (resId != 0) resId else R.drawable.img_dummy_avatar),
+                                contentDescription = stringResource(id = R.string.player_avatar),
+                                contentScale = ContentScale.Crop,
+                                modifier = avatarModifier
+                            )
+                        }
+                        else -> Image(
+                            painter = painterResource(id = R.drawable.img_dummy_avatar),
+                            contentDescription = stringResource(id = R.string.player_avatar),
+                            contentScale = ContentScale.Crop,
+                            modifier = avatarModifier
                         )
                     }
-                    else -> Image(
-                        painter = painterResource(id = R.drawable.img_dummy_avatar),
-                        contentDescription = stringResource(id = R.string.player_avatar),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.width(64.dp).height(64.dp).clip(CircleShape)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = if (player.nickName.length > 10) player.nickName.take(10) + "…" else player.nickName,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Light,
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = if (player.nickName.length > 10) player.nickName.take(10) + "…" else player.nickName,
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Light
-                )
             }
         }
     }
@@ -175,17 +243,24 @@ fun PartyPhotoAlbumSection(
 ) {
     val context = LocalContext.current
     Column(modifier = modifier) {
-        Text(
-            text = stringResource(id = R.string.party_album_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.scrapbook),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                fontStyle = FontStyle.Italic,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(R.string.x_moments, photos.size),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            )
+        }
         Spacer(modifier = Modifier.height(12.dp))
         if (!hasCameraPermission) {
-            Button(
-                onClick = onRequestPermission,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Button(onClick = onRequestPermission, modifier = Modifier.fillMaxWidth()) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_camera),
                     contentDescription = null,
@@ -231,8 +306,8 @@ fun DeletePartyButton(
         onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.errorContainer,
-            contentColor = MaterialTheme.colorScheme.onErrorContainer
+            containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.07f),
+            contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
         )
     ) {
         Text(

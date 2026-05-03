@@ -57,7 +57,7 @@ class GameConfigViewModel @Inject constructor(
     fun onStartGame(onReady: () -> Unit) {
         viewModelScope.launch {
             val partyId = args.partyId
-            if (partyId != null) partyRepository.updateLastUsed(partyId)
+            if (partyId != null) partyRepository.updateLastUsed(partyId, args.gameModeName)
             onReady()
         }
     }

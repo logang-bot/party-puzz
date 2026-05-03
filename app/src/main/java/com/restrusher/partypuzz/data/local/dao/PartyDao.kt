@@ -26,8 +26,8 @@ interface PartyDao {
     @Query("SELECT * FROM parties WHERE id = :partyId")
     suspend fun getPartyById(partyId: Int): PartyWithPlayers?
 
-    @Query("UPDATE parties SET lastUsedAt = :timestamp WHERE id = :partyId")
-    suspend fun updateLastUsed(partyId: Int, timestamp: Long)
+    @Query("UPDATE parties SET lastUsedAt = :timestamp, lastGameModeNameRes = :gameModeNameRes WHERE id = :partyId")
+    suspend fun updateLastUsed(partyId: Int, timestamp: Long, gameModeNameRes: Int)
 
     @Query("UPDATE parties SET name = :name WHERE id = :partyId")
     suspend fun updatePartyName(partyId: Int, name: String)

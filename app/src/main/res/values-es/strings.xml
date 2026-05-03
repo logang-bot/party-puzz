@@ -143,6 +143,16 @@
     <string name="game_mode_tap_suffix"></string>
     <string name="with">con</string>
     <string name="and_x_more">y %1$d más</string>
+    <string name="parties_summary">%1$d sesiones · %2$d fotos</string>
+    <string name="recent_parties">Fiestas recientes</string>
+    <string name="x_sessions">%1$d sesiones</string>
+    <string name="x_players">%1$d jugadores</string>
+    <string name="x_photos">%1$d fotos</string>
+    <string name="cast">Elenco</string>
+    <string name="scrapbook">Álbum</string>
+    <string name="x_moments">%1$d momentos</string>
+    <string name="players_label">Jugadores</string>
+    <string name="photos_label">Fotos</string>
     <string name="select_a_party">Seleccionar una fiesta</string>
     <string name="cancel">Cancelar</string>
     <string name="game">Juego</string>

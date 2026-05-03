@@ -184,7 +184,20 @@ PartyPhotoDao
 
 ### Database version
 
-Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list.
+Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list. The database is currently at **v7** (see `create-player-feature-spec.md` for the full version history).
+
+### `PartyWithPlayers` — eager photo loading
+
+`PartyWithPlayers` includes a `@Relation` field for photos:
+
+```kotlin
+@Relation(parentColumn = "id", entityColumn = "partyId")
+val photos: List<PartyPhotoEntity>
+```
+
+This means every call to `getAllPartiesWithPlayers()` or `getPartyById()` also loads the party's photo list in the same Room transaction. Party list cards (`PartyCard`, `LastPartyCard`) use `party.photos.size` directly for photo count display — no separate `PartyPhotoDao` query is needed for that purpose.
+
+`PartyDetailViewModel` still observes `partyPhotoRepository.getPhotosForParty(partyId)` as a live `Flow` for the full detail screen, where real-time updates (a new photo captured mid-session) must be reflected immediately.
 
 ---
 

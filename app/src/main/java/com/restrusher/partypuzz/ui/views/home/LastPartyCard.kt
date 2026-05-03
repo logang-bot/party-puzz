@@ -6,49 +6,31 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.entities.PartyEntity
 import com.restrusher.partypuzz.data.local.entities.PartyWithPlayers
@@ -56,11 +38,12 @@ import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.data.models.InterestedIn
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
-import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-private val cardShape = RoundedCornerShape(15.dp)
+private val cardShape = RoundedCornerShape(16.dp)
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun LastPartyCard(
     party: PartyWithPlayers,
@@ -69,212 +52,97 @@ fun LastPartyCard(
     modifier: Modifier = Modifier,
     showSeeButton: Boolean = true
 ) {
-    val context = LocalContext.current
-    val players = party.players
-    var showPlayersSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    val coroutineScope = rememberCoroutineScope()
-    val (displayedNames, remaining) = playerNamesSlice(players)
-    val namesText = if (remaining > 0)
-        "${displayedNames.joinToString(", ")} ${stringResource(R.string.and_x_more, remaining)}"
-    else
-        displayedNames.joinToString(", ")
+    val gameModeNameRes = party.party.lastGameModeNameRes
+    val gradientColors = lastPartyCardGradient(gameModeNameRes)
+    val imageRes = lastPartyCardImageRes(gameModeNameRes)
+    val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
+    val displayDate = party.party.lastUsedAt ?: party.party.dateCreation
 
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) MaterialTheme.colorScheme.outline else Color.Transparent,
-        animationSpec = tween(durationMillis = 400),
-        label = "borderColor"
-    )
-
-    val backgroundColor by animateColorAsState(
         targetValue = if (isSelected)
-            MaterialTheme.colorScheme.inversePrimary.copy(alpha = 0.3f)
+            MaterialTheme.colorScheme.outline
         else
-            MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.03f),
+            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
         animationSpec = tween(durationMillis = 400),
-        label = "backgroundColor"
+        label = "border"
     )
 
-    Box(
-        modifier = modifier
-            .border(width = 1.dp, color = borderColor, shape = cardShape)
-            .clip(cardShape)
-            .background(backgroundColor)
-            .fillMaxWidth()
-            .clickable { onCardClick() }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 15.dp, vertical = 10.dp)
-        ) {
-            Spacer(modifier = Modifier.height(5.dp))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Row(horizontalArrangement = Arrangement.spacedBy((-15).dp)) {
-                        players.take(3).forEach { player ->
-                            when {
-                                player.photoPath != null -> AsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(File(player.photoPath))
-                                        .build(),
-                                    contentDescription = stringResource(id = R.string.player_avatar),
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .width(50.dp)
-                                        .height(50.dp)
-                                        .clip(CircleShape)
-                                )
-                                player.avatarName != null -> {
-                                    val resId = context.resources.getIdentifier(
-                                        player.avatarName, "drawable", context.packageName
-                                    )
-                                    Image(
-                                        painter = painterResource(id = if (resId != 0) resId else R.drawable.img_dummy_avatar),
-                                        contentDescription = stringResource(id = R.string.player_avatar),
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .width(50.dp)
-                                            .height(50.dp)
-                                            .clip(CircleShape)
-                                    )
-                                }
-                                else -> Image(
-                                    painter = painterResource(id = R.drawable.img_dummy_avatar),
-                                    contentDescription = stringResource(id = R.string.player_avatar),
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .width(50.dp)
-                                        .height(50.dp)
-                                        .clip(CircleShape)
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = namesText,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.ExtraLight
-                    )
-                }
-                if (showSeeButton) {
-                    Button(
-                        onClick = { showPlayersSheet = true },
-                        colors = ButtonDefaults.buttonColors(
-                            contentColor = MaterialTheme.colorScheme.tertiary,
-                            containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
-                        )
-                    ) {
-                        Text(text = stringResource(id = R.string.see), fontWeight = FontWeight.ExtraBold)
-                    }
-                }
-            }
-        }
-    }
+    val subtitle = "${dateFormat.format(Date(displayDate))} · " +
+        stringResource(R.string.x_players, party.players.size) + " · " +
+        stringResource(R.string.x_photos, party.photos.size)
 
-    if (showPlayersSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showPlayersSheet = false },
-            sheetState = sheetState,
-            windowInsets = WindowInsets(0)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .clip(cardShape)
+            .border(1.dp, borderColor, cardShape)
+            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f))
+            .clickable { onCardClick() }
+            .padding(12.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(52.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(Brush.linearGradient(gradientColors))
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .navigationBarsPadding()
-                    .padding(bottom = 24.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.players),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    players.forEach { player ->
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            when {
-                                player.photoPath != null -> AsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(File(player.photoPath))
-                                        .build(),
-                                    contentDescription = stringResource(id = R.string.player_avatar),
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .width(50.dp)
-                                        .height(50.dp)
-                                        .clip(CircleShape)
-                                )
-                                player.avatarName != null -> {
-                                    val resId = context.resources.getIdentifier(
-                                        player.avatarName, "drawable", context.packageName
-                                    )
-                                    Image(
-                                        painter = painterResource(id = if (resId != 0) resId else R.drawable.img_dummy_avatar),
-                                        contentDescription = stringResource(id = R.string.player_avatar),
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .width(50.dp)
-                                            .height(50.dp)
-                                            .clip(CircleShape)
-                                    )
-                                }
-                                else -> Image(
-                                    painter = painterResource(id = R.drawable.img_dummy_avatar),
-                                    contentDescription = stringResource(id = R.string.player_avatar),
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .width(50.dp)
-                                        .height(50.dp)
-                                        .clip(CircleShape)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = if (player.nickName.length > 12) player.nickName.take(12) + "…" else player.nickName,
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = FontWeight.Light,
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-                Button(
-                    onClick = {
-                        coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
-                            showPlayersSheet = false
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = MaterialTheme.colorScheme.onTertiary,
-                        containerColor = MaterialTheme.colorScheme.tertiary
-                    )
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.close),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                }
-            }
+            Image(
+                painter = painterResource(imageRes),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(14.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = party.party.name,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
+}
+
+private fun lastPartyCardGradient(gameModeNameRes: Int?): List<Color> = when (gameModeNameRes) {
+    R.string.standard_game_mode -> listOf(Color(0xFF1B7B7B), Color(0xFF0E5252))
+    R.string.bar_game_mode -> listOf(Color(0xFFE87060), Color(0xFFCA4535))
+    R.string.couples_game_mode -> listOf(Color(0xFFCC50A8), Color(0xFF8A35C0))
+    R.string.party_puzz_game_mode -> listOf(Color(0xFF6848C0), Color(0xFF472898))
+    else -> listOf(Color(0xFF2A3A55), Color(0xFF1A2640))
+}
+
+private fun lastPartyCardImageRes(gameModeNameRes: Int?): Int = when (gameModeNameRes) {
+    R.string.standard_game_mode -> R.drawable.img_standard_illustration
+    R.string.bar_game_mode -> R.drawable.img_bar_mode_illustration
+    R.string.couples_game_mode -> R.drawable.img_couples_mode_illustration
+    R.string.party_puzz_game_mode -> R.drawable.img_partypuzz_mode_illustration
+    else -> R.drawable.img_standard_illustration
+}
+
+// helper referenced by HomeScreen — kept internal to this file
+internal fun playerNamesSlice(
+    players: List<PlayerEntity>,
+    maxShown: Int = 3
+): Pair<List<String>, Int> {
+    val names = players.take(maxShown).map { p ->
+        val first = p.nickName.trim().split("\\s+".toRegex()).firstOrNull() ?: p.nickName
+        if (first.length > 10) "${first.take(10)}…" else first
+    }
+    return names to (players.size - names.size)
 }
 
 @Composable
@@ -288,7 +156,8 @@ fun LastPartyCardPreview() {
                 PlayerEntity(id = 2, nickName = "John", gender = Gender.Male, interestedIn = InterestedIn.Woman),
                 PlayerEntity(id = 3, nickName = "Clara", gender = Gender.Female, interestedIn = InterestedIn.Man),
                 PlayerEntity(id = 4, nickName = "Chris", gender = Gender.Male, interestedIn = InterestedIn.Woman),
-            )
+            ),
+            photos = emptyList()
         )
         LastPartyCard(
             party = fakeParty,

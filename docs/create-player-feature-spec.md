@@ -40,6 +40,8 @@ players added during the current game session.
 | `id` | `Int` (PK, autoGenerate) | Unique party ID |
 | `name` | `String` | Auto-generated name, e.g. `"Party 1741478400000"` |
 | `dateCreation` | `Long` | Unix timestamp (ms) at creation time |
+| `lastUsedAt` | `Long?` | Timestamp of the most recent game session; `null` until the first game is played |
+| `lastGameModeNameRes` | `Int?` | String resource ID of the game mode used in the last session (e.g. `R.string.standard_game_mode`); used by party cards to render a mode-specific gradient and icon |
 
 ### `PartyPlayerCrossRef` (`party_player_cross_ref` table)
 
@@ -98,7 +100,7 @@ CreatePlayerScreen
 | `PartyRepositoryImpl` | `data/repositories/` | Creates parties and cross-ref links |
 | `PlayerLocalProxy` | `data/local/proxies/` | Room-backed `PlayerProxy` |
 | `PartyLocalProxy` | `data/local/proxies/` | Room-backed `PartyProxy` |
-| `PartyPuzzDatabase` | `data/local/` | Room DB v2; entities: `Player`, `Party`, `PartyPlayerCrossRef` |
+| `PartyPuzzDatabase` | `data/local/` | Room DB v7; entities: `Player`, `Party`, `PartyPlayerCrossRef`, `PartyPhotoEntity` |
 | `GamePlayersList` | `data/local/appData/appDataSource/` | Singleton holding in-memory player list + `currentPartyId` |
 
 ### DI wiring (`di/`)
@@ -183,3 +185,5 @@ Both selectors accept a nullable selected value (`Gender?` and `InterestedIn?`) 
 | 3 | Added bar mode support (no schema change to `players`). |
 | 4 | Added `interestedIn: InterestedIn` column to `players`. |
 | 5 | Both `gender` and `interestedIn` columns present on `players`; `gender` is optional (`Unknown` default), `interestedIn` is required. |
+| 6 | Added `PartyPhotoEntity` (`party_photos` table) for the photo album feature. See `photo-album.md`. |
+| 7 | Added `lastUsedAt: Long?` and `lastGameModeNameRes: Int?` to `PartyEntity`. `lastGameModeNameRes` is written by `GameConfigViewModel.onStartGame()` and read by party cards to display a mode-specific gradient. |

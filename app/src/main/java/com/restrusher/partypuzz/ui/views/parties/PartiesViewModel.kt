@@ -21,7 +21,13 @@ class PartiesViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             partyRepository.getAllParties().collect { parties ->
-                _uiState.update { it.copy(parties = parties, isLoading = false) }
+                _uiState.update {
+                    it.copy(
+                        parties = parties,
+                        isLoading = false,
+                        totalPhotoCount = parties.sumOf { p -> p.photos.size }
+                    )
+                }
             }
         }
     }

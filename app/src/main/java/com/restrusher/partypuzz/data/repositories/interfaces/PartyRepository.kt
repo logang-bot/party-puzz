@@ -8,7 +8,7 @@ interface PartyRepository {
     suspend fun linkPlayerToParty(partyId: Int, playerId: Int)
     fun getAllParties(): Flow<List<PartyWithPlayers>>
     suspend fun getPartyById(partyId: Int): PartyWithPlayers?
-    suspend fun updateLastUsed(partyId: Int)
+    suspend fun updateLastUsed(partyId: Int, gameModeNameRes: Int)
     suspend fun updatePartyName(partyId: Int, name: String)
     suspend fun deleteParty(partyId: Int)
 }

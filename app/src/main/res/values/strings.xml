@@ -142,6 +142,16 @@
     <string name="game_mode_tap_suffix">mode</string>
     <string name="with">with</string>
     <string name="and_x_more">and %1$d more</string>
+    <string name="parties_summary">%1$d sessions · %2$d photos</string>
+    <string name="recent_parties">Recent parties</string>
+    <string name="x_sessions">%1$d sessions</string>
+    <string name="x_players">%1$d players</string>
+    <string name="x_photos">%1$d photos</string>
+    <string name="cast">Cast</string>
+    <string name="scrapbook">Scrapbook</string>
+    <string name="x_moments">%1$d moments</string>
+    <string name="players_label">Players</string>
+    <string name="photos_label">Photos</string>
     <string name="select_a_party">Select a party</string>
     <string name="cancel">Cancel</string>
     <string name="game">Game</string>
