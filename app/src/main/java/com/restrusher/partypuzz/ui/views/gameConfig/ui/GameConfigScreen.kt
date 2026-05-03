@@ -117,25 +117,18 @@ fun SharedTransitionScope.GameConfigScreen(
                                 boundsTransform = { _, _ -> tween(durationMillis = 400) }
                             )
                     )
-                    Box(
-                        contentAlignment = Alignment.Center,
+                    Image(
+                        painter = painterResource(id = gameModeImage),
+                        contentDescription = stringResource(id = R.string.game_mode_image),
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .size(72.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.primaryContainer)
                             .sharedElement(
                                 state = rememberSharedContentState(key = "game/${gameModeImage}"),
                                 animatedVisibilityScope = animatedVisibilityScope,
                                 boundsTransform = { _, _ -> tween(durationMillis = 400) }
                             )
-                    ) {
-                        Image(
-                            painter = painterResource(id = gameModeImage),
-                            contentDescription = stringResource(id = R.string.game_mode_image),
-                            contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(50.dp)
-                        )
-                    }
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -301,7 +294,7 @@ fun GameConfigScreenPreview() {
                     setAppBarTitle = { },
                     animatedVisibilityScope = this,
                     gameModeName = R.string.party_puzz_game_mode,
-                    gameModeImage = R.drawable.img_partypuzz_mode_illustration,
+                    gameModeImage = R.drawable.ic_partypuzz,
                     gameModeDescription = R.string.party_puzz_description,
                     onCreatePlayerClick = {},
                     onEditPlayerClick = {},

@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,6 +38,7 @@ import com.restrusher.partypuzz.data.local.entities.PartyWithPlayers
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
 import com.restrusher.partypuzz.data.models.Gender
 import com.restrusher.partypuzz.data.models.InterestedIn
+import com.restrusher.partypuzz.ui.common.gameModeTheme
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,8 +55,7 @@ fun LastPartyCard(
     showSeeButton: Boolean = true
 ) {
     val gameModeNameRes = party.party.lastGameModeNameRes
-    val gradientColors = lastPartyCardGradient(gameModeNameRes)
-    val imageRes = lastPartyCardImageRes(gameModeNameRes)
+    val theme = gameModeTheme(gameModeNameRes)
     val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
     val displayDate = party.party.lastUsedAt ?: party.party.dateCreation
 
@@ -85,12 +86,13 @@ fun LastPartyCard(
             modifier = Modifier
                 .size(52.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .background(Brush.linearGradient(gradientColors))
+                .background(Brush.linearGradient(theme.gradientColors))
         ) {
             Image(
-                painter = painterResource(imageRes),
+                painter = painterResource(theme.iconId),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -117,23 +119,6 @@ fun LastPartyCard(
     }
 }
 
-private fun lastPartyCardGradient(gameModeNameRes: Int?): List<Color> = when (gameModeNameRes) {
-    R.string.standard_game_mode -> listOf(Color(0xFF1B7B7B), Color(0xFF0E5252))
-    R.string.bar_game_mode -> listOf(Color(0xFFE87060), Color(0xFFCA4535))
-    R.string.couples_game_mode -> listOf(Color(0xFFCC50A8), Color(0xFF8A35C0))
-    R.string.party_puzz_game_mode -> listOf(Color(0xFF6848C0), Color(0xFF472898))
-    else -> listOf(Color(0xFF2A3A55), Color(0xFF1A2640))
-}
-
-private fun lastPartyCardImageRes(gameModeNameRes: Int?): Int = when (gameModeNameRes) {
-    R.string.standard_game_mode -> R.drawable.img_standard_illustration
-    R.string.bar_game_mode -> R.drawable.img_bar_mode_illustration
-    R.string.couples_game_mode -> R.drawable.img_couples_mode_illustration
-    R.string.party_puzz_game_mode -> R.drawable.img_partypuzz_mode_illustration
-    else -> R.drawable.img_standard_illustration
-}
-
-// helper referenced by HomeScreen — kept internal to this file
 internal fun playerNamesSlice(
     players: List<PlayerEntity>,
     maxShown: Int = 3

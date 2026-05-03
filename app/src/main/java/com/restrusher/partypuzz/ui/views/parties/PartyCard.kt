@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -39,6 +40,7 @@ import coil3.request.ImageRequest
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.entities.PartyWithPlayers
 import com.restrusher.partypuzz.data.local.entities.PlayerEntity
+import com.restrusher.partypuzz.ui.common.gameModeTheme
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -53,11 +55,9 @@ fun PartyCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
     val players = party.players
     val gameModeNameRes = party.party.lastGameModeNameRes
-    val gradientColors = gameModeGradient(gameModeNameRes)
-    val decorativeImageRes = gameModeImageRes(gameModeNameRes)
+    val theme = gameModeTheme(gameModeNameRes)
     val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
     val displayDate = party.party.lastUsedAt ?: party.party.dateCreation
 
@@ -75,18 +75,19 @@ fun PartyCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(cardShape)
-            .background(brush = Brush.linearGradient(gradientColors))
+            .background(brush = Brush.linearGradient(theme.gradientColors))
             .clickable { onClick() }
     ) {
         Image(
-            painter = painterResource(decorativeImageRes),
+            painter = painterResource(theme.iconId),
             contentDescription = null,
-            alpha = 0.12f,
+            alpha = 0.25f,
+            colorFilter = ColorFilter.tint(Color.White),
             contentScale = ContentScale.Fit,
             modifier = Modifier
-                .size(120.dp)
+                .size(140.dp)
                 .align(Alignment.TopEnd)
-                .offset(x = 20.dp, y = (-8).dp)
+                .offset(x = 24.dp, y = (-12).dp)
         )
 
         Column(modifier = Modifier.fillMaxWidth()) {
@@ -195,20 +196,4 @@ private fun PlayerAvatarSmall(player: PlayerEntity) {
             modifier = Modifier.size(36.dp).clip(CircleShape)
         )
     }
-}
-
-private fun gameModeGradient(gameModeNameRes: Int?): List<Color> = when (gameModeNameRes) {
-    R.string.standard_game_mode -> listOf(Color(0xFF1B7B7B), Color(0xFF0E5252))
-    R.string.bar_game_mode -> listOf(Color(0xFFE87060), Color(0xFFCA4535))
-    R.string.couples_game_mode -> listOf(Color(0xFFCC50A8), Color(0xFF8A35C0))
-    R.string.party_puzz_game_mode -> listOf(Color(0xFF6848C0), Color(0xFF472898))
-    else -> listOf(Color(0xFF2A4060), Color(0xFF162840))
-}
-
-private fun gameModeImageRes(gameModeNameRes: Int?): Int = when (gameModeNameRes) {
-    R.string.standard_game_mode -> R.drawable.img_standard_illustration
-    R.string.bar_game_mode -> R.drawable.img_bar_mode_illustration
-    R.string.couples_game_mode -> R.drawable.img_couples_mode_illustration
-    R.string.party_puzz_game_mode -> R.drawable.img_partypuzz_mode_illustration
-    else -> R.drawable.img_standard_illustration
 }
