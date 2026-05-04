@@ -114,6 +114,8 @@
     <string name="new_player">Nuevo jugador</string>
     <string name="step_pick_face">Paso 01 · Elige tu cara</string>
     <string name="step_pick_name">Paso 02 · Elige tu nombre</string>
+    <string name="step_pick_gender">Paso 03 · Elige tu género</string>
+    <string name="step_pick_interested_in">Paso 04 · Quién te gusta</string>
     <string name="generated">Generada</string>
     <string name="add_to_the_party">Añadir a la fiesta</string>
     <string name="name_auto_generated_hint">Los nombres se generan de un mazo de adjetivos ligeramente absurdos. Puedes editar lo que quieras.</string>
@@ -157,6 +159,7 @@
     <string name="cancel">Cancelar</string>
     <string name="game">Juego</string>
     <string name="tap_to_play">Toca para jugar</string>
+    <string name="tap_to_play_with">Toca para jugar con %1$s</string>
     <string name="truth">Verdad</string>
     <string name="dare">Reto</string>
     <string name="truth_or_dare_title">¿Verdad o Reto?</string>
@@ -411,6 +414,53 @@
     <string name="ready">Listo</string>
     <string name="go">¡Ya!</string>
     <string name="choose_opponent">Elige tu rival</string>
+
+    <!-- Party name generator word bank -->
+    <string-array name="party_name_first_words">
+        <item>Nocturno</item>
+        <item>Galáctico</item>
+        <item>Explosivo</item>
+        <item>Épico</item>
+        <item>Loco</item>
+        <item>Picante</item>
+        <item>Misterioso</item>
+        <item>Caótico</item>
+        <item>Dorado</item>
+        <item>Salvaje</item>
+        <item>Tropical</item>
+        <item>Eléctrico</item>
+        <item>Clandestino</item>
+        <item>Descabellado</item>
+        <item>Delirante</item>
+        <item>Vertiginoso</item>
+        <item>Secreto</item>
+        <item>Brillante</item>
+        <item>Ruidoso</item>
+        <item>Interminable</item>
+    </string-array>
+
+    <string-array name="party_name_second_words">
+        <item>Desmadre</item>
+        <item>Reventón</item>
+        <item>Carnaval</item>
+        <item>Alboroto</item>
+        <item>Jolgorio</item>
+        <item>Parranda</item>
+        <item>Pachanga</item>
+        <item>Mitote</item>
+        <item>Zafarrancho</item>
+        <item>Relajo</item>
+        <item>Escándalo</item>
+        <item>Bacanal</item>
+        <item>Juerga</item>
+        <item>Francachela</item>
+        <item>Cotorreo</item>
+        <item>Borlote</item>
+        <item>Euforia</item>
+        <item>Revuelta</item>
+        <item>Algarabía</item>
+        <item>Fiestón</item>
+    </string-array>
 
     <!-- Name generator word bank -->
     <string-array name="name_adjectives">

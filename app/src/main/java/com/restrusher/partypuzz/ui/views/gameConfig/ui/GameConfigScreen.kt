@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -123,11 +124,6 @@ fun SharedTransitionScope.GameConfigScreen(
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .size(72.dp)
-                            .sharedElement(
-                                state = rememberSharedContentState(key = "game/${gameModeImage}"),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                boundsTransform = { _, _ -> tween(durationMillis = 400) }
-                            )
                     )
                 }
 
@@ -137,7 +133,13 @@ fun SharedTransitionScope.GameConfigScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.ExtraLight,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .sharedElement(
+                            state = rememberSharedContentState(key = "game/${gameModeDescription}"),
+                            animatedVisibilityScope = animatedVisibilityScope,
+                            boundsTransform = { _, _ -> tween(durationMillis = 400) }
+                        )
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -208,8 +210,9 @@ private fun MiniGamesHintBox(modifier: Modifier = Modifier) {
                 .background(MaterialTheme.colorScheme.primaryContainer)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_plus),
+                painter = painterResource(id = R.drawable.ic_lightbulb),
                 contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
                 modifier = Modifier.size(20.dp)
             )
         }

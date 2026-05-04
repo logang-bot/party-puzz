@@ -102,6 +102,12 @@ class CreatePlayerViewModel @Inject constructor(
 
     fun randomAvatarIndex(): Int = (1..MAX_RANDOM_AVATARS).random()
 
+    fun generateRandomPartyName(): String {
+        val firstWords = context.resources.getStringArray(R.array.party_name_first_words)
+        val secondWords = context.resources.getStringArray(R.array.party_name_second_words)
+        return "${firstWords.random()} ${secondWords.random()}"
+    }
+
     fun generateRandomName(): String {
         val adjectives = context.resources.getStringArray(R.array.name_adjectives)
         val nouns = context.resources.getStringArray(R.array.name_nouns)
@@ -143,7 +149,7 @@ class CreatePlayerViewModel @Inject constructor(
             )
 
             val partyId = GamePlayersList.currentPartyId
-                ?: partyRepository.createParty("Party ${System.currentTimeMillis()}").toInt()
+                ?: partyRepository.createParty(generateRandomPartyName()).toInt()
                     .also { GamePlayersList.currentPartyId = it }
 
             partyRepository.linkPlayerToParty(partyId, playerId.toInt())

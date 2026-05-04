@@ -113,6 +113,8 @@
     <string name="new_player">New player</string>
     <string name="step_pick_face">Step 01 · Pick your face</string>
     <string name="step_pick_name">Step 02 · Pick your name</string>
+    <string name="step_pick_gender">Step 03 · Pick your gender</string>
+    <string name="step_pick_interested_in">Step 04 · Who you like</string>
     <string name="generated">Generated</string>
     <string name="add_to_the_party">Add to the party</string>
     <string name="name_auto_generated_hint">Names are auto-generated from a deck of mildly stupid adjectives. You can edit anything.</string>
@@ -156,6 +158,7 @@
     <string name="cancel">Cancel</string>
     <string name="game">Game</string>
     <string name="tap_to_play">Tap to play</string>
+    <string name="tap_to_play_with">Tap to play with %1$s</string>
     <string name="truth">Truth</string>
     <string name="dare">Dare</string>
     <string name="truth_or_dare_title">Truth or Dare?</string>
@@ -410,6 +413,53 @@
     <string name="ready">Ready</string>
     <string name="go">Go!</string>
     <string name="choose_opponent">Choose your opponent</string>
+
+    <!-- Party name generator word bank -->
+    <string-array name="party_name_first_words">
+        <item>Rooftop</item>
+        <item>Backyard</item>
+        <item>Basement</item>
+        <item>Midnight</item>
+        <item>Golden</item>
+        <item>Neon</item>
+        <item>Wild</item>
+        <item>Electric</item>
+        <item>Cosmic</item>
+        <item>Tipsy</item>
+        <item>Glitter</item>
+        <item>Thunder</item>
+        <item>Secret</item>
+        <item>Disco</item>
+        <item>Cursed</item>
+        <item>Lemon</item>
+        <item>Mystery</item>
+        <item>Viking</item>
+        <item>Chaotic</item>
+        <item>Fuzzy</item>
+    </string-array>
+
+    <string-array name="party_name_second_words">
+        <item>Chaos</item>
+        <item>Mayhem</item>
+        <item>Bash</item>
+        <item>Fiesta</item>
+        <item>Riot</item>
+        <item>Carnival</item>
+        <item>Circus</item>
+        <item>Frenzy</item>
+        <item>Madness</item>
+        <item>Fiasco</item>
+        <item>Rampage</item>
+        <item>Extravaganza</item>
+        <item>Rave</item>
+        <item>Shindig</item>
+        <item>Hullabaloo</item>
+        <item>Ruckus</item>
+        <item>Jamboree</item>
+        <item>Blowout</item>
+        <item>Spectacle</item>
+        <item>Bonanza</item>
+    </string-array>
 
     <!-- Name generator word bank -->
     <string-array name="name_adjectives">

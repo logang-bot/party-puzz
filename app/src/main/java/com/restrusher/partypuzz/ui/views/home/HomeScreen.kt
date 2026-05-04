@@ -99,7 +99,8 @@ fun SharedTransitionScope.HomeScreen(
                             onGameOptionSelected(name, image, description, partyId)
                         },
                         gameMode = uiState.gameModes[index],
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
+                        selectedPartyName = if (uiState.isPartySelected) uiState.activeParty?.party?.name else null
                     )
                 }
                 Row(

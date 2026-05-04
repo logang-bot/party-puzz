@@ -292,18 +292,24 @@ fun PlayerFormContent(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 4.dp)
         )
         AnimatedVisibility(visible = isCouplesMode) {
-            GenderOptionsContainer(
-                selectedGender = gender,
-                onGenderSelected = onGenderSelected,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-            )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                StepLabel(stringResource(R.string.step_pick_gender))
+                GenderOptionsContainer(
+                    selectedGender = gender,
+                    onGenderSelected = onGenderSelected,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                )
+            }
         }
         AnimatedVisibility(visible = isCouplesMode) {
-            InterestedInOptionsContainer(
-                selectedInterestedIn = interestedIn,
-                onInterestedInSelected = onInterestedInSelected,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-            )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                StepLabel(stringResource(R.string.step_pick_interested_in))
+                InterestedInOptionsContainer(
+                    selectedInterestedIn = interestedIn,
+                    onInterestedInSelected = onInterestedInSelected,
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
     }
