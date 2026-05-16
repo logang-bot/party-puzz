@@ -45,9 +45,8 @@ internal fun MiniGameChallengeContent(
     val result = uiState.miniGameResult
     var pendingOpponent by remember { mutableStateOf<Player?>(null) }
 
-    val bottomButtonVisible = result == null &&
-            (miniGame.isGlobal || pendingOpponent != null)
-    val useLargeHeader = result == null && miniGame.isGlobal
+    val bottomButtonVisible = result == null && (miniGame.isGlobal || pendingOpponent != null)
+    val isPrePlay = result == null
 
     Box(modifier = modifier) {
         Column(
@@ -58,7 +57,7 @@ internal fun MiniGameChallengeContent(
                 .padding(horizontal = 24.dp)
                 .padding(bottom = if (bottomButtonVisible) 80.dp else 0.dp)
         ) {
-            MiniGameHeader(miniGame = miniGame, isLarge = useLargeHeader)
+            MiniGameHeader(miniGame = miniGame, isPrePlay = isPrePlay)
             when (result) {
                 is ScoredMiniGameResult -> ScoredResultContent(
                     result = result,
@@ -107,17 +106,19 @@ internal fun MiniGameChallengeContent(
     }
 }
 
+// ─── Header ──────────────────────────────────────────────────────────────────
+
 @Composable
-private fun MiniGameHeader(miniGame: MiniGame, isLarge: Boolean) {
-    if (isLarge) {
-        Text(
-            text = stringResource(miniGame.nameRes),
-            style = MaterialTheme.typography.headlineLarge,
-            fontWeight = FontWeight.Bold,
-            color = Color.White,
-            textAlign = TextAlign.Center
-        )
-        if (miniGame.isGlobal) {
+private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
+    when {
+        isPrePlay && miniGame.isGlobal -> {
+            Text(
+                text = stringResource(miniGame.nameRes),
+                style = MaterialTheme.typography.headlineLarge,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = stringResource(R.string.mini_game_everyone_plays),
@@ -127,16 +128,30 @@ private fun MiniGameHeader(miniGame: MiniGame, isLarge: Boolean) {
                 textAlign = TextAlign.Center
             )
         }
-    } else {
-        Text(
-            text = stringResource(miniGame.nameRes),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.White.copy(alpha = 0.65f),
-            textAlign = TextAlign.Center
-        )
+        isPrePlay -> {
+            // 2-player game: prominent title above opponent selection
+            Text(
+                text = stringResource(miniGame.nameRes),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.White,
+                textAlign = TextAlign.Center
+            )
+        }
+        else -> {
+            // Result state: small label above the result
+            Text(
+                text = stringResource(miniGame.nameRes),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White.copy(alpha = 0.65f),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
+
+// ─── Pre-play content ─────────────────────────────────────────────────────────
 
 @Composable
 private fun GlobalMiniGameContent(miniGame: MiniGame) {
@@ -183,9 +198,11 @@ private fun OpponentSelectionContent(
     val opponents = uiState.players.filter { it != uiState.selectedPlayer }
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
+        // Each DealOptionButton is 56 dp tall; cap total list height so the
+        // centred column never overflows the card with many players.
         modifier = Modifier
             .fillMaxWidth()
-            .height(((opponents.size * 64) + ((opponents.size - 1) * 8)).coerceAtMost(300).dp)
+            .height(((opponents.size * 56) + ((opponents.size - 1) * 8)).coerceAtMost(280).dp)
     ) {
         items(opponents, key = { it.id }) { player ->
             DealOptionButton(
@@ -197,6 +214,8 @@ private fun OpponentSelectionContent(
         }
     }
 }
+
+// ─── Result content ───────────────────────────────────────────────────────────
 
 @Composable
 private fun ScoredResultContent(
@@ -215,19 +234,21 @@ private fun ScoredResultContent(
         color = Color.White,
         textAlign = TextAlign.Center
     )
-    Spacer(Modifier.height(8.dp))
-    Text(
-        text = "${result.player1Name}:  ${result.player1Score}",
-        style = MaterialTheme.typography.titleLarge,
-        color = Color.White.copy(alpha = 0.8f),
-        textAlign = TextAlign.Center
-    )
-    Text(
-        text = "${result.player2Name}:  ${result.player2Score}",
-        style = MaterialTheme.typography.titleLarge,
-        color = Color.White.copy(alpha = 0.8f),
-        textAlign = TextAlign.Center
-    )
+    if (result.showScoreDetails) {
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = "${result.player1Name}:  ${result.player1Score}",
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White.copy(alpha = 0.8f),
+            textAlign = TextAlign.Center
+        )
+        Text(
+            text = "${result.player2Name}:  ${result.player2Score}",
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White.copy(alpha = 0.8f),
+            textAlign = TextAlign.Center
+        )
+    }
     Spacer(Modifier.height(16.dp))
     ResultDismissAction(isModeActive = isModeActive, onFinished = onFinished)
 }
@@ -268,6 +289,8 @@ private fun ResultDismissAction(isModeActive: Boolean, onFinished: () -> Unit) {
     }
 }
 
+// ─── Previews ─────────────────────────────────────────────────────────────────
+
 private val previewPlayer1 = Player(1, "Alice", Gender.Female, InterestedIn.Man)
 private val previewPlayer2 = Player(2, "Bob", Gender.Male, InterestedIn.Woman)
 private val previewPlayer3 = Player(3, "Carol", Gender.Female, InterestedIn.Both)
@@ -307,6 +330,33 @@ private fun MiniGameResultDarkPreview() {
                         player1Score = 3,
                         player2Name = "Bob",
                         player2Score = 1
+                    )
+                ),
+                onGlobalMiniGameStarted = {},
+                onOpponentSelected = {},
+                onFinished = {},
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Preview(name = "MiniGame – tap war result – Dark", showBackground = true, widthDp = 360, heightDp = 500)
+@Composable
+private fun MiniGameTapWarResultDarkPreview() {
+    PartyPuzzTheme(themeMode = ThemeMode.DARK) {
+        Box(Modifier.background(Color(0xFF162447)).fillMaxSize()) {
+            MiniGameChallengeContent(
+                uiState = GameScreenState(
+                    selectedPlayer = previewPlayer1,
+                    players = listOf(previewPlayer1, previewPlayer2),
+                    miniGame = MiniGame.TAP_WAR,
+                    miniGameResult = ScoredMiniGameResult(
+                        player1Name = "Alice",
+                        player1Score = 42,
+                        player2Name = "Bob",
+                        player2Score = 38,
+                        showScoreDetails = false
                     )
                 ),
                 onGlobalMiniGameStarted = {},

@@ -23,6 +23,8 @@ Current entries:
 |---|---|---|
 | `FOLLOW_THE_SPOT` | 2 | `false` |
 | `HOT_POTATO` | 2 | `true` |
+| `TAP_WAR` | 2 | `false` |
+| `SIMON_SAYS` | 2 | `true` |
 
 ### How a mini-game deal is triggered
 
@@ -77,9 +79,10 @@ MiniGameChallengeContent shows large title + "Everyone plays!" + description + S
          │
   Mini-game route launched (reads all players from GamePlayersList directly)
          │
-  onGameFinished(loserName) → SavedStateHandle ["hot_potato_loser"]
+  onGameFinished(loserName) → SavedStateHandle [game-specific key]
+  (e.g. "hot_potato_loser", "simon_says_loser")
          │
-  GameScreen reads loserName → onHotPotatoResultReceived(loserName)
+  GameScreen LaunchedEffect reads loserName → game-specific ViewModel handler
          │
   LoserMiniGameResult stored in state.miniGameResult
          │
@@ -195,6 +198,58 @@ A 2-player reaction game. Both players hold the phone at opposite ends. A spot a
 
 ---
 
+## Tap War
+
+A 2-player tug-of-war game. The screen is split horizontally (portrait, same orientation as Follow the Spot). A progress bar starts centred; each tap on your half pushes it toward the opponent's edge. The player whose side the bar reaches first loses.
+
+### Mechanics
+
+- Screen is split: Player 2 on top (rotated 180°), Player 1 on bottom.
+- A single `barPosition: Float` in `[0.0, 1.0]` represents the bar position: 0.0 = Player 1 wins, 1.0 = Player 2 wins; starts at 0.5.
+- Each tap on Player 1's half applies `+BAR_STEP` (0.04); each tap on Player 2's half applies `−BAR_STEP`. Position is clamped to `[0, 1]`.
+- When `barPosition ≥ 1.0` Player 2 wins; when `barPosition ≤ 0.0` Player 1 wins — `winner: Int?` is set accordingly and the game stops.
+- A 3-second countdown precedes the game; during countdown taps are ignored.
+- A 10-second game timer runs after the countdown. If neither player pushes the bar to an edge within time, the player with the bar on their side at expiry loses (bar > 0.5 → Player 1 wins; bar < 0.5 → Player 2 wins; exactly 0.5 → tie).
+- A cycling border animation (4 pastel colours, 600 ms per step) runs while the game is active.
+- Player 2's inner content (photo + name) is rotated 180° via `isFlipped = true`.
+
+### Divider strip (`TugOfWarBar`)
+
+The centre strip has two visual layers stacked in a `Box`:
+
+1. **Autoconsumable progress bar** (background layer) — a `Box` with `fillMaxWidth(timerFraction)` and `fillMaxHeight()` filled with `surfaceVariant`. The fraction is driven by an `Animatable` updated via `LaunchedEffect(timeRemaining, isGameRunning)`: it snaps to the current second's fraction and smoothly animates to the next over 1 000 ms with `LinearEasing`, giving a continuous drain effect. When `isGameRunning = false` (bar win or timeout) it snaps to 0.
+
+2. **Indicator row** (foreground layer) — a `Row` containing a `PlayerAvatar` on each side and an `IndicatorTrack` in the centre. `IndicatorTrack` uses two `Spacer`s weighted by `barPosition` and `1 − barPosition` with a 20 dp circle indicator at their boundary; `animateFloatAsState` with a spring drives smooth motion. The row fades to 0 alpha when the game ends; "Tap to exit" fades in over it.
+
+### State model (`TapWarState`)
+
+| Field | Purpose |
+|---|---|
+| `player1` / `player2` | `Player?` built from route args |
+| `barPosition` | `Float` in `[0.0, 1.0]`; starts at 0.5 |
+| `isGameRunning` | `true` between Go and game end |
+| `isCountingDown` | `true` during the 3-2-1-Go sequence |
+| `countdownValue` | 3 → 0 |
+| `timeRemaining` | Seconds left (counts down from 10 once game starts) |
+| `winner` | `Int?` — `1` or `2` once the bar reaches an edge or time expires; `null` while in play |
+
+### Result
+
+`onGameFinished(p1Score, p2Score)` writes both scores to `SavedStateHandle` using the shared `mini_game_p1_score` / `mini_game_p2_score` keys (same as Follow the Spot). `GameScreenViewModel.onMiniGameResultReceived` constructs a `ScoredMiniGameResult`.
+
+### Key files
+
+| File | Role |
+|---|---|
+| `TapWarScreen.kt` | Screen + `TapWarContent` composable |
+| `TapWarSide.kt` | Single player half: tappable zone, border animation, `TapWarDividerEdge` enum |
+| `TugOfWarBar.kt` | Divider strip: autoconsumable timer progress bar + animated indicator track, player avatars, "Tap to exit" |
+| `TapWarState.kt` | State data class |
+| `TapWarViewModel.kt` | Countdown job, timer job, tap handlers (`onPlayer1Tapped`, `onPlayer2Tapped`), bar update, time-based win resolution |
+| `TapWarRoute` (`HomeScreenRoutes.kt`) | `data class` carrying both players' display info |
+
+---
+
 ## Hot Potato
 
 A global mini-game (all registered players participate). The phone represents the "hot potato" — players physically pass it around, each tapping the screen to confirm the pass. A hidden random timer (10–30 s) fires silently; whoever is showing on screen at that moment has the potato and must drink.
@@ -267,6 +322,97 @@ In Bar Time / Couples / Party Puzz modes the challenge card flips to show the pu
 
 ---
 
+## Simon Says
+
+A global mini-game (all registered players participate). The phone is passed around. A growing sequence of 4 coloured buttons is shown and highlighted one at a time. The active player must tap the same sequence back. Each round the sequence grows by one button. The first player to tap incorrectly loses and drinks.
+
+### Mechanics
+
+- All players read from `GamePlayersList.PlayersList` at ViewModel init — no route args needed.
+- 3-second countdown before the first round (`MiniGameCountdownOverlay`).
+- Four colour buttons in a 2×2 grid: green (0), red (1), blue (2), yellow (3).
+- Each round: sequence is replayed button by button (SHOWING phase), then the current player taps back in order (INPUT phase).
+- On correct completion of the full sequence → PASS phase: the footer shows the next player's photo + "Pass the phone to [name] and tap here when ready!" The entire footer area is tappable (no explicit button). Tapping advances `currentPlayerIndex` and starts the next round with one more button appended.
+- On incorrect tap → GAME_OVER phase: `loser` is set to the current player.
+- Players cycle in order: `currentPlayerIndex = (current + 1) % players.size`.
+
+### Phases (`SimonSaysPhase`)
+
+| Phase | Description |
+|---|---|
+| `COUNTDOWN` | Pre-game 3-2-1-Go overlay; footer renders an invisible placeholder to keep layout stable |
+| `SHOWING` | Sequence highlighted button by button (600 ms on, 200 ms gap); footer shows player photo + "Hey [name], watch carefully!" |
+| `INPUT` | Active player taps back the sequence; header shows `"Round N • X/N"` tally; footer shows player photo + "Your turn, [name]!" |
+| `PASS` | Sequence completed; footer shows next player's photo + pass instruction; entire footer is tappable to confirm |
+| `GAME_OVER` | Incorrect tap; buttons scatter off-screen; footer shows loser photo + "Oops, [name] missed it!"; "Tap to exit" fades into the grid area after 300 ms |
+
+### Highlight timing
+
+| Constant | Value |
+|---|---|
+| `BUTTON_HIGHLIGHT_MS` | 600 ms |
+| `BUTTON_GAP_MS` | 200 ms |
+
+### UI design
+
+**Layout:**
+- Header (`RoundHeader`): round number centered (`titleLarge` bold). During INPUT, a secondary tally `"• X/N"` (`labelLarge`, `onSurfaceVariant`) is appended inline to show progress through the sequence.
+- Grid (`SimonGrid`): 2×2 `Box` of `SimonButton` composables filling the remaining weight.
+- Footer (`PhaseFooter`): flexible height; always renders a `PlayerInfo` (64 dp circle photo + `headlineSmall` message) or an invisible placeholder during COUNTDOWN to prevent the grid from jumping.
+
+**`SimonButton`:**
+- Dim state: `baseColor.copy(alpha = 0.25f)`; highlighted state: `baseColor` (full opacity). Animates via `animateColorAsState(tween(120))`.
+- Tap ripple: expands from tap point to fill the full card using `hypot(width, height)` as max radius; ripple colour = `baseColor` at 50 % alpha fading to 0 over 400 ms.
+- Scatter (GAME_OVER): each button translates outward in its corner direction and fades to 0 alpha over 350 ms via `animateFloatAsState` + `graphicsLayer`.
+
+**Game-over overlay:**
+- Scoped to the `SimonGrid` area only — header and footer remain fully visible.
+- Uses `animateFloatAsState` + `Modifier.alpha()` (300 ms delay, 400 ms fade-in) to avoid `ColumnScope.AnimatedVisibility` receiver conflicts.
+- Style: `titleMedium` + `FontWeight.Bold` + `onSurfaceVariant` — matches the "Tap to exit" style used in `GameDivider` (Follow the Spot) and `TugOfWarBar` (Tap War).
+
+### State model (`SimonSaysState`)
+
+| Field | Type | Purpose |
+|---|---|---|
+| `players` | `List<Player>` | Full roster, copied from `GamePlayersList` at init |
+| `currentPlayerIndex` | `Int` | Index into `players`; advances on each pass |
+| `sequence` | `List<Int>` | 0–3 values; grows by one per round |
+| `playerInputIndex` | `Int` | Position in `sequence` being validated during INPUT |
+| `phase` | `SimonSaysPhase` | Drives UI layout |
+| `highlightedButton` | `Int` | Button index lit during SHOWING; `-1` when none |
+| `countdownValue` | `Int` | 3 → 0 |
+| `loser` | `Player?` | Set on incorrect tap |
+| `currentPlayer` *(computed)* | `Player?` | `players.getOrNull(currentPlayerIndex)` |
+| `roundNumber` *(computed)* | `Int` | `sequence.size` |
+
+### Result passing
+
+Simon Says uses a dedicated `SavedStateHandle` key (`simon_says_loser`) so it does not collide with the Hot Potato key:
+
+```
+onGameFinished(loserName)
+    → savedStateHandle["simon_says_loser"] = loserName
+    → GameScreen LaunchedEffect picks up the value
+    → viewModel.onSimonSaysResultReceived(loserName)
+    → state.miniGameResult = LoserMiniGameResult(loserName)
+    → MiniGameChallengeContent renders LoserResultContent panel
+    → user taps Finish (mode active) / card (standard) → onMiniGameDealFinished()
+    → modeHandler.applyMiniGameResult(state) → punishment event (if any) + deal reset
+```
+
+### Key files
+
+| File | Role |
+|---|---|
+| `SimonSaysScreen.kt` | Screen + `SimonSaysContent`, `RoundHeader`, `PlayerInfo`, `SimonGrid`, `PhaseFooter` |
+| `SimonButton.kt` | Individual colour button with tap ripple and scatter animation; `SimonColors` list (green, red, blue, yellow); `ScatterDirs` per-corner offsets |
+| `SimonSaysState.kt` | State data class + `SimonSaysPhase` enum + computed properties |
+| `SimonSaysViewModel.kt` | Countdown job, sequence show job, tap validation, pass/game-over logic |
+| `SimonSaysRoute` (`HomeScreenRoutes.kt`) | `data object` — no route args; all player data read from `GamePlayersList` |
+| `MiniGameCountdownOverlay.kt` | Shared countdown overlay (see above) |
+
+---
+
 ## Adding a New Mini-Game
 
 1. Add an entry to `MiniGame.kt` with `nameRes`, `descriptionRes`, `minPlayers`, and `isGlobal`.
@@ -305,6 +451,16 @@ In Bar Time / Couples / Party Puzz modes the challenge card flips to show the pu
 | `go` | `"Go!"` |
 | `finish` | `"Finish"` |
 | `tap_to_dismiss` | `"Tap to dismiss"` |
+| `tap_war` | `"Tap War"` |
+| `tap_war_description` | `"Tap your side as fast as you can — push the bar into your opponent's half to win."` |
+| `simon_says` | `"Simon Says"` |
+| `simon_says_description` | `"Follow the flashing sequence — whoever breaks it first drinks."` |
+| `simon_says_round` | `"Round %1$d"` |
+| `simon_says_step` | `"%1$d of %2$d"` (header tally during INPUT) |
+| `simon_says_watch_player` | `"Hey %1$s, watch carefully!"` (SHOWING footer) |
+| `simon_says_now_your_turn` | `"Your turn, %1$s!"` (INPUT footer) |
+| `simon_says_pass_complete` | `"Pass the phone to %1$s and tap here when ready!"` (PASS footer) |
+| `simon_says_missed` | `"Oops, %1$s missed it!"` (GAME_OVER footer) |
 
 All keys have matching `values-es/strings.xml` entries.
 

@@ -113,8 +113,6 @@ fun MiniGamesOptionChip(
                 val cornerPx = cornerRadius.toPx()
                 val borderPx = 1.dp.toPx()
 
-                // Gradient border: diagonal-sized square guarantees full coverage
-                // of the chip bounds at every rotation angle
                 if (gradientAlpha > 0f) {
                     val diag = sqrt(size.width * size.width + size.height * size.height)
                     rotate(degrees = animatable.value, pivot = center) {
@@ -127,9 +125,6 @@ fun MiniGamesOptionChip(
                     }
                 }
 
-                // Solid border fades in once the gradient fades out.
-                // Stroke width is 2× borderPx; the outer half is clipped away,
-                // leaving exactly 1 dp of visible border — matching other chips.
                 if (solidBorderAlpha > 0f) {
                     drawRoundRect(
                         color = solidBorderColor,
@@ -139,8 +134,6 @@ fun MiniGamesOptionChip(
                     )
                 }
 
-                // Interior background always inset so both border styles sit in
-                // the same 1 dp strip around the chip edge
                 drawRoundRect(
                     color = backgroundColor,
                     cornerRadius = CornerRadius(maxOf(0f, cornerPx - borderPx)),

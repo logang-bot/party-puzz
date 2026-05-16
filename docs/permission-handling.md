@@ -124,9 +124,25 @@ dialogQueue
 
 ---
 
-## In-Game Camera Check (`GameScreen`)
+## In-Game Camera Check (`GameScreen` + `GameScreenViewModel`)
 
-The game screen uses a simpler, silent permission check — no dialog queue, no rationale. The check happens at the exact moment the user taps "Take a photo" on the camera request card:
+The in-game camera permission is checked **twice** — silently both times, with no dialog queue or rationale.
+
+**Check 1 — at deal start (`GameScreenViewModel`):**
+
+`pendingCameraRequest` is only set to `true` when the camera permission is already granted at the moment the challenge card appears. If permission is missing, the camera request card will never show for that deal.
+
+```
+CHALLENGE_SHOWN phase begins
+    │
+    ├─ partyId != null AND CAMERA granted?  ──Yes──►  pendingCameraRequest = true
+    │
+    └─ Either condition false  ───────────►  pendingCameraRequest = false  (card never shows)
+```
+
+**Check 2 — on button tap (`GameScreen`):**
+
+A second check runs when the user taps "Take a photo" as a safety net in case the permission was revoked mid-session.
 
 ```
 User taps "Take a photo" (onCameraRequested callback)
@@ -137,7 +153,7 @@ User taps "Take a photo" (onCameraRequested callback)
                                     (camera card dismissed silently, deal resets)
 ```
 
-This is intentional: the camera request card is an **opportunistic** prompt. If the permission is missing the moment is simply skipped rather than interrupting the game with a permission dialog. Users who want the feature can grant the permission from `PartyDetailScreen`.
+This is intentional: the camera request card is an **opportunistic** prompt. Users who want the feature can grant the permission from `PartyDetailScreen`.
 
 **Launchers in `GameScreen`:**
 

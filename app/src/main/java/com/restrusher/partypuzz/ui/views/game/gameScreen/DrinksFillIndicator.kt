@@ -1,5 +1,6 @@
 package com.restrusher.partypuzz.ui.views.game.gameScreen
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -25,11 +26,13 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
 private val BeerIconSize = 280.dp
-private val ArrowSize = 66.dp
+private val ArrowSize = 46.dp
 private val FillColor = Color(0xFFFFA726)
 private const val MaxDrinks = 5
 
@@ -122,5 +125,21 @@ private fun MaskedFill(fillFraction: Float) {
                     }
                 }
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DrinksFillIndicatorPreview() {
+    PartyPuzzTheme {
+        DrinksFillIndicator(amount = 3)
+    }
+}
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun DrinksFillIndicatorDarkPreview() {
+    PartyPuzzTheme {
+        DrinksFillIndicator(amount = 3)
     }
 }

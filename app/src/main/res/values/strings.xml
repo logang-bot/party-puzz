@@ -24,6 +24,12 @@
     <string name="edit_player">Edit player</string>
     <string name="update">Update</string>
 
+    <!-- Home Screen -->
+    <string name="tonight_mode">TONIGHT\'S MODE</string>
+    <string name="whats_the">What\'s the</string>
+    <string name="vibe">vibe?</string>
+    <string name="card_mode_label">MODE</string>
+
     <!-- Game Modes -->
     <string name="standard_game_mode">Standard</string>
     <string name="bar_game_mode">Bar time</string>
@@ -72,6 +78,11 @@
     <string name="add_player">Add player</string>
     <string name="add">Add</string>
     <string name="customize_your_party">Customize your party</string>
+    <string name="mode_selected">Mode selected</string>
+    <string name="question_categories">Question categories</string>
+    <string name="added">added</string>
+    <string name="start_the_party">Start the party</string>
+    <string name="mini_games_hint">The phone passes between players each turn — set it on the table, screen up. Tap to flip the prompt, hand it on.</string>
     <string name="bar_mode">Bar Mode</string>
     <string name="can_skip_questions">Can skip questions</string>
     <string name="unlimited_mode">No-end mode</string>
@@ -99,6 +110,14 @@
     <string name="players">Players</string>
     <string name="options">Options</string>
     <string name="confirm">Confirm</string>
+    <string name="new_player">New player</string>
+    <string name="step_pick_face">Step 01 · Pick your face</string>
+    <string name="step_pick_name">Step 02 · Pick your name</string>
+    <string name="step_pick_gender">Step 03 · Pick your gender</string>
+    <string name="step_pick_interested_in">Step 04 · Who you like</string>
+    <string name="generated">Generated</string>
+    <string name="add_to_the_party">Add to the party</string>
+    <string name="name_auto_generated_hint">Names are auto-generated from a deck of mildly stupid adjectives. You can edit anything.</string>
     <string name="gather_your_friends_for_a_night_of_fun">Gather your friends for a night of fun and friendly competition in our new Bar Brawl game mode! This immersive experience will transport you to a virtual bar where you can challenge your friends to a variety of drinking games and challenges.</string>
     <string name="choose_a_different_party">Choose a different party</string>
     <string name="no_parties_yet">No parties created yet, start a game and enjoy</string>
@@ -125,10 +144,21 @@
     <string name="game_mode_tap_suffix">mode</string>
     <string name="with">with</string>
     <string name="and_x_more">and %1$d more</string>
+    <string name="parties_summary">%1$d sessions · %2$d photos</string>
+    <string name="recent_parties">Recent parties</string>
+    <string name="x_sessions">%1$d sessions</string>
+    <string name="x_players">%1$d players</string>
+    <string name="x_photos">%1$d photos</string>
+    <string name="cast">Cast</string>
+    <string name="scrapbook">Scrapbook</string>
+    <string name="x_moments">%1$d moments</string>
+    <string name="players_label">Players</string>
+    <string name="photos_label">Photos</string>
     <string name="select_a_party">Select a party</string>
     <string name="cancel">Cancel</string>
     <string name="game">Game</string>
     <string name="tap_to_play">Tap to play</string>
+    <string name="tap_to_play_with">Tap to play with %1$s</string>
     <string name="truth">Truth</string>
     <string name="dare">Dare</string>
     <string name="truth_or_dare_title">Truth or Dare?</string>
@@ -370,6 +400,21 @@
     <string name="follow_the_spot_description">Chase the moving spot and tap it — whoever lands the most hits in 10 seconds wins.</string>
     <string name="hot_potato">Hot Potato</string>
     <string name="hot_potato_description">Pass the phone around — whoever\'s holding it when it explodes has to drink.</string>
+    <string name="tap_war">Tap War</string>
+    <string name="tap_war_description">Tap your side as fast as you can — push the bar into your opponent\'s half to win.</string>
+    <string name="simon_says">Simon Says</string>
+    <string name="simon_says_description">Follow the flashing sequence — whoever breaks it first drinks.</string>
+    <string name="simon_says_round">Round %1$d</string>
+    <string name="simon_says_watch">Watch carefully…</string>
+    <string name="simon_says_watch_player">Hey %1$s, watch carefully!</string>
+    <string name="simon_says_your_turn">Tap it back!</string>
+    <string name="simon_says_now_your_turn">Your turn, %1$s!</string>
+    <string name="simon_says_step">%1$d of %2$d</string>
+    <string name="simon_says_pass_to">Pass to %1$s!</string>
+    <string name="simon_says_pass_complete">Well done, pass it to %1$s and tap here when ready!</string>
+    <string name="simon_says_missed">Oops, %1$s missed it!</string>
+    <string name="simon_says_game_over">%1$s drinks!</string>
+    <string name="simon_says_done">Done</string>
     <string name="hot_potato_tap_to_pass">Tap to pass!</string>
     <string name="hot_potato_next">Next up</string>
     <string name="hot_potato_waiting">Waiting…</string>
@@ -383,6 +428,53 @@
     <string name="ready">Ready</string>
     <string name="go">Go!</string>
     <string name="choose_opponent">Choose your opponent</string>
+
+    <!-- Party name generator word bank -->
+    <string-array name="party_name_first_words">
+        <item>Rooftop</item>
+        <item>Backyard</item>
+        <item>Basement</item>
+        <item>Midnight</item>
+        <item>Golden</item>
+        <item>Neon</item>
+        <item>Wild</item>
+        <item>Electric</item>
+        <item>Cosmic</item>
+        <item>Tipsy</item>
+        <item>Glitter</item>
+        <item>Thunder</item>
+        <item>Secret</item>
+        <item>Disco</item>
+        <item>Cursed</item>
+        <item>Lemon</item>
+        <item>Mystery</item>
+        <item>Viking</item>
+        <item>Chaotic</item>
+        <item>Fuzzy</item>
+    </string-array>
+
+    <string-array name="party_name_second_words">
+        <item>Chaos</item>
+        <item>Mayhem</item>
+        <item>Bash</item>
+        <item>Fiesta</item>
+        <item>Riot</item>
+        <item>Carnival</item>
+        <item>Circus</item>
+        <item>Frenzy</item>
+        <item>Madness</item>
+        <item>Fiasco</item>
+        <item>Rampage</item>
+        <item>Extravaganza</item>
+        <item>Rave</item>
+        <item>Shindig</item>
+        <item>Hullabaloo</item>
+        <item>Ruckus</item>
+        <item>Jamboree</item>
+        <item>Blowout</item>
+        <item>Spectacle</item>
+        <item>Bonanza</item>
+    </string-array>
 
     <!-- Name generator word bank -->
     <string-array name="name_adjectives">

@@ -28,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -80,15 +79,6 @@ fun PartyDetailScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primaryContainer,
-                        MaterialTheme.colorScheme.secondaryContainer,
-                        MaterialTheme.colorScheme.tertiaryContainer
-                    )
-                )
-            )
     ) {
         when {
             uiState.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -98,8 +88,14 @@ fun PartyDetailScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
+                val party = uiState.party!!
+                val lastModeRes = party.party.lastGameModeNameRes
+                val gameModeName = if (lastModeRes != null) stringResource(lastModeRes) else null
+                val displayDate = party.party.lastUsedAt ?: party.party.dateCreation
                 PartyNameSection(
-                    name = uiState.party!!.party.name,
+                    name = party.party.name,
+                    gameModeName = gameModeName,
+                    displayDate = displayDate,
                     isEditing = uiState.isEditing,
                     editedName = uiState.editedName,
                     onEditClick = viewModel::startEditing,
@@ -108,9 +104,15 @@ fun PartyDetailScreen(
                     onDiscard = viewModel::discardEditing,
                     modifier = Modifier.fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                StatCardRow(
+                    playerCount = party.players.size,
+                    photoCount = uiState.photos.size,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 Spacer(modifier = Modifier.height(24.dp))
                 PartyPlayersGrid(
-                    players = uiState.party!!.players,
+                    players = party.players,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(24.dp))

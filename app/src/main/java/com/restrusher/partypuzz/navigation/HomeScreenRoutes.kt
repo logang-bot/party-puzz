@@ -43,3 +43,16 @@ data class FollowTheSpotRoute(
 
 @Serializable
 data object HotPotatoRoute
+
+@Serializable
+data object SimonSaysRoute
+
+@Serializable
+data class TapWarRoute(
+    val player1Name: String,
+    val player1PhotoPath: String?,
+    val player1AvatarName: String?,
+    val player2Name: String,
+    val player2PhotoPath: String?,
+    val player2AvatarName: String?
+)

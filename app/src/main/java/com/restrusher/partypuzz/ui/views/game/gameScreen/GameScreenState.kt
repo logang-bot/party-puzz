@@ -23,7 +23,8 @@ data class ScoredMiniGameResult(
     val player1Name: String,
     val player1Score: Int,
     val player2Name: String,
-    val player2Score: Int
+    val player2Score: Int,
+    val showScoreDetails: Boolean = true
 ) : MiniGameResult {
     val winner: String?
         get() = when {

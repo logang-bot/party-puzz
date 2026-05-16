@@ -1,6 +1,20 @@
 # Game Deal Flow
 
-A **game deal** is the full sequence from a player tapping the card to a challenge being shown and dismissed. Each deal selects one player randomly and one of three deal types randomly.
+A **game deal** is the full sequence from a player tapping the card to a challenge being shown and dismissed. Each deal selects one player using a **round-based** system and one deal type randomly.
+
+---
+
+## Round-Based Player Selection
+
+Players take turns in rounds. A round ends only when every player has been selected exactly once; then a new round begins. Within each round the order is random (the round's queue is shuffled at the start), so no two consecutive rounds produce the same sequence.
+
+```
+Round 1: [Player B, Player A, Player C]   ← shuffled on first deal
+Round 2: [Player C, Player B, Player A]   ← reshuffled once queue is empty
+...
+```
+
+`roundQueue` is a private mutable list in `GameScreenViewModel`. When it is empty, it is refilled with `players.shuffled()`; the front element is taken for the current deal.
 
 ---
 

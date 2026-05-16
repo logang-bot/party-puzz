@@ -9,11 +9,13 @@ Each party has a photo album — a collection of photos automatically captured d
 ```
 Game session (CHALLENGE_SHOWN)
     │
-    │  pendingCameraRequest rolled at deal-start (~33% chance)
+    │  pendingCameraRequest set at deal-start when session is party-linked
     │
-    ├─ Dare dismissed  ──► camera request card appears (on top of challenge card)
+    ├─ Dare dismissed         ──► camera request card appears (on top of challenge card)
     │
-    └─ Mode event dismissed  ──► camera request card appears (on top of challenge card)
+    ├─ Sticky Dare dismissed  ──► camera request card appears (on top of challenge card)
+    │
+    └─ Mode event dismissed   ──► camera request card appears (on top of challenge card)
                 │
                 ├─ User taps "Take Photo"  ──► camera app opens
                 │       │
@@ -35,8 +37,8 @@ The camera request only fires when **all** of the following are true:
 |---|---|
 | Session is party-linked | `GamePlayersList.currentPartyId != null` |
 | Random roll succeeds | ~33 % probability (`CAMERA_TRIGGER_PROBABILITY = 0.33`) |
-| Camera permission is granted | Checked at the moment the user taps "Take Photo" |
-| Trigger point reached | Dare challenge dismissed **or** Bar / Couples mode event dismissed |
+| Camera permission is granted | Checked **twice**: at `CHALLENGE_SHOWN` time (if missing, `pendingCameraRequest` stays `false` and the card never appears) and again when the user taps "Take Photo" (safety net in case permission was revoked mid-session) |
+| Trigger point reached | Dare dismissed **or** Sticky Dare dismissed **or** Bar / Couples mode event dismissed |
 
 > The random roll is decided at `CHALLENGE_SHOWN` time (start of the challenge phase), not at dismissal. This ensures the game knows upfront whether a camera card will follow, allowing a smooth transition without flashing the "tap to play" idle state in between.
 
@@ -103,13 +105,13 @@ Both fields are cleared by `resetDealState()`.
 
 ```
 onGameDealTapped()
-    └─ CHALLENGE_SHOWN update sets pendingCameraRequest = (random < 0.33 && partyId != null)
+    └─ CHALLENGE_SHOWN update sets pendingCameraRequest = (random < 0.33 && partyId != null && cameraPermission == GRANTED)
 
 onModeEventDismissed()
     ├─ pendingCameraRequest == true  ──► clearEvent + showCameraRequest = true  (stay in CHALLENGE_SHOWN)
     └─ false  ──► resetDealState
 
-onChallengeDismissed()  [dare branch only]
+onChallengeDismissed()  [dare or sticky dare branch]
     ├─ pendingCameraRequest == true  ──► showCameraRequest = true  (stay in CHALLENGE_SHOWN)
     └─ false  ──► resetDealState
 
@@ -184,7 +186,20 @@ PartyPhotoDao
 
 ### Database version
 
-Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list.
+Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list. The database is currently at **v7** (see `create-player-feature-spec.md` for the full version history).
+
+### `PartyWithPlayers` — eager photo loading
+
+`PartyWithPlayers` includes a `@Relation` field for photos:
+
+```kotlin
+@Relation(parentColumn = "id", entityColumn = "partyId")
+val photos: List<PartyPhotoEntity>
+```
+
+This means every call to `getAllPartiesWithPlayers()` or `getPartyById()` also loads the party's photo list in the same Room transaction. Party list cards (`PartyCard`, `LastPartyCard`) use `party.photos.size` directly for photo count display — no separate `PartyPhotoDao` query is needed for that purpose.
+
+`PartyDetailViewModel` still observes `partyPhotoRepository.getPhotosForParty(partyId)` as a live `Flow` for the full detail screen, where real-time updates (a new photo captured mid-session) must be reflected immediately.
 
 ---
 
