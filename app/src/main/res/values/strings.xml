@@ -80,6 +80,11 @@
     <string name="customize_your_party">Customize your party</string>
     <string name="mode_selected">Mode selected</string>
     <string name="question_categories">Question categories</string>
+    <string name="pick_what_to_play">Pick what to play</string>
+    <string name="included">Included</string>
+    <string name="tap_to_add">Tap to add</string>
+    <string name="categories_count_on">%1$d/%2$d on</string>
+    <string name="options_toggle_hint">Tap to toggle. Off categories are skipped for tonight.</string>
     <string name="added">added</string>
     <string name="start_the_party">Start the party</string>
     <string name="mini_games_hint">The phone passes between players each turn — set it on the table, screen up. Tap to flip the prompt, hand it on.</string>
@@ -215,6 +220,26 @@
         <item>What\'s something you pretend to understand but have no clue about</item>
         <item>What\'s the most money you\'ve wasted on something stupid</item>
         <item>Who was your most awkward kiss</item>
+        <item>What\'s the most embarrassing song you know all the words to</item>
+        <item>Have you ever pretended to laugh at a joke you didn\'t understand</item>
+        <item>What\'s the worst habit you\'d hate for others to find out about</item>
+        <item>What\'s the biggest white lie you tell on a regular basis</item>
+        <item>Have you ever liked your own photo using a second account</item>
+        <item>What\'s something you\'ve done that would embarrass you if your parents knew</item>
+        <item>Who in this room would you choose to be stranded on a desert island with</item>
+        <item>What\'s the weirdest dream you\'ve had about someone you know</item>
+        <item>Have you ever talked badly about someone who is in this room right now</item>
+        <item>What\'s the most selfish thing you\'ve ever done</item>
+        <item>If you could erase one memory from your life, what would it be</item>
+        <item>What\'s something you\'ve never told your best friend</item>
+        <item>What\'s the most embarrassing thing you\'ve done to get someone\'s attention</item>
+        <item>What\'s the worst pickup line you\'ve ever used or been given</item>
+        <item>What\'s your most shameful guilty pleasure show or movie</item>
+        <item>What\'s the strangest thing you\'ve done when nobody was watching</item>
+        <item>Have you ever blamed something on someone else to avoid getting in trouble</item>
+        <item>What\'s the most money you\'ve borrowed and never paid back</item>
+        <item>What\'s the rudest thought you\'ve ever had about a stranger</item>
+        <item>Have you ever faked being busy to avoid answering a call</item>
     </string-array>
 
     <!-- Dare texts -->
@@ -251,6 +276,26 @@
         <item>Show the group your top 3 most played songs right now</item>
         <item>Do a handstand — or attempt one</item>
         <item>Do your best impression of a news anchor reporting on this party</item>
+        <item>Speak only in rhymes until your next turn</item>
+        <item>Do your best opera singing for 30 seconds</item>
+        <item>Give the group a 30-second motivational speech right now</item>
+        <item>Teach the group a dance move you just made up</item>
+        <item>Text the 5th contact in your phone "I need to tell you something important"</item>
+        <item>Act out a famous movie scene — the group guesses which one</item>
+        <item>Make a dramatic exit and re-enter from a different direction</item>
+        <item>Pretend you\'re being interviewed on TV — answer 3 questions from the group</item>
+        <item>Attempt the worm on the floor</item>
+        <item>Wear something as a hat for the rest of the game</item>
+        <item>Try to walk across the room with your phone balanced on your head</item>
+        <item>Do 15 burpees right now</item>
+        <item>Speak in a movie trailer voice for the next 30 seconds</item>
+        <item>Give this party a 5-star review — out loud, right now</item>
+        <item>Swap seats with someone the group chooses for the next 2 rounds</item>
+        <item>Describe every person in this room in exactly one word — starting from your right</item>
+        <item>Say something genuinely kind about every person in the room</item>
+        <item>Have a staring contest with the person to your right — loser does 10 squats</item>
+        <item>Bite into a lemon slice without pulling a face</item>
+        <item>Let the group draw something on your arm with a pen</item>
     </string-array>
 
     <!-- Sticky dares -->
@@ -267,6 +312,16 @@
         <item>For 5 minutes the player must start every sentence with "Actually…"</item>
         <item>For 2 minutes the player must give a thumbs up every time someone speaks</item>
         <item>For 2 minutes the player must communicate using only hand gestures</item>
+        <item>For 3 minutes the player must speak with a fake British accent</item>
+        <item>For 2 minutes the player must call everyone by the wrong name</item>
+        <item>For 5 minutes the player must end every sentence with "and that\'s a fact"</item>
+        <item>For 3 minutes the player must act extremely formal and proper</item>
+        <item>For 2 minutes the player must express everything as dramatically as possible</item>
+        <item>For 3 minutes the player must avoid saying the words "yes" and "no"</item>
+        <item>For 5 minutes the player must repeat the last word of every sentence they say</item>
+        <item>For 2 minutes the player must clap once after everything anyone says</item>
+        <item>For 3 minutes the player must speak at half their normal speed</item>
+        <item>For 2 minutes the player must react to everything with extreme surprise</item>
     </string-array>
 
     <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
@@ -286,6 +341,21 @@
         <item>What is the fastest land animal?</item>
         <item>Which is the smallest planet in the solar system?</item>
         <item>How many strings does a standard guitar have?</item>
+        <item>What is the capital of Japan?</item>
+        <item>How many bones are in the adult human body?</item>
+        <item>What is the chemical symbol for water?</item>
+        <item>Which is the largest country in the world by area?</item>
+        <item>What is the largest planet in the solar system?</item>
+        <item>How many keys does a standard piano have?</item>
+        <item>What is the capital of Australia?</item>
+        <item>How many colors are in a rainbow?</item>
+        <item>Which sport uses a shuttlecock?</item>
+        <item>Which is the smallest ocean on Earth?</item>
+        <item>What is the square root of 144?</item>
+        <item>Who painted the Mona Lisa?</item>
+        <item>How many days are in a leap year?</item>
+        <item>What is the longest river in the world?</item>
+        <item>Which planet is known for its rings?</item>
     </string-array>
 
     <string-array name="gk_options_a">
@@ -304,6 +374,21 @@
         <item>Lion</item>
         <item>Mercury</item>
         <item>6</item>
+        <item>Tokyo</item>
+        <item>206</item>
+        <item>H2O</item>
+        <item>Russia</item>
+        <item>Saturn</item>
+        <item>80</item>
+        <item>Sydney</item>
+        <item>6</item>
+        <item>Badminton</item>
+        <item>Arctic</item>
+        <item>12</item>
+        <item>Michelangelo</item>
+        <item>365</item>
+        <item>Amazon</item>
+        <item>Saturn</item>
     </string-array>
 
     <string-array name="gk_options_b">
@@ -322,6 +407,21 @@
         <item>Cheetah</item>
         <item>Mars</item>
         <item>7</item>
+        <item>Beijing</item>
+        <item>212</item>
+        <item>HO2</item>
+        <item>Canada</item>
+        <item>Jupiter</item>
+        <item>88</item>
+        <item>Canberra</item>
+        <item>7</item>
+        <item>Squash</item>
+        <item>Indian</item>
+        <item>14</item>
+        <item>Leonardo da Vinci</item>
+        <item>366</item>
+        <item>Nile</item>
+        <item>Mars</item>
     </string-array>
 
     <!-- "A" or "B" — must match gk_questions order -->
@@ -341,6 +441,21 @@
         <item>B</item>
         <item>A</item>
         <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
     </string-array>
 
     <!-- Sticky dare supplementary data (parallel arrays — indices must stay in sync with sticky_dares) -->
@@ -357,6 +472,16 @@
         <item>starting every sentence with "Actually…"</item>
         <item>giving a thumbs up every time someone speaks</item>
         <item>communicating using only hand gestures</item>
+        <item>speaking with a fake British accent</item>
+        <item>calling everyone by the wrong name</item>
+        <item>ending every sentence with "and that\'s a fact"</item>
+        <item>acting extremely formal and proper</item>
+        <item>expressing everything as dramatically as possible</item>
+        <item>avoiding the words "yes" and "no"</item>
+        <item>repeating the last word of every sentence they say</item>
+        <item>clapping once after everything anyone says</item>
+        <item>speaking at half their normal speed</item>
+        <item>reacting to everything with extreme surprise</item>
     </string-array>
 
     <string-array name="sticky_dares_duration_labels">
@@ -372,6 +497,16 @@
         <item>5 minutes</item>
         <item>2 minutes</item>
         <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
     </string-array>
 
     <integer-array name="sticky_dares_duration_seconds">
@@ -386,6 +521,16 @@
         <item>180</item>
         <item>300</item>
         <item>120</item>
+        <item>120</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>180</item>
         <item>120</item>
     </integer-array>
 
@@ -419,6 +564,16 @@
     <string name="hot_potato_next">Next up</string>
     <string name="hot_potato_waiting">Waiting…</string>
     <string name="hot_potato_boom">BOOM!</string>
+    <string name="circle_master">Circle Master</string>
+    <string name="circle_master_description">Take turns drawing a perfect circle — the shakiest hand drinks.</string>
+    <string name="circle_master_draw_instruction">Draw a circle around the dot!</string>
+    <string name="circle_master_score_perfect">Flawless!</string>
+    <string name="circle_master_score_great">Pretty round!</string>
+    <string name="circle_master_score_not_bad">Not bad!</string>
+    <string name="circle_master_score_try_harder">Could be rounder…</string>
+    <string name="circle_master_score_oops">That\'s no circle…</string>
+    <string name="circle_master_pass_to">Pass to %1$s and tap here when ready!</string>
+    <string name="circle_master_results">Results</string>
     <string name="start">Start</string>
     <string name="tap_to_exit">Tap to exit</string>
     <string name="mini_game_winner">Winner: %1$s</string>

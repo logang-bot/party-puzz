@@ -17,6 +17,9 @@ Navigation uses Jetpack Navigation Compose with **type-safe serializable routes*
 | `GameScreen` | `data object` | — |
 | `FollowTheSpotRoute` | `data class` | `player1Name`, `player1PhotoPath?`, `player1AvatarName?`, `player2Name`, `player2PhotoPath?`, `player2AvatarName?` |
 | `HotPotatoRoute` | `data object` | — (ViewModel reads all players from `GamePlayersList` directly) |
+| `SimonSaysRoute` | `data object` | — (ViewModel reads all players from `GamePlayersList` directly) |
+| `TapWarRoute` | `data class` | `player1Name`, `player1PhotoPath?`, `player1AvatarName?`, `player2Name`, `player2PhotoPath?`, `player2AvatarName?` |
+| `CircleMasterRoute` | `data object` | — (ViewModel reads all players from `GamePlayersList` directly) |
 
 ---
 
@@ -43,13 +46,16 @@ HomeScreen
 
 ```kotlin
 val isFullScreenRoute =
-    currentScreen?.hasRoute(LoadingScreen::class)     == true ||
-    currentScreen?.hasRoute(GameScreen::class)        == true ||
+    currentScreen?.hasRoute(LoadingScreen::class)      == true ||
+    currentScreen?.hasRoute(GameScreen::class)         == true ||
     currentScreen?.hasRoute(FollowTheSpotRoute::class) == true ||
-    currentScreen?.hasRoute(HotPotatoRoute::class)    == true
+    currentScreen?.hasRoute(HotPotatoRoute::class)     == true ||
+    currentScreen?.hasRoute(TapWarRoute::class)        == true ||
+    currentScreen?.hasRoute(SimonSaysRoute::class)     == true ||
+    currentScreen?.hasRoute(CircleMasterRoute::class)  == true
 ```
 
-- **Full-screen routes** (`LoadingScreen`, `GameScreen`, `FollowTheSpotRoute`, `HotPotatoRoute`): app bar is hidden with a slide-up + fade-out exit animation.
+- **Full-screen routes** (`LoadingScreen`, `GameScreen`, `FollowTheSpotRoute`, `HotPotatoRoute`, `TapWarRoute`, `SimonSaysRoute`, `CircleMasterRoute`): app bar is hidden with a slide-up + fade-out exit animation.
 - **All other routes**: app bar is visible with a slide-down + fade-in enter animation.
 
 The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. Screens that need a title call the `setAppBarTitle` lambda passed to them (e.g. `GameConfigScreen`, `CreatePlayerScreen`).

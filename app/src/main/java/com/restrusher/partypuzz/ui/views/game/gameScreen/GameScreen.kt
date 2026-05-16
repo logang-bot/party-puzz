@@ -108,6 +108,15 @@ fun GameScreen(
                 backStackEntry.savedStateHandle.remove<String>("simon_says_loser")
             }
     }
+    LaunchedEffect(backStackEntry) {
+        backStackEntry?.savedStateHandle
+            ?.getStateFlow<String?>("circle_master_loser", null)
+            ?.filterNotNull()
+            ?.collect { loserName ->
+                viewModel.onCircleMasterResultReceived(loserName)
+                backStackEntry.savedStateHandle.remove<String>("circle_master_loser")
+            }
+    }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val backgroundGradient = rememberBackgroundGradient()

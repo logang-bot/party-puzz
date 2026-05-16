@@ -5,16 +5,13 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,10 +27,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,17 +44,16 @@ private val borderColors = listOf(
 )
 
 @Composable
-fun MiniGamesOptionChip(
-    modifier: Modifier = Modifier,
+fun MiniGamesOptionCard(
     optionName: String,
+    modifier: Modifier = Modifier,
     initialEnabled: Boolean = false,
     onToggled: () -> Unit = {},
 ) {
     var selected by remember { mutableStateOf(initialEnabled) }
     val interactionSource = remember { MutableInteractionSource() }
-    val cornerRadius = 20.dp
+    val cornerRadius = 12.dp
 
-    // One-shot: animates 0° → 360° over 3 s, then fades into a solid border
     val animatable = remember { Animatable(0f) }
     var animationDone by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -81,33 +75,21 @@ fun MiniGamesOptionChip(
         label = "solid border alpha"
     )
 
-    // Inverted relative to other chips: they use primary bg / onPrimary text
-    val enabledColor = MaterialTheme.colorScheme.onPrimary
-    val enabledTextColor = MaterialTheme.colorScheme.primary
-    val surfaceVariantColor = MaterialTheme.colorScheme.surfaceVariant
-    val primaryColor = MaterialTheme.colorScheme.primary
-
-    val textColor by animateColorAsState(
-        targetValue = if (selected) enabledTextColor else MaterialTheme.colorScheme.onSurface,
+    val checkBgColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
         animationSpec = tween(250),
-        label = "text color"
+        label = "check bg"
     )
-    val backgroundColor by animateColorAsState(
-        targetValue = if (selected) enabledColor else surfaceVariantColor,
-        animationSpec = tween(250),
-        label = "bg color"
-    )
-    // When enabled the border matches the background, making it seamlessly invisible
     val solidBorderColor by animateColorAsState(
-        targetValue = if (selected) enabledColor else primaryColor,
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
         animationSpec = tween(250),
         label = "border color"
     )
+    val bgColor = MaterialTheme.colorScheme.surfaceContainer
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .wrapContentWidth()
             .clip(RoundedCornerShape(cornerRadius))
             .drawWithContent {
                 val cornerPx = cornerRadius.toPx()
@@ -135,7 +117,7 @@ fun MiniGamesOptionChip(
                 }
 
                 drawRoundRect(
-                    color = backgroundColor,
+                    color = bgColor,
                     cornerRadius = CornerRadius(maxOf(0f, cornerPx - borderPx)),
                     topLeft = Offset(borderPx, borderPx),
                     size = Size(size.width - borderPx * 2, size.height - borderPx * 2)
@@ -147,26 +129,21 @@ fun MiniGamesOptionChip(
                 selected = !selected
                 onToggled()
             }
-            .padding(vertical = 5.dp, horizontal = 10.dp)
+            .padding(horizontal = 12.dp, vertical = 12.dp)
     ) {
-        if (selected) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_check),
-                contentDescription = stringResource(id = R.string.option_description),
-                colorFilter = ColorFilter.tint(textColor),
-                modifier = Modifier
-                    .size(16.dp)
-                    .padding(end = 2.dp)
-            )
-        }
-        Text(text = optionName, style = MaterialTheme.typography.labelLarge, color = textColor)
+        OptionCardContent(
+            optionName = optionName,
+            selected = selected,
+            checkBgColor = checkBgColor,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun MiniGamesOptionChipPreview() {
+fun MiniGamesOptionCardPreview() {
     PartyPuzzTheme {
-        MiniGamesOptionChip(optionName = stringResource(id = R.string.mini_games))
+        MiniGamesOptionCard(optionName = stringResource(id = R.string.mini_games))
     }
 }

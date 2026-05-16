@@ -48,6 +48,9 @@ data object HotPotatoRoute
 data object SimonSaysRoute
 
 @Serializable
+data object CircleMasterRoute
+
+@Serializable
 data class TapWarRoute(
     val player1Name: String,
     val player1PhotoPath: String?,

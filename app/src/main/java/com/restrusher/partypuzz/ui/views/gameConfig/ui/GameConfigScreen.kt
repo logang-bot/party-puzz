@@ -143,7 +143,6 @@ fun SharedTransitionScope.GameConfigScreen(
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
-                GameConfigSectionLabel(stringResource(R.string.question_categories))
                 OptionsContainer()
 
                 Spacer(modifier = Modifier.height(12.dp))

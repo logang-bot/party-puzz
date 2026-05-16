@@ -1,5 +1,6 @@
 package com.restrusher.partypuzz.ui.views.gameConfig.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -8,13 +9,16 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,13 +35,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
-private data class OptionDef(@androidx.annotation.StringRes val labelRes: Int, val initialEnabled: Boolean)
+private data class OptionDef(@StringRes val labelRes: Int, val initialEnabled: Boolean)
 
 private val optionDefinitions = listOf(
     OptionDef(R.string.truth_or_dare, true),
@@ -46,7 +52,6 @@ private val optionDefinitions = listOf(
     OptionDef(R.string.mini_games, false),
 )
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun OptionsContainer(modifier: Modifier = Modifier) {
     LaunchedEffect(Unit) {
@@ -57,79 +62,165 @@ fun OptionsContainer(modifier: Modifier = Modifier) {
         )
     }
 
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp, horizontal = 4.dp)
-    ) {
-        optionDefinitions.forEach { def ->
-            if (def.labelRes == R.string.mini_games) {
-                MiniGamesOptionChip(
-                    optionName = stringResource(def.labelRes),
-                    initialEnabled = def.initialEnabled,
-                    onToggled = { GameOptionsSource.toggle(def.labelRes) }
-                )
-            } else {
-                OptionChip(
-                    optionName = stringResource(def.labelRes),
-                    initialEnabled = def.initialEnabled,
-                    onToggled = { GameOptionsSource.toggle(def.labelRes) }
-                )
-            }
-        }
+    val enabledCount = GameOptionsSource.options.count { it.enabled }
+
+    Column(modifier = modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+        OptionsHeader(enabledCount = enabledCount, totalCount = optionDefinitions.size)
+        Text(
+            text = stringResource(R.string.options_toggle_hint),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        OptionsGrid()
     }
 }
 
 @Composable
-fun OptionChip(
-    optionName: String, initialEnabled: Boolean = false, onToggled: () -> Unit = {}, modifier: Modifier = Modifier
+private fun OptionsHeader(enabledCount: Int, totalCount: Int) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        GameConfigSectionLabel(
+            text = stringResource(R.string.pick_what_to_play),
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = stringResource(R.string.categories_count_on, enabledCount, totalCount),
+            style = MaterialTheme.typography.labelSmall,
+            letterSpacing = 0.5.sp,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+private fun OptionsGrid() {
+    val rows = optionDefinitions.chunked(2)
+    rows.forEachIndexed { index, pair ->
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            pair.forEach { def ->
+                if (def.labelRes == R.string.mini_games) {
+                    MiniGamesOptionCard(
+                        optionName = stringResource(def.labelRes),
+                        initialEnabled = def.initialEnabled,
+                        onToggled = { GameOptionsSource.toggle(def.labelRes) },
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    OptionCard(
+                        optionName = stringResource(def.labelRes),
+                        initialEnabled = def.initialEnabled,
+                        onToggled = { GameOptionsSource.toggle(def.labelRes) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+            if (pair.size == 1) Spacer(modifier = Modifier.weight(1f))
+        }
+        if (index < rows.lastIndex) Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@Composable
+fun OptionCard(
+    optionName: String,
+    modifier: Modifier = Modifier,
+    initialEnabled: Boolean = false,
+    onToggled: () -> Unit = {}
 ) {
     var selected by remember { mutableStateOf(initialEnabled) }
     val interactionSource = remember { MutableInteractionSource() }
-    val chipShape = RoundedCornerShape(20.dp)
+    val cardShape = RoundedCornerShape(12.dp)
 
-    val backgroundColor by animateColorAsState(
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+        animationSpec = tween(250),
+        label = "card border"
+    )
+    val checkBgColor by animateColorAsState(
         targetValue = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
         animationSpec = tween(250),
-        label = "chip bg"
-    )
-    val textColor by animateColorAsState(
-        targetValue = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-        animationSpec = tween(250),
-        label = "chip text"
-    )
-    val borderColor by animateColorAsState(
-        targetValue = if (selected) Color.Transparent else MaterialTheme.colorScheme.primary,
-        animationSpec = tween(250),
-        label = "chip border"
+        label = "check bg"
     )
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .wrapContentWidth()
-            .clip(chipShape)
-            .border(1.dp, borderColor, chipShape)
-            .background(backgroundColor)
+            .clip(cardShape)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+            .border(1.dp, borderColor, cardShape)
             .clickable(interactionSource = interactionSource, indication = null) {
                 selected = !selected
                 onToggled()
             }
-            .padding(vertical = 5.dp, horizontal = 10.dp)
+            .padding(horizontal = 12.dp, vertical = 12.dp)
+    ) {
+        OptionCardContent(
+            optionName = optionName,
+            selected = selected,
+            checkBgColor = checkBgColor,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+internal fun OptionCardContent(
+    optionName: String,
+    selected: Boolean,
+    checkBgColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = optionName,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = if (selected) stringResource(R.string.included).uppercase()
+                else stringResource(R.string.tap_to_add).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                letterSpacing = 1.sp,
+                color = if (selected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        OptionToggleCircle(selected = selected, checkBgColor = checkBgColor)
+    }
+}
+
+@Composable
+private fun OptionToggleCircle(selected: Boolean, checkBgColor: Color) {
+    val circleColor by animateColorAsState(
+        targetValue = if (selected) Color.Transparent else MaterialTheme.colorScheme.outlineVariant,
+        animationSpec = tween(250),
+        label = "circle border"
+    )
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(24.dp)
+            .clip(CircleShape)
+            .background(checkBgColor)
+            .border(1.5.dp, circleColor, CircleShape)
     ) {
         if (selected) {
             Image(
                 painter = painterResource(id = R.drawable.ic_check),
-                contentDescription = stringResource(id = R.string.option_description),
-                colorFilter = ColorFilter.tint(textColor),
-                modifier = Modifier
-                    .size(16.dp)
-                    .padding(end = 2.dp)
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                modifier = Modifier.size(14.dp)
             )
         }
-        Text(text = optionName, style = MaterialTheme.typography.labelLarge, color = textColor)
     }
 }
 
@@ -141,10 +232,10 @@ fun OptionsContainerPreview() {
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun OptionChipPreview() {
+fun OptionCardPreview() {
     PartyPuzzTheme {
-        OptionChip(optionName = stringResource(id = R.string.truth_or_dare), initialEnabled = true)
+        OptionCard(optionName = stringResource(id = R.string.truth_or_dare), initialEnabled = true)
     }
 }

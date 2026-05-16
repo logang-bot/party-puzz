@@ -25,6 +25,7 @@ Current entries:
 | `HOT_POTATO` | 2 | `true` |
 | `TAP_WAR` | 2 | `false` |
 | `SIMON_SAYS` | 2 | `true` |
+| `CIRCLE_MASTER` | 2 | `true` |
 
 ### How a mini-game deal is triggered
 
@@ -413,6 +414,96 @@ onGameFinished(loserName)
 
 ---
 
+## Circle Master
+
+A global mini-game (all registered players participate). Each player takes a turn drawing a circle around a fixed center dot on screen. When they lift their finger, a score (0–100 %) is computed based on how close the path is to a perfect circle. After every player has drawn, the one with the lowest score loses and drinks.
+
+### Mechanics
+
+- All players read from `GamePlayersList.PlayersList` at ViewModel init — no route args needed.
+- 3-second countdown before the first player's turn (`MiniGameCountdownOverlay`).
+- Each player's turn proceeds through three sub-phases: **DRAWING → SCORE_REVEAL → PASS**.
+- In **DRAWING**: a red center dot is shown; the player draws by dragging a finger around it. Lifting the finger ends the draw and triggers scoring.
+- In **SCORE_REVEAL**: the drawn path is frozen on the canvas and the score percentage is shown. The whole screen is tappable to continue.
+- In **PASS** (when more players remain): next player's photo + pass instruction are shown. Tapping advances to the next player's DRAWING turn.
+- After the last player draws and acknowledges their score, the game transitions to **WINNER**.
+- In **WINNER**: all scores are shown sorted highest-to-lowest, with the winner's name and score highlighted. Tapping the screen returns to `GameScreen`.
+
+### Scoring algorithm
+
+1. Collect touch `Offset` points during the DRAWING phase.
+2. If fewer than 20 points were collected, score = 0 (no valid circle).
+3. Compute the centroid (mean x, mean y) of the path.
+4. Compute each point's Euclidean distance from the centroid (`radii` list).
+5. If the average radius < 10 px (essentially a dot), score = 0.
+6. Compute standard deviation of the radii.
+7. `score = round((1 – clamp(stddev / avgRadius, 0, 1)) × 100)`
+
+Higher variance in the radii → lower score. A perfect circle has zero variance → 100 %.
+
+### Score labels
+
+| Range | Label (EN) |
+|---|---|
+| 90–100 | `"Flawless!"` |
+| 75–89 | `"Pretty round!"` |
+| 60–74 | `"Not bad!"` |
+| 40–59 | `"Could be rounder…"` |
+| 0–39 | `"That's no circle…"` |
+
+### State model (`CircleMasterState`)
+
+| Field | Type | Purpose |
+|---|---|---|
+| `players` | `List<Player>` | Full roster, copied from `GamePlayersList` at init |
+| `currentPlayerIndex` | `Int` | Index into `players`; advances after each pass |
+| `scores` | `Map<String, Int>` | `nickName → score` accumulated across turns |
+| `phase` | `CircleMasterPhase` | Drives UI layout |
+| `countdownValue` | `Int` | 3 → 0 |
+| `drawnPath` | `List<Offset>` | Points collected during DRAWING; cleared on each new turn |
+| `currentScore` | `Int?` | Score computed at draw-end; `null` during DRAWING |
+| `winner` | `Player?` | Highest scorer; set when entering WINNER |
+| `loser` | `Player?` | Lowest scorer; passed back as `LoserMiniGameResult` |
+| `currentPlayer` *(computed)* | `Player?` | `players[currentPlayerIndex]` |
+| `nextPlayer` *(computed)* | `Player?` | `players[currentPlayerIndex + 1]` or `null` |
+| `isLastPlayer` *(computed)* | `Boolean` | `currentPlayerIndex >= players.size - 1` |
+
+### Phases (`CircleMasterPhase`)
+
+| Phase | Description |
+|---|---|
+| `COUNTDOWN` | 3-2-1-Go overlay; canvas is shown below but not interactive |
+| `DRAWING` | Active player drags to draw; path collected live |
+| `SCORE_REVEAL` | Drawn path frozen; score percentage + label shown; tap anywhere to continue |
+| `PASS` | Next player info shown; tap anywhere to start their turn |
+| `WINNER` | Sorted scoreboard; tap anywhere to exit and return result |
+
+### Result passing
+
+```
+onGameFinished(loserName)
+    → savedStateHandle["circle_master_loser"] = loserName
+    → GameScreen LaunchedEffect picks up the value
+    → viewModel.onCircleMasterResultReceived(loserName)
+    → state.miniGameResult = LoserMiniGameResult(loserName)
+    → MiniGameChallengeContent renders LoserResultContent panel
+    → user taps Finish (mode active) / card (standard) → onMiniGameDealFinished()
+    → modeHandler.applyMiniGameResult(state) → punishment event (if any) + deal reset
+```
+
+### Key files
+
+| File | Role |
+|---|---|
+| `CircleMasterScreen.kt` | Screen + `CircleMasterContent`, `DrawingContent`, `PassContent`, `WinnerContent` |
+| `CircleCanvas.kt` | Drawing canvas with `detectDragGestures`; renders center dot and live/frozen path |
+| `CircleMasterState.kt` | State data class + `CircleMasterPhase` enum + computed properties |
+| `CircleMasterViewModel.kt` | Countdown job, `onDrawPoint`, `onDrawEnd`, scoring algorithm, `resolveWinnerLoser` |
+| `CircleMasterRoute` (`HomeScreenRoutes.kt`) | `data object` — no route args; all player data read from `GamePlayersList` |
+| `MiniGameCountdownOverlay.kt` | Shared countdown overlay |
+
+---
+
 ## Adding a New Mini-Game
 
 1. Add an entry to `MiniGame.kt` with `nameRes`, `descriptionRes`, `minPlayers`, and `isGlobal`.
@@ -461,6 +552,16 @@ onGameFinished(loserName)
 | `simon_says_now_your_turn` | `"Your turn, %1$s!"` (INPUT footer) |
 | `simon_says_pass_complete` | `"Pass the phone to %1$s and tap here when ready!"` (PASS footer) |
 | `simon_says_missed` | `"Oops, %1$s missed it!"` (GAME_OVER footer) |
+| `circle_master` | `"Circle Master"` |
+| `circle_master_description` | `"Take turns drawing a perfect circle — the shakiest hand drinks."` |
+| `circle_master_draw_instruction` | `"Draw a circle around the dot!"` |
+| `circle_master_score_perfect` | `"Flawless!"` |
+| `circle_master_score_great` | `"Pretty round!"` |
+| `circle_master_score_not_bad` | `"Not bad!"` |
+| `circle_master_score_try_harder` | `"Could be rounder…"` |
+| `circle_master_score_oops` | `"That's no circle…"` |
+| `circle_master_pass_to` | `"Pass to %1$s and tap here when ready!"` |
+| `circle_master_results` | `"Results"` |
 
 All keys have matching `values-es/strings.xml` entries.
 

@@ -287,6 +287,10 @@ class GameScreenViewModel @Inject constructor(
         _uiState.update { it.copy(miniGameResult = LoserMiniGameResult(loserName = loserName)) }
     }
 
+    fun onCircleMasterResultReceived(loserName: String) {
+        _uiState.update { it.copy(miniGameResult = LoserMiniGameResult(loserName = loserName)) }
+    }
+
     fun onMiniGameResultReceived(player1Score: Int, player2Score: Int) {
         val state = _uiState.value
         val result = ScoredMiniGameResult(

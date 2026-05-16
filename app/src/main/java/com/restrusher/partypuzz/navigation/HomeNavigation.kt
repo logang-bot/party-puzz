@@ -46,6 +46,7 @@ import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.ui.theme.appBackground
 import com.restrusher.partypuzz.ui.common.HomeAppBar
 import com.restrusher.partypuzz.ui.views.createPlayer.CreatePlayerScreen as CreatePlayerScreenComposable
+import com.restrusher.partypuzz.ui.views.game.miniGames.circleMaster.CircleMasterScreen
 import com.restrusher.partypuzz.ui.views.game.miniGames.followTheSpot.FollowTheSpotScreen
 import com.restrusher.partypuzz.ui.views.game.miniGames.hotPotato.HotPotatoScreen
 import com.restrusher.partypuzz.ui.views.game.miniGames.simonSays.SimonSaysScreen
@@ -74,7 +75,8 @@ fun HomeNavigation(
             currentScreen?.hasRoute(FollowTheSpotRoute::class) == true ||
             currentScreen?.hasRoute(HotPotatoRoute::class) == true ||
             currentScreen?.hasRoute(TapWarRoute::class) == true ||
-            currentScreen?.hasRoute(SimonSaysRoute::class) == true
+            currentScreen?.hasRoute(SimonSaysRoute::class) == true ||
+            currentScreen?.hasRoute(CircleMasterRoute::class) == true
 
     val isHomeScreen = currentScreen?.hasRoute(HomeScreen::class) == true
 
@@ -270,6 +272,7 @@ fun HomeNavigation(
                                 when (miniGame) {
                                     MiniGame.HOT_POTATO -> navController.navigate(HotPotatoRoute)
                                     MiniGame.SIMON_SAYS -> navController.navigate(SimonSaysRoute)
+                                    MiniGame.CIRCLE_MASTER -> navController.navigate(CircleMasterRoute)
                                     else -> Unit
                                 }
                             },
@@ -313,6 +316,21 @@ fun HomeNavigation(
                             onGameFinished = { loserName ->
                                 navController.previousBackStackEntry?.savedStateHandle
                                     ?.set("simon_says_loser", loserName)
+                                navController.popBackStack()
+                            },
+                            onAbortGame = {
+                                navController.previousBackStackEntry?.savedStateHandle
+                                    ?.set("mini_game_aborted", true)
+                                navController.popBackStack()
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    composable<CircleMasterRoute> {
+                        CircleMasterScreen(
+                            onGameFinished = { loserName ->
+                                navController.previousBackStackEntry?.savedStateHandle
+                                    ?.set("circle_master_loser", loserName)
                                 navController.popBackStack()
                             },
                             onAbortGame = {

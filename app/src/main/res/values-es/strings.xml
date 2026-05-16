@@ -81,6 +81,11 @@
     <string name="customize_your_party">Personaliza tu fiesta</string>
     <string name="mode_selected">Modo seleccionado</string>
     <string name="question_categories">Categorías de preguntas</string>
+    <string name="pick_what_to_play">Elige qué jugar</string>
+    <string name="included">Incluido</string>
+    <string name="tap_to_add">Toca para añadir</string>
+    <string name="categories_count_on">%1$d/%2$d activas</string>
+    <string name="options_toggle_hint">Toca para activar o desactivar. Las categorías desactivadas se omiten esta noche.</string>
     <string name="added">añadidos</string>
     <string name="start_the_party">Comenzar la fiesta</string>
     <string name="mini_games_hint">El teléfono pasa de jugador en jugador — ponlo sobre la mesa con la pantalla hacia arriba. Toca para cambiar la pregunta y pásalo.</string>
@@ -216,6 +221,26 @@
         <item>¿De qué cosa aparentas saber pero no tienes ni idea?</item>
         <item>¿En qué cosa más tonta has gastado dinero?</item>
         <item>¿Quién fue tu beso más incómodo?</item>
+        <item>¿Cuál es la canción más vergonzosa de la que te sabes toda la letra?</item>
+        <item>¿Alguna vez fingiste reírte de un chiste que no entendiste?</item>
+        <item>¿Cuál es el peor hábito que tendrías vergüenza de que alguien descubriera?</item>
+        <item>¿Cuál es la mentira piadosa que más repites?</item>
+        <item>¿Alguna vez le diste like a tu propia foto desde una cuenta secundaria?</item>
+        <item>¿Hay algo que hayas hecho y que te daría vergüenza que tus padres supieran?</item>
+        <item>¿Con quién del grupo te quedarías en una isla desierta?</item>
+        <item>¿Cuál es el sueño más raro que has tenido sobre alguien que conoces?</item>
+        <item>¿Alguna vez has hablado mal de alguien que está en este cuarto ahora mismo?</item>
+        <item>¿Cuál es la cosa más egoísta que has hecho en tu vida?</item>
+        <item>Si pudieras borrar un recuerdo de tu vida, ¿cuál sería?</item>
+        <item>¿Qué es algo que nunca le has contado a tu mejor amigo?</item>
+        <item>¿Cuál es lo más vergonzoso que has hecho para llamar la atención de alguien?</item>
+        <item>¿Cuál es la peor frase de ligue que has usado o que te han dicho?</item>
+        <item>¿Cuál es tu serie o película culposa más vergonzosa?</item>
+        <item>¿Cuál es lo más raro que has hecho cuando nadie te miraba?</item>
+        <item>¿Alguna vez le echaste la culpa a alguien de algo que tú hiciste?</item>
+        <item>¿Cuánto dinero has pedido prestado y nunca devuelto?</item>
+        <item>¿Cuál es el pensamiento más grosero que has tenido sobre un desconocido?</item>
+        <item>¿Alguna vez fingiste estar ocupado para no contestar una llamada?</item>
     </string-array>
 
     <!-- Dare texts -->
@@ -252,6 +277,26 @@
         <item>Muéstrale al grupo tus 3 canciones más escuchadas ahora mismo</item>
         <item>Intenta hacer un paro de manos</item>
         <item>Imita a un presentador de noticias cubriendo esta fiesta</item>
+        <item>Habla solo en rima hasta que sea tu turno otra vez</item>
+        <item>Canta ópera a todo volumen durante 30 segundos</item>
+        <item>Dale al grupo un discurso motivacional de 30 segundos ahora mismo</item>
+        <item>Levántate y enseña al grupo un paso de baile que te inventes</item>
+        <item>Mándale un mensaje al quinto contacto de tu teléfono: "Tengo que contarte algo importante"</item>
+        <item>Actúa una escena de película — el grupo adivina cuál</item>
+        <item>Sal de la habitación de forma dramática y vuelve a entrar por otro lado</item>
+        <item>Finge que te están entrevistando en televisión y responde 3 preguntas del grupo</item>
+        <item>Intenta hacer el gusano en el suelo</item>
+        <item>Ponte algo en la cabeza como si fuera un sombrero y úsalo el resto del juego</item>
+        <item>Intenta caminar por el cuarto con el teléfono equilibrado en la cabeza</item>
+        <item>Haz 15 burpees ahora mismo</item>
+        <item>Habla como si fuera un tráiler de película durante 30 segundos</item>
+        <item>Dale al grupo una reseña de 5 estrellas de esta fiesta — en voz alta y en serio</item>
+        <item>Intercambia sitio con alguien que el grupo elija durante las próximas 2 rondas</item>
+        <item>Describe a cada persona del grupo con exactamente una palabra — empezando por tu derecha</item>
+        <item>Di algo genuinamente amable sobre cada una de las personas del grupo</item>
+        <item>Reta a pulso a la persona de tu derecha — el que pierda hace 10 sentadillas</item>
+        <item>Muérdete un gajo de limón sin hacer ninguna cara</item>
+        <item>Deja que el grupo te dibuje algo en el brazo con un bolígrafo</item>
     </string-array>
 
     <!-- Sticky dares -->
@@ -268,6 +313,16 @@
         <item>Durante 5 minutos el jugador debe empezar cada frase con "La verdad es que…"</item>
         <item>Durante 2 minutos el jugador debe hacer un pulgar arriba cada vez que alguien habla</item>
         <item>Durante 2 minutos el jugador debe comunicarse solo con gestos</item>
+        <item>Durante 3 minutos el jugador debe hablar con acento español de España</item>
+        <item>Durante 2 minutos el jugador debe llamar a todos por un nombre equivocado</item>
+        <item>Durante 5 minutos el jugador debe terminar cada frase con "y punto"</item>
+        <item>Durante 3 minutos el jugador debe comportarse de forma extremadamente formal</item>
+        <item>Durante 2 minutos el jugador debe exagerar dramáticamente todo lo que dice</item>
+        <item>Durante 3 minutos el jugador debe evitar las palabras "sí" y "no"</item>
+        <item>Durante 5 minutos el jugador debe repetir la última palabra de cada frase que dice</item>
+        <item>Durante 2 minutos el jugador debe aplaudir una vez cada vez que alguien habla</item>
+        <item>Durante 3 minutos el jugador debe hablar a la mitad de su velocidad normal</item>
+        <item>Durante 2 minutos el jugador debe reaccionar a todo con sorpresa extrema</item>
     </string-array>
 
     <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
@@ -287,6 +342,21 @@
         <item>¿Cuál es el animal terrestre más rápido?</item>
         <item>¿Cuál es el planeta más pequeño del sistema solar?</item>
         <item>¿Cuántas cuerdas tiene una guitarra estándar?</item>
+        <item>¿Cuál es la capital de Japón?</item>
+        <item>¿Cuántos huesos tiene el cuerpo humano adulto?</item>
+        <item>¿Cuál es el símbolo químico del agua?</item>
+        <item>¿Cuál es el país más grande del mundo por extensión?</item>
+        <item>¿Cuál es el planeta más grande del sistema solar?</item>
+        <item>¿Cuántas teclas tiene un piano estándar?</item>
+        <item>¿Cuál es la capital de Australia?</item>
+        <item>¿Cuántos colores tiene el arcoíris?</item>
+        <item>¿En qué deporte se usa un volante?</item>
+        <item>¿Cuál es el océano más pequeño de la Tierra?</item>
+        <item>¿Cuánto es la raíz cuadrada de 144?</item>
+        <item>¿Quién pintó la Mona Lisa?</item>
+        <item>¿Cuántos días tiene un año bisiesto?</item>
+        <item>¿Cuál es el río más largo del mundo?</item>
+        <item>¿Qué planeta es famoso por sus anillos?</item>
     </string-array>
 
     <string-array name="gk_options_a">
@@ -305,6 +375,21 @@
         <item>León</item>
         <item>Mercurio</item>
         <item>6</item>
+        <item>Tokio</item>
+        <item>206</item>
+        <item>H2O</item>
+        <item>Rusia</item>
+        <item>Saturno</item>
+        <item>80</item>
+        <item>Sídney</item>
+        <item>6</item>
+        <item>Bádminton</item>
+        <item>Ártico</item>
+        <item>12</item>
+        <item>Miguel Ángel</item>
+        <item>365</item>
+        <item>Amazonas</item>
+        <item>Saturno</item>
     </string-array>
 
     <string-array name="gk_options_b">
@@ -323,6 +408,21 @@
         <item>Guepardo</item>
         <item>Marte</item>
         <item>7</item>
+        <item>Pekín</item>
+        <item>212</item>
+        <item>HO2</item>
+        <item>Canadá</item>
+        <item>Júpiter</item>
+        <item>88</item>
+        <item>Canberra</item>
+        <item>7</item>
+        <item>Squash</item>
+        <item>Índico</item>
+        <item>14</item>
+        <item>Leonardo da Vinci</item>
+        <item>366</item>
+        <item>Nilo</item>
+        <item>Marte</item>
     </string-array>
 
     <!-- "A" or "B" — must match gk_questions order -->
@@ -342,6 +442,21 @@
         <item>B</item>
         <item>A</item>
         <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
     </string-array>
 
     <!-- Sticky dare supplementary data (parallel arrays — indices must stay in sync with sticky_dares) -->
@@ -358,6 +473,16 @@
         <item>empezando cada frase con "La verdad es que…"</item>
         <item>haciendo un pulgar arriba cada vez que alguien habla</item>
         <item>comunicándose solo con gestos</item>
+        <item>hablando con acento español de España</item>
+        <item>llamando a todos por un nombre equivocado</item>
+        <item>terminando cada frase con "y punto"</item>
+        <item>comportándose de forma extremadamente formal</item>
+        <item>exagerando dramáticamente todo lo que dice</item>
+        <item>evitando las palabras "sí" y "no"</item>
+        <item>repitiendo la última palabra de cada frase que dice</item>
+        <item>aplaudiendo una vez cada vez que alguien habla</item>
+        <item>hablando a la mitad de su velocidad normal</item>
+        <item>reaccionando a todo con sorpresa extrema</item>
     </string-array>
 
     <string-array name="sticky_dares_duration_labels">
@@ -373,6 +498,16 @@
         <item>5 minutos</item>
         <item>2 minutos</item>
         <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>5 minutos</item>
+        <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
     </string-array>
 
     <integer-array name="sticky_dares_duration_seconds">
@@ -387,6 +522,16 @@
         <item>180</item>
         <item>300</item>
         <item>120</item>
+        <item>120</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>180</item>
         <item>120</item>
     </integer-array>
 
@@ -420,6 +565,16 @@
     <string name="hot_potato_next">El siguiente</string>
     <string name="hot_potato_waiting">Esperando…</string>
     <string name="hot_potato_boom">¡BOOM!</string>
+    <string name="circle_master">Maestro del Círculo</string>
+    <string name="circle_master_description">Por turnos, dibujad un círculo perfecto — quien lo haga peor bebe.</string>
+    <string name="circle_master_draw_instruction">¡Dibuja un círculo alrededor del punto!</string>
+    <string name="circle_master_score_perfect">¡Perfecto!</string>
+    <string name="circle_master_score_great">¡Muy redondo!</string>
+    <string name="circle_master_score_not_bad">¡No está mal!</string>
+    <string name="circle_master_score_try_harder">Podría ser más redondo…</string>
+    <string name="circle_master_score_oops">Eso no es un círculo…</string>
+    <string name="circle_master_pass_to">¡Pásaselo a %1$s y toca aquí cuando estés listo!</string>
+    <string name="circle_master_results">Resultados</string>
     <string name="start">Empezar</string>
     <string name="tap_to_exit">Toca para salir</string>
     <string name="mini_game_winner">Ganador: %1$s</string>
