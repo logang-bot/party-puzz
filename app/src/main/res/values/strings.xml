@@ -698,4 +698,8 @@
         <item>Mongoose</item>
     </string-array>
 
+    <string name="rewarded_ad_title">Unlock spicy prompts</string>
+    <string name="rewarded_ad_subtitle">Watch a short clip · 120 extra prompts + 18+ dares</string>
+    <string name="watch">Watch</string>
+
 </resources>

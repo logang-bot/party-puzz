@@ -699,4 +699,8 @@
         <item>Raspado</item>
     </string-array>
 
+    <string name="rewarded_ad_title">Desbloquea prompts picantes</string>
+    <string name="rewarded_ad_subtitle">Mira un clip corto · 120 prompts adicionales + retos +18</string>
+    <string name="watch">Ver</string>
+
 </resources>

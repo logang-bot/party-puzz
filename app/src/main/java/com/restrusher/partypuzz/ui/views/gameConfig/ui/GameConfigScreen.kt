@@ -59,6 +59,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzz.data.local.appData.appDataSource.GamePlayersList
+import com.restrusher.partypuzz.ui.common.AdBannerView
+import com.restrusher.partypuzz.ui.common.AdUnitIds
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 import com.restrusher.partypuzz.ui.views.gameConfig.GameConfigViewModel
@@ -144,6 +146,9 @@ fun SharedTransitionScope.GameConfigScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
                 OptionsContainer()
+
+                Spacer(modifier = Modifier.height(12.dp))
+                AdBannerView(adUnitId = AdUnitIds.GAME_CONFIG_BANNER)
 
                 Spacer(modifier = Modifier.height(12.dp))
                 PlayersContainer(

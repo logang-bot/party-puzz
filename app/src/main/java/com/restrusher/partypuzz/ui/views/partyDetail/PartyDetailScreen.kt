@@ -36,6 +36,8 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.ui.common.AdBannerView
+import com.restrusher.partypuzz.ui.common.AdUnitIds
 
 @Composable
 fun PartyDetailScreen(
@@ -86,7 +88,7 @@ fun PartyDetailScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 16.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 50.dp)
             ) {
                 val party = uiState.party!!
                 val lastModeRes = party.party.lastGameModeNameRes
@@ -130,6 +132,11 @@ fun PartyDetailScreen(
                 )
             }
         }
+
+        AdBannerView(
+            adUnitId = AdUnitIds.PARTY_DETAIL_BANNER,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
 
         if (uiState.isSaving || uiState.isDeleting) {
             Box(

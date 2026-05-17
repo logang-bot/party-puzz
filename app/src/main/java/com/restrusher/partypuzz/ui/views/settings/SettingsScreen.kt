@@ -39,6 +39,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
 import com.restrusher.partypuzz.data.preferences.AppLanguage
 import com.restrusher.partypuzz.data.preferences.ThemeMode
+import com.restrusher.partypuzz.ui.common.AdBannerView
+import com.restrusher.partypuzz.ui.common.AdUnitIds
 
 @Composable
 fun SettingsScreen(
@@ -51,27 +53,35 @@ fun SettingsScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        SettingsSectionHeader(title = stringResource(id = R.string.appearance))
+    Box(modifier = modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 50.dp)
+        ) {
+            SettingsSectionHeader(title = stringResource(id = R.string.appearance))
 
-        SettingsRow(
-            title = stringResource(id = R.string.theme_color),
-            subtitle = uiState.themeMode.toDisplayString(),
-            iconRes = R.drawable.ic_dark_mode,
-            onClick = viewModel::openThemeSheet
-        )
+            SettingsRow(
+                title = stringResource(id = R.string.theme_color),
+                subtitle = uiState.themeMode.toDisplayString(),
+                iconRes = R.drawable.ic_dark_mode,
+                onClick = viewModel::openThemeSheet
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
-        SettingsSectionHeader(title = stringResource(id = R.string.language))
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSectionHeader(title = stringResource(id = R.string.language))
 
-        SettingsRow(
-            title = stringResource(id = R.string.language),
-            subtitle = uiState.appLanguage.toDisplayString(),
-            iconRes = R.drawable.ic_flag_system,
-            onClick = viewModel::openLanguageSheet
+            SettingsRow(
+                title = stringResource(id = R.string.language),
+                subtitle = uiState.appLanguage.toDisplayString(),
+                iconRes = R.drawable.ic_flag_system,
+                onClick = viewModel::openLanguageSheet
+            )
+        }
+
+        AdBannerView(
+            adUnitId = AdUnitIds.SETTINGS_BANNER,
+            modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 

@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzz.R
+import com.restrusher.partypuzz.ui.common.AdBannerView
+import com.restrusher.partypuzz.ui.common.AdUnitIds
 import com.restrusher.partypuzz.ui.common.LockScreenOrientation
 import com.restrusher.partypuzz.ui.theme.PartyPuzzTheme
 
@@ -66,7 +68,7 @@ fun SharedTransitionScope.HomeScreen(
         if (uiState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
-            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 50.dp)) {
                 val pagerState = rememberPagerState(initialPage = 0) { uiState.gameModes.size }
                 Column(modifier = Modifier.padding(start = 20.dp, top = 8.dp, bottom = 16.dp)) {
                     Text(
@@ -178,6 +180,11 @@ fun SharedTransitionScope.HomeScreen(
                 }
             }
         }
+
+        AdBannerView(
+            adUnitId = AdUnitIds.HOME_BANNER,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
 
         if (uiState.isDialogOpen) {
             PartyPickerDialog(
