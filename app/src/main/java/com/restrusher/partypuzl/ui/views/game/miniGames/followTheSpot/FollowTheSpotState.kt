@@ -1,0 +1,19 @@
+package com.restrusher.partypuzl.ui.views.game.miniGames.followTheSpot
+
+import com.restrusher.partypuzl.data.models.Player
+
+data class FollowTheSpotState(
+    val player1: Player? = null,
+    val player2: Player? = null,
+    val player1Score: Int = 0,
+    val player2Score: Int = 0,
+    val totalDuration: Int = FollowTheSpotViewModel.GAME_DURATION_SECONDS,
+    val timeRemaining: Int = FollowTheSpotViewModel.GAME_DURATION_SECONDS,
+    val player1SpotNormX: Float = 0.5f,
+    val player1SpotNormY: Float = 0.5f,
+    val player2SpotNormX: Float = 0.5f,
+    val player2SpotNormY: Float = 0.5f,
+    val isGameRunning: Boolean = false,
+    val isCountingDown: Boolean = false,
+    val countdownValue: Int = 3
+)

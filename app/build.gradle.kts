@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.restrusher.partypuzz"
+    namespace = "com.restrusher.partypuzl"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.restrusher.partypuzz"
+        applicationId = "com.restrusher.partypuzl"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -98,4 +98,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.core.splashscreen)
+
+    // AdMob
+    implementation(libs.play.services.ads)
+    implementation(libs.androidx.material.icons.extended)
 }

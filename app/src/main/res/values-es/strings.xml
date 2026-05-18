@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PartyPuzz</string>
+    <string name="app_name">PartyPuzl</string>
 
     <!-- Navigation Routes -->
     <string name="home_screen">HomeScreen</string>
@@ -60,7 +60,7 @@
     <string name="standard_description">El modo clásico donde cada jugador compite por su cuenta — ¡que gane el mejor!</string>
     <string name="bar_description">Un modo hecho para noches de bar — ¡reúne a tu equipo y compite en rondas de locos desafíos!</string>
     <string name="couples_description">Refuerza tu amor con tu pareja jugando en equipo</string>
-    <string name="party_puzz_description">Es simple PartyPuzz… ¡disfruta!</string>
+    <string name="party_puzz_description">Es simple PartyPuzl… ¡disfruta!</string>
 
     <string name="welcome">Bienvenido</string>
     <string name="glad_to_have_you_back">Hola %1$s, nos alegra tenerte de vuelta. ¿Qué quieres jugar hoy?</string>
@@ -698,5 +698,9 @@
         <item>Charro</item>
         <item>Raspado</item>
     </string-array>
+
+    <string name="rewarded_ad_title">Desbloquea prompts picantes</string>
+    <string name="rewarded_ad_subtitle">Mira un clip corto · 120 prompts adicionales + retos +18</string>
+    <string name="watch">Ver</string>
 
 </resources>
