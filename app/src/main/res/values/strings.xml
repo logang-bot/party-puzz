@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PartyPuzz</string>
+    <string name="app_name">PartyPuzl</string>
 
     <!-- Navigation Routes -->
     <string name="home_screen">HomeScreen</string>

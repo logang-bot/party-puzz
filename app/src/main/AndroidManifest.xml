@@ -11,7 +11,7 @@
         android:maxSdkVersion="28" />
 
     <application
-        android:name=".PartyPuzzApplication"
+        android:name=".PartyPuzlApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,7 +20,7 @@
         android:localeConfig="@xml/locales_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PartyPuzz"
+        android:theme="@style/Theme.PartyPuzl"
         tools:targetApi="33">
         <!-- TODO: Replace with your production AdMob App ID from the AdMob dashboard -->
         <meta-data
@@ -40,7 +40,7 @@
             android:name=".ui.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.PartyPuzz.Starting">
+            android:theme="@style/Theme.PartyPuzl.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
