@@ -22,7 +22,9 @@ import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
 import com.restrusher.partypuzl.navigation.HomeNavigation
 import com.restrusher.partypuzl.ui.common.AppOpenAdManager
+import com.restrusher.partypuzl.ui.common.LocalIsAdFree
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,16 +54,20 @@ class MainActivity : AppCompatActivity() {
         setContent {
             val themeMode by userPreferencesRepository.themeMode
                 .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
+            val isAdFree by userPreferencesRepository.isAdFree
+                .collectAsStateWithLifecycle(initialValue = false)
 
             PartyPuzlTheme(themeMode = themeMode) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    HomeNavigation()
-                    if (appOpenAdManager.isAdVisible) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(MaterialTheme.colorScheme.background)
-                        )
+                CompositionLocalProvider(LocalIsAdFree provides isAdFree) {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        HomeNavigation()
+                        if (appOpenAdManager.isAdVisible) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.background)
+                            )
+                        }
                     }
                 }
             }

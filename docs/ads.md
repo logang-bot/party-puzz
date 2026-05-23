@@ -123,6 +123,43 @@ The card shows a fire icon, title (`rewarded_ad_title`), subtitle (`rewarded_ad_
 
 ---
 
+## Remove Ads — In-App Purchase
+
+The app has a single "Remove Ads" one-time purchase. There is only one app listing on the Play Store; ads are toggled at runtime based on purchase state.
+
+### Product ID
+
+`remove_ads` — create this as a **one-time product (INAPP)** in Play Console → Monetize → Products → In-app products.
+
+> **TODO:** Go to Play Console → your app → Monetize → Products → In-app products → Create product. Set the product ID to exactly `remove_ads`, type **One-time**, set the price, and activate it. The billing client will fail silently to find the product until this is done.
+
+### Purchase flow
+
+1. `BillingManager.connect()` is called in `PartyPuzzApplication.onCreate()`.
+2. On connection it queries existing purchases and product details from the Play Store.
+3. If the user already owns `remove_ads`, `UserPreferencesRepository.setAdFree(true)` is called and the state is persisted in DataStore.
+4. The Settings screen exposes a **Remove Ads** row (under the "Purchases" section). Tapping it calls `BillingManager.launchPurchaseFlow(activity)`.
+5. On successful purchase, `onPurchasesUpdated` fires, the purchase is acknowledged, and `isAdFree` flips to `true` app-wide immediately.
+
+### How `isAdFree` propagates
+
+| Layer | Mechanism |
+|---|---|
+| DataStore | `UserPreferencesRepository.isAdFree: Flow<Boolean>` — source of truth |
+| `AppOpenAdManager` | Collects `isAdFree` via a coroutine scope; `loadAd()` and `showWhenReady()` no-op when true |
+| Banner composables | `LocalIsAdFree` CompositionLocal provided in `MainActivity`; `AdBannerView` returns early when true |
+| Settings screen | Reads `uiState.isAdFree` from `SettingsViewModel`; bottom padding removed when true |
+
+### Build types
+
+| Build type | `USE_TEST_ADS` | Debuggable | Purpose |
+|---|---|---|---|
+| `debug` | `true` | Yes | Local development |
+| `staging` | `true` | No | QA — release-like but safe (no risk of invalid traffic) |
+| `release` | `false` | No | Production |
+
+---
+
 ## Key Files
 
 | File | Role |

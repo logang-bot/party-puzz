@@ -7,5 +7,6 @@ data class SettingsState(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val appLanguage: AppLanguage = AppLanguage.SYSTEM,
     val isThemeSheetOpen: Boolean = false,
-    val isLanguageSheetOpen: Boolean = false
+    val isLanguageSheetOpen: Boolean = false,
+    val isAdFree: Boolean = false
 )

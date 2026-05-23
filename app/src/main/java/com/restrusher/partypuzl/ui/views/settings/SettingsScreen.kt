@@ -1,5 +1,6 @@
 package com.restrusher.partypuzl.ui.views.settings
 
+import android.app.Activity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,12 +56,13 @@ fun SettingsScreen(
     LaunchedEffect(Unit) { setAppBarTitle(title) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 50.dp)
+                .padding(bottom = if (uiState.isAdFree) 0.dp else 50.dp)
         ) {
             SettingsSectionHeader(title = stringResource(id = R.string.appearance))
 
@@ -76,6 +81,14 @@ fun SettingsScreen(
                 subtitle = uiState.appLanguage.toDisplayString(),
                 iconRes = R.drawable.ic_flag_system,
                 onClick = viewModel::openLanguageSheet
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSectionHeader(title = stringResource(id = R.string.purchases))
+
+            RemoveAdsRow(
+                isAdFree = uiState.isAdFree,
+                onClick = { viewModel.purchaseRemoveAds(context as Activity) }
             )
         }
 
@@ -267,6 +280,58 @@ private fun AppLanguage.toDisplayIconRes(): Int = when (this) {
     AppLanguage.SYSTEM -> R.drawable.ic_flag_system
     AppLanguage.ENGLISH -> R.drawable.ic_flag_us
     AppLanguage.SPANISH -> R.drawable.ic_flag_es
+}
+
+@Composable
+private fun RemoveAdsRow(
+    isAdFree: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .then(if (!isAdFree) Modifier.clickable(onClick = onClick) else Modifier)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primaryContainer)
+        ) {
+            Icon(
+                imageVector = if (isAdFree) Icons.Filled.CheckCircle else Icons.Filled.Block,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(if (isAdFree) R.string.ads_removed else R.string.remove_ads),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = stringResource(if (isAdFree) R.string.ads_removed_subtitle else R.string.remove_ads_subtitle),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+            )
+        }
+        if (!isAdFree) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
 }
 
 @Composable

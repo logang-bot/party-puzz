@@ -699,6 +699,13 @@
         <item>Raspado</item>
     </string-array>
 
+    <!-- Purchases -->
+    <string name="purchases">Compras</string>
+    <string name="remove_ads">Eliminar anuncios</string>
+    <string name="remove_ads_subtitle">Compra única · Apoya la app</string>
+    <string name="ads_removed">Sin anuncios</string>
+    <string name="ads_removed_subtitle">¡Gracias por tu apoyo!</string>
+
     <string name="rewarded_ad_title">Desbloquea prompts picantes</string>
     <string name="rewarded_ad_subtitle">Mira un clip corto · 120 prompts adicionales + retos +18</string>
     <string name="watch">Ver</string>

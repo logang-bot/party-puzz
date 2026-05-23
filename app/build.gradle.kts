@@ -27,10 +27,17 @@ android {
     buildTypes {
         debug {
             manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            buildConfigField("boolean", "USE_TEST_ADS", "true")
+        }
+        create("staging") {
+            initWith(getByName("release"))
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         release {
             isMinifyEnabled = false
             manifestPlaceholders["admobAppId"] = "ca-app-pub-7803968519747509~8418313584"
+            buildConfigField("boolean", "USE_TEST_ADS", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -106,4 +113,7 @@ dependencies {
     // AdMob
     implementation(libs.play.services.ads)
     implementation(libs.androidx.material.icons.extended)
+
+    // Play Billing
+    implementation(libs.billing.ktx)
 }

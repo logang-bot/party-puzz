@@ -698,6 +698,13 @@
         <item>Mongoose</item>
     </string-array>
 
+    <!-- Purchases -->
+    <string name="purchases">Purchases</string>
+    <string name="remove_ads">Remove Ads</string>
+    <string name="remove_ads_subtitle">One-time purchase · Support the app</string>
+    <string name="ads_removed">Ads Removed</string>
+    <string name="ads_removed_subtitle">Thank you for your support!</string>
+
     <string name="rewarded_ad_title">Unlock spicy prompts</string>
     <string name="rewarded_ad_subtitle">Watch a short clip · 120 extra prompts + 18+ dares</string>
     <string name="watch">Watch</string>

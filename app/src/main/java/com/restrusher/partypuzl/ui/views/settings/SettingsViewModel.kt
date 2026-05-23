@@ -1,7 +1,9 @@
 package com.restrusher.partypuzl.ui.views.settings
 
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.restrusher.partypuzl.data.billing.BillingManager
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val billingManager: BillingManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsState())
@@ -25,10 +28,11 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 userPreferencesRepository.themeMode,
-                userPreferencesRepository.appLanguage
-            ) { theme, language -> theme to language }
-                .collect { (theme, language) ->
-                    _uiState.update { it.copy(themeMode = theme, appLanguage = language) }
+                userPreferencesRepository.appLanguage,
+                userPreferencesRepository.isAdFree
+            ) { theme, language, isAdFree -> Triple(theme, language, isAdFree) }
+                .collect { (theme, language, isAdFree) ->
+                    _uiState.update { it.copy(themeMode = theme, appLanguage = language, isAdFree = isAdFree) }
                 }
         }
     }
@@ -50,5 +54,9 @@ class SettingsViewModel @Inject constructor(
             userPreferencesRepository.setAppLanguage(language)
             closeLanguageSheet()
         }
+    }
+
+    fun purchaseRemoveAds(activity: Activity) {
+        billingManager.launchPurchaseFlow(activity)
     }
 }
