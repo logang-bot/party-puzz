@@ -22,10 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PartyPuzl"
         tools:targetApi="33">
-        <!-- TODO: Replace with your production AdMob App ID from the AdMob dashboard -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="${admobAppId}" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

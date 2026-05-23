@@ -25,8 +25,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+        }
         release {
             isMinifyEnabled = false
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-7803968519747509~8418313584"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
