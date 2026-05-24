@@ -14,8 +14,8 @@ android {
     defaultConfig {
         applicationId = "com.restrusher.partypuzl"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 1
+        targetSdk = 35
+        versionCode = 3
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -35,7 +35,8 @@ android {
             buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             manifestPlaceholders["admobAppId"] = "ca-app-pub-7803968519747509~8418313584"
             buildConfigField("boolean", "USE_TEST_ADS", "false")
             proguardFiles(
