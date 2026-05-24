@@ -92,7 +92,7 @@ MiniGameChallengeContent shows large title + "Everyone plays!" + description + S
   user taps Finish (mode active) or the card (standard) → onMiniGameDealFinished()
          │
   modeHandler.applyMiniGameResult → punishment for the loser + deal reset
-  (in Bar / Couples / Party Puzz the card flips to the mode event first)
+  (in Bar / Couples / Party Puzl the card flips to the mode event first)
 ```
 
 Global and two-player mini-games share the same state field, the same result-panel scaffolding (`MiniGameChallengeContent`), and the same dismiss trigger (`onMiniGameDealFinished`). The two variants of `MiniGameResult` differ only in which payload they carry and in how each mode handler decides who to punish or reward (see [game-mode-handler.md](game-mode-handler.md)).
@@ -308,7 +308,7 @@ onGameFinished(loserName)
     → modeHandler.applyMiniGameResult(state) → punishment event (if any) + deal reset
 ```
 
-In Bar Time / Couples / Party Puzz modes the challenge card flips to show the punishment event before resetting; in Standard mode the deal resets silently.
+In Bar Time / Couples / Party Puzl modes the challenge card flips to show the punishment event before resetting; in Standard mode the deal resets silently.
 
 ### Key files
 

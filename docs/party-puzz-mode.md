@@ -1,6 +1,6 @@
-# Party Puzz Mode
+# Party Puzl Mode
 
-Party Puzz is the "everything goes" game mode. Each deal ends with a mode event drawn randomly from the other three modes — Bar Time, Couples, or nothing at all — so no two rounds feel the same.
+Party Puzl is the "everything goes" game mode. Each deal ends with a mode event drawn randomly from the other three modes — Bar Time, Couples, or nothing at all — so no two rounds feel the same.
 
 ---
 
@@ -13,7 +13,7 @@ barMode    = BarModeState(isActive = … || isPartyPuzzMode),
 couplesMode = CouplesModeState(isActive = … || isPartyPuzzMode)
 ```
 
-Both `isActive` flags are set to `true` for Party Puzz. This ensures `isModeActive = true`, which controls shared UI such as the Skip button on Sticky Dare and the Finish button on mini-game results.
+Both `isActive` flags are set to `true` for Party Puzl. This ensures `isModeActive = true`, which controls shared UI such as the Skip button on Sticky Dare and the Finish button on mini-game results.
 
 ---
 
@@ -48,7 +48,7 @@ The random draw is **per trigger**, not per deal. Each call to `applyPunishment`
 
 ## Event types
 
-Party Puzz produces no event types of its own. It delegates to the full event catalogues of the other modes:
+Party Puzl produces no event types of its own. It delegates to the full event catalogues of the other modes:
 
 | Source mode | Possible events |
 |---|---|
@@ -62,7 +62,7 @@ See [bar-mode.md](bar-mode.md) and [couples-mode.md](couples-mode.md) for the fu
 
 ## Event triggers per deal type
 
-The triggers are identical to those of Bar Time and Couples mode — because Party Puzz reuses the same handler interface. If the random draw produces a `NoOpModeHandler`, the trigger still fires but produces no visible event and the deal resets as in Standard mode.
+The triggers are identical to those of Bar Time and Couples mode — because Party Puzl reuses the same handler interface. If the random draw produces a `NoOpModeHandler`, the trigger still fires but produces no visible event and the deal resets as in Standard mode.
 
 | Deal type | Trigger | Possible outcome |
 |---|---|---|
@@ -76,7 +76,7 @@ The triggers are identical to those of Bar Time and Couples mode — because Par
 | Mini-game (two-player) | Tie | nothing (all handlers return state unchanged on tie) |
 | Mini-game (global) | A single loser identified | Bar punishment on the loser / Couples punishment on the loser / nothing |
 
-Global mini-game results reach Party Puzz through the same random delegation as every other trigger — `applyMiniGameResult` is dispatched to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler`, and each of those branches on the `LoserMiniGameResult` variant to decide who the punishment falls on (the loser rather than the current player). See [game-mode-handler.md](game-mode-handler.md) for the `MiniGameResult` sealed interface.
+Global mini-game results reach Party Puzl through the same random delegation as every other trigger — `applyMiniGameResult` is dispatched to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler`, and each of those branches on the `LoserMiniGameResult` variant to decide who the punishment falls on (the loser rather than the current player). See [game-mode-handler.md](game-mode-handler.md) for the `MiniGameResult` sealed interface.
 
 ---
 
@@ -112,7 +112,7 @@ random handler chosen
 
 ### No new state class
 
-Party Puzz reuses the existing `BarModeState` and `CouplesModeState` inside `GameScreenState`. No `PartyPuzzModeState` class is needed because the mode has no state of its own beyond what the sub-modes already track.
+Party Puzl reuses the existing `BarModeState` and `CouplesModeState` inside `GameScreenState`. No `PartyPuzzModeState` class is needed because the mode has no state of its own beyond what the sub-modes already track.
 
 ### Handler selection
 
@@ -127,7 +127,7 @@ private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameMo
 
 ### No new dialog
 
-Party Puzz produces no new overlay. `GameScreen` already mounts `BarEventDialog` and `CouplesEventDialog` via `AnimatedVisibility`; whichever dialog's backing event is set will appear automatically.
+Party Puzl produces no new overlay. `GameScreen` already mounts `BarEventDialog` and `CouplesEventDialog` via `AnimatedVisibility`; whichever dialog's backing event is set will appear automatically.
 
 ---
 
@@ -137,8 +137,8 @@ Party Puzz produces no new overlay. `GameScreen` already mounts `BarEventDialog`
 |---|---|
 | `GameModeHandler.kt` | `PartyPuzzModeHandler` implementation |
 | `GameScreenViewModel.kt` | Routes `party_puzz_game_mode` to `PartyPuzzModeHandler`; activates both sub-modes |
-| `BarModeState.kt` / `CouplesModeState.kt` | Sub-mode states that Party Puzz can populate |
-| `BarEventDialog.kt` / `CouplesEventDialog.kt` | Dialogs reused as-is by Party Puzz |
+| `BarModeState.kt` / `CouplesModeState.kt` | Sub-mode states that Party Puzl can populate |
+| `BarEventDialog.kt` / `CouplesEventDialog.kt` | Dialogs reused as-is by Party Puzl |
 | `GameScreenState.kt` | `hasActiveModeEvent` and `isModeActive` already cover both sub-modes |
 
 ---
@@ -147,5 +147,5 @@ Party Puzz produces no new overlay. `GameScreen` already mounts `BarEventDialog`
 
 | Key | EN value |
 |---|---|
-| `party_puzz_game_mode` | `"Party Puzz"` |
+| `party_puzz_game_mode` | `"Party Puzl"` |
 | `party_puzz_description` | `"The ultimate mix — every round is a surprise, combining all game modes into one unpredictable experience!"` |

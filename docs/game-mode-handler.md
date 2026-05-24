@@ -84,7 +84,7 @@ data class LoserMiniGameResult(val loserName: String) : MiniGameResult
 
 `applyMiniGameResult` pattern-matches on the variant:
 
-| Variant | Bar / Couples / Party Puzz behaviour |
+| Variant | Bar / Couples / Party Puzl behaviour |
 |---|---|
 | `ScoredMiniGameResult` with `winner == selectedPlayer.nickName` | Reward the current player (Bar: `GiveDrinks(opponent)`; Couples: random reward) |
 | `ScoredMiniGameResult` with `winner == null` (tie) | No event — `applyMiniGameResult` returns state unchanged; ViewModel falls through to `resetDeal()` |
@@ -103,7 +103,7 @@ Adding a new mini-game usually means reusing one of the two variants; only intro
 | `NoOpModeHandler` | Standard | All methods return `state` unchanged — no events fire |
 | `BarModeHandler` | Bar Time | Produces `TakeDrinks` / `GiveDrinks` / `GiveDrinksPickTarget` / `NoAction` |
 | `CouplesModeHandler` | Couples | Produces `MakeALoveDeclaration` / `ActOfLove` / `GiveAKiss` / `ChoseKissers` / `ChoseLovers` |
-| `PartyPuzzModeHandler` | Party Puzz | Randomly delegates to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler` on each trigger; `clearEvent` clears both sub-mode events |
+| `PartyPuzzModeHandler` | Party Puzl | Randomly delegates to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler` on each trigger; `clearEvent` clears both sub-mode events |
 
 ---
 

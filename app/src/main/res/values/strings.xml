@@ -34,7 +34,7 @@
     <string name="standard_game_mode">Standard</string>
     <string name="bar_game_mode">Bar time</string>
     <string name="couples_game_mode">Couples</string>
-    <string name="party_puzz_game_mode">Party Puzz</string>
+    <string name="party_puzz_game_mode">Party Puzl</string>
 
     <!-- Bar time event dialog -->
     <string name="skip">Skip</string>
@@ -697,6 +697,11 @@
         <item>Salamander</item>
         <item>Mongoose</item>
     </string-array>
+
+    <!-- Legal -->
+    <string name="legal">Legal</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_subtitle">How we handle your data</string>
 
     <!-- Purchases -->
     <string name="purchases">Purchases</string>

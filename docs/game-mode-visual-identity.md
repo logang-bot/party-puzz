@@ -34,7 +34,7 @@ val theme = gameModeTheme(gameModeNameRes)
 | Standard | `#2EB6C6` → `#1C4F5C` | `ic_standard` |
 | Bar | `#FF8A5C` → `#FF5B8A` | `ic_bar` |
 | Couples | `#FF5B8A` → `#8B6CFF` | `ic_couples` |
-| Party Puzz | `#A8E063` → `#1C7A87` | `ic_partypuzz` |
+| Party Puzl | `#A8E063` → `#1C7A87` | `ic_partypuzz` |
 | *(fallback)* | `#2A4060` → `#162840` | `ic_standard` |
 
 All four icons are **XML vector drawables** in `res/drawable/`. The `ic_standard` star path was scaled to fill its 16×16 viewport (the original 24×24 viewport left 33% empty space, making the star visually smaller than the other icons).
@@ -88,7 +88,7 @@ Gradient applied to the 52 dp square thumbnail box only. Party name, subtitle, a
 | Standard | `img_standard_illustration` | `ic_standard` |
 | Couples | `img_couples_mode_illustration` | `ic_couples` |
 | Bar | `img_bar_mode_illustration` | `ic_bar` |
-| Party Puzz | `img_partypuzz_mode_illustration` | `ic_partypuzz` |
+| Party Puzl | `img_partypuzz_mode_illustration` | `ic_partypuzz` |
 
 `GameMode.imageId` is the value forwarded through navigation as `gameModeImage` to `GameConfigScreen`.
 

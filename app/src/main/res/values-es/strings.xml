@@ -35,7 +35,7 @@
     <string name="standard_game_mode">Estándar</string>
     <string name="bar_game_mode">Bar time</string>
     <string name="couples_game_mode">Parejas</string>
-    <string name="party_puzz_game_mode">Party Puzz</string>
+    <string name="party_puzz_game_mode">Party Puzl</string>
 
     <!-- Bar time event dialog -->
     <string name="skip">Omitir</string>
@@ -698,6 +698,11 @@
         <item>Charro</item>
         <item>Raspado</item>
     </string-array>
+
+    <!-- Legal -->
+    <string name="legal">Legal</string>
+    <string name="privacy_policy">Política de privacidad</string>
+    <string name="privacy_policy_subtitle">Cómo gestionamos tus datos</string>
 
     <!-- Purchases -->
     <string name="purchases">Compras</string>

@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +58,7 @@ fun SettingsScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -89,6 +91,18 @@ fun SettingsScreen(
             RemoveAdsRow(
                 isAdFree = uiState.isAdFree,
                 onClick = { viewModel.purchaseRemoveAds(context as Activity) }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            SettingsSectionHeader(title = stringResource(id = R.string.legal))
+
+            SettingsRow(
+                title = stringResource(id = R.string.privacy_policy),
+                subtitle = stringResource(id = R.string.privacy_policy_subtitle),
+                iconRes = R.drawable.ic_info,
+                onClick = {
+                    uriHandler.openUri("https://logang-bot.github.io/partypuzz-legal/privacy-policy.html")
+                }
             )
         }
 
