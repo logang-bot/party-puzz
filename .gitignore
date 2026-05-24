@@ -15,4 +15,4 @@
 local.properties
 
 # App Release Files
-app/release/*
+app/release/*app/staging/

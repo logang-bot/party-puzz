@@ -35,8 +35,7 @@ android {
             buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
             manifestPlaceholders["admobAppId"] = "ca-app-pub-7803968519747509~8418313584"
             buildConfigField("boolean", "USE_TEST_ADS", "false")
             proguardFiles(
