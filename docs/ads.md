@@ -170,4 +170,4 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 | `PartyPuzzApplication.kt` | `MobileAds.initialize()` + `appOpenAdManager.loadAd()` on app start |
 | `ui/MainActivity.kt` | `showWhenReady` / `clearPendingActivity` hooks + full-screen overlay |
 | `AndroidManifest.xml` | `APPLICATION_ID` meta-data |
-| `gradle/libs.versions.toml` | `play-services-ads` + `material-icons-extended` version entries |
+| `gradle/libs.versions.toml` | `play-services-ads` version entry |

@@ -15,7 +15,7 @@ android {
         applicationId = "com.restrusher.partypuzl"
         minSdk = 24
         targetSdk = 35
-        versionCode = 3
+        versionCode = 4
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -112,7 +112,6 @@ dependencies {
 
     // AdMob
     implementation(libs.play.services.ads)
-    implementation(libs.androidx.material.icons.extended)
 
     // Play Billing
     implementation(libs.billing.ktx)

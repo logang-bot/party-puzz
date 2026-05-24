@@ -15,10 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -203,7 +199,7 @@ private fun SettingsRow(
             )
         }
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+            painter = painterResource(R.drawable.ic_keyboard_arrow_right),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
             modifier = Modifier.size(20.dp)
@@ -317,7 +313,7 @@ private fun RemoveAdsRow(
                 .background(MaterialTheme.colorScheme.primaryContainer)
         ) {
             Icon(
-                imageVector = if (isAdFree) Icons.Filled.CheckCircle else Icons.Filled.Block,
+                painter = if (isAdFree) painterResource(R.drawable.ic_check_circle) else painterResource(R.drawable.ic_block),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(22.dp)
@@ -339,7 +335,7 @@ private fun RemoveAdsRow(
         }
         if (!isAdFree) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                painter = painterResource(R.drawable.ic_keyboard_arrow_right),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
                 modifier = Modifier.size(20.dp)

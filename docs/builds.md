@@ -45,6 +45,18 @@ Staging is not debuggable, so Android Studio's default **app** run configuration
 adb install app/build/outputs/apk/staging/app-staging.apk
 ```
 
+### Build output locations
+
+| Build type | Output |
+|---|---|
+| Debug / Staging APK | `app/build/outputs/apk/<buildType>/` |
+| Signed release AAB | `app/release/` |
+| Signed staging APK | `app/staging/` |
+
+`app/release/` and `app/staging/` are gitignored — never commit build outputs.
+
+---
+
 ### Signed release (Play Store upload)
 
 The Play Store requires a signed artifact. Use Android Studio:
@@ -55,4 +67,4 @@ The Play Store requires a signed artifact. Use Android Studio:
 4. Select the `release` build variant
 5. The signed bundle lands in `app/release/`
 
-> Keep your keystore file and passwords safe — losing them means you can never update the app on the Play Store.
+> Keep your keystore (upload key) and passwords safe — if lost, you can request a reset via Play Console → **Setup → App signing → Request upload key reset**. See `docs/release.md` for details on how Play App Signing works.

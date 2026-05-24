@@ -3,9 +3,6 @@ package com.restrusher.partypuzl.ui.common
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -49,15 +46,16 @@ fun HomeAppBar(
             if (shouldShowLogo)
                 IconButton(onClick = onMenuClick) {
                     Icon(
-                        imageVector = Icons.Default.Menu,
+                        painter = painterResource(R.drawable.ic_menu),
                         contentDescription = stringResource(id = R.string.menu)
                     )
                 }
             else if (canNavigateBack)
                 IconButton(onClick = navigateUp) {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(
-                        id = R.string.back_button
-                    ))
+                    Icon(
+                        painter = painterResource(R.drawable.ic_arrow_back),
+                        contentDescription = stringResource(id = R.string.back_button)
+                    )
                 }
         },
         actions = {

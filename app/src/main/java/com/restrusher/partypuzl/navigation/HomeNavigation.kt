@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -108,7 +106,7 @@ fun HomeNavigation(
                 )
                 NavigationDrawerItem(
                     icon = {
-                        Icon(imageVector = Icons.Default.PlayArrow, contentDescription = null)
+                        Icon(painter = painterResource(R.drawable.ic_play_arrow), contentDescription = null)
                     },
                     label = { Text(text = stringResource(id = R.string.play)) },
                     selected = isHomeScreen,
