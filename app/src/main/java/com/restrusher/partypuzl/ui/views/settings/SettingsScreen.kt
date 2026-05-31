@@ -90,6 +90,23 @@ fun SettingsScreen(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+            SettingsSectionHeader(title = stringResource(id = R.string.support))
+
+            SettingsRow(
+                title = stringResource(id = R.string.support_dev),
+                subtitle = stringResource(id = R.string.support_dev_subtitle),
+                iconRes = R.drawable.ic_sports_bar,
+                onClick = { uriHandler.openUri("https://ko-fi.com/restrusher") }
+            )
+
+            SettingsRow(
+                title = stringResource(id = R.string.support_dev_airtm),
+                subtitle = stringResource(id = R.string.support_dev_airtm_subtitle),
+                iconRes = R.drawable.ic_whatshot,
+                onClick = { uriHandler.openUri("https://airtm.me/lordgatsu") }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
             SettingsSectionHeader(title = stringResource(id = R.string.legal))
 
             SettingsRow(

@@ -699,6 +699,13 @@
         <item>Raspado</item>
     </string-array>
 
+    <!-- Support -->
+    <string name="support">Apoyo</string>
+    <string name="support_dev">Apoya al desarrollador</string>
+    <string name="support_dev_subtitle">Cómprame un café en Ko-fi</string>
+    <string name="support_dev_airtm">Donar vía AirTM</string>
+    <string name="support_dev_airtm_subtitle">Alternativa para Latinoamérica</string>
+
     <!-- Legal -->
     <string name="legal">Legal</string>
     <string name="privacy_policy">Política de privacidad</string>
