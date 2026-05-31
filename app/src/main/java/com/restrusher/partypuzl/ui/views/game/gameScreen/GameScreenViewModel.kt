@@ -69,7 +69,7 @@ class GameScreenViewModel @Inject constructor(
 
     private fun nextPlayerInRound(players: List<Player>): Player {
         if (roundQueue.isEmpty()) roundQueue.addAll(players.shuffled())
-        return roundQueue.removeFirst()
+        return roundQueue.removeAt(0)
     }
 
     fun onGameDealTapped() {
