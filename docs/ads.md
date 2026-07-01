@@ -1,6 +1,6 @@
 # Ads
 
-The app monetises with Google AdMob. Three ad formats are integrated: banner ads on informational screens, an App Open Ad on every app launch / foreground return, and a rewarded ad infrastructure ready to be wired up.
+The app monetises with Unity Ads. Three ad formats are integrated: banner ads on informational screens, an interstitial shown on every app launch / foreground return (standing in for AdMob's App Open Ad, which Unity Ads has no equivalent of), and a rewarded ad infrastructure ready to be wired up.
 
 ---
 
@@ -10,39 +10,39 @@ The app monetises with Google AdMob. Three ad formats are integrated: banner ads
 
 ```toml
 # gradle/libs.versions.toml
-playServicesAds = "23.6.0"
-play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+unityAds = "4.15.1"
+unity-ads = { group = "com.unity3d.ads", name = "unity-ads", version.ref = "unityAds" }
 ```
 
-### Manifest
+### Game ID
 
-```xml
-<!-- TODO: Replace with your production AdMob App ID -->
-<meta-data
-    android:name="com.google.android.gms.ads.APPLICATION_ID"
-    android:value="ca-app-pub-3940256099942544~3347511713" />
-```
+Unity Ads is initialised with an **Android Game ID** from the Unity Dashboard (Monetization → your project → the "Android" platform entry), passed via `BuildConfig.UNITY_GAME_ID`. This app's Game ID is `800079402`, set as a `buildConfigField` on all three build types in `app/build.gradle.kts`.
+
+Unlike AdMob, Unity Ads doesn't need any `AndroidManifest.xml` meta-data — the SDK is initialised entirely in code.
 
 ### Initialisation
 
-`MobileAds.initialize(this)` is called in `PartyPuzzApplication.onCreate()` — the earliest possible point in the app lifecycle, before any Activity exists.
+`UnityAds.initialize(this, BuildConfig.UNITY_GAME_ID, BuildConfig.USE_TEST_ADS, listener)` is called in `PartyPuzlApplication.onCreate()` — the earliest possible point in the app lifecycle, before any Activity exists. The App Open interstitial's first `loadAd()` call is chained off `onInitializationComplete()` so it never races SDK init.
 
 ---
 
-## Ad Unit IDs
+## Ad Placement IDs
 
-All IDs live in `AdUnitIds` inside `AdBannerView.kt`.
+All IDs live in `AdPlacementIds` inside `AdBannerView.kt`.
 
-| Constant | Format | Screen |
-|---|---|---|
-| `HOME_BANNER` | Banner | `HomeScreen` |
-| `PARTIES_BANNER` | Banner | `PartiesScreen` |
-| `PARTY_DETAIL_BANNER` | Banner | `PartyDetailScreen` |
-| `SETTINGS_BANNER` | Banner | `SettingsScreen` |
-| `GAME_CONFIG_BANNER` | Banner | `GameConfigScreen` |
-| `APP_OPEN` | App Open | App launch / foreground |
+| Constant | Placement ID | Format | Screen |
+|---|---|---|---|
+| `HOME_BANNER` | `Banner_Android` | Banner | `HomeScreen` |
+| `PARTIES_BANNER` | `Banner_Android` | Banner | `PartiesScreen` |
+| `PARTY_DETAIL_BANNER` | `Banner_Android` | Banner | `PartyDetailScreen` |
+| `SETTINGS_BANNER` | `Banner_Android` | Banner | `SettingsScreen` |
+| `GAME_CONFIG_BANNER` | `Banner_Android` | Banner | `GameConfigScreen` |
+| `APP_OPEN_INTERSTITIAL` | `Interstitial_Android` | Interstitial | App launch / foreground |
+| `GAME_CONFIG_REWARDED` | `Rewarded_Android` | Rewarded | Not wired in yet — see [Rewarded Ad](#rewarded-ad-infrastructure) |
 
-All values are currently set to Google's **test IDs**. Replace each constant with the matching production ad unit ID from the AdMob dashboard before releasing.
+All five banner screens share the single `Banner_Android` placement — Unity Ads placements aren't scoped per-screen the way AdMob ad units were, so per-screen breakdowns in the Unity Dashboard use its own analytics (impression source), not separate placement IDs. `Banner_Android`, `Interstitial_Android`, and `Rewarded_Android` are the default placements Unity auto-creates per format for a new Android app entry.
+
+Unlike AdMob, Unity Ads doesn't use separate test/production ad unit IDs — the same placement ID is used everywhere, and `BuildConfig.USE_TEST_ADS` instead controls the `testMode` flag passed to `UnityAds.initialize()`, which routes all placements through Unity's test ad network.
 
 ---
 
@@ -50,7 +50,7 @@ All values are currently set to Google's **test IDs**. Replace each constant wit
 
 ### Composable
 
-`AdBannerView(adUnitId, modifier)` in `ui/common/AdBannerView.kt` wraps an `AdView` via `AndroidView`. It calls `loadAd()` once on first composition.
+`AdBannerView(placementId, modifier)` in `ui/common/AdBannerView.kt` wraps a Unity `BannerView` via `AndroidView`. It calls `load()` once on first composition and `destroy()` when the view leaves composition.
 
 ### Placement
 
@@ -62,13 +62,13 @@ All values are currently set to Google's **test IDs**. Replace each constant wit
 | `SettingsScreen` | Pinned at the bottom | Root `Column` wrapped in a `Box`; `padding(bottom = 50.dp)` on the inner `Column` |
 | `GameConfigScreen` | Inline, between the options grid and the players section | Placed directly inside the scrollable `Column`, not as an overlay |
 
-The standard banner height is 50 dp (`AdSize.BANNER`).
+The banner size is a fixed 320×50 (`UnityBannerSize(320, 50)`), matching AdMob's old standard banner footprint.
 
 ---
 
-## App Open Ad
+## App Open Interstitial
 
-Shown every time the app is cold-started or brought back from the background.
+Shown every time the app is cold-started or brought back from the background, standing in for AdMob's App Open Ad format (Unity Ads has no dedicated app-open placement type).
 
 ### Manager
 
@@ -76,8 +76,8 @@ Shown every time the app is cold-started or brought back from the background.
 
 | Method | Purpose |
 |---|---|
-| `loadAd()` | Starts an async `AppOpenAd.load()`. No-ops if an ad is already available or a load is in progress. |
-| `showWhenReady(activity)` | Shows immediately if an ad is loaded and fresh (< 4 h old). Otherwise stores a `WeakReference<Activity>` and shows the instant `onAdLoaded` fires. |
+| `loadAd()` | Starts an async `UnityAds.load()` on `AdPlacementIds.APP_OPEN_INTERSTITIAL`. No-ops if an ad is already available or a load is in progress. |
+| `showWhenReady(activity)` | Shows immediately if an ad is loaded and fresh (< 4 h old). Otherwise stores a `WeakReference<Activity>` and shows the instant `onUnityAdsAdLoaded` fires. |
 | `clearPendingActivity()` | Drops the stored reference. Called from `MainActivity.onStop()` to prevent a stale Activity from being shown an ad after the app backgrounds. |
 
 `isAdVisible` is a public `mutableStateOf(Boolean)` that Compose can observe.
@@ -85,8 +85,8 @@ Shown every time the app is cold-started or brought back from the background.
 ### Lifecycle wiring (`MainActivity`)
 
 ```
-Application.onCreate()  →  MobileAds.initialize() + appOpenAdManager.loadAd()
-                            (ad starts loading before any Activity exists)
+Application.onCreate()  →  UnityAds.initialize() → onInitializationComplete() → appOpenAdManager.loadAd()
+                            (ad starts loading once the SDK finishes initialising)
 
 MainActivity.onStart()  →  appOpenAdManager.showWhenReady(this)
 MainActivity.onStop()   →  appOpenAdManager.clearPendingActivity()
@@ -94,10 +94,10 @@ MainActivity.onStop()   →  appOpenAdManager.clearPendingActivity()
 
 ### Full-screen overlay
 
-When the App Open Ad shows, the SDK hides the status bar, which would cause the underlying app content to shift and become visible at the screen edges. To prevent this, `MainActivity.setContent` renders a `Box` that fills the entire screen (including system bar areas, thanks to `enableEdgeToEdge()`) using `MaterialTheme.colorScheme.background` whenever `isAdVisible` is `true`.
+When the interstitial shows, the SDK renders its own full-screen Activity, but the underlying Compose content briefly shows a frame edge-to-edge before/after that transition. To prevent this, `MainActivity.setContent` renders a `Box` that fills the entire screen (including system bar areas, thanks to `enableEdgeToEdge()`) using `MaterialTheme.colorScheme.background` whenever `isAdVisible` is `true`.
 
 ```
-AdMob App Open Ad window          ← SDK overlay, full-screen
+Unity Ads interstitial window     ← SDK overlay, full-screen
 ────────────────────────────────────────────────────────────
 colorScheme.background Box        ← fillMaxSize, hides app content
 HomeNavigation                    ← invisible while ad is showing
@@ -113,19 +113,19 @@ After the ad is dismissed `isAdVisible` returns to `false` and the overlay is re
 
 | Class / function | Purpose |
 |---|---|
-| `RewardedAdState` | Holds the loaded `RewardedAd`; exposes `isReady` and `show(activity, onRewarded)` |
-| `rememberRewardedAd(adUnitId)` | Composable that creates and remembers a `RewardedAdState`, loading the ad on first composition |
+| `RewardedAdState` | Loads a Unity rewarded placement; exposes `isReady` and `show(activity, onRewarded)` |
+| `rememberRewardedAd(placementId)` | Composable that creates and remembers a `RewardedAdState`, loading the ad on first composition |
 | `RewardedAdCard(rewardedAdState)` | Styled card composable matching the in-app native ad design |
 
-The card shows a fire icon, title (`rewarded_ad_title`), subtitle (`rewarded_ad_subtitle`), and a **WATCH** button that is enabled only once the ad has loaded. Tapping it shows the rewarded video; the `onRewarded` callback is the hook for granting the reward in-game.
+The card shows a fire icon, title (`rewarded_ad_title`), subtitle (`rewarded_ad_subtitle`), and a **WATCH** button that is enabled only once the ad has loaded. Tapping it shows the rewarded video; `onRewarded` fires only when Unity reports `UnityAdsShowCompletionState.COMPLETED` (i.e. the user watched to the end) — the hook for granting the reward in-game.
 
-> This system is not currently wired into any screen. To activate it, call `rememberRewardedAd(AdUnitIds.GAME_CONFIG_REWARDED)` at the top of the target composable and place `RewardedAdCard(rewardedAdState)` in the layout. Add `GAME_CONFIG_REWARDED` back to `AdUnitIds` with the test rewarded ID `ca-app-pub-3940256099942544/5224354917`.
+> This system is not currently wired into any screen. The `Rewarded_Android` placement is already configured in `AdPlacementIds.GAME_CONFIG_REWARDED`. To activate it, call `rememberRewardedAd(AdPlacementIds.GAME_CONFIG_REWARDED)` at the top of the target composable and place `RewardedAdCard(rewardedAdState)` in the layout.
 
 ---
 
 ## Remove Ads — In-App Purchase
 
-The app has a single "Remove Ads" one-time purchase. There is only one app listing on the Play Store; ads are toggled at runtime based on purchase state.
+The app has a single "Remove Ads" one-time purchase. There is only one app listing on the Play Store; ads are toggled at runtime based on purchase state. This is unaffected by the Unity Ads migration.
 
 ### Product ID
 
@@ -135,7 +135,7 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 
 ### Purchase flow
 
-1. `BillingManager.connect()` is called in `PartyPuzzApplication.onCreate()`.
+1. `BillingManager.connect()` is called in `PartyPuzlApplication.onCreate()`.
 2. On connection it queries existing purchases and product details from the Play Store.
 3. If the user already owns `remove_ads`, `UserPreferencesRepository.setAdFree(true)` is called and the state is persisted in DataStore.
 4. The Settings screen exposes a **Remove Ads** row (under the "Purchases" section). Tapping it calls `BillingManager.launchPurchaseFlow(activity)`.
@@ -155,7 +155,7 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 | Build type | `USE_TEST_ADS` | Debuggable | Purpose |
 |---|---|---|---|
 | `debug` | `true` | Yes | Local development |
-| `staging` | `true` | No | QA — release-like but safe (no risk of invalid traffic) |
+| `staging` | `true` | No | QA — release-like but safe (routes through Unity's test ad network) |
 | `release` | `false` | No | Production |
 
 ---
@@ -164,10 +164,10 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 
 | File | Role |
 |---|---|
-| `ui/common/AdBannerView.kt` | `AdBannerView` composable + `AdUnitIds` constants |
-| `ui/common/AppOpenAdManager.kt` | App Open Ad load / show lifecycle manager |
+| `ui/common/AdBannerView.kt` | `AdBannerView` composable + `AdPlacementIds` constants |
+| `ui/common/AppOpenAdManager.kt` | App-open interstitial load / show lifecycle manager |
 | `ui/common/RewardedAdCard.kt` | `RewardedAdState`, `rememberRewardedAd`, `RewardedAdCard` |
-| `PartyPuzzApplication.kt` | `MobileAds.initialize()` + `appOpenAdManager.loadAd()` on app start |
+| `PartyPuzlApplication.kt` | `UnityAds.initialize()` + `appOpenAdManager.loadAd()` on app start |
 | `ui/MainActivity.kt` | `showWhenReady` / `clearPendingActivity` hooks + full-screen overlay |
-| `AndroidManifest.xml` | `APPLICATION_ID` meta-data |
-| `gradle/libs.versions.toml` | `play-services-ads` version entry |
+| `gradle/libs.versions.toml` | `unity-ads` version entry |
+| `app/build.gradle.kts` | `UNITY_GAME_ID` / `USE_TEST_ADS` `buildConfigField`s per build type |

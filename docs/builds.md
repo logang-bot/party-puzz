@@ -4,9 +4,9 @@
 
 | Build type | Ads | Debuggable | Purpose |
 |---|---|---|---|
-| `debug` | Test IDs | Yes | Local development |
-| `staging` | Test IDs | No | QA — release-like, safe to test without risking invalid AdMob traffic |
-| `release` | Real IDs | No | Production / Play Store |
+| `debug` | Unity test mode | Yes | Local development |
+| `staging` | Unity test mode | No | QA — release-like, safe to test without risking invalid ad traffic |
+| `release` | Live ads | No | Production / Play Store |
 
 ---
 

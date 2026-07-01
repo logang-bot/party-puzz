@@ -58,7 +58,7 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.AdPlacementIds
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.views.gameConfig.GameConfigViewModel
@@ -146,7 +146,7 @@ fun SharedTransitionScope.GameConfigScreen(
                 OptionsContainer()
 
                 Spacer(modifier = Modifier.height(12.dp))
-                AdBannerView(adUnitId = AdUnitIds.GAME_CONFIG_BANNER)
+                AdBannerView(placementId = AdPlacementIds.GAME_CONFIG_BANNER)
 
                 Spacer(modifier = Modifier.height(12.dp))
                 PlayersContainer(

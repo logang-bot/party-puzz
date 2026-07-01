@@ -37,7 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.AdPlacementIds
 
 @Composable
 fun PartyDetailScreen(
@@ -134,7 +134,7 @@ fun PartyDetailScreen(
         }
 
         AdBannerView(
-            adUnitId = AdUnitIds.PARTY_DETAIL_BANNER,
+            placementId = AdPlacementIds.PARTY_DETAIL_BANNER,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
 

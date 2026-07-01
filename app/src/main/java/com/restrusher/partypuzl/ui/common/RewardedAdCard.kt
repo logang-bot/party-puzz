@@ -1,7 +1,6 @@
 package com.restrusher.partypuzl.ui.common
 
 import android.app.Activity
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,43 +32,59 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.rewarded.RewardedAd
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.unity3d.ads.IUnityAdsLoadListener
+import com.unity3d.ads.IUnityAdsShowListener
+import com.unity3d.ads.UnityAds
 import com.restrusher.partypuzl.R
 
-class RewardedAdState(private val context: Context) {
-    var rewardedAd by mutableStateOf<RewardedAd?>(null)
+class RewardedAdState(private val placementId: String) {
+    var isReady by mutableStateOf(false)
         private set
 
-    val isReady get() = rewardedAd != null
-
-    fun load(adUnitId: String) {
-        RewardedAd.load(
-            context,
-            adUnitId,
-            AdRequest.Builder().build(),
-            object : RewardedAdLoadCallback() {
-                override fun onAdLoaded(ad: RewardedAd) { rewardedAd = ad }
-                override fun onAdFailedToLoad(error: LoadAdError) { rewardedAd = null }
+    fun load() {
+        isReady = false
+        UnityAds.load(
+            placementId,
+            object : IUnityAdsLoadListener {
+                override fun onUnityAdsAdLoaded(placementId: String) { isReady = true }
+                override fun onUnityAdsFailedToLoad(
+                    placementId: String,
+                    error: UnityAds.UnityAdsLoadError,
+                    message: String
+                ) { isReady = false }
             }
         )
     }
 
     fun show(activity: Activity, onRewarded: () -> Unit = {}) {
-        rewardedAd?.let { ad ->
-            ad.show(activity) { onRewarded() }
-            rewardedAd = null
-        }
+        if (!isReady) return
+        isReady = false
+        UnityAds.show(
+            activity,
+            placementId,
+            object : IUnityAdsShowListener {
+                override fun onUnityAdsShowFailure(
+                    placementId: String,
+                    error: UnityAds.UnityAdsShowError,
+                    message: String
+                ) {}
+                override fun onUnityAdsShowStart(placementId: String) {}
+                override fun onUnityAdsShowClick(placementId: String) {}
+                override fun onUnityAdsShowComplete(
+                    placementId: String,
+                    state: UnityAds.UnityAdsShowCompletionState
+                ) {
+                    if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) onRewarded()
+                }
+            }
+        )
     }
 }
 
 @Composable
-fun rememberRewardedAd(adUnitId: String): RewardedAdState {
-    val context = LocalContext.current
-    val state = remember { RewardedAdState(context) }
-    LaunchedEffect(adUnitId) { state.load(adUnitId) }
+fun rememberRewardedAd(placementId: String): RewardedAdState {
+    val state = remember(placementId) { RewardedAdState(placementId) }
+    LaunchedEffect(placementId) { state.load() }
     return state
 }
 

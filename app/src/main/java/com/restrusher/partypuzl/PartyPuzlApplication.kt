@@ -1,9 +1,10 @@
 package com.restrusher.partypuzl
 
 import android.app.Application
-import com.google.android.gms.ads.MobileAds
 import com.restrusher.partypuzl.data.billing.BillingManager
 import com.restrusher.partypuzl.ui.common.AppOpenAdManager
+import com.unity3d.ads.IUnityAdsInitializationListener
+import com.unity3d.ads.UnityAds
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -18,8 +19,20 @@ class PartyPuzlApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        MobileAds.initialize(this)
-        appOpenAdManager.loadAd()
+        UnityAds.initialize(
+            this,
+            BuildConfig.UNITY_GAME_ID,
+            BuildConfig.USE_TEST_ADS,
+            object : IUnityAdsInitializationListener {
+                override fun onInitializationComplete() {
+                    appOpenAdManager.loadAd()
+                }
+                override fun onInitializationFailed(
+                    error: UnityAds.UnityAdsInitializationError,
+                    message: String
+                ) {}
+            }
+        )
         billingManager.connect()
     }
 }

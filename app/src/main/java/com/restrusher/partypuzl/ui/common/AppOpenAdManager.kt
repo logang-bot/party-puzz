@@ -1,17 +1,13 @@
 package com.restrusher.partypuzl.ui.common
 
 import android.app.Activity
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.appopen.AppOpenAd
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.unity3d.ads.IUnityAdsLoadListener
+import com.unity3d.ads.IUnityAdsShowListener
+import com.unity3d.ads.UnityAds
 import java.lang.ref.WeakReference
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,14 +16,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
+/**
+ * Unity Ads has no dedicated "App Open" ad format, so this manager shows an
+ * interstitial ([AdPlacementIds.APP_OPEN_INTERSTITIAL]) on app launch / foreground
+ * return in place of AdMob's App Open Ad, keeping the same load/show lifecycle.
+ */
 @Singleton
 class AppOpenAdManager @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val userPreferencesRepository: UserPreferencesRepository
 ) {
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private var isAdFree = false
-    private var appOpenAd: AppOpenAd? = null
+    private var isAdLoaded = false
     private var isLoading = false
     var isAdVisible by mutableStateOf(false)
         private set
@@ -43,21 +43,23 @@ class AppOpenAdManager @Inject constructor(
     fun loadAd() {
         if (isAdFree || isAdAvailable() || isLoading) return
         isLoading = true
-        AppOpenAd.load(
-            context,
-            AdUnitIds.APP_OPEN,
-            AdRequest.Builder().build(),
-            object : AppOpenAd.AppOpenAdLoadCallback() {
-                override fun onAdLoaded(ad: AppOpenAd) {
+        UnityAds.load(
+            AdPlacementIds.APP_OPEN_INTERSTITIAL,
+            object : IUnityAdsLoadListener {
+                override fun onUnityAdsAdLoaded(placementId: String) {
                     isLoading = false
-                    appOpenAd = ad
+                    isAdLoaded = true
                     loadTime = System.currentTimeMillis()
                     pendingActivity?.get()?.let { showAd(it) }
                     pendingActivity = null
                 }
-                override fun onAdFailedToLoad(error: LoadAdError) {
+                override fun onUnityAdsFailedToLoad(
+                    placementId: String,
+                    error: UnityAds.UnityAdsLoadError,
+                    message: String
+                ) {
                     isLoading = false
-                    appOpenAd = null
+                    isAdLoaded = false
                     pendingActivity = null
                 }
             }
@@ -80,21 +82,33 @@ class AppOpenAdManager @Inject constructor(
 
     private fun showAd(activity: Activity) {
         if (isAdVisible || activity.isFinishing || activity.isDestroyed) return
-        appOpenAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
-            override fun onAdShowedFullScreenContent() { isAdVisible = true }
-            override fun onAdDismissedFullScreenContent() {
-                appOpenAd = null
-                isAdVisible = false
-                loadAd()
+        isAdVisible = true
+        UnityAds.show(
+            activity,
+            AdPlacementIds.APP_OPEN_INTERSTITIAL,
+            object : IUnityAdsShowListener {
+                override fun onUnityAdsShowFailure(
+                    placementId: String,
+                    error: UnityAds.UnityAdsShowError,
+                    message: String
+                ) {
+                    isAdLoaded = false
+                    isAdVisible = false
+                }
+                override fun onUnityAdsShowStart(placementId: String) {}
+                override fun onUnityAdsShowClick(placementId: String) {}
+                override fun onUnityAdsShowComplete(
+                    placementId: String,
+                    state: UnityAds.UnityAdsShowCompletionState
+                ) {
+                    isAdLoaded = false
+                    isAdVisible = false
+                    loadAd()
+                }
             }
-            override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                appOpenAd = null
-                isAdVisible = false
-            }
-        }
-        appOpenAd?.show(activity)
+        )
     }
 
     private fun isAdAvailable() =
-        appOpenAd != null && System.currentTimeMillis() - loadTime < 4 * 3_600_000L
+        isAdLoaded && System.currentTimeMillis() - loadTime < 4 * 3_600_000L
 }

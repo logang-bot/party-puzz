@@ -26,17 +26,17 @@ android {
 
     buildTypes {
         debug {
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            buildConfigField("String", "UNITY_GAME_ID", "\"800079402\"")
             buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         create("staging") {
             initWith(getByName("release"))
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            buildConfigField("String", "UNITY_GAME_ID", "\"800079402\"")
             buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         release {
             isMinifyEnabled = false
-            manifestPlaceholders["admobAppId"] = "ca-app-pub-7803968519747509~8418313584"
+            buildConfigField("String", "UNITY_GAME_ID", "\"800079402\"")
             buildConfigField("boolean", "USE_TEST_ADS", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -110,8 +110,8 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
-    // AdMob
-    implementation(libs.play.services.ads)
+    // Unity Ads
+    implementation(libs.unity.ads)
 
     // Play Billing
     implementation(libs.billing.ktx)

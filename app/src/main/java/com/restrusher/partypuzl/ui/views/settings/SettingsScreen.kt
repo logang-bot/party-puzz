@@ -41,7 +41,7 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.AdPlacementIds
 
 @Composable
 fun SettingsScreen(
@@ -120,7 +120,7 @@ fun SettingsScreen(
         }
 
         AdBannerView(
-            adUnitId = AdUnitIds.SETTINGS_BANNER,
+            placementId = AdPlacementIds.SETTINGS_BANNER,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

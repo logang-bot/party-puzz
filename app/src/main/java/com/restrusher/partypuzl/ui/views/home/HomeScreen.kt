@@ -46,7 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.AdPlacementIds
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 
@@ -182,7 +182,7 @@ fun SharedTransitionScope.HomeScreen(
         }
 
         AdBannerView(
-            adUnitId = AdUnitIds.HOME_BANNER,
+            placementId = AdPlacementIds.HOME_BANNER,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
 

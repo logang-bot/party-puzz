@@ -91,8 +91,8 @@ On the very first release there are extra steps before promoting to production:
 
 - [ ] Add a privacy policy URL to Play Console → **App content → Privacy policy**
 - [ ] Publish to internal testing first and verify the build works
-- [ ] **Closed testing** — create a closed testing track with at least **20 testers** who must opt in and stay enrolled for **14 consecutive days** before the production track unlocks (required for personal Google accounts)
-- [ ] Wait for AdMob to approve the app (they crawl the Play Store listing — can take a few days)
+- [ ] **Closed testing** — create a closed testing track with at least **12 testers** who must opt in and stay enrolled for **14 consecutive days** before the production track unlocks (required for personal Google accounts). This is tracked cumulatively per testing track — uploading new builds to the same track does not reset the clock, only removing/losing testers or abandoning the track does.
+- [ ] Use a **`staging`** build (`USE_TEST_ADS = true`) for this closed testing period — see `docs/ads.md`. Only switch to a `release` build with real ads once you're ready to promote to production.
 - [ ] Verify the `remove_ads` in-app product is created and active in Play Console
 - [ ] Test the Remove Ads purchase using a Play Store license tester account
-- [ ] Once AdMob approves and the 14-day closed testing period is complete → promote to production
+- [ ] Once the 14-day closed testing period is complete → promote to production
