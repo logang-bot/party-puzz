@@ -1,6 +1,7 @@
 package com.restrusher.partypuzl.ui.common
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -47,6 +48,7 @@ class AppOpenAdManager @Inject constructor(
             AdPlacementIds.APP_OPEN_INTERSTITIAL,
             object : IUnityAdsLoadListener {
                 override fun onUnityAdsAdLoaded(placementId: String) {
+                    Log.d("AppOpenAdManager", "Interstitial loaded: $placementId")
                     isLoading = false
                     isAdLoaded = true
                     loadTime = System.currentTimeMillis()
@@ -58,6 +60,7 @@ class AppOpenAdManager @Inject constructor(
                     error: UnityAds.UnityAdsLoadError,
                     message: String
                 ) {
+                    Log.e("AppOpenAdManager", "Interstitial failed to load ($placementId): [$error] $message")
                     isLoading = false
                     isAdLoaded = false
                     pendingActivity = null
@@ -92,15 +95,19 @@ class AppOpenAdManager @Inject constructor(
                     error: UnityAds.UnityAdsShowError,
                     message: String
                 ) {
+                    Log.e("AppOpenAdManager", "Interstitial failed to show ($placementId): [$error] $message")
                     isAdLoaded = false
                     isAdVisible = false
                 }
-                override fun onUnityAdsShowStart(placementId: String) {}
+                override fun onUnityAdsShowStart(placementId: String) {
+                    Log.d("AppOpenAdManager", "Interstitial show started: $placementId")
+                }
                 override fun onUnityAdsShowClick(placementId: String) {}
                 override fun onUnityAdsShowComplete(
                     placementId: String,
                     state: UnityAds.UnityAdsShowCompletionState
                 ) {
+                    Log.d("AppOpenAdManager", "Interstitial show complete: $placementId ($state)")
                     isAdLoaded = false
                     isAdVisible = false
                     loadAd()

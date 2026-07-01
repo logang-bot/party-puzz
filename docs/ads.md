@@ -18,7 +18,11 @@ unity-ads = { group = "com.unity3d.ads", name = "unity-ads", version.ref = "unit
 
 Unity Ads is initialised with an **Android Game ID** from the Unity Dashboard (Monetization → your project → the "Android" platform entry), passed via `BuildConfig.UNITY_GAME_ID`. This app's Game ID is `800079402`, set as a `buildConfigField` on all three build types in `app/build.gradle.kts`.
 
-Unlike AdMob, Unity Ads doesn't need any `AndroidManifest.xml` meta-data — the SDK is initialised entirely in code.
+Unlike AdMob, Unity Ads doesn't need any `AndroidManifest.xml` meta-data — the SDK is initialised entirely in code. It does require one manifest permission, since the app targets Android 13+:
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+```
 
 ### Initialisation
 
