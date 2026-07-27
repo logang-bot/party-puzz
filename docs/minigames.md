@@ -29,7 +29,7 @@ Current entries:
 
 ### How a mini-game deal is triggered
 
-1. `GameScreenViewModel.onGameDealTapped()` randomly picks `GameDealType.MINI_GAME`.
+1. The player picks **Mini-games** on the deal picker (or the "Surprise me" reel lands on it), and `GameScreenViewModel.onDealChosen()` starts a `GameDealType.MINI_GAME` challenge.
 2. Any `MiniGame` entry whose `minPlayers ≤ players.size` is eligible.
 3. `dealPhase` advances to `CHALLENGE_SHOWN` and `miniGame` is set in `GameScreenState`.
 4. `MiniGameChallengeContent` is rendered on the challenge card.

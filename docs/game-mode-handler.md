@@ -61,7 +61,7 @@ All methods are pure state transformers — they receive the current `GameScreen
 | `applyPunishment(state, currentPlayer)` | Player skips or fails a challenge | Sets the active mode event to a punishment; `currentPlayer` identifies who to exclude from target selection |
 | `applyReward(state)` | Player succeeds at a challenge | Sets the active mode event to a reward |
 | `applyMiniGameResult(state)` | Finish button tapped on mini-game results | Branches on `state.miniGameResult` (see below). Tie / no result → state unchanged, ViewModel then calls `resetDeal()` |
-| `clearEvent(state)` | User taps OK in the mode event dialog | Clears the active mode event field; the ViewModel then resets the deal to IDLE |
+| `clearEvent(state)` | User taps the landed outcome | Clears the active mode event field; the ViewModel then returns the turn to the deal picker |
 
 ### `MiniGameResult` sealed interface
 
@@ -141,3 +141,12 @@ private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameMo
 | `GameScreenViewModel.kt` | Holds `modeHandler`; calls it at each trigger point |
 | `BarModeState.kt` / `CouplesModeState.kt` | State + event factory methods per mode |
 | `BarEvent.kt` / `CouplesEvent.kt` | Sealed event hierarchies per mode |
+
+
+---
+
+## Related
+
+- [outcome-presentation.md](outcome-presentation.md) — How a produced event reaches the screen
+- [bar-mode.md](bar-mode.md), [couples-mode.md](couples-mode.md), [party-puzz-mode.md](party-puzz-mode.md) — The implementations
+- [game-deal-flow.md](game-deal-flow.md) — Where the trigger points sit in a turn

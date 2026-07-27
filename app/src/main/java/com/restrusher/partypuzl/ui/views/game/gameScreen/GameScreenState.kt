@@ -2,11 +2,14 @@ package com.restrusher.partypuzl.ui.views.game.gameScreen
 
 import com.restrusher.partypuzl.data.models.Player
 
-enum class GameDealPhase {
-    IDLE, ANIMATING, PLAYER_NAME_REVEAL, PLAYER_PHOTO_REVEAL, CHALLENGE_SHOWN
-}
+internal const val SURPRISE_SHUFFLE_DURATION_MS = 1600L
+internal const val OUTCOME_SPIN_DURATION_MS = 1800L
+
+enum class GameDealPhase { DEAL_CHOICE, SURPRISE_SHUFFLE, CHALLENGE_SHOWN }
 
 enum class GameDealType { TRUTH_OR_DARE, STICKY_DARE, GENERAL_KNOWLEDGE, MINI_GAME }
+
+enum class OutcomeStage { SPINNING, REVEALED }
 
 enum class TruthOrDareChoice { TRUTH, DARE }
 
@@ -40,12 +43,15 @@ data class LoserMiniGameResult(
 
 data class GameScreenState(
     val players: List<Player> = emptyList(),
-    val dealPhase: GameDealPhase = GameDealPhase.IDLE,
-    val animatingName: String = "",
+    val dealPhase: GameDealPhase = GameDealPhase.DEAL_CHOICE,
+    val roundNumber: Int = 0,
     val selectedPlayer: Player? = null,
     // Current deal
     val dealType: GameDealType? = null,
     val challengeText: String? = null,
+    // Deal picker — the last category played party-wide is promoted to the hero card
+    val heroDealType: GameDealType = GameDealType.TRUTH_OR_DARE,
+    val surpriseDealType: GameDealType? = null,
     // Truth or dare
     val truthOrDareChoice: TruthOrDareChoice? = null,
     // General knowledge
@@ -65,6 +71,8 @@ data class GameScreenState(
     val barMode: BarModeState = BarModeState(),
     // Couples mode
     val couplesMode: CouplesModeState = CouplesModeState(),
+    // Reward / punishment reveal — spins before it lands
+    val outcomeStage: OutcomeStage? = null,
     // Camera request — decided at CHALLENGE_SHOWN, consumed after dare or mode event dismissal
     val pendingCameraRequest: Boolean = false,
     val showCameraRequest: Boolean = false
@@ -75,6 +83,20 @@ data class GameScreenState(
     val hasActiveModeEvent: Boolean
         get() = barMode.activeEvent != null || couplesMode.activeEvent != null
 
+    val activeEventCategory: EventCategory?
+        get() = couplesMode.activeEvent?.category ?: barMode.activeEvent?.category
+
+    val availableDealTypes: List<GameDealType>
+        get() = GameDealType.entries.filter {
+            it != GameDealType.MINI_GAME || players.size >= MINI_GAME_MIN_PLAYERS
+        }
+
+    val resolvedHeroDealType: GameDealType
+        get() = heroDealType.takeIf { it in availableDealTypes } ?: GameDealType.TRUTH_OR_DARE
+
+    val compactDealTypes: List<GameDealType>
+        get() = availableDealTypes - resolvedHeroDealType
+
     val isChallengeDismissible: Boolean
         get() = when (dealType) {
             GameDealType.TRUTH_OR_DARE -> truthOrDareChoice != null
@@ -83,4 +105,8 @@ data class GameScreenState(
             GameDealType.MINI_GAME -> miniGameResult != null
             null -> false
         }
+
+    private companion object {
+        const val MINI_GAME_MIN_PLAYERS = 2
+    }
 }

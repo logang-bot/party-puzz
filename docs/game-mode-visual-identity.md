@@ -108,3 +108,19 @@ Gradient applied to the 52 dp square thumbnail box only. Party name, subtitle, a
 | `ui/views/home/LastPartyCard.kt` | Home screen party summary: gradient thumbnail, white icon |
 | `ui/views/parties/PartyCard.kt` | Parties list card: gradient bg, corner icon |
 | `ui/views/gameConfig/ui/GameConfigScreen.kt` | Config screen header: bare icon (no background) |
+| `ui/views/game/gameScreen/GameScreenTheme.kt` | Game screen background: mode gradient tinted over the app background |
+
+---
+
+## Game screen background
+
+The in-game background is the one place the mode palette is used as an atmosphere rather than an accent. `rememberBackgroundGradient()` takes the first stop of the mode's gradient, composites it over the app background base at 38 % (dark) or 22 % (light), and runs it as a three-stop vertical gradient down to the plain background colour.
+
+The effect is that Bar mode plays under a warm orange sky and Couples under a pink one, while the surface colours underneath stay the standard themed ones. Before this, every mode played on the same fixed navy.
+
+---
+
+## Related
+
+- [game-deal-flow.md](game-deal-flow.md) — Where the background is applied
+- [outcome-presentation.md](outcome-presentation.md) — Per-mode reward and punishment theming

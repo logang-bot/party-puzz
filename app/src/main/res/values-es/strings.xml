@@ -80,12 +80,6 @@
     <string name="add">Agregar</string>
     <string name="customize_your_party">Personaliza tu fiesta</string>
     <string name="mode_selected">Modo seleccionado</string>
-    <string name="question_categories">Categorías de preguntas</string>
-    <string name="pick_what_to_play">Elige qué jugar</string>
-    <string name="included">Incluido</string>
-    <string name="tap_to_add">Toca para añadir</string>
-    <string name="categories_count_on">%1$d/%2$d activas</string>
-    <string name="options_toggle_hint">Toca para activar o desactivar. Las categorías desactivadas se omiten esta noche.</string>
     <string name="added">añadidos</string>
     <string name="start_the_party">Comenzar la fiesta</string>
     <string name="mini_games_hint">El teléfono pasa de jugador en jugador — ponlo sobre la mesa con la pantalla hacia arriba. Toca para cambiar la pregunta y pásalo.</string>
@@ -167,10 +161,29 @@
     <string name="tap_to_play_with">Toca para jugar con %1$s</string>
     <string name="truth">Verdad</string>
     <string name="dare">Reto</string>
-    <string name="truth_or_dare_title">¿Verdad o Reto?</string>
     <string name="sticky_dare_title">¡Reto pegajoso!</string>
     <string name="general_knowledge_title">Cultura general</string>
     <string name="tap_to_dismiss">Toca para cerrar</string>
+    <string name="pass_the_phone_to">Pásale el teléfono a</string>
+    <string name="tap_when_ready">Toca cuando estés listo</string>
+    <string name="round_number">Ronda %1$d</string>
+    <string name="its_your_turn">Es tu turno</string>
+    <string name="surprise_me">Sorpréndeme · gira la ruleta</string>
+    <string name="shuffling_the_deal">Barajando la jugada…</string>
+    <string name="deal_kicker_truth">Suéltalo</string>
+    <string name="deal_kicker_dare">Demuéstralo</string>
+    <string name="deal_kicker_general_knowledge">Piensa rápido</string>
+    <string name="deal_kicker_sticky_dare">Se queda contigo</string>
+    <string name="deal_kicker_mini_game">Todos a la vez</string>
+    <string name="deal_blurb_truth">Responde con sinceridad o la sala decide tu castigo.</string>
+    <string name="deal_blurb_dare">Hazlo. La sala vota si de verdad lo intentaste.</string>
+    <string name="deal_blurb_general_knowledge">Responde antes de que se te adelanten.</string>
+    <string name="deal_blurb_sticky_dare">Te acompaña durante varias rondas.</string>
+    <string name="deal_blurb_mini_game">Un reto rápido para todos.</string>
+    <string name="outcome_rolling_reward">Girando una recompensa…</string>
+    <string name="outcome_rolling_punishment">Girando un castigo…</string>
+    <string name="outcome_reward">Recompensa</string>
+    <string name="outcome_punishment">Castigo</string>
     <string name="cancel_dare">Cancelar reto</string>
     <string name="exit_game_title">¿Salir del juego?</string>
     <string name="exit_game_message">¿Estás seguro de que quieres salir del juego actual?</string>
@@ -536,7 +549,6 @@
     </integer-array>
 
     <!-- Game screen UI -->
-    <string name="game_configuration">Configuración del juego</string>
     <string name="active_dares_title">Retos activos</string>
     <string name="no_active_dares">No hay retos activos ahora mismo</string>
     <string name="no_active_dares_for_player">No hay retos activos para este jugador</string>
@@ -730,5 +742,20 @@
     <string name="rewarded_ad_title">Desbloquea prompts picantes</string>
     <string name="rewarded_ad_subtitle">Mira un clip corto · 120 prompts adicionales + retos +18</string>
     <string name="watch">Ver</string>
+
+    <!-- Ruleta de recompensas y castigos. El orden debe coincidir con BarEvent.reelIndex y CouplesEvent.reelIndex. -->
+    <string-array name="outcome_reel_bar">
+        <item>No pasa nada</item>
+        <item>Regala tragos</item>
+        <item>Elige quién bebe</item>
+        <item>Bébete unos tragos</item>
+    </string-array>
+    <string-array name="outcome_reel_couples">
+        <item>Da un beso</item>
+        <item>Elige quiénes se besan</item>
+        <item>Haz una declaración de amor</item>
+        <item>Haz un acto de amor</item>
+        <item>Elige a los enamorados</item>
+    </string-array>
 
 </resources>

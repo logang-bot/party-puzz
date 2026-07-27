@@ -13,7 +13,7 @@ Navigation uses Jetpack Navigation Compose with **type-safe serializable routes*
 | `HomeScreen` | `data object` | — |
 | `GameConfigScreen` | `data class` | `gameModeName: Int`, `gameModeImage: Int`, `gameModeDescription: Int`, `partyId: Int?` |
 | `CreatePlayerScreen` | `data class` | `playerId: Int = -1` (default = create mode), `isCouplesMode: Boolean = false` |
-| `LoadingScreen` | `data object` | — |
+| `LoadingScreen` | `data object` | — (declared but **not registered in the graph** — see below) |
 | `GameScreen` | `data object` | — |
 | `FollowTheSpotRoute` | `data class` | `player1Name`, `player1PhotoPath?`, `player1AvatarName?`, `player2Name`, `player2PhotoPath?`, `player2AvatarName?` |
 | `HotPotatoRoute` | `data object` | — (ViewModel reads all players from `GamePlayersList` directly) |
@@ -30,8 +30,7 @@ HomeScreen
     └─► GameConfigScreen
             ├─► CreatePlayerScreen  (create new player)
             ├─► CreatePlayerScreen(playerId)  (edit existing player)
-            └─► LoadingScreen
-                    └─► GameScreen  (LoadingScreen popped from back stack)
+            └─► GameScreen
                             ├─► FollowTheSpotRoute  (2-player mini-game)
                             │       └─► back to GameScreen  (p1Score, p2Score via SavedStateHandle)
                             └─► HotPotatoRoute  (global mini-game)
@@ -46,7 +45,6 @@ HomeScreen
 
 ```kotlin
 val isFullScreenRoute =
-    currentScreen?.hasRoute(LoadingScreen::class)      == true ||
     currentScreen?.hasRoute(GameScreen::class)         == true ||
     currentScreen?.hasRoute(FollowTheSpotRoute::class) == true ||
     currentScreen?.hasRoute(HotPotatoRoute::class)     == true ||
@@ -55,7 +53,7 @@ val isFullScreenRoute =
     currentScreen?.hasRoute(CircleMasterRoute::class)  == true
 ```
 
-- **Full-screen routes** (`LoadingScreen`, `GameScreen`, `FollowTheSpotRoute`, `HotPotatoRoute`, `TapWarRoute`, `SimonSaysRoute`, `CircleMasterRoute`): app bar is hidden with a slide-up + fade-out exit animation.
+- **Full-screen routes** (`GameScreen`, `FollowTheSpotRoute`, `HotPotatoRoute`, `TapWarRoute`, `SimonSaysRoute`, `CircleMasterRoute`): app bar is hidden with a slide-up + fade-out exit animation.
 - **All other routes**: app bar is visible with a slide-down + fade-in enter animation.
 
 The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. Screens that need a title call the `setAppBarTitle` lambda passed to them (e.g. `GameConfigScreen`, `CreatePlayerScreen`).
@@ -66,7 +64,7 @@ The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. 
 
 | Route | Enter | Exit |
 |---|---|---|
-| `LoadingScreen` | `slideInVertically { it } + fadeIn` (400ms) | `slideOutVertically { -it } + fadeOut` (300ms) |
+| `GameScreen` | `slideInVertically { it } + fadeIn` (400ms) | default |
 | `GameConfigScreen` | default | `fadeOut` (300ms) |
 | All others | default | default |
 
@@ -74,7 +72,7 @@ The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. 
 
 ## Back Stack & Result Passing
 
-- **`LoadingScreen → GameScreen`**: `LoadingScreen` is popped inclusively on navigation to `GameScreen`, so the user cannot navigate back to it.
+- **`GameConfigScreen → GameScreen`**: a direct navigation, no pop. Back from `GameScreen` (via the exit dialog) returns to `GameConfigScreen`.
 - **`FollowTheSpotRoute → GameScreen`**: mini-game results (`mini_game_p1_score`, `mini_game_p2_score`) are written to the previous back stack entry's `SavedStateHandle` before calling `popBackStack()`.
 - **`HotPotatoRoute → GameScreen`**: the loser's name (`hot_potato_loser`) is written to `SavedStateHandle`. A dedicated `LaunchedEffect` in `GameScreen` reads it and calls `viewModel.onHotPotatoResultReceived(loserName)`. No `MiniGameResult` is shown on the challenge card — punishment is applied directly via the mode handler.
 
@@ -90,3 +88,13 @@ The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. 
 | `GameConfigScreen` | `R.string.prepare_your_party` |
 
 Unmapped routes fall back to `R.string.home_screen`.
+
+---
+
+## Removed loading step
+
+`GameConfigScreen` used to navigate to `LoadingScreen`, which showed a 5 s orbit animation with rotating tips before forwarding to `GameScreen` and popping itself. That step was dropped — it delayed the game for no benefit.
+
+`GameScreen` now carries the enter transition that `LoadingScreen` used (`slideInVertically { it } + fadeIn`, 400 ms), so the move from setup into the game looks unchanged.
+
+`LoadingScreen.kt`, its `loading_texts` array, `TripleOrbitLoadingAnimation` and `BlurredAnimatedText` are all **kept** for possible reuse; only the `composable<LoadingScreen>` registration and the route's entry in `isFullScreenRoute` were removed. Re-enabling it means restoring those two blocks.

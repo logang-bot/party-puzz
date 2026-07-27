@@ -1,6 +1,8 @@
 # Game Deal Flow
 
-A **game deal** is the full sequence from a player tapping the card to a challenge being shown and dismissed. Each deal selects one player using a **round-based** system and one deal type randomly.
+A **game deal** is one player's turn, from the deal picker appearing to the challenge being dismissed. Each turn picks one player using a **round-based** system, and the player then picks their own deal type.
+
+> Deal types used to be drawn randomly, and the categories in play were pre-selected on the config screen. Both are gone: the player chooses live, every turn. See [game-config.md](game-config.md).
 
 ---
 
@@ -9,45 +11,86 @@ A **game deal** is the full sequence from a player tapping the card to a challen
 Players take turns in rounds. A round ends only when every player has been selected exactly once; then a new round begins. Within each round the order is random (the round's queue is shuffled at the start), so no two consecutive rounds produce the same sequence.
 
 ```
-Round 1: [Player B, Player A, Player C]   ← shuffled on first deal
+Round 1: [Player B, Player A, Player C]   ← shuffled at start of round
 Round 2: [Player C, Player B, Player A]   ← reshuffled once queue is empty
 ...
 ```
 
-`roundQueue` is a private mutable list in `GameScreenViewModel`. When it is empty, it is refilled with `players.shuffled()`; the front element is taken for the current deal.
+`roundQueue` is a private mutable list in `GameScreenViewModel`. When it is empty it is refilled with `players.shuffled()` and `roundNumber` is incremented; the front element is taken for the current turn.
+
+> `advanceToNextTurn()` steps the queue **outside** the `_uiState.update { }` lambda. `MutableStateFlow.update` is a compare-and-set retry loop whose lambda may run more than once — stepping the queue inside it would occasionally skip a player or double-count a round.
 
 ---
 
 ## Phase Sequence
 
 ```
-IDLE ──tap──▶ ANIMATING ──5 s──▶ PLAYER_NAME_REVEAL ──1 s──▶ PLAYER_PHOTO_REVEAL ──1 s──▶ CHALLENGE_SHOWN
-                                                                                                    │
-                                                                                            user dismisses
-                                                                                                    │
-                                                                                    ┌───────────────┴───────────────┐
-                                                                              pendingCameraRequest             no pending
-                                                                              == true                          camera
-                                                                                    │                               │
-                                                                             CHALLENGE_SHOWN                      IDLE
-                                                                          (camera card on top)
-                                                                                    │
-                                                                          photo taken or skipped
-                                                                                    │
-                                                                                  IDLE
+       ┌─────────────────────────────────────────────┐
+       │                                             │
+       ▼                                             │
+  DEAL_CHOICE ──picks a deal──▶ CHALLENGE_SHOWN      │
+       │                              │              │
+  "Surprise me"                  user dismisses      │
+       │                              │              │
+       ▼                  ┌───────────┴───────────┐  │
+SURPRISE_SHUFFLE      mode produced          nothing │
+       │              an event               happened│
+  1.6 s reel               │                     │   │
+       │             outcome overlay             │   │
+       └──────▶            │                     │   │
+                     spin ──▶ reveal             │   │
+                           │                     │   │
+                           └─────────┬───────────┘   │
+                                     │               │
+                         pendingCameraRequest?        │
+                              │            │          │
+                             yes           no ────────┤
+                              │                       │
+                      camera request ─────────────────┘
+                                        (next player)
 ```
 
-| Phase | What the main card shows | Duration |
+| Phase | What the screen shows | Duration |
 |---|---|---|
-| `IDLE` | "Tap to play" | Until user taps |
-| `ANIMATING` | Player names cycling rapidly | 5 s |
-| `PLAYER_NAME_REVEAL` | Selected player's nickname | 1 s |
-| `PLAYER_PHOTO_REVEAL` | Selected player's photo | 1 s |
-| `CHALLENGE_SHOWN` | Challenge overlay (deal-type-specific) | Until dismissed |
+| `DEAL_CHOICE` | Current player, hero card(s), compact tiles, "Surprise me" | Until a deal is picked |
+| `SURPRISE_SHUFFLE` | Slot reel cycling the four deals | 1.6 s |
+| `CHALLENGE_SHOWN` | The chosen challenge, full-bleed | Until dismissed |
 
-> The selected player and deal type are both decided **before** the animation starts; the cycling is purely cosmetic.
+There is no idle or hand-off phase. The game opens directly on `DEAL_CHOICE` — `GameScreenViewModel.init` calls `advanceToNextTurn()`, so round 1's player is selected before the first frame, and a finished turn returns straight to the picker for the next player.
 
-> When `pendingCameraRequest` is true, `dealPhase` stays at `CHALLENGE_SHOWN` after the challenge/event is dismissed. The camera request card slides in on top of the (still-visible) challenge card. The deal only resets to `IDLE` once the camera interaction resolves. See [photo-album.md](photo-album.md) for full details.
+> When `pendingCameraRequest` is true, `dealPhase` stays at `CHALLENGE_SHOWN` after the challenge or event is dismissed, and the camera request card slides in on top. The turn only advances once the camera interaction resolves. See [photo-album.md](photo-album.md).
+
+---
+
+## Whose turn it is
+
+The picker announces the player itself: avatar, "IT'S YOUR TURN", and their nickname sit above the cards. The active player is also ringed in the player rail along the bottom.
+
+> An earlier iteration opened each turn on a split-screen "pass the phone" hand-off. That design was pulled — it is reserved for the Follow The Spot mini-game redesign. `PassThePhoneContent.kt` is kept in the package, unused, as the starting point for that work.
+
+---
+
+## Deal Choice
+
+The player picks their own deal. Whichever category was played **last — by anyone, not just this player** — is promoted to a large hero card; the rest collapse into compact tiles.
+
+| Hero category | Rendered as |
+|---|---|
+| Truth or Dare | **Two** hero cards, Truth and Dare, so the player commits to a side up front |
+| General Knowledge / Sticky Dares / Mini-games | One hero card |
+
+`heroDealType` is stored in `GameScreenState` and updated in `startChallenge()`, so it survives across turns. On the very first turn there is no previous pick, so `GameScreenViewModel.init` seeds it at **random** from `availableDealTypes`. `resolvedHeroDealType` falls back to Truth or Dare if the stored hero later becomes unavailable.
+
+| User action | Resulting `truthOrDareChoice` |
+|---|---|
+| Hero **Truth** card | `TRUTH` |
+| Hero **Dare** card | `DARE` |
+| Compact **Truth or Dare** tile | Random |
+| Surprise reel lands on Truth or Dare | Random |
+
+**Availability:** all four deals are always offered, except `MINI_GAME`, which needs at least 2 players (`availableDealTypes`). The compact row therefore renders either 2 or 3 tiles.
+
+**Surprise me** picks the target first, moves to `SURPRISE_SHUFFLE`, spins a `SlotReel` onto that target, and then starts the challenge. A surprise result counts as a pick, so it becomes the next turn's hero.
 
 ---
 
@@ -55,18 +98,12 @@ IDLE ──tap──▶ ANIMATING ──5 s──▶ PLAYER_NAME_REVEAL ──1 
 
 ### 1. Truth or Dare (`TRUTH_OR_DARE`)
 
-**Challenge card — initial state:**
-- Title: "Truth or Dare?"
-- Two buttons: **Truth** and **Dare**
+The Truth / Dare split now happens in the deal picker, so the challenge renders the committed prompt directly — there is no in-challenge choice step and no card flip.
+
+- Label: TRUTH or DARE, tinted with that side's accent
+- Prompt text, drawn at random when the challenge starts
 - Player name anchored to the bottom
-
-**After the player picks an option (flip card animation):**
-- Card flips on the Y axis (600 ms, `FastOutSlowInEasing`)
-- Back face shows the label (TRUTH / DARE) and a randomly selected question from `strings.xml`
-- Player name remains at the bottom
-- "Tap to dismiss" hint appears
-
-**Dismissal:** Only available after a choice is made.
+- **Skip** button in Bar / Couples / Party Puzl modes, "Tap to dismiss" otherwise
 
 **String resources used:**
 - `R.array.truth_texts` — truth questions
@@ -76,19 +113,19 @@ IDLE ──tap──▶ ANIMATING ──5 s──▶ PLAYER_NAME_REVEAL ──1 
 
 ### 2. Sticky Dare (`STICKY_DARE`)
 
-A dare with a fixed duration. Unlike the other types, dismissing the card does **not** end the challenge — it starts a countdown timer that runs in the background while the game continues.
+A dare with a fixed duration. Unlike the other types, dismissing does **not** end the challenge — it starts a countdown timer that runs in the background while the game continues.
 
-**Challenge card:**
+**Challenge:**
 - Title: "Sticky Dare!"
 - Dare text shown immediately (no extra interaction required)
 - Player name anchored to the bottom
 - "Tap to dismiss" hint
 
-**Dismissal:** Always available (tap anywhere on the card). On dismissal an `ActiveStickyDare` is created and the countdown starts.
+**Dismissal:** Always available. On dismissal an `ActiveStickyDare` is created and the countdown starts.
 
 #### Post-dismissal: Sticky Dare Pill
 
-A floating pill appears in the top bar (between the exit and info buttons) showing the most recently added active dare:
+A floating pill appears in the top bar showing the most recently added active dare:
 
 ```
 [Name] is [present continuous text] for [original duration label]
@@ -105,7 +142,7 @@ There are two entry points to the bottom sheet, each showing a different scope:
 | Entry point | Title | Rows shown | Player name shown per row |
 |---|---|---|---|
 | Tap the **sticky dare pill** | "Active Dares" | All active dares across all players | Yes |
-| Tap a **player avatar card** | Player's nickname | Only that player's active dares | No |
+| Tap a **player avatar** | Player's nickname | Only that player's active dares | No |
 
 Each row shows:
 
@@ -125,8 +162,10 @@ Each row shows:
 - Ticks every second; when `remainingSeconds` reaches 0 it sets `isCompleted = true`, waits 400 ms for the exit animation, then removes the dare from state
 - All timers are cancelled in `ViewModel.onCleared()` — firing when the user exits the game screen
 
-**String resources used (3 parallel arrays — indices must stay in sync with `sticky_dares`):**
-- `R.array.sticky_dares` — full dare text shown on the challenge card
+> Cancelling a dare early from the sheet punishes **mid-turn**. The outcome overlay renders over whatever phase is active, and dismissing it clears the event without advancing the turn, so the current player does not silently lose their go.
+
+**String resources used (4 parallel arrays — indices must stay in sync with `sticky_dares`):**
+- `R.array.sticky_dares` — full dare text shown on the challenge
 - `R.array.sticky_dares_present_continuous` — present-continuous form used in the pill and bottom sheet
 - `R.array.sticky_dares_duration_labels` — human-readable duration (e.g. `"2 minutes"`)
 - `R.array.sticky_dares_duration_seconds` (`integer-array`) — duration in seconds for the countdown
@@ -137,7 +176,7 @@ Each row shows:
 
 A trivia question with exactly two answer options.
 
-**Challenge card — initial state:**
+**Initial state:**
 - Title: "General Knowledge"
 - Question text
 - Two option buttons: **A** and **B**
@@ -149,7 +188,7 @@ A trivia question with exactly two answer options.
 - Unselected wrong option dims
 - "Tap to dismiss" hint appears
 
-**Dismissal:** Only available after an answer is selected.
+**Dismissal:** Only available after an answer is selected. A correct answer rewards, a wrong one punishes — see [outcome-presentation.md](outcome-presentation.md).
 
 **String resources used (4 parallel arrays — indices must stay in sync):**
 - `R.array.gk_questions` — question text
@@ -159,15 +198,19 @@ A trivia question with exactly two answer options.
 
 ---
 
-## Shared Challenge Card Layout
+### 4. Mini-games (`MINI_GAME`)
 
-All three deal types share the same card container:
+See [minigames.md](minigames.md).
 
-- **Background:** player photo, blurred (`BlurEffect` 25 px)
-- **Overlay:** `Color.Black` at 62 % opacity for text legibility
-- **Entry animation:** scale from 85 % + fade in (350 ms / 300 ms)
-- **Exit animation:** scale to 85 % + fade out (300 ms / 250 ms)
-- **Dismissal guard:** `isChallengeDismissible` in `GameScreenState` prevents taps from going through before the deal type allows it
+---
+
+## Presentation
+
+The glass card that used to hold every prompt is gone. Challenge content renders full-bleed on the screen background, which is a vertical gradient tinted by the game mode being played (`rememberBackgroundGradient()` in `GameScreenTheme.kt`, reusing the `gameModeTheme()` palette — see [game-mode-visual-identity.md](game-mode-visual-identity.md)).
+
+- **Phase transitions:** `AnimatedContent`, fade + scale from 94 % (320 ms in / 220 ms out)
+- **Dismissal guard:** `isChallengeDismissible` prevents taps from going through before the deal type allows it
+- **Player rail:** 46 dp avatars in a 72 dp row, the active player ringed in the primary colour
 
 ---
 
@@ -176,19 +219,26 @@ All three deal types share the same card container:
 | Field | Type | Purpose |
 |---|---|---|
 | `dealPhase` | `GameDealPhase` | Current phase in the sequence |
-| `selectedPlayer` | `Player?` | Player selected for this deal |
-| `animatingName` | `String` | Name shown while cycling |
-| `dealType` | `GameDealType?` | Which type of challenge was drawn |
+| `roundNumber` | `Int` | 1-based; incremented when the round queue refills. Tracked but not currently surfaced in the UI |
+| `selectedPlayer` | `Player?` | Player whose turn it is |
+| `dealType` | `GameDealType?` | Which deal the player chose |
+| `heroDealType` | `GameDealType` | Last category played, promoted next turn |
+| `surpriseDealType` | `GameDealType?` | Reel landing target during `SURPRISE_SHUFFLE` |
 | `challengeText` | `String?` | Question / dare text (Truth or Dare + Sticky Dare) |
-| `truthOrDareChoice` | `TruthOrDareChoice?` | `TRUTH` / `DARE` once the player has chosen; `null` before |
+| `truthOrDareChoice` | `TruthOrDareChoice?` | `TRUTH` / `DARE`; set at pick time, never null once the challenge shows |
 | `generalKnowledgeQuestion` | `GeneralKnowledgeQuestion?` | Full GK question object |
 | `selectedAnswerOption` | `Char?` | `'A'` or `'B'` once the player has answered |
 | `stickyDarePresentContinuous` | `String?` | Present-continuous form of the active sticky dare |
 | `stickyDareDurationLabel` | `String?` | Human-readable duration (e.g. `"2 minutes"`) |
 | `stickyDareDurationSeconds` | `Int?` | Duration in seconds; copied into `ActiveStickyDare` on dismissal |
 | `activeStickyDares` | `List<ActiveStickyDare>` | All currently running sticky dare timers |
-| `isChallengeDismissible` | `Boolean` (computed) | `true` when tapping the card should return to IDLE |
-| `pendingCameraRequest` | `Boolean` | Rolled at `CHALLENGE_SHOWN`; signals that a camera card should follow this deal's final dismissal |
+| `outcomeStage` | `OutcomeStage?` | `SPINNING` / `REVEALED` while a reward or punishment is on screen |
+| `availableDealTypes` | `List<GameDealType>` (computed) | All four, minus `MINI_GAME` under 2 players |
+| `resolvedHeroDealType` | `GameDealType` (computed) | `heroDealType`, or Truth or Dare if unavailable |
+| `compactDealTypes` | `List<GameDealType>` (computed) | `availableDealTypes` minus the hero |
+| `activeEventCategory` | `EventCategory?` (computed) | Reward vs punishment of the active event |
+| `isChallengeDismissible` | `Boolean` (computed) | `true` when tapping should end the challenge |
+| `pendingCameraRequest` | `Boolean` | Rolled at `CHALLENGE_SHOWN`; signals that a camera card should follow this turn's final dismissal |
 | `showCameraRequest` | `Boolean` | `true` while the camera request card overlay is visible |
 
 ### `ActiveStickyDare` fields
@@ -209,21 +259,29 @@ All three deal types share the same card container:
 
 | File | Role |
 |---|---|
-| `GameScreenState.kt` | State, enums (`GameDealPhase`, `GameDealType`, `TruthOrDareChoice`), `GeneralKnowledgeQuestion`, `ActiveStickyDare` |
-| `GameScreenViewModel.kt` | Orchestrates phase transitions, loads string resources, manages sticky dare countdown jobs |
-| `GameDealSection.kt` | All deal-related composables: main card, challenge overlay, flip card, per-type UIs |
-| `GameScreen.kt` | Root screen composable; top bar layout, bottom sheet and info panel visibility state |
+| `GameScreenState.kt` | State, enums (`GameDealPhase`, `GameDealType`, `TruthOrDareChoice`, `OutcomeStage`), `GeneralKnowledgeQuestion`, spin duration constants |
+| `GameScreenViewModel.kt` | Turn machine, challenge content loading, sticky dare countdown jobs, outcome staging |
+| `GameDealSection.kt` | Phase router; challenge, outcome overlay and camera card layering |
+| `GameScreen.kt` | Root screen composable; background, top bar, bottom sheet visibility |
+| `PassThePhoneContent.kt` | Split-screen hand-off — **not in the flow**; parked for the Follow The Spot redesign |
+| `DealChoiceContent.kt` | The picker: hero card(s), compact tiles, "Surprise me" |
+| `DealCategoryCards.kt` | `DealHeroCard` and `DealCompactCard` |
+| `SurpriseShuffleContent.kt` | "Surprise me" reel |
+| `SlotReel.kt` | Shared slot-machine reel, used by the surprise shuffle and the outcome roll |
+| `GameScreenTheme.kt` | Mode-tinted background gradient, per-deal accents, shared shapes |
 | `ActiveStickyDare.kt` | `ActiveStickyDare` data class and `Int.toRemainingTimeLabel()` extension |
 | `StickyDarePill.kt` | Animated pill shown in the top bar while at least one sticky dare is active |
 | `StickyDaresBottomSheet.kt` | `ModalBottomSheet` listing all active dares with countdown and exit animations |
-| `GameInfoPanel.kt` | Floating Surface panel showing selected game options (reads from `GameOptionsSource`) |
-| `PlayersListRow.kt` | Players row; tapping a card opens the bottom sheet filtered to that player's dares |
+| `PlayersListRow.kt` | Player rail; tapping an avatar opens the bottom sheet filtered to that player's dares |
 | `BouncingDotsAnimation.kt` (`ui/common`) | Reusable 3-dot bouncing animation composable |
-| `GameOptionsSource.kt` (`data/local/…`) | In-memory singleton for selected game options; written by `OptionsContainer`, read by `GameInfoPanel` |
+| `GameOptionsSource.kt` (`data/local/…`) | In-memory singleton holding `currentGameModeNameRes`, written by `GameConfigScreen`, read by `GameScreenViewModel` |
 | `res/values/strings.xml` | All localizable challenge strings (truth, dare, sticky dares + parallel arrays, GK questions) |
 
 ---
 
 ## Related
 
+- [game-config.md](game-config.md) — Setup screen that precedes the game
+- [outcome-presentation.md](outcome-presentation.md) — Reward and punishment spin and reveal
+- [minigames.md](minigames.md) — The mini-game deal type
 - [photo-album.md](photo-album.md) — Camera request card, photo storage, and party album

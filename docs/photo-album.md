@@ -24,7 +24,7 @@ Game session (CHALLENGE_SHOWN)
                 │
                 └─ User taps anywhere else  ──► dismissed, no photo saved
                         │
-                        └─ Deal resets to IDLE
+                        └─ Turn advances to PASS
 ```
 
 ---
@@ -40,7 +40,7 @@ The camera request only fires when **all** of the following are true:
 | Camera permission is granted | Checked **twice**: at `CHALLENGE_SHOWN` time (if missing, `pendingCameraRequest` stays `false` and the card never appears) and again when the user taps "Take Photo" (safety net in case permission was revoked mid-session) |
 | Trigger point reached | Dare dismissed **or** Sticky Dare dismissed **or** Bar / Couples mode event dismissed |
 
-> The random roll is decided at `CHALLENGE_SHOWN` time (start of the challenge phase), not at dismissal. This ensures the game knows upfront whether a camera card will follow, allowing a smooth transition without flashing the "tap to play" idle state in between.
+> The roll is decided at `CHALLENGE_SHOWN` time (start of the challenge phase), not at dismissal. This ensures the game knows upfront whether a camera card will follow, allowing a smooth transition without flashing the pass-the-phone screen in between.
 
 ---
 
@@ -83,7 +83,7 @@ Tapping **anywhere on the card** (not just the button) calls `onCameraRequestDis
 While the camera card is visible, `dealPhase` remains `CHALLENGE_SHOWN`. This keeps the challenge card visible beneath the camera card, avoiding a jarring flash of the idle state:
 
 ```
-[main card — tap to play / cycling / photo]   always rendered
+[current phase — pass / picker / challenge]   always rendered
 [challenge card]                               visible while dealPhase == CHALLENGE_SHOWN
 [camera request card]                          on top when showCameraRequest == true
 ```

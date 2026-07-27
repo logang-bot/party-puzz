@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 
+private val correctAnswerColor = Color(0xFF2E7D32)
+private val wrongAnswerColor = Color(0xFFC62828)
+
 @Composable
 internal fun DealOptionButton(
     text: String,
@@ -33,8 +36,10 @@ internal fun DealOptionButton(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White.copy(alpha = if (isSelected) 0.4f else 0.2f),
-            contentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.onSurface.copy(
+                alpha = if (isSelected) 0.24f else 0.12f
+            ),
+            contentColor = MaterialTheme.colorScheme.onSurface
         ),
         modifier = modifier.height(56.dp)
     ) {
@@ -55,11 +60,19 @@ internal fun AnswerOptionButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isAnswered = selectedOption != null
+    val isCorrect = option == correctOption
+    val isWrongPick = isAnswered && option == selectedOption && !isCorrect
+
     val containerColor = when {
-        selectedOption == null -> Color.White.copy(alpha = 0.2f)
-        option == correctOption -> Color(0xFF2E7D32).copy(alpha = 0.85f)
-        option == selectedOption -> Color(0xFFC62828).copy(alpha = 0.85f)
-        else -> Color.White.copy(alpha = 0.1f)
+        !isAnswered -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        isCorrect -> correctAnswerColor.copy(alpha = 0.85f)
+        isWrongPick -> wrongAnswerColor.copy(alpha = 0.85f)
+        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+    }
+    val contentColor = when {
+        isAnswered && (isCorrect || isWrongPick) -> Color.White
+        else -> MaterialTheme.colorScheme.onSurface
     }
 
     Button(
@@ -67,11 +80,11 @@ internal fun AnswerOptionButton(
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
-            contentColor = Color.White,
+            contentColor = contentColor,
             disabledContainerColor = containerColor,
-            disabledContentColor = Color.White
+            disabledContentColor = contentColor
         ),
-        enabled = selectedOption == null,
+        enabled = !isAnswered,
         modifier = modifier.height(56.dp)
     ) {
         Text(
@@ -87,7 +100,7 @@ internal fun AnswerOptionButton(
 @Composable
 private fun DealOptionButtonLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFF162447)).padding(16.dp)) {
+        Box(Modifier.background(Color(0xFFFFF5E6)).padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 DealOptionButton(text = "Truth", onClick = {}, modifier = Modifier.weight(1f))
                 DealOptionButton(text = "Dare", onClick = {}, isSelected = true, modifier = Modifier.weight(1f))
@@ -100,7 +113,7 @@ private fun DealOptionButtonLightPreview() {
 @Composable
 private fun AnswerOptionButtonDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF162447)).padding(16.dp)) {
+        Box(Modifier.background(Color(0xFF0B1F24)).padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 AnswerOptionButton(
                     text = "Paris",
@@ -127,7 +140,7 @@ private fun AnswerOptionButtonDarkPreview() {
 @Composable
 private fun DealOptionButtonSelectedDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF162447)).padding(16.dp)) {
+        Box(Modifier.background(Color(0xFF0B1F24)).padding(16.dp)) {
             DealOptionButton(
                 text = "Skip",
                 onClick = {},

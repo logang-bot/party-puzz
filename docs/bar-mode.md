@@ -1,6 +1,6 @@
 # Bar Time Mode
 
-Bar Time is a game mode layered on top of the standard deal flow. When it is active, each deal ends with a **bar event** — a randomly drawn outcome that the player in turn must resolve before the next deal starts.
+Bar Time is a game mode layered on top of the standard deal flow. When it is active, each turn ends with a **bar event** — an outcome the player in turn must resolve before the phone is passed on.
 
 ---
 
@@ -27,7 +27,7 @@ barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.
 
 Each event carries its category as an extension property (`val BarEvent.category: EventCategory`) — see [game-mode-handler.md](game-mode-handler.md).
 
-Events are **not randomly drawn** — each deal type produces a deterministic event based on the outcome:
+Events are **not randomly drawn** — each deal type produces a deterministic event based on how the player did:
 
 | Deal type | Outcome | Event |
 |---|---|---|
@@ -78,71 +78,47 @@ user resolves event (OK / Give)
       │
 onModeEventDismissed()
       │
-activeEvent = null  +  deal resets to IDLE
+activeEvent = null  +  turn returns to the deal picker
 ```
 
 The challenge card is non-interactive while any mode event is set (`enabled = … && !uiState.hasActiveModeEvent`), preventing double-triggering. The card tap is also disabled during mini-game result display when a mode is active (`!uiState.isModeActive` guard).
 
 ---
 
-## Bar event dialog
+## Bar event presentation
 
-The dialog is an overlay composable (`BarEventDialog`) shown inside `GameScreen`'s root `Box` via `AnimatedVisibility` (`fadeIn` / `fadeOut`). It is not a system dialog.
+Bar events are rendered by the shared outcome overlay, not by a bespoke dialog. Every event rolls on a slot reel before it lands, and rewards look different from punishments. The full presentation contract lives in [outcome-presentation.md](outcome-presentation.md); what follows is bar-specific.
 
-**Layout (top to bottom inside the card):**
+**Theme:**
+
+| Category | Gradient | Tone | Icon |
+|---|---|---|---|
+| Reward (`NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`) | `#FFD25A` → `#FF5B8A` | `#FFD25A` | `ic_sports_bar` |
+| Punishment (`TakeDrinks`) | `#FF2E63` → `#1A0B2E` | `#FF2E63` | `ic_whatshot` |
+
+**Reel:** `R.array.outcome_reel_bar`, ordered `NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`, `TakeDrinks` — matching `BarEvent.reelIndex`, so the reel stops on the event that actually fired.
+
+**Layout after landing:**
 
 ```
-"Bar Event!"  ← headlineLarge, bold
-[visual]  ← DrinksFillIndicator for any drink-amount event, otherwise static bar icon
-[event-specific content]
+[gradient badge + icon]   ← pops in with a bouncy spring
+REWARD / PUNISHMENT       ← kicker, tone-coloured
+"Take 3 drink(s)!"        ← message, italic headline
+"Tap to dismiss"          ← or the target buttons
 ```
-
-**Card entry animation:** the card spins from 720° to 0° (`tween` 800 ms, `FastOutSlowInEasing`) driven by `animateFloatAsState` with a `LaunchedEffect(Unit)` trigger. The visual is static (no continuous rotation).
-
-### The visual slot
-
-`ModeEventChallengeContent` picks the visual based on the event kind:
-
-| Event kind | Visual |
-|---|---|
-| Any event carrying an `amount` (`TakeDrinks`, `GiveDrinks`, `GiveDrinksPickTarget`) | `DrinksFillIndicator(amount)` — animated arrow + progressively filling beer icon |
-| `NoAction` | Static `ic_sports_bar` icon |
-| (Couples event branch) | Static `couplesEvent.imageRes` image |
-
-This means every drink-amount variant shares the same animated indicator — `GiveDrinks` and `GiveDrinksPickTarget` look and behave like `TakeDrinks` above the message line. Previously `GiveDrinks`/`GiveDrinksPickTarget` fell through to the static bar icon; they are now unified with the animated indicator so the player can see at a glance how many drinks are involved.
 
 ### Content per event type
 
-**NoAction**
-```
-[ic_sports_bar]
-"Nothing happens — carry on!"    ← headlineMedium, bold
-"Tap to dismiss"
-```
+| Event | Message | Interaction |
+|---|---|---|
+| `NoAction` | "Nothing happens — carry on!" | Tap to dismiss |
+| `TakeDrinks` | "Take X drink(s)!" | Tap to dismiss |
+| `GiveDrinks` | "Give X drink(s) to PlayerName!" | Tap to dismiss |
+| `GiveDrinksPickTarget` | "Give X drink(s) to:" | One button per candidate |
 
-**TakeDrinks**
-```
-[DrinksFillIndicator(amount)]
-"Take X drink(s)!"    ← headlineMedium, bold
-"Tap to dismiss"
-```
+Tapping a player button calls `onGiveDrinksTargetSelected(name)`, which transitions the active event to `GiveDrinks(amount, name)` in place. `outcomeStage` stays `REVEALED`, so the reel does not spin again.
 
-**GiveDrinks**
-```
-[DrinksFillIndicator(amount)]
-"Give X drink(s) to PlayerName!"    ← headlineMedium, bold
-"Tap to dismiss"
-```
-
-**GiveDrinksPickTarget** *(shown before target is selected)*
-```
-[DrinksFillIndicator(amount)]
-"Give X drink(s) to:"    ← headlineMedium, bold
-[PlayerA]
-[PlayerB]
-…
-```
-Tapping a player button calls `onGiveDrinksTargetSelected(name)` on the ViewModel, which transitions the active event to `GiveDrinks(amount, name)` and the dialog updates to the standard `GiveDrinks` view.
+> The animated `DrinksFillIndicator` beer glass was removed in the game screen redesign. Drink counts are carried by the message copy.
 
 ---
 
@@ -178,13 +154,13 @@ The ViewModel delegates event construction to `BarModeState` factory methods. It
 
 | Method | When called | Event produced |
 |---|---|---|
-| `onTruthOrDareSkipped()` | Skip button on T/D back face | `TakeDrinks` |
+| `onTruthOrDareSkipped()` | Skip button on the Truth or Dare prompt | `TakeDrinks` |
 | `onStickyDareSkipped()` | Skip button on Sticky Dare card | `TakeDrinks` |
 | `cancelStickyDare(id)` (modified) | Cancel button in dares sheet | `TakeDrinks` (bar mode only, after dare removed) |
 | `onMiniGameDealFinished()` | Finish button on mini-game results | `GiveDrinks` / `TakeDrinks` / `NoAction` based on winner |
 | `onChallengeDismissed()` (modified) | GK card tap after answer | `GiveDrinksPickTarget` (correct) / `TakeDrinks` (wrong) |
 | `onGiveDrinksTargetSelected(name)` | Player button in pick-target dialog | transitions `GiveDrinksPickTarget` → `GiveDrinks` |
-| `onModeEventDismissed()` | OK button inside `BarEventDialog` | clears event via handler, resets deal to IDLE |
+| `onModeEventDismissed()` | Tap on the landed outcome | clears event via handler, returns the turn to the deal picker |
 
 Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-mode-handler.md](game-mode-handler.md).
 
@@ -196,11 +172,12 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 |---|---|
 | `BarEvent.kt` | Sealed class: `NoAction`, `GiveDrinks`, `TakeDrinks(amount)` |
 | `BarModeState.kt` | State data class + `triggerRandomEvent()` logic |
-| `BarEventDialog.kt` | Dialog composable: scrim, rotating card entry animation, per-event content |
+| `outcome/OutcomeSpinContent.kt`, `outcome/OutcomeRevealContent.kt` | Shared roll and reveal used by every bar event |
+| `outcome/OutcomeTheme.kt` | Bar reward / punishment theming and `BarEvent.reelIndex` |
 | `GameScreenState.kt` | Holds `val barMode: BarModeState` |
 | `GameScreenViewModel.kt` | Delegates event logic to `BarModeHandler` via `GameModeHandler` |
 | `GameDealSection.kt` | Skip / Finish buttons; GK tap hint; challenge card enabled guard |
-| `GameScreen.kt` | Shows `BarEventDialog` overlay; passes new callbacks to `GameDealSection` |
+| `GameDealSection.kt` | `OutcomeOverlay` — layers the roll and reveal above the turn |
 | `GameOptionsSource.kt` | `currentGameModeNameRes: Int?` — bridge between `GameConfigScreen` and the ViewModel |
 | `GameConfigScreen.kt` | Sets `GameOptionsSource.currentGameModeNameRes` on composition |
 
@@ -219,3 +196,13 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 | `finish` | `"Finish"` |
 | `give` | `"Give"` |
 | `tap_to_continue` | `"Tap to continue"` ← replaces `tap_to_dismiss` in GK when bar mode is active |
+
+
+---
+
+## Related
+
+- [outcome-presentation.md](outcome-presentation.md) — How the roll and reveal are rendered
+- [game-mode-handler.md](game-mode-handler.md) — `BarModeHandler` and the trigger points
+- [game-deal-flow.md](game-deal-flow.md) — The turn a bar event ends
+- [party-puzz-mode.md](party-puzz-mode.md) — Bar events inside the mixed mode

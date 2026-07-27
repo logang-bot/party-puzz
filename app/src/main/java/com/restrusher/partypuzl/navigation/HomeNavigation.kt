@@ -52,7 +52,6 @@ import com.restrusher.partypuzl.ui.views.game.miniGames.tapWar.TapWarScreen
 import com.restrusher.partypuzl.ui.views.game.gameScreen.GameScreen
 import com.restrusher.partypuzl.ui.views.game.gameScreen.MiniGame
 import com.restrusher.partypuzl.ui.views.gameConfig.ui.GameConfigScreen
-import com.restrusher.partypuzl.ui.views.gameLoading.LoadingScreen
 import com.restrusher.partypuzl.ui.views.home.HomeScreen
 import com.restrusher.partypuzl.ui.views.parties.PartiesScreen
 import com.restrusher.partypuzl.ui.views.partyDetail.PartyDetailScreen
@@ -68,8 +67,7 @@ fun HomeNavigation(
     val currentScreen = backStackEntry?.destination
     var appBarTitle by remember { mutableStateOf("") }
 
-    val isFullScreenRoute = currentScreen?.hasRoute(LoadingScreen::class) == true ||
-            currentScreen?.hasRoute(GameScreen::class) == true ||
+    val isFullScreenRoute = currentScreen?.hasRoute(GameScreen::class) == true ||
             currentScreen?.hasRoute(FollowTheSpotRoute::class) == true ||
             currentScreen?.hasRoute(HotPotatoRoute::class) == true ||
             currentScreen?.hasRoute(TapWarRoute::class) == true ||
@@ -207,7 +205,7 @@ fun HomeNavigation(
                                 navController.navigate(CreatePlayerScreen(playerId = playerId, isCouplesMode = args.gameModeName == R.string.couples_game_mode))
                             },
                             onStartGameClick = {
-                                navController.navigate(LoadingScreen)
+                                navController.navigate(GameScreen)
                             },
                             modifier = Modifier.fillMaxSize()
                         )
@@ -223,19 +221,9 @@ fun HomeNavigation(
                             navigateBack = { navController.popBackStack() }
                         )
                     }
-                    composable<LoadingScreen>(
-                        enterTransition = { slideInVertically(tween(400)) { it } + fadeIn(tween(400)) },
-                        exitTransition = { slideOutVertically(tween(300)) { -it } + fadeOut(tween(300)) }
-                    ) {
-                        LoadingScreen(
-                            onLoadingComplete = {
-                                navController.navigate(GameScreen) {
-                                    popUpTo(LoadingScreen) { inclusive = true }
-                                }
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                    // LoadingScreen is intentionally not in the graph — GameConfigScreen navigates
+                    // straight to GameScreen, keeping the slide-up transition the loading step used.
+                    // LoadingScreen.kt and its route are kept for future reuse.
                     composable<GameScreen>(
                         enterTransition = { slideInVertically(tween(400)) { it } + fadeIn(tween(400)) }
                     ) {

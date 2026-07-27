@@ -1,6 +1,6 @@
 # Party Puzl Mode
 
-Party Puzl is the "everything goes" game mode. Each deal ends with a mode event drawn randomly from the other three modes — Bar Time, Couples, or nothing at all — so no two rounds feel the same.
+Party Puzl is the "everything goes" game mode. Each turn ends with a mode event drawn randomly from the other three modes — Bar Time, Couples, or nothing at all — so no two rounds feel the same.
 
 ---
 
@@ -91,17 +91,17 @@ user taps Skip / Finish / card (GK only)
       │
 random handler chosen
       │
-      ├─ NoOpModeHandler  ──▶  no event; deal resets to IDLE
+      ├─ NoOpModeHandler  ──▶  no event; turn advances to PASS
       │
       ├─ BarModeHandler   ──▶  barMode.activeEvent set  ──▶  BarEventDialog appears
       │                        user resolves bar event (OK / Give)
       │                        onModeEventDismissed()
-      │                        both activeEvents cleared  +  deal resets to IDLE
+      │                        both activeEvents cleared  +  turn advances to PASS
       │
       └─ CouplesModeHandler ▶  couplesMode.activeEvent set  ──▶  CouplesEventDialog appears
                                user taps card
                                onModeEventDismissed()
-                               both activeEvents cleared  +  deal resets to IDLE
+                               both activeEvents cleared  +  turn advances to PASS
 ```
 
 `hasActiveModeEvent` (checks both `barMode.activeEvent` and `couplesMode.activeEvent`) is the single guard used throughout the UI to detect a pending event regardless of which sub-mode produced it.
@@ -149,3 +149,13 @@ Party Puzl produces no new overlay. `GameScreen` already mounts `BarEventDialog`
 |---|---|
 | `party_puzz_game_mode` | `"Party Puzl"` |
 | `party_puzz_description` | `"The ultimate mix — every round is a surprise, combining all game modes into one unpredictable experience!"` |
+
+
+---
+
+## Related
+
+- [game-mode-handler.md](game-mode-handler.md) — The delegation interface
+- [outcome-presentation.md](outcome-presentation.md) — How the resulting event is rendered
+- [bar-mode.md](bar-mode.md) — Bar sub-handler
+- [couples-mode.md](couples-mode.md) — Couples sub-handler

@@ -34,10 +34,6 @@ class GameScreenViewModel @Inject constructor(
 ) : ViewModel() {
 
     companion object {
-        private const val ANIMATION_DURATION_MS = 2500L
-        private const val NAME_CYCLE_INTERVAL_MS = 300L
-        private const val NAME_REVEAL_DURATION_MS = 1500L
-        private const val PHOTO_REVEAL_DURATION_MS = 400L
         private const val STICKY_DARE_EXIT_DELAY_MS = 400L
     }
 
@@ -62,82 +58,79 @@ class GameScreenViewModel @Inject constructor(
     val uiState: StateFlow<GameScreenState> = _uiState.asStateFlow()
 
     private var dealJob: Job? = null
+    private var outcomeJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
 
     // Round-based player selection: each player plays once per round before any repeats
     private val roundQueue = mutableListOf<Player>()
+    private var roundNumber = 0
 
-    private fun nextPlayerInRound(players: List<Player>): Player {
-        if (roundQueue.isEmpty()) roundQueue.addAll(players.shuffled())
+    init {
+        // No deal has been played yet, so the first hero card is drawn at random rather than
+        // always opening on Truth or Dare.
+        _uiState.update { it.copy(heroDealType = it.availableDealTypes.random()) }
+        advanceToNextTurn()
+    }
+
+    private fun nextPlayerInRound(players: List<Player>): Player? {
+        if (players.isEmpty()) return null
+        if (roundQueue.isEmpty()) {
+            roundQueue.addAll(players.shuffled())
+            roundNumber++
+        }
         return roundQueue.removeAt(0)
     }
 
-    fun onGameDealTapped() {
+    fun onDealChosen(dealType: GameDealType, truthOrDareChoice: TruthOrDareChoice? = null) {
+        if (_uiState.value.dealPhase != GameDealPhase.DEAL_CHOICE) return
+        startChallenge(dealType, truthOrDareChoice)
+    }
+
+    fun onSurpriseRequested() {
         val state = _uiState.value
-        if (state.dealPhase != GameDealPhase.IDLE || state.players.isEmpty()) return
-
-        val selectedPlayer = nextPlayerInRound(state.players)
-        val availableDealTypes = GameDealType.entries.filter { type ->
-            val playerCountOk = if (type == GameDealType.MINI_GAME) state.players.size >= 2 else true
-            playerCountOk && isDealTypeEnabled(type)
+        if (state.dealPhase != GameDealPhase.DEAL_CHOICE) return
+        val target = state.availableDealTypes.random()
+        _uiState.update {
+            it.copy(dealPhase = GameDealPhase.SURPRISE_SHUFFLE, surpriseDealType = target)
         }
-        val dealType = availableDealTypes.random()
-
         dealJob?.cancel()
         dealJob = viewModelScope.launch {
-            // Phase 1: Cycle through player names for 5 seconds
-            _uiState.update { it.copy(dealPhase = GameDealPhase.ANIMATING) }
-            val players = _uiState.value.players
-            val iterations = (ANIMATION_DURATION_MS / NAME_CYCLE_INTERVAL_MS).toInt()
-            val namePool = players.map { it.nickName }.toMutableList()
-            repeat(iterations) { i ->
-                if (i % players.size == 0) namePool.shuffle()
-                _uiState.update { it.copy(animatingName = namePool[i % players.size]) }
-                delay(NAME_CYCLE_INTERVAL_MS)
-            }
-
-            // Phase 2: Reveal selected player's name
-            _uiState.update {
-                it.copy(
-                    dealPhase = GameDealPhase.PLAYER_NAME_REVEAL,
-                    selectedPlayer = selectedPlayer,
-                    animatingName = ""
-                )
-            }
-            delay(NAME_REVEAL_DURATION_MS)
-
-            // Phase 3: Reveal selected player's photo
-            _uiState.update { it.copy(dealPhase = GameDealPhase.PLAYER_PHOTO_REVEAL) }
-            delay(PHOTO_REVEAL_DURATION_MS)
-
-            // Phase 4: Show challenge — load content based on deal type
-            val (challengeText, gkQuestion, pcText, durationLabel, durationSeconds, miniGame) =
-                buildChallengeContent(dealType, selectedPlayer.nickName, _uiState.value.activeStickyDares)
-
-            _uiState.update {
-                it.copy(
-                    dealPhase = GameDealPhase.CHALLENGE_SHOWN,
-                    dealType = dealType,
-                    challengeText = challengeText,
-                    generalKnowledgeQuestion = gkQuestion,
-                    stickyDarePresentContinuous = pcText,
-                    stickyDareDurationLabel = durationLabel,
-                    stickyDareDurationSeconds = durationSeconds,
-                    miniGame = miniGame,
-                    pendingCameraRequest = currentPartyId != null &&
-                            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-                )
-            }
+            delay(SURPRISE_SHUFFLE_DURATION_MS)
+            startChallenge(target, null)
         }
     }
 
-    fun onTruthOrDareChosen(choice: TruthOrDareChoice) {
-        if (_uiState.value.truthOrDareChoice != null) return
-        val texts = when (choice) {
-            TruthOrDareChoice.TRUTH -> context.resources.getStringArray(R.array.truth_texts)
-            TruthOrDareChoice.DARE -> context.resources.getStringArray(R.array.dare_texts)
+    private fun startChallenge(dealType: GameDealType, truthOrDareChoice: TruthOrDareChoice?) {
+        val state = _uiState.value
+        val choice = if (dealType == GameDealType.TRUTH_OR_DARE) {
+            truthOrDareChoice ?: TruthOrDareChoice.entries.random()
+        } else {
+            null
         }
-        _uiState.update { it.copy(truthOrDareChoice = choice, challengeText = texts.random()) }
+        val content = buildChallengeContent(
+            ChallengeRequest(
+                dealType = dealType,
+                truthOrDareChoice = choice,
+                playerName = state.selectedPlayer?.nickName.orEmpty(),
+                activeStickyDares = state.activeStickyDares
+            )
+        )
+        _uiState.update {
+            it.copy(
+                dealPhase = GameDealPhase.CHALLENGE_SHOWN,
+                dealType = dealType,
+                heroDealType = dealType,
+                surpriseDealType = null,
+                truthOrDareChoice = choice,
+                challengeText = content.challengeText,
+                generalKnowledgeQuestion = content.gkQuestion,
+                stickyDarePresentContinuous = content.presentContinuous,
+                stickyDareDurationLabel = content.durationLabel,
+                stickyDareDurationSeconds = content.durationSeconds,
+                miniGame = content.miniGame,
+                pendingCameraRequest = isCameraAvailable()
+            )
+        }
     }
 
     fun onGeneralKnowledgeAnswered(option: Char) {
@@ -150,19 +143,18 @@ class GameScreenViewModel @Inject constructor(
     }
 
     fun onTruthOrDareSkipped() {
-        if (_uiState.value.truthOrDareChoice == null) return
-        _uiState.update { modeHandler.applyPunishment(it, it.selectedPlayer) }
+        if (_uiState.value.dealType != GameDealType.TRUTH_OR_DARE) return
+        applyOutcome { modeHandler.applyPunishment(it, it.selectedPlayer) }
     }
 
     fun onStickyDareSkipped() {
         if (_uiState.value.dealType != GameDealType.STICKY_DARE) return
-        _uiState.update { modeHandler.applyPunishment(it, it.selectedPlayer) }
+        applyOutcome { modeHandler.applyPunishment(it, it.selectedPlayer) }
     }
 
     fun onMiniGameDealFinished() {
         if (_uiState.value.miniGameResult == null) return
-        _uiState.update { modeHandler.applyMiniGameResult(it) }
-        if (!_uiState.value.hasActiveModeEvent) resetDeal()
+        applyOutcome { modeHandler.applyMiniGameResult(it) }
     }
 
     fun onGiveDrinksTargetSelected(targetName: String) {
@@ -180,104 +172,106 @@ class GameScreenViewModel @Inject constructor(
     }
 
     fun onModeEventDismissed() {
-        dealJob?.cancel()
-        if (_uiState.value.pendingCameraRequest) {
-            _uiState.update {
-                modeHandler.clearEvent(it).copy(showCameraRequest = true, pendingCameraRequest = false)
-            }
-        } else {
-            _uiState.update { resetDealState(modeHandler.clearEvent(it)) }
+        outcomeJob?.cancel()
+        val state = _uiState.value
+        // A dare cancelled from the sticky-dares sheet punishes mid-turn — clear it and stay put,
+        // otherwise the current player would silently lose their turn.
+        if (state.dealPhase != GameDealPhase.CHALLENGE_SHOWN) {
+            _uiState.update { modeHandler.clearEvent(it).copy(outcomeStage = null) }
+            return
         }
+        if (state.pendingCameraRequest) {
+            _uiState.update {
+                modeHandler.clearEvent(it).copy(
+                    outcomeStage = null,
+                    showCameraRequest = true,
+                    pendingCameraRequest = false
+                )
+            }
+            return
+        }
+        advanceToNextTurn()
     }
 
     fun onChallengeDismissed() {
         val state = _uiState.value
         if (!state.isChallengeDismissible) return
 
-        if (state.dealType == GameDealType.GENERAL_KNOWLEDGE) {
-            val isCorrect = state.generalKnowledgeQuestion != null &&
-                    state.selectedAnswerOption == state.generalKnowledgeQuestion.correctOption
+        when (state.dealType) {
+            GameDealType.GENERAL_KNOWLEDGE -> dismissGeneralKnowledge(state)
+            GameDealType.STICKY_DARE -> dismissStickyDare(state)
+            else -> dismissTruthOrDare(state)
+        }
+    }
+
+    private fun dismissGeneralKnowledge(state: GameScreenState) {
+        val isCorrect = state.generalKnowledgeQuestion != null &&
+                state.selectedAnswerOption == state.generalKnowledgeQuestion.correctOption
+        applyOutcome {
+            if (isCorrect) modeHandler.applyReward(it)
+            else modeHandler.applyPunishment(it, it.selectedPlayer)
+        }
+    }
+
+    private fun dismissStickyDare(state: GameScreenState) {
+        val dare = ActiveStickyDare(
+            id = UUID.randomUUID().toString(),
+            playerName = state.selectedPlayer?.nickName.orEmpty(),
+            presentContinuousText = state.stickyDarePresentContinuous.orEmpty(),
+            durationLabel = state.stickyDareDurationLabel.orEmpty(),
+            totalSeconds = state.stickyDareDurationSeconds ?: 60,
+            remainingSeconds = state.stickyDareDurationSeconds ?: 60
+        )
+        _uiState.update { it.copy(activeStickyDares = it.activeStickyDares + dare) }
+        if (state.pendingCameraRequest) {
             _uiState.update {
-                if (isCorrect) modeHandler.applyReward(it)
-                else modeHandler.applyPunishment(it, it.selectedPlayer)
+                it.copy(
+                    showCameraRequest = true,
+                    pendingCameraRequest = false,
+                    stickyDarePresentContinuous = null,
+                    stickyDareDurationLabel = null,
+                    stickyDareDurationSeconds = null
+                )
             }
-            if (!_uiState.value.hasActiveModeEvent) resetDeal()
-            return
-        }
-
-        if (state.dealType == GameDealType.STICKY_DARE) {
-            val dare = ActiveStickyDare(
-                id = UUID.randomUUID().toString(),
-                playerName = state.selectedPlayer?.nickName.orEmpty(),
-                presentContinuousText = state.stickyDarePresentContinuous.orEmpty(),
-                durationLabel = state.stickyDareDurationLabel.orEmpty(),
-                totalSeconds = state.stickyDareDurationSeconds ?: 60,
-                remainingSeconds = state.stickyDareDurationSeconds ?: 60
-            )
-            if (state.pendingCameraRequest) {
-                _uiState.update {
-                    it.copy(
-                        activeStickyDares = it.activeStickyDares + dare,
-                        showCameraRequest = true,
-                        pendingCameraRequest = false,
-                        stickyDarePresentContinuous = null,
-                        stickyDareDurationLabel = null,
-                        stickyDareDurationSeconds = null
-                    )
-                }
-            } else {
-                _uiState.update {
-                    it.copy(
-                        activeStickyDares = it.activeStickyDares + dare,
-                        dealPhase = GameDealPhase.IDLE,
-                        selectedPlayer = null,
-                        animatingName = "",
-                        dealType = null,
-                        challengeText = null,
-                        stickyDarePresentContinuous = null,
-                        stickyDareDurationLabel = null,
-                        stickyDareDurationSeconds = null
-                    )
-                }
-            }
-            startStickyDareTimer(dare.id)
         } else {
-            val isDare = state.dealType == GameDealType.TRUTH_OR_DARE &&
-                    state.truthOrDareChoice == TruthOrDareChoice.DARE
-            if (isDare && state.pendingCameraRequest) {
-                _uiState.update { it.copy(showCameraRequest = true, pendingCameraRequest = false) }
-            } else {
-                resetDeal()
-            }
+            advanceToNextTurn()
+        }
+        startStickyDareTimer(dare.id)
+    }
+
+    private fun dismissTruthOrDare(state: GameScreenState) {
+        val isDare = state.dealType == GameDealType.TRUTH_OR_DARE &&
+                state.truthOrDareChoice == TruthOrDareChoice.DARE
+        if (isDare && state.pendingCameraRequest) {
+            _uiState.update { it.copy(showCameraRequest = true, pendingCameraRequest = false) }
+        } else {
+            advanceToNextTurn()
         }
     }
 
-    fun onCameraRequestDismissed() {
-        dealJob?.cancel()
-        _uiState.update { resetDealState(it) }
-    }
+    fun onCameraRequestDismissed() = advanceToNextTurn()
 
     fun onPhotoCaptured(uri: Uri) {
         val partyId = currentPartyId ?: run {
-            dealJob?.cancel()
-            _uiState.update { resetDealState(it) }
+            advanceToNextTurn()
             return
         }
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                val dir = File(context.filesDir, "party_photos/$partyId").also { it.mkdirs() }
-                val dest = File(dir, "photo_${System.currentTimeMillis()}.jpg")
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    dest.outputStream().use { output -> input.copyTo(output) }
-                }
-                partyPhotoRepository.addPhoto(partyId, dest.absolutePath)
-            }
-            dealJob?.cancel()
-            _uiState.update { resetDealState(it) }
+            withContext(Dispatchers.IO) { storePhoto(partyId, uri) }
+            advanceToNextTurn()
         }
     }
 
-    fun onMiniGameAborted() = resetDeal()
+    private suspend fun storePhoto(partyId: Int, uri: Uri) {
+        val dir = File(context.filesDir, "party_photos/$partyId").also { it.mkdirs() }
+        val dest = File(dir, "photo_${System.currentTimeMillis()}.jpg")
+        context.contentResolver.openInputStream(uri)?.use { input ->
+            dest.outputStream().use { output -> input.copyTo(output) }
+        }
+        partyPhotoRepository.addPhoto(partyId, dest.absolutePath)
+    }
+
+    fun onMiniGameAborted() = advanceToNextTurn()
 
     fun onHotPotatoResultReceived(loserName: String) {
         _uiState.update { it.copy(miniGameResult = LoserMiniGameResult(loserName = loserName)) }
@@ -304,44 +298,82 @@ class GameScreenViewModel @Inject constructor(
     }
 
     fun cancelStickyDare(dareId: String) {
-        stickyDareJobs[dareId]?.cancel()
-        stickyDareJobs.remove(dareId)
+        stickyDareJobs.remove(dareId)?.cancel()
         val dare = _uiState.value.activeStickyDares.find { it.id == dareId }
         viewModelScope.launch {
-            _uiState.update { s ->
-                s.copy(activeStickyDares = s.activeStickyDares.map { d ->
-                    if (d.id == dareId) d.copy(isCompleted = true) else d
-                })
-            }
-            delay(STICKY_DARE_EXIT_DELAY_MS)
-            _uiState.update { s ->
-                s.copy(activeStickyDares = s.activeStickyDares.filter { it.id != dareId })
-            }
+            completeAndRemoveStickyDare(dareId)
             val darePlayer = _uiState.value.players.find { it.nickName == dare?.playerName }
             _uiState.update { modeHandler.applyPunishment(it, darePlayer) }
+            if (_uiState.value.hasActiveModeEvent) startOutcomeSpin()
         }
     }
 
-    private fun resetDeal() {
-        dealJob?.cancel()
-        _uiState.update { resetDealState(it) }
+    // Reward / punishment lands after a short slot-reel spin. When the mode produced no event
+    // (Standard mode, or Party Puzl rolling its no-op handler) the turn just moves on.
+    private fun applyOutcome(transform: (GameScreenState) -> GameScreenState) {
+        _uiState.update(transform)
+        if (_uiState.value.hasActiveModeEvent) startOutcomeSpin() else advanceToNextTurn()
     }
 
-    private fun resetDealState(state: GameScreenState) = state.copy(
-        dealPhase = GameDealPhase.IDLE,
-        selectedPlayer = null,
-        animatingName = "",
+    private fun startOutcomeSpin() {
+        _uiState.update { it.copy(outcomeStage = OutcomeStage.SPINNING) }
+        outcomeJob?.cancel()
+        outcomeJob = viewModelScope.launch {
+            delay(OUTCOME_SPIN_DURATION_MS)
+            _uiState.update { it.copy(outcomeStage = OutcomeStage.REVEALED) }
+        }
+    }
+
+    // The round queue must advance exactly once per turn. MutableStateFlow.update is a
+    // compare-and-set retry loop whose lambda can run more than once, so the queue is
+    // stepped here, outside of it, and only the resulting values are folded into the state.
+    private fun advanceToNextTurn() {
+        dealJob?.cancel()
+        outcomeJob?.cancel()
+        val nextPlayer = nextPlayerInRound(_uiState.value.players)
+        val round = roundNumber
+        _uiState.update {
+            clearedTurn(modeHandler.clearEvent(it)).copy(
+                dealPhase = GameDealPhase.DEAL_CHOICE,
+                selectedPlayer = nextPlayer,
+                roundNumber = round
+            )
+        }
+    }
+
+    private fun clearedTurn(state: GameScreenState) = state.copy(
         dealType = null,
+        surpriseDealType = null,
         challengeText = null,
         truthOrDareChoice = null,
         generalKnowledgeQuestion = null,
         selectedAnswerOption = null,
+        stickyDarePresentContinuous = null,
+        stickyDareDurationLabel = null,
+        stickyDareDurationSeconds = null,
         miniGame = null,
         miniGameOpponent = null,
         miniGameResult = null,
+        outcomeStage = null,
         pendingCameraRequest = false,
         showCameraRequest = false
     )
+
+    private fun isCameraAvailable(): Boolean = currentPartyId != null &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED
+
+    private suspend fun completeAndRemoveStickyDare(dareId: String) {
+        _uiState.update { state ->
+            state.copy(activeStickyDares = state.activeStickyDares.map { dare ->
+                if (dare.id == dareId) dare.copy(isCompleted = true) else dare
+            })
+        }
+        delay(STICKY_DARE_EXIT_DELAY_MS)
+        _uiState.update { state ->
+            state.copy(activeStickyDares = state.activeStickyDares.filter { it.id != dareId })
+        }
+    }
 
     private fun startStickyDareTimer(dareId: String) {
         stickyDareJobs[dareId] = viewModelScope.launch {
@@ -359,17 +391,7 @@ class GameScreenViewModel @Inject constructor(
                 val remaining = _uiState.value.activeStickyDares
                     .find { it.id == dareId }?.remainingSeconds ?: break
                 if (remaining <= 0) {
-                    _uiState.update { state ->
-                        state.copy(
-                            activeStickyDares = state.activeStickyDares.map { dare ->
-                                if (dare.id == dareId) dare.copy(isCompleted = true) else dare
-                            }
-                        )
-                    }
-                    delay(STICKY_DARE_EXIT_DELAY_MS)
-                    _uiState.update { state ->
-                        state.copy(activeStickyDares = state.activeStickyDares.filter { it.id != dareId })
-                    }
+                    completeAndRemoveStickyDare(dareId)
                     break
                 }
             }
@@ -377,75 +399,59 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-    private fun isDealTypeEnabled(dealType: GameDealType): Boolean {
-        val labelRes = when (dealType) {
-            GameDealType.TRUTH_OR_DARE -> R.string.truth_or_dare
-            GameDealType.GENERAL_KNOWLEDGE -> R.string.general_knowledge_title
-            GameDealType.STICKY_DARE -> R.string.sticky_dares
-            GameDealType.MINI_GAME -> R.string.mini_games
-        }
-        return GameOptionsSource.options.find { it.labelRes == labelRes }?.enabled ?: true
-    }
-
-    // Returns (challengeText, gkQuestion, presentContinuous, durationLabel, durationSeconds, miniGame)
-    private data class ChallengeContent(
-        val challengeText: String?,
-        val gkQuestion: GeneralKnowledgeQuestion?,
-        val presentContinuous: String?,
-        val durationLabel: String?,
-        val durationSeconds: Int?,
-        val miniGame: MiniGame?
+    private data class ChallengeRequest(
+        val dealType: GameDealType,
+        val truthOrDareChoice: TruthOrDareChoice?,
+        val playerName: String,
+        val activeStickyDares: List<ActiveStickyDare>
     )
 
-    private fun buildChallengeContent(
-        dealType: GameDealType,
-        playerName: String = "",
-        activeStickyDares: List<ActiveStickyDare> = emptyList()
-    ): ChallengeContent {
-        return when (dealType) {
-            GameDealType.TRUTH_OR_DARE -> ChallengeContent(null, null, null, null, null, null)
-            GameDealType.STICKY_DARE -> {
-                val dares = context.resources.getStringArray(R.array.sticky_dares)
-                val presentContinuous = context.resources.getStringArray(R.array.sticky_dares_present_continuous)
-                val durationLabels = context.resources.getStringArray(R.array.sticky_dares_duration_labels)
-                val durationSeconds = context.resources.getIntArray(R.array.sticky_dares_duration_seconds)
-                val activePcTexts = activeStickyDares
-                    .filter { it.playerName == playerName && !it.isCompleted }
-                    .map { it.presentContinuousText }
-                    .toSet()
-                val eligibleIndices = dares.indices.filter { presentContinuous[it] !in activePcTexts }
-                val index = (if (eligibleIndices.isNotEmpty()) eligibleIndices else dares.indices.toList()).random()
-                ChallengeContent(
-                    challengeText = dares[index],
-                    gkQuestion = null,
-                    presentContinuous = presentContinuous[index],
-                    durationLabel = durationLabels[index],
-                    durationSeconds = durationSeconds[index],
-                    miniGame = null
-                )
-            }
-            GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(
-                challengeText = null,
-                gkQuestion = loadGkQuestions().randomOrNull(),
-                presentContinuous = null,
-                durationLabel = null,
-                durationSeconds = null,
-                miniGame = null
+    private data class ChallengeContent(
+        val challengeText: String? = null,
+        val gkQuestion: GeneralKnowledgeQuestion? = null,
+        val presentContinuous: String? = null,
+        val durationLabel: String? = null,
+        val durationSeconds: Int? = null,
+        val miniGame: MiniGame? = null
+    )
+
+    private fun buildChallengeContent(request: ChallengeRequest): ChallengeContent =
+        when (request.dealType) {
+            GameDealType.TRUTH_OR_DARE -> buildTruthOrDareContent(request.truthOrDareChoice)
+            GameDealType.STICKY_DARE -> buildStickyDareContent(request)
+            GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(gkQuestion = loadGkQuestions().randomOrNull())
+            GameDealType.MINI_GAME -> ChallengeContent(
+                miniGame = MiniGame.entries
+                    .filter { _uiState.value.players.size >= it.minPlayers }
+                    .randomOrNull()
             )
-            GameDealType.MINI_GAME -> {
-                val eligibleGames = MiniGame.entries.filter {
-                    _uiState.value.players.size >= it.minPlayers
-                }
-                ChallengeContent(
-                    challengeText = null,
-                    gkQuestion = null,
-                    presentContinuous = null,
-                    durationLabel = null,
-                    durationSeconds = null,
-                    miniGame = eligibleGames.randomOrNull()
-                )
-            }
         }
+
+    private fun buildTruthOrDareContent(choice: TruthOrDareChoice?): ChallengeContent {
+        val texts = when (choice) {
+            TruthOrDareChoice.TRUTH -> context.resources.getStringArray(R.array.truth_texts)
+            else -> context.resources.getStringArray(R.array.dare_texts)
+        }
+        return ChallengeContent(challengeText = texts.random())
+    }
+
+    private fun buildStickyDareContent(request: ChallengeRequest): ChallengeContent {
+        val dares = context.resources.getStringArray(R.array.sticky_dares)
+        val presentContinuous = context.resources.getStringArray(R.array.sticky_dares_present_continuous)
+        val durationLabels = context.resources.getStringArray(R.array.sticky_dares_duration_labels)
+        val durationSeconds = context.resources.getIntArray(R.array.sticky_dares_duration_seconds)
+        val activePcTexts = request.activeStickyDares
+            .filter { it.playerName == request.playerName && !it.isCompleted }
+            .map { it.presentContinuousText }
+            .toSet()
+        val eligibleIndices = dares.indices.filter { presentContinuous[it] !in activePcTexts }
+        val index = (if (eligibleIndices.isNotEmpty()) eligibleIndices else dares.indices.toList()).random()
+        return ChallengeContent(
+            challengeText = dares[index],
+            presentContinuous = presentContinuous[index],
+            durationLabel = durationLabels[index],
+            durationSeconds = durationSeconds[index]
+        )
     }
 
     private fun loadGkQuestions(): List<GeneralKnowledgeQuestion> {
@@ -465,6 +471,7 @@ class GameScreenViewModel @Inject constructor(
 
     override fun onCleared() {
         dealJob?.cancel()
+        outcomeJob?.cancel()
         stickyDareJobs.values.forEach { it.cancel() }
         super.onCleared()
     }

@@ -6,16 +6,7 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,26 +27,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.content.FileProvider
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.navigation.NavBackStackEntry
-import kotlinx.coroutines.flow.filterNotNull
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.navigation.NavBackStackEntry
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
+import kotlinx.coroutines.flow.filterNotNull
 import java.io.File
 
 private const val KEY_MINI_GAME_P1_SCORE = "mini_game_p1_score"
 private const val KEY_MINI_GAME_P2_SCORE = "mini_game_p2_score"
+private const val PLAYER_RAIL_HEIGHT_DP = 72
 
 @Composable
 fun GameScreen(
@@ -131,8 +123,7 @@ fun GameScreen(
     }
 
     var showExitDialog by remember { mutableStateOf(false) }
-    var showInfoPanel by remember { mutableStateOf(false) }
-    // null = sheet closed; non-null = open for that player; use sentinel ALL_PLAYERS for all-dares
+    // null = all dares; non-null = only that player's dares
     var daresSheetPlayer: Player? by remember { mutableStateOf(null) }
     var showDaresSheet by remember { mutableStateOf(false) }
 
@@ -180,8 +171,6 @@ fun GameScreen(
                 .statusBarsPadding()
                 .navigationBarsPadding()
         ) {
-            // Top bar: Box so exit and info are always anchored to their edges
-            // regardless of whether the pill is visible
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -205,26 +194,16 @@ fun GameScreen(
                     },
                     modifier = Modifier
                         .align(Alignment.Center)
-                        // horizontal padding leaves room for the two icon buttons (48dp each)
+                        // leaves room for the exit button on either side of the centred pill
                         .padding(horizontal = 52.dp)
                 )
-                IconButton(
-                    onClick = { showInfoPanel = !showInfoPanel },
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_info),
-                        contentDescription = stringResource(id = R.string.game_configuration),
-                        tint = MaterialTheme.colorScheme.onSurface
-                    )
-                }
             }
 
             GameDealSection(
                 uiState = uiState,
-                onGameDealTapped = viewModel::onGameDealTapped,
+                onDealChosen = viewModel::onDealChosen,
+                onSurpriseRequested = viewModel::onSurpriseRequested,
                 onChallengeDismissed = viewModel::onChallengeDismissed,
-                onTruthOrDareChosen = viewModel::onTruthOrDareChosen,
                 onTruthOrDareSkipped = viewModel::onTruthOrDareSkipped,
                 onStickyDareSkipped = viewModel::onStickyDareSkipped,
                 onMiniGameDealFinished = viewModel::onMiniGameDealFinished,
@@ -253,12 +232,11 @@ fun GameScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
-                    .padding(16.dp)
             )
+
             PlayersListRow(
                 players = uiState.players,
                 selectedPlayer = uiState.selectedPlayer,
-                dealPhase = uiState.dealPhase,
                 activeStickyDares = uiState.activeStickyDares,
                 onPlayerTapped = { player ->
                     daresSheetPlayer = player
@@ -266,33 +244,8 @@ fun GameScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(100.dp)
+                    .height(PLAYER_RAIL_HEIGHT_DP.dp)
             )
-        }
-
-        // Info panel overlay — dismissed by tapping the backdrop
-        AnimatedVisibility(
-            visible = showInfoPanel,
-            enter = scaleIn(tween(200), transformOrigin = TransformOrigin(1f, 0f)) + fadeIn(tween(200)),
-            exit = scaleOut(tween(150), transformOrigin = TransformOrigin(1f, 0f)) + fadeOut(tween(150)),
-            modifier = Modifier.align(Alignment.TopEnd)
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { showInfoPanel = false }
-                )
-                GameInfoPanel(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .statusBarsPadding()
-                        .padding(top = 56.dp, end = 8.dp)
-                )
-            }
         }
     }
 }

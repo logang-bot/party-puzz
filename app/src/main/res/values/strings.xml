@@ -79,12 +79,6 @@
     <string name="add">Add</string>
     <string name="customize_your_party">Customize your party</string>
     <string name="mode_selected">Mode selected</string>
-    <string name="question_categories">Question categories</string>
-    <string name="pick_what_to_play">Pick what to play</string>
-    <string name="included">Included</string>
-    <string name="tap_to_add">Tap to add</string>
-    <string name="categories_count_on">%1$d/%2$d on</string>
-    <string name="options_toggle_hint">Tap to toggle. Off categories are skipped for tonight.</string>
     <string name="added">added</string>
     <string name="start_the_party">Start the party</string>
     <string name="mini_games_hint">The phone passes between players each turn — set it on the table, screen up. Tap to flip the prompt, hand it on.</string>
@@ -166,10 +160,29 @@
     <string name="tap_to_play_with">Tap to play with %1$s</string>
     <string name="truth">Truth</string>
     <string name="dare">Dare</string>
-    <string name="truth_or_dare_title">Truth or Dare?</string>
     <string name="sticky_dare_title">Sticky Dare!</string>
     <string name="general_knowledge_title">General Knowledge</string>
     <string name="tap_to_dismiss">Tap to dismiss</string>
+    <string name="pass_the_phone_to">Pass the phone to</string>
+    <string name="tap_when_ready">Tap when ready</string>
+    <string name="round_number">Round %1$d</string>
+    <string name="its_your_turn">It\'s your turn</string>
+    <string name="surprise_me">Surprise me · spin the wheel</string>
+    <string name="shuffling_the_deal">Shuffling the deal…</string>
+    <string name="deal_kicker_truth">Spill it</string>
+    <string name="deal_kicker_dare">Show us</string>
+    <string name="deal_kicker_general_knowledge">Think fast</string>
+    <string name="deal_kicker_sticky_dare">Sticks around</string>
+    <string name="deal_kicker_mini_game">All together</string>
+    <string name="deal_blurb_truth">Answer honestly, or the room decides your fate.</string>
+    <string name="deal_blurb_dare">Do it. The room votes on whether you really tried.</string>
+    <string name="deal_blurb_general_knowledge">Answer before the room beats you to it.</string>
+    <string name="deal_blurb_sticky_dare">Carries over for a few rounds.</string>
+    <string name="deal_blurb_mini_game">A quick challenge for everyone.</string>
+    <string name="outcome_rolling_reward">Rolling a reward…</string>
+    <string name="outcome_rolling_punishment">Rolling a punishment…</string>
+    <string name="outcome_reward">Reward</string>
+    <string name="outcome_punishment">Punishment</string>
     <string name="cancel_dare">Cancel dare</string>
     <string name="exit_game_title">Exit game?</string>
     <string name="exit_game_message">Are you sure you want to exit the current game?</string>
@@ -535,7 +548,6 @@
     </integer-array>
 
     <!-- Game screen UI -->
-    <string name="game_configuration">Game Configuration</string>
     <string name="active_dares_title">Active Dares</string>
     <string name="no_active_dares">No active dares right now</string>
     <string name="no_active_dares_for_player">No active dares for this player</string>
@@ -729,5 +741,20 @@
     <string name="rewarded_ad_title">Unlock spicy prompts</string>
     <string name="rewarded_ad_subtitle">Watch a short clip · 120 extra prompts + 18+ dares</string>
     <string name="watch">Watch</string>
+
+    <!-- Reward / punishment roll. Order must match BarEvent.reelIndex and CouplesEvent.reelIndex. -->
+    <string-array name="outcome_reel_bar">
+        <item>Nothing happens</item>
+        <item>Give drinks away</item>
+        <item>Choose who drinks</item>
+        <item>Take drinks</item>
+    </string-array>
+    <string-array name="outcome_reel_couples">
+        <item>Give a kiss</item>
+        <item>Choose the kissers</item>
+        <item>Make a love declaration</item>
+        <item>Do an act of love</item>
+        <item>Choose the lovers</item>
+    </string-array>
 
 </resources>

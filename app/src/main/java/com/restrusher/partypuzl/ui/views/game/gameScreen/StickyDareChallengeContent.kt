@@ -45,7 +45,7 @@ internal fun StickyDareChallengeContent(
                 text = stringResource(R.string.sticky_dare_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = 0.65f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(16.dp))
@@ -53,14 +53,14 @@ internal fun StickyDareChallengeContent(
                 text = uiState.challengeText.orEmpty(),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.tap_to_dismiss),
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.45f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
                 textAlign = TextAlign.Center
             )
             if (uiState.isModeActive) {
@@ -77,7 +77,7 @@ internal fun StickyDareChallengeContent(
                 text = player.nickName,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color.White.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)

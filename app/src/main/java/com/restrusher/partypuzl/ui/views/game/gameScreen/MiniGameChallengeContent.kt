@@ -116,7 +116,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(miniGame.nameRes),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(4.dp))
@@ -124,7 +124,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(R.string.mini_game_everyone_plays),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium,
-                color = Color.White.copy(alpha = 0.75f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
                 textAlign = TextAlign.Center
             )
         }
@@ -134,7 +134,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(miniGame.nameRes),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
         }
@@ -144,7 +144,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(miniGame.nameRes),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = 0.65f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                 textAlign = TextAlign.Center
             )
         }
@@ -159,7 +159,7 @@ private fun GlobalMiniGameContent(miniGame: MiniGame) {
     Text(
         text = stringResource(miniGame.descriptionRes),
         style = MaterialTheme.typography.bodyLarge,
-        color = Color.White.copy(alpha = 0.80f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.80f),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(80.dp))
@@ -176,7 +176,7 @@ private fun OpponentSelectionContent(
     Text(
         text = stringResource(miniGame.descriptionRes),
         style = MaterialTheme.typography.bodyMedium,
-        color = Color.White.copy(alpha = 0.75f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(16.dp))
@@ -184,14 +184,14 @@ private fun OpponentSelectionContent(
         text = uiState.selectedPlayer?.nickName.orEmpty(),
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.onSurface,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(16.dp))
     Text(
         text = stringResource(R.string.choose_opponent),
         style = MaterialTheme.typography.labelMedium,
-        color = Color.White.copy(alpha = 0.55f),
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(8.dp))
@@ -231,7 +231,7 @@ private fun ScoredResultContent(
             stringResource(R.string.mini_game_tie),
         style = MaterialTheme.typography.displaySmall,
         fontWeight = FontWeight.Bold,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.onSurface,
         textAlign = TextAlign.Center
     )
     if (result.showScoreDetails) {
@@ -239,13 +239,13 @@ private fun ScoredResultContent(
         Text(
             text = "${result.player1Name}:  ${result.player1Score}",
             style = MaterialTheme.typography.titleLarge,
-            color = Color.White.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             textAlign = TextAlign.Center
         )
         Text(
             text = "${result.player2Name}:  ${result.player2Score}",
             style = MaterialTheme.typography.titleLarge,
-            color = Color.White.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
             textAlign = TextAlign.Center
         )
     }
@@ -264,7 +264,7 @@ private fun LoserResultContent(
         text = stringResource(R.string.mini_game_loser, result.loserName),
         style = MaterialTheme.typography.displaySmall,
         fontWeight = FontWeight.Bold,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.onSurface,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(16.dp))
@@ -283,7 +283,7 @@ private fun ResultDismissAction(isModeActive: Boolean, onFinished: () -> Unit) {
         Text(
             text = stringResource(R.string.tap_to_dismiss),
             style = MaterialTheme.typography.bodySmall,
-            color = Color.White.copy(alpha = 0.45f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
             textAlign = TextAlign.Center
         )
     }

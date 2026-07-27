@@ -143,9 +143,6 @@ fun SharedTransitionScope.GameConfigScreen(
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
-                OptionsContainer()
-
-                Spacer(modifier = Modifier.height(12.dp))
                 AdBannerView(adUnitId = AdUnitIds.GAME_CONFIG_BANNER)
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -164,7 +161,7 @@ fun SharedTransitionScope.GameConfigScreen(
 
             StartGameButton(
                 onClick = { viewModel.onStartGame(onStartGameClick) },
-                enabled = GamePlayersList.PlayersList.size >= 2 && GameOptionsSource.options.any { it.enabled },
+                enabled = GamePlayersList.PlayersList.size >= 2,
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()

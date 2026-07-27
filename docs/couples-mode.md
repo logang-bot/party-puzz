@@ -117,7 +117,7 @@ user taps anywhere on the card
       │
 onModeEventDismissed()
       │
-activeEvent = null  +  deal resets to IDLE
+activeEvent = null  +  turn returns to the deal picker
 ```
 
 The challenge card re-enables tapping when a couples event is active (same pattern as bar events): `isTapDismissibleCouplesEvent = couplesMode.activeEvent != null` is ORed into the `enabled` condition, and the click handler calls `onModeEventDismissed()` for that branch. The card tap is also disabled during mini-game result display when a mode is active (`!uiState.isModeActive` guard).
@@ -221,7 +221,7 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 | `cancelStickyDare(id)` (modified) | Cancel button in dares sheet | punishment event (dare's player as target) |
 | `onMiniGameDealFinished()` | Finish button on mini-game results | reward (win) / punishment (loss) / silent reset (tie) |
 | `onChallengeDismissed()` (modified) | GK card tap after answer | reward (correct) or punishment (wrong) |
-| `onModeEventDismissed()` | Tap anywhere on the card while a couples event is active | clears event, resets deal to IDLE |
+| `onModeEventDismissed()` | Tap on the landed outcome | clears event, returns the turn to the deal picker |
 
 ---
 
@@ -250,3 +250,13 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 | `couples_event_make_love_declaration` | `"Make a love declaration to %1$s!"` (`%1$s` = target player name) |
 | `couples_event_act_of_love` | `"Do whatever %1$s tells you to do!"` (`%1$s` = requester player name) |
 | `couples_event_chose_lovers` | `"You choose who will make a love declaration!"` |
+
+
+---
+
+## Related
+
+- [outcome-presentation.md](outcome-presentation.md) — How the roll and reveal are rendered
+- [game-mode-handler.md](game-mode-handler.md) — `CouplesModeHandler` and the trigger points
+- [game-deal-flow.md](game-deal-flow.md) — The turn a couples event ends
+- [create-player-feature-spec.md](create-player-feature-spec.md) — Gender and interest fields used for target selection

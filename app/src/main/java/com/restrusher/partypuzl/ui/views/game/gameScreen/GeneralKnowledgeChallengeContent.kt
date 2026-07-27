@@ -49,7 +49,7 @@ internal fun GeneralKnowledgeChallengeContent(
                 text = stringResource(R.string.general_knowledge_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = 0.65f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(16.dp))
@@ -57,7 +57,7 @@ internal fun GeneralKnowledgeChallengeContent(
                 text = question.question,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(32.dp))
@@ -89,7 +89,7 @@ internal fun GeneralKnowledgeChallengeContent(
                         if (uiState.isModeActive) R.string.tap_to_continue else R.string.tap_to_dismiss
                     ),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.45f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
                     textAlign = TextAlign.Center
                 )
             }
@@ -99,7 +99,7 @@ internal fun GeneralKnowledgeChallengeContent(
                 text = player.nickName,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = Color.White.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)
