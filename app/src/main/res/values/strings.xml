@@ -58,11 +58,11 @@
     <!-- Game Modes Descriptions -->
     <string name="standard_description">The classic mode where every player competes on their own — may the best one win!</string>
     <string name="bar_description">A mode made for bar nights — grab your crew and compete in rounds of wild challenges!</string>
-    <string name="couples_description">Reinforce your love with your couple playing as a team</string>
+    <string name="couples_description">Strengthen your love with your partner, playing as a team!</string>
     <string name="party_puzz_description">The ultimate mix — every round is a surprise, combining all game modes into one unpredictable experience!</string>
 
     <string name="welcome">Welcome</string>
-    <string name="glad_to_have_you_back">Hi %1$s we are glad to have you back. What do you want to play today?</string>
+    <string name="glad_to_have_you_back">Hi %1$s, we are glad to have you back. What do you want to play today?</string>
 
     <!-- Image Descriptions -->
     <string name="back_button">Back</string>
@@ -245,7 +245,7 @@
     <!-- Dare texts -->
     <string-array name="dare_texts">
         <item>Do 100 squats</item>
-        <item>Say yes to everything for the next 1 minute</item>
+        <item>Say yes to everything for the next minute</item>
         <item>Keep your eyes closed until it\'s your go again</item>
         <item>Do your best impression of someone in the room</item>
         <item>Let the group go through your phone for 30 seconds</item>
@@ -300,7 +300,7 @@
 
     <!-- Sticky dares -->
     <string-array name="sticky_dares">
-        <item>For 1 minute the player must talk with an Hispanic accent</item>
+        <item>For 1 minute the player must talk with a Hispanic accent</item>
         <item>For 2 minutes the player must end every phrase with \"oh, yeah\"</item>
         <item>For 5 minutes the player must continue the party standing up</item>
         <item>For 3 minutes the player must talk in a funny accent</item>
@@ -539,6 +539,15 @@
     <string name="active_dares_title">Active Dares</string>
     <string name="no_active_dares">No active dares right now</string>
     <string name="no_active_dares_for_player">No active dares for this player</string>
+    <string name="sticky_dare_pill">%1$s is %2$s for %3$s</string>
+    <plurals name="remaining_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
+    <plurals name="remaining_seconds">
+        <item quantity="one">%d second</item>
+        <item quantity="other">%d seconds</item>
+    </plurals>
 
     <!-- Mini-games -->
     <string name="follow_the_spot">Follow The Spot</string>

@@ -43,7 +43,7 @@
     <string name="give">Dar</string>
     <string name="tap_to_continue">Toca para continuar</string>
     <string name="bar_event_title">¡Evento de Bar!</string>
-    <string name="bar_event_no_action">¡Nada ocurre! — ¡Continuad!</string>
+    <string name="bar_event_no_action">¡No pasa nada — sigan!</string>
     <string name="bar_event_take_drinks">¡Bebe %1$d trago(s)!</string>
     <string name="bar_event_give_drinks">¡Da %1$d trago(s) a %2$s!</string>
     <string name="bar_event_give_drinks_choose">¡Da %1$d trago(s) a:</string>
@@ -60,7 +60,7 @@
     <string name="standard_description">El modo clásico donde cada jugador compite por su cuenta — ¡que gane el mejor!</string>
     <string name="bar_description">Un modo hecho para noches de bar — ¡reúne a tu equipo y compite en rondas de locos desafíos!</string>
     <string name="couples_description">Refuerza tu amor con tu pareja jugando en equipo</string>
-    <string name="party_puzz_description">Es simple PartyPuzl… ¡disfruta!</string>
+    <string name="party_puzz_description">La mezcla definitiva — cada ronda es una sorpresa que combina todos los modos de juego en una experiencia impredecible!</string>
 
     <string name="welcome">Bienvenido</string>
     <string name="glad_to_have_you_back">Hola %1$s, nos alegra tenerte de vuelta. ¿Qué quieres jugar hoy?</string>
@@ -212,7 +212,7 @@
         <item>¿Con quién de los que están aquí cambiarías tu vida?</item>
         <item>¿Por qué cosa más ridícula has llorado?</item>
         <item>¿Alguna vez has hecho trampa en un juego?</item>
-        <item>¿Cuál es lo más comprometedor que tienes en el teléfono ahora mismo?</item>
+        <item>¿Qué es lo más comprometedor que tienes en el teléfono ahora mismo?</item>
         <item>¿Cuál es la cosa más rara que has comido?</item>
         <item>¿Alguna vez le hiciste ghosting a alguien — por qué?</item>
         <item>¿Cuál es tu mayor miedo irracional?</item>
@@ -233,10 +233,10 @@
         <item>¿Cuál es la cosa más egoísta que has hecho en tu vida?</item>
         <item>Si pudieras borrar un recuerdo de tu vida, ¿cuál sería?</item>
         <item>¿Qué es algo que nunca le has contado a tu mejor amigo?</item>
-        <item>¿Cuál es lo más vergonzoso que has hecho para llamar la atención de alguien?</item>
+        <item>¿Qué es lo más vergonzoso que has hecho para llamar la atención de alguien?</item>
         <item>¿Cuál es la peor frase de ligue que has usado o que te han dicho?</item>
-        <item>¿Cuál es tu serie o película culposa más vergonzosa?</item>
-        <item>¿Cuál es lo más raro que has hecho cuando nadie te miraba?</item>
+        <item>¿Cuál es tu serie o película de placer culpable más vergonzosa?</item>
+        <item>¿Qué es lo más raro que has hecho cuando nadie te miraba?</item>
         <item>¿Alguna vez le echaste la culpa a alguien de algo que tú hiciste?</item>
         <item>¿Cuánto dinero has pedido prestado y nunca devuelto?</item>
         <item>¿Cuál es el pensamiento más grosero que has tenido sobre un desconocido?</item>
@@ -263,7 +263,7 @@
         <item>Muéstrale al grupo la última foto de tu galería</item>
         <item>Imita a un bebé haciendo una rabieta</item>
         <item>Di el abecedario al revés lo más rápido que puedas</item>
-        <item>Haz 10 sentadillas con salto ahora mismo</item>
+        <item>Haz 10 saltos de tijera ahora mismo</item>
         <item>Tómate una selfie con la persona a tu izquierda y mándasela a alguien de tus contactos</item>
         <item>Imita a tu famoso favorito — el grupo adivina quién es</item>
         <item>Muéstrale al grupo tu conversación más reciente en el teléfono</item>
@@ -271,7 +271,7 @@
         <item>Haz tu mejor carcajada malvada</item>
         <item>Deja que alguien del grupo te escriba algo en la frente con un marcador</item>
         <item>Huélele los zapatos a la persona a tu derecha</item>
-        <item>Haz tu mejor escena de corrida a cámara lenta por el cuarto</item>
+        <item>Cruza el cuarto corriendo en cámara lenta, como en las películas</item>
         <item>Bebe de tu vaso sin usar las manos</item>
         <item>Actúa como un perro durante 30 segundos</item>
         <item>Muéstrale al grupo tus 3 canciones más escuchadas ahora mismo</item>
@@ -294,7 +294,7 @@
         <item>Intercambia sitio con alguien que el grupo elija durante las próximas 2 rondas</item>
         <item>Describe a cada persona del grupo con exactamente una palabra — empezando por tu derecha</item>
         <item>Di algo genuinamente amable sobre cada una de las personas del grupo</item>
-        <item>Reta a pulso a la persona de tu derecha — el que pierda hace 10 sentadillas</item>
+        <item>Haz un duelo de miradas con la persona de tu derecha — el que pierda hace 10 sentadillas</item>
         <item>Muérdete un gajo de limón sin hacer ninguna cara</item>
         <item>Deja que el grupo te dibuje algo en el brazo con un bolígrafo</item>
     </string-array>
@@ -540,6 +540,15 @@
     <string name="active_dares_title">Retos activos</string>
     <string name="no_active_dares">No hay retos activos ahora mismo</string>
     <string name="no_active_dares_for_player">No hay retos activos para este jugador</string>
+    <string name="sticky_dare_pill">%1$s está %2$s durante %3$s</string>
+    <plurals name="remaining_minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="other">%d minutos</item>
+    </plurals>
+    <plurals name="remaining_seconds">
+        <item quantity="one">%d segundo</item>
+        <item quantity="other">%d segundos</item>
+    </plurals>
 
     <!-- Mini-games -->
     <string name="follow_the_spot">Sigue el punto</string>
@@ -566,7 +575,7 @@
     <string name="hot_potato_waiting">Esperando…</string>
     <string name="hot_potato_boom">¡BOOM!</string>
     <string name="circle_master">Maestro del Círculo</string>
-    <string name="circle_master_description">Por turnos, dibujad un círculo perfecto — quien lo haga peor bebe.</string>
+    <string name="circle_master_description">Por turnos, dibujen un círculo perfecto — quien lo haga peor bebe.</string>
     <string name="circle_master_draw_instruction">¡Dibuja un círculo alrededor del punto!</string>
     <string name="circle_master_score_perfect">¡Perfecto!</string>
     <string name="circle_master_score_great">¡Muy redondo!</string>
