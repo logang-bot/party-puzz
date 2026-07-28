@@ -10,7 +10,9 @@ import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
+import com.restrusher.partypuzl.data.models.EnabledPackContent
 import com.restrusher.partypuzl.data.models.Player
+import com.restrusher.partypuzl.data.packs.QuestionPackContentLoader
 import com.restrusher.partypuzl.data.repositories.interfaces.PartyPhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,7 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class GameScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val partyPhotoRepository: PartyPhotoRepository
+    private val partyPhotoRepository: PartyPhotoRepository,
+    private val questionPackContentLoader: QuestionPackContentLoader
 ) : ViewModel() {
 
     companion object {
@@ -57,6 +60,12 @@ class GameScreenViewModel @Inject constructor(
     )
     val uiState: StateFlow<GameScreenState> = _uiState.asStateFlow()
 
+    /**
+     * The deck for this game, pooled from every enabled pack. Read once at init — packs can't be
+     * toggled mid-game, so there is no reason to observe it.
+     */
+    private var packContent: EnabledPackContent = EnabledPackContent()
+
     private var dealJob: Job? = null
     private var outcomeJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
@@ -66,10 +75,31 @@ class GameScreenViewModel @Inject constructor(
     private var roundNumber = 0
 
     init {
-        // No deal has been played yet, so the first hero card is drawn at random rather than
-        // always opening on Truth or Dare.
-        _uiState.update { it.copy(heroDealType = it.availableDealTypes.random()) }
+        loadPackContent()
         advanceToNextTurn()
+    }
+
+    /**
+     * Resolves the enabled packs into a playable deck, then narrows the deal picker to the
+     * categories that actually have content. A deal whose packs are all switched off never
+     * appears on the choice screen or in the surprise reel.
+     */
+    private fun loadPackContent() {
+        viewModelScope.launch {
+            val content = withContext(Dispatchers.IO) {
+                questionPackContentLoader.loadEnabledContent()
+            }
+            packContent = content
+            _uiState.update { state ->
+                val narrowed = state.copy(enabledCategories = content.availableCategories)
+                // No deal has been played yet, so the first hero card is drawn at random rather
+                // than always opening on Truth or Dare.
+                narrowed.copy(
+                    heroDealType = narrowed.availableDealTypes.randomOrNull()
+                        ?: narrowed.heroDealType
+                )
+            }
+        }
     }
 
     private fun nextPlayerInRound(players: List<Player>): Player? {
@@ -89,7 +119,7 @@ class GameScreenViewModel @Inject constructor(
     fun onSurpriseRequested() {
         val state = _uiState.value
         if (state.dealPhase != GameDealPhase.DEAL_CHOICE) return
-        val target = state.availableDealTypes.random()
+        val target = state.availableDealTypes.randomOrNull() ?: return
         _uiState.update {
             it.copy(dealPhase = GameDealPhase.SURPRISE_SHUFFLE, surpriseDealType = target)
         }
@@ -419,54 +449,49 @@ class GameScreenViewModel @Inject constructor(
         when (request.dealType) {
             GameDealType.TRUTH_OR_DARE -> buildTruthOrDareContent(request.truthOrDareChoice)
             GameDealType.STICKY_DARE -> buildStickyDareContent(request)
-            GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(gkQuestion = loadGkQuestions().randomOrNull())
+            GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(
+                gkQuestion = packContent.trivia.randomOrNull()?.let {
+                    GeneralKnowledgeQuestion(
+                        question = it.question,
+                        optionA = it.optionA,
+                        optionB = it.optionB,
+                        correctOption = it.correctOption
+                    )
+                }
+            )
             GameDealType.MINI_GAME -> ChallengeContent(
                 miniGame = MiniGame.entries
-                    .filter { _uiState.value.players.size >= it.minPlayers }
-                    .randomOrNull()
+                    .takeIf { packContent.hasMiniGames }
+                    ?.filter { _uiState.value.players.size >= it.minPlayers }
+                    ?.randomOrNull()
             )
         }
 
     private fun buildTruthOrDareContent(choice: TruthOrDareChoice?): ChallengeContent {
         val texts = when (choice) {
-            TruthOrDareChoice.TRUTH -> context.resources.getStringArray(R.array.truth_texts)
-            else -> context.resources.getStringArray(R.array.dare_texts)
+            TruthOrDareChoice.TRUTH -> packContent.truths
+            else -> packContent.dares
         }
-        return ChallengeContent(challengeText = texts.random())
+        return ChallengeContent(challengeText = texts.randomOrNull())
     }
 
     private fun buildStickyDareContent(request: ChallengeRequest): ChallengeContent {
-        val dares = context.resources.getStringArray(R.array.sticky_dares)
-        val presentContinuous = context.resources.getStringArray(R.array.sticky_dares_present_continuous)
-        val durationLabels = context.resources.getStringArray(R.array.sticky_dares_duration_labels)
-        val durationSeconds = context.resources.getIntArray(R.array.sticky_dares_duration_seconds)
+        val dares = packContent.stickyDares
+        if (dares.isEmpty()) return ChallengeContent()
         val activePcTexts = request.activeStickyDares
             .filter { it.playerName == request.playerName && !it.isCompleted }
             .map { it.presentContinuousText }
             .toSet()
-        val eligibleIndices = dares.indices.filter { presentContinuous[it] !in activePcTexts }
-        val index = (if (eligibleIndices.isNotEmpty()) eligibleIndices else dares.indices.toList()).random()
+        // Prefer a dare this player isn't already serving; fall back to the whole pool if they
+        // somehow hold all of them.
+        val eligible = dares.filter { it.presentContinuous !in activePcTexts }
+        val dare = (eligible.ifEmpty { dares }).random()
         return ChallengeContent(
-            challengeText = dares[index],
-            presentContinuous = presentContinuous[index],
-            durationLabel = durationLabels[index],
-            durationSeconds = durationSeconds[index]
+            challengeText = dare.text,
+            presentContinuous = dare.presentContinuous,
+            durationLabel = dare.durationLabel,
+            durationSeconds = dare.durationSeconds
         )
-    }
-
-    private fun loadGkQuestions(): List<GeneralKnowledgeQuestion> {
-        val questions = context.resources.getStringArray(R.array.gk_questions)
-        val optionsA = context.resources.getStringArray(R.array.gk_options_a)
-        val optionsB = context.resources.getStringArray(R.array.gk_options_b)
-        val correctOptions = context.resources.getStringArray(R.array.gk_correct_options)
-        return questions.indices.map { i ->
-            GeneralKnowledgeQuestion(
-                question = questions[i],
-                optionA = optionsA[i],
-                optionB = optionsB[i],
-                correctOption = correctOptions[i].first()
-            )
-        }
     }
 
     override fun onCleared() {

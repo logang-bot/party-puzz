@@ -29,6 +29,7 @@ Current entries:
 
 ### How a mini-game deal is triggered
 
+0. The **Mini-games** question pack has to be enabled on the setup screen. It is the one pack with no question rows — mini-games are code, not prompts — so `QuestionPackContentLoader` checks its enabled flag directly and reports it as `EnabledPackContent.hasMiniGames`. With the pack off, `MINI_GAME` is dropped from `availableDealTypes` and never appears on the picker or the reel. See [question-packs.md](question-packs.md).
 1. The player picks **Mini-games** on the deal picker (or the "Surprise me" reel lands on it), and `GameScreenViewModel.onDealChosen()` starts a `GameDealType.MINI_GAME` challenge.
 2. Any `MiniGame` entry whose `minPlayers ≤ players.size` is eligible.
 3. `dealPhase` advances to `CHALLENGE_SHOWN` and `miniGame` is set in `GameScreenState`.
@@ -519,6 +520,8 @@ onGameFinished(loserName)
 6. In `GameScreenViewModel.kt`, add a result handler that stores an appropriate `MiniGameResult` variant (`ScoredMiniGameResult` or `LoserMiniGameResult`) — reuse existing variants when possible so each mode handler's `applyMiniGameResult` keeps a flat `when` on the sealed interface.
 7. Add string resources to `values/strings.xml` and `values-es/strings.xml` — at minimum `<name>_description` for the deal card.
 8. Use `MiniGameCountdownOverlay` for the pre-game countdown.
+
+Nothing needs doing on the question-packs side: the Mini-games pack has no rows and the setup screen reports `MiniGame.entries.size`, so a new entry shows up in its prompt count automatically.
 
 ---
 

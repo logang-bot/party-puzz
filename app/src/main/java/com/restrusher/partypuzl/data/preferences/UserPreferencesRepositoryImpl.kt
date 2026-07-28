@@ -4,8 +4,10 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -17,6 +19,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         private val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
         private val IS_AD_FREE_KEY = booleanPreferencesKey("is_ad_free")
+        private val QUESTION_MAPPING_VERSION_KEY = intPreferencesKey("question_mapping_version")
     }
 
     override val themeMode: Flow<ThemeMode> = dataStore.data.map { prefs ->
@@ -43,5 +46,12 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun setAdFree(adFree: Boolean) {
         dataStore.edit { prefs -> prefs[IS_AD_FREE_KEY] = adFree }
+    }
+
+    override suspend fun getQuestionMappingVersion(): Int =
+        dataStore.data.first()[QUESTION_MAPPING_VERSION_KEY] ?: 0
+
+    override suspend fun setQuestionMappingVersion(version: Int) {
+        dataStore.edit { prefs -> prefs[QUESTION_MAPPING_VERSION_KEY] = version }
     }
 }

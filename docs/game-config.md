@@ -1,8 +1,10 @@
 # Game Configuration Screen
 
-`GameConfigScreen` is the setup step between selecting a game mode and starting the game. Players register who is playing, and that is all — there is nothing else to configure.
+`GameConfigScreen` is the setup step between selecting a game mode and starting the game. Players register who is playing and pick which question packs are in play.
 
 > **The "Pick what to play" categories section was removed.** Deal types are no longer pre-enabled here; each player picks their own deal at the start of their turn. See [game-deal-flow.md](game-deal-flow.md). `OptionsContainer.kt` and `MiniGamesOptionChip.kt` were deleted along with the `GameOptionsSource.options` list, `initialize()` and `toggle()`.
+>
+> Its replacement is the **Choose your packs** section: because every official pack maps to one deal, switching a pack off is now what removes that deal from the game. See [question-packs.md](question-packs.md).
 
 ---
 
@@ -10,8 +12,10 @@
 
 The screen is portrait-locked and composed of two regions:
 
-1. **Scrollable content column** — game mode header, ad banner, players section, and the mini-games hint.
+1. **Scrollable content column** — game mode header, ad banner, players section, question packs, and the mini-games hint.
 2. **Pinned footer** — the Start the Party button, always visible above the navigation bar.
+
+Players sit **above** the packs section, matching the design's Prepare screen: who is playing is the required step, packs are the optional one.
 
 ---
 
@@ -31,19 +35,57 @@ Shows the list of registered players. Each player card supports edit and delete 
 
 ---
 
+## Question Packs Section
+
+**File:** `ui/views/gameConfig/ui/QuestionPacksSection.kt`
+
+Three groups — **Official** (11 packs), **Premium** (3) and **Custom** — sharing one row design (`PackRow.kt`) and differing only in the badge and the trailing control:
+
+| Group | Trailing control | Corner badge | Row when enabled |
+|---|---|---|---|
+| Official | Check circle (accent fill) | Check | Tinted with the pack's accent at 8 % |
+| Premium, unlocked | Check circle | — | Tinted |
+| Premium, locked | **Unlock** pill | Padlock | Untinted, whole row at 70 % opacity |
+| Custom | — | — | Empty state only |
+
+Tapping an unlocked row toggles it. Tapping a locked premium row opens `UnlockChoiceBottomSheet`. The Custom group renders the design's dashed "Write your first pack" panel with a *Coming soon* chip — there is no authoring flow yet.
+
+Each row's meta line shows the prompt count, read from the `questions` table once after seeding. The Mini-games pack has no question rows, so it reports `MiniGame.entries.size` instead of zero.
+
+Full behaviour — tiers, unlocking, and how enabled packs reach the game — is documented in [question-packs.md](question-packs.md).
+
+---
+
+## Unlock Bottom Sheet
+
+**File:** `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt`
+
+A `ModalBottomSheet` offering two routes: watch a rewarded ad (unlocks that pack for the session) or buy the one-time upgrade (unlocks everything permanently and removes ads, via the existing `remove_ads` product).
+
+The rewarded ad is loaded on first composition of the screen, not when the sheet opens, so the option is usually ready the moment the sheet appears. While it is still loading the option stays visible but disabled and its subtitle reads "Loading ad…". After a reward is granted the ad is reloaded so a second pack can be unlocked in the same session.
+
+If the Play Store has no details for `remove_ads` — no connection, or the product was never created in Play Console — `launchPurchaseFlow` returns `false` and the screen shows a snackbar instead of appearing to do nothing.
+
+---
+
 ## Mini-Games Hint Box
 
-A small informational row below the players list. An icon (`ic_lightbulb`) sits in a `primaryContainer` rounded box; the hint text (`mini_games_hint`) explains the phone-passing mechanic.
+A small informational row below the packs section. An icon (`ic_lightbulb`) sits in a `primaryContainer` rounded box; the hint text (`mini_games_hint`) explains the phone-passing mechanic.
 
 ---
 
 ## Start the Party Button
 
-Pinned at the bottom of the screen, above the navigation bar (`navigationBarsPadding`). Enabled only when at least 2 players are registered (`GamePlayersList.PlayersList.size >= 2`).
+Pinned at the bottom of the screen, above the navigation bar (`navigationBarsPadding`). Enabled when **both**:
 
-> The second condition — "at least one category enabled" — was dropped with the categories section. Leaving it in place would have permanently disabled the button, because `GameOptionsSource.options` would never be populated again.
+- at least 2 players are registered (`GamePlayersList.PlayersList.size >= 2`), and
+- at least one pack is enabled (`GameConfigState.hasEnabledPack`).
 
-When disabled, the button uses `onSurface.copy(alpha = 0.12f)` background and `onSurface.copy(alpha = 0.38f)` text — the standard Material3 disabled surface treatment. When enabled, pressing the button animates the background and text colors between `primary` ↔ `onPrimary` via `animateColorAsState(tween 300 ms)`.
+> The second condition replaces the old "at least one category enabled" check that was dropped with the categories section. It is meaningful again now that every pack can be switched off — without it the game would open with nothing to draw.
+
+**Disabled styling:** the button keeps its solid `primary` fill and dims the whole composable to 45 % alpha, matching the design's `.pp-btn:disabled { opacity: 0.45 }`. It previously used the Material default — an `onSurface.copy(alpha = 0.12f)` background — which read as a translucent bar with the screen background showing through it.
+
+When enabled, pressing the button animates the background and text colors between `primary` ↔ `onPrimary` via `animateColorAsState(tween 300 ms)`.
 
 Tapping calls `GameConfigViewModel.onStartGame(onStartGameClick)`, which sets `isLoading = true`, prepares game state, then invokes the navigation callback. A `CircularProgressIndicator` overlay is shown while `isLoading` is true.
 
@@ -53,12 +95,23 @@ The callback navigates **straight to `GameScreen`**. The intermediate `LoadingSc
 
 ## String Resources
 
-| Key | EN | ES |
-|---|---|---|
-| `prepare_your_party` | "Prepare your party" | *(ES equivalent)* |
-| `mode_selected` | "Mode selected" | *(ES equivalent)* |
-| `mini_games_hint` | "The phone passes between players each turn — set it on the table, screen up. Tap to flip the prompt, hand it on." | *(ES equivalent)* |
-| `start_the_party` | "Start the party" | *(ES equivalent)* |
+| Key | EN |
+|---|---|
+| `prepare_your_party` | "Prepare your party" |
+| `mode_selected` | "Mode selected" |
+| `mini_games_hint` | "The phone passes between players each turn — …" |
+| `start_the_party` | "Start the party" |
+| `choose_your_packs` | "Choose your packs" |
+| `choose_your_packs_subtitle` | "Curated by PartyPuzz or written by you — …" |
+| `pack_group_official` / `_premium` / `_custom` | Group and badge labels |
+| `pack_prompts_count` | "%1$d prompts" |
+| `pack_unlock` | "Unlock" |
+| `pack_unlocked_session` | "Unlocked for this session" |
+| `pack_write_first` / `_subtitle` / `pack_coming_soon` | Custom empty state |
+| `unlock_sheet_*`, `unlock_option_*`, `unlock_not_now` | Unlock bottom sheet |
+| `pack_truth_or_dare`, `pack_movie_night`, … | Pack names |
+
+All have Spanish equivalents in `values-es/strings.xml`.
 
 Removed with the categories section: `pick_what_to_play`, `categories_count_on`, `options_toggle_hint`.
 
@@ -68,10 +121,16 @@ Removed with the categories section: `pick_what_to_play`, `categories_count_on`,
 
 | File | Role |
 |---|---|
-| `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, `StartGameButton`, `GameConfigSectionLabel` |
+| `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, snackbar, unlock sheet host |
+| `ui/views/gameConfig/ui/GameConfigComponents.kt` | `GameModeHeader`, `GameConfigSectionLabel`, `MiniGamesHintBox`, `StartGameButton` |
+| `ui/views/gameConfig/ui/QuestionPacksSection.kt` | Official / Premium / Custom groups |
+| `ui/views/gameConfig/ui/PackRow.kt` | Shared pack row layout |
+| `ui/views/gameConfig/ui/PackRowControls.kt` | Icon tile, tier badge, check control, Unlock pill, badge colours |
+| `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt` | Rewarded ad vs. purchase sheet |
 | `ui/views/gameConfig/ui/PlayersContainer.kt` | Player list + add-player affordance |
 | `ui/views/gameConfig/ui/PlayerDataCard.kt` | Individual player card with edit/delete |
-| `ui/views/gameConfig/GameConfigViewModel.kt` | `onStartGame`, `deletePlayer`; exposes `GameConfigState` |
+| `ui/views/gameConfig/GameConfigViewModel.kt` | Pack state, unlock flows, `onStartGame`, `deletePlayer` |
+| `ui/views/gameConfig/GameConfigState.kt` | `GameConfigState`, `PackUiModel` |
 | `data/local/appData/appDataSource/GameOptionsSource.kt` | Singleton holding `currentGameModeNameRes` |
 | `data/local/appData/appDataSource/GamePlayersList` | Singleton holding the registered player list |
 
@@ -79,7 +138,9 @@ Removed with the categories section: `pick_what_to_play`, `categories_count_on`,
 
 ## Related
 
+- [question-packs.md](question-packs.md) — pack tiers, catalog, unlocking, and how packs feed the game
 - [navigation.md](navigation.md) — `GameConfigScreen` route parameters and transitions
 - [game-mode-visual-identity.md](game-mode-visual-identity.md) — shared element animation for the mode header icon and name
 - [game-deal-flow.md](game-deal-flow.md) — where deal selection now happens
+- [ads.md](ads.md) — rewarded ad and the `remove_ads` purchase
 - [minigames.md](minigames.md) — mini-game system

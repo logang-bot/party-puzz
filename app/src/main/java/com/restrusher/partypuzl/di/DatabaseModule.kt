@@ -5,6 +5,8 @@ import com.restrusher.partypuzl.data.local.PartyPuzlDatabase
 import com.restrusher.partypuzl.data.local.dao.PartyDao
 import com.restrusher.partypuzl.data.local.dao.PartyPhotoDao
 import com.restrusher.partypuzl.data.local.dao.PlayerDao
+import com.restrusher.partypuzl.data.local.dao.QuestionDao
+import com.restrusher.partypuzl.data.local.dao.QuestionPackDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,6 +30,16 @@ object DatabaseModule {
     @Provides
     fun providePartyPhotoDao(database: PartyPuzlDatabase): PartyPhotoDao {
         return database.partyPhotoDao()
+    }
+
+    @Provides
+    fun provideQuestionPackDao(database: PartyPuzlDatabase): QuestionPackDao {
+        return database.questionPackDao()
+    }
+
+    @Provides
+    fun provideQuestionDao(database: PartyPuzlDatabase): QuestionDao {
+        return database.questionDao()
     }
 
     @Provides

@@ -82,7 +82,7 @@
     <string name="mode_selected">Modo seleccionado</string>
     <string name="added">añadidos</string>
     <string name="start_the_party">Comenzar la fiesta</string>
-    <string name="mini_games_hint">El teléfono pasa de jugador en jugador — ponlo sobre la mesa con la pantalla hacia arriba. Toca para cambiar la pregunta y pásalo.</string>
+    <string name="mini_games_hint">El teléfono pasa de jugador en jugador — en tu turno, elige tu jugada, complétala y pásale el teléfono al siguiente.</string>
     <string name="bar_mode">Modo Bar</string>
     <string name="can_skip_questions">Se pueden saltar preguntas</string>
     <string name="unlimited_mode">Modo sin fin</string>
@@ -756,6 +756,186 @@
         <item>Haz una declaración de amor</item>
         <item>Haz un acto de amor</item>
         <item>Elige a los enamorados</item>
+    </string-array>
+
+    <!-- ============================================================
+         Paquetes de preguntas — pantalla de configuración
+         ============================================================ -->
+    <string name="choose_your_packs">Elige tus paquetes</string>
+    <string name="choose_your_packs_subtitle">Creados por PartyPuzz o escritos por ti — todo se mezcla en su jugada correspondiente.</string>
+    <string name="pack_group_official">Oficiales</string>
+    <string name="pack_group_premium">Premium</string>
+    <string name="pack_group_custom">Personalizados</string>
+    <string name="pack_group_custom_count">Personalizados · %1$d/%2$d</string>
+    <string name="pack_prompts_count">%1$d preguntas</string>
+    <string name="pack_unlock">Desbloquear</string>
+    <string name="pack_unlocked_session">Desbloqueado por esta sesión</string>
+    <string name="pack_enabled_content_description">%1$s activado</string>
+    <string name="pack_disabled_content_description">%1$s desactivado</string>
+    <string name="pack_write_first">Escribe tu primer paquete</string>
+    <string name="pack_write_first_subtitle">Verdad o Reto para tu grupo, retos persistentes para la despedida — tu sala, tus preguntas.</string>
+    <string name="pack_coming_soon">Próximamente</string>
+    <string name="packs_none_enabled_warning">Activa al menos un paquete para comenzar la fiesta.</string>
+
+    <!-- Nombres de paquetes -->
+    <string name="pack_icebreakers">Para romper el hielo</string>
+    <string name="pack_confessions">Confesiones</string>
+    <string name="pack_party_animals">Almas de la fiesta</string>
+    <string name="pack_this_room">Esta sala</string>
+    <string name="pack_voices_accents">Voces y acentos</string>
+    <string name="pack_verbal_tics">Manías verbales</string>
+    <string name="pack_body_persona">Cuerpo y personaje</string>
+    <string name="pack_world_geography">Geografía mundial</string>
+    <string name="pack_space_science">Espacio y ciencia</string>
+    <string name="pack_mixed_bag">Cajón de sastre</string>
+    <string name="pack_mini_games">Minijuegos</string>
+    <string name="pack_movie_night">Noche de Cine</string>
+    <string name="pack_spicy">Picante</string>
+    <string name="pack_nsfw_confessions">Confesiones +18</string>
+
+    <!-- Hoja inferior de desbloqueo -->
+    <string name="unlock_sheet_kicker">Premium</string>
+    <string name="unlock_sheet_title">Desbloquear %1$s</string>
+    <string name="unlock_sheet_subtitle">Elige cómo quieres desbloquearlo.</string>
+    <string name="unlock_option_ad_title">Ver un anuncio corto</string>
+    <string name="unlock_option_ad_subtitle">Gratis · se desbloquea por esta sesión</string>
+    <string name="unlock_option_ad_loading">Cargando anuncio…</string>
+    <string name="unlock_option_purchase_title">Desbloquear todo</string>
+    <string name="unlock_option_purchase_subtitle">Pago único · todos los paquetes, sin anuncios</string>
+    <string name="unlock_not_now">Ahora no</string>
+    <string name="unlock_purchase_unavailable">Las compras no están disponibles ahora. Inténtalo más tarde.</string>
+
+    <!-- ============================================================
+         Contenido de paquetes premium
+         Los arreglos paralelos siguen las mismas reglas que los oficiales:
+         los índices deben mantenerse sincronizados dentro de cada paquete.
+         ============================================================ -->
+
+    <!-- Noche de Cine (premium · Cultura General) -->
+    <string-array name="movie_gk_questions">
+        <item>¿En qué película aparece un personaje llamado Forrest Gump?</item>
+        <item>¿Cómo se llama el león de El Rey León?</item>
+        <item>¿Qué película ganó el primer Óscar a Mejor Película para una plataforma de streaming?</item>
+        <item>En Matrix, ¿qué pastilla toma Neo?</item>
+        <item>¿Cuál es la película más taquillera de todos los tiempos?</item>
+        <item>¿Qué director hizo Tiburón?</item>
+        <item>¿Cómo se llama el hotel de El Resplandor?</item>
+        <item>¿Qué película animada trata de una rata que quiere ser chef?</item>
+        <item>En Titanic, ¿cómo se llama el personaje de Kate Winslet?</item>
+        <item>¿Qué superhéroe es conocido como el Caballero Oscuro?</item>
+        <item>¿Cuál es el país africano ficticio de Black Panther?</item>
+        <item>¿Qué película empieza con \"Hace mucho tiempo en una galaxia muy, muy lejana\"?</item>
+    </string-array>
+    <string-array name="movie_gk_options_a">
+        <item>Forrest Gump</item>
+        <item>Mufasa</item>
+        <item>Roma</item>
+        <item>Azul</item>
+        <item>Avengers: Endgame</item>
+        <item>Steven Spielberg</item>
+        <item>El Overlook</item>
+        <item>Ratatouille</item>
+        <item>Rose</item>
+        <item>Batman</item>
+        <item>Wakanda</item>
+        <item>Star Wars</item>
+    </string-array>
+    <string-array name="movie_gk_options_b">
+        <item>Náufrago</item>
+        <item>Simba</item>
+        <item>CODA</item>
+        <item>Roja</item>
+        <item>Avatar</item>
+        <item>Martin Scorsese</item>
+        <item>El Bates</item>
+        <item>Lo que el agua se llevó</item>
+        <item>Ruth</item>
+        <item>Superman</item>
+        <item>Zamunda</item>
+        <item>Star Trek</item>
+    </string-array>
+    <!-- "A" o "B" — debe coincidir con el orden de movie_gk_questions -->
+    <string-array name="movie_gk_correct_options">
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+    </string-array>
+
+    <!-- Picante (premium · Retos Persistentes) -->
+    <string-array name="spicy_sticky_dares">
+        <item>Durante 3 minutos el jugador debe halagar a todo el que le hable</item>
+        <item>Durante 2 minutos el jugador debe responder solo con un guiño</item>
+        <item>Durante 5 minutos el jugador debe llamar a todos \"cariño\"</item>
+        <item>Durante 3 minutos el jugador debe hablar solo con frases de ligue</item>
+        <item>Durante 2 minutos el jugador debe lanzar un beso antes de cada frase</item>
+        <item>Durante 5 minutos el jugador debe puntuar todo del uno al diez en voz alta</item>
+        <item>Durante 3 minutos el jugador debe susurrar todas sus respuestas</item>
+        <item>Durante 2 minutos el jugador debe posar cada vez que alguien se ría</item>
+    </string-array>
+    <string-array name="spicy_sticky_dares_present_continuous">
+        <item>halagando a todo el que le hable</item>
+        <item>respondiendo solo con un guiño</item>
+        <item>llamando a todos \"cariño\"</item>
+        <item>hablando solo con frases de ligue</item>
+        <item>lanzando un beso antes de cada frase</item>
+        <item>puntuando todo del uno al diez en voz alta</item>
+        <item>susurrando todas sus respuestas</item>
+        <item>posando cada vez que alguien se ría</item>
+    </string-array>
+    <string-array name="spicy_sticky_dares_duration_labels">
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+    </string-array>
+    <integer-array name="spicy_sticky_dares_duration_seconds">
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+    </integer-array>
+
+    <!-- Confesiones +18 (premium · Verdad o Reto) -->
+    <string-array name="nsfw_truth_texts">
+        <item>¿Qué es lo más atrevido que has hecho para llamar la atención de alguien?</item>
+        <item>¿Con quién de esta sala preferirías quedarte atrapado en un ascensor?</item>
+        <item>¿Qué es lo más vergonzoso de tu historial de búsqueda?</item>
+        <item>Cuéntanos la peor cita que has tenido.</item>
+        <item>¿Cuál es un secreto que nunca le has contado a nadie de esta sala?</item>
+        <item>¿Cuál fue tu enamoramiento más inapropiado?</item>
+        <item>¿Cuál es la mentira más grande que has dicho para cancelar planes?</item>
+        <item>¿Qué es lo más imprudente que has hecho en una noche de fiesta?</item>
+        <item>¿Con cuál de tus ex menos te gustaría cruzarte mañana?</item>
+        <item>¿Qué has hecho que jamás le admitirías a tus padres?</item>
+    </string-array>
+    <string-array name="nsfw_dare_texts">
+        <item>Lee en voz dramática el último mensaje que enviaste.</item>
+        <item>Deja que el grupo elija tu próxima publicación en redes.</item>
+        <item>Enséñale a todos la última foto que tomaste.</item>
+        <item>Envíale a un amigo un halago tan exagerado que resulte sospechoso.</item>
+        <item>Dile el halago más coqueto que se te ocurra a quien tienes a la izquierda.</item>
+        <item>Deja que quien tienes a la derecha califique tu ropa en voz alta.</item>
+        <item>Haz tu mejor imitación de alguien con quien hayas salido.</item>
+        <item>Confiesa tu emoji más usado y actúalo.</item>
+        <item>Deja que el grupo te ponga un apodo para el resto de la noche.</item>
+        <item>Susúrrale un secreto al jugador que elija el grupo.</item>
     </string-array>
 
 </resources>

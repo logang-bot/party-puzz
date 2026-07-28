@@ -3,9 +3,13 @@ package com.restrusher.partypuzl.di
 import com.restrusher.partypuzl.data.local.proxies.PartyLocalProxy
 import com.restrusher.partypuzl.data.local.proxies.PartyPhotoLocalProxy
 import com.restrusher.partypuzl.data.local.proxies.PlayerLocalProxy
+import com.restrusher.partypuzl.data.local.proxies.QuestionLocalProxy
+import com.restrusher.partypuzl.data.local.proxies.QuestionPackLocalProxy
 import com.restrusher.partypuzl.data.proxies.PartyPhotoProxy
 import com.restrusher.partypuzl.data.proxies.PartyProxy
 import com.restrusher.partypuzl.data.proxies.PlayerProxy
+import com.restrusher.partypuzl.data.proxies.QuestionPackProxy
+import com.restrusher.partypuzl.data.proxies.QuestionProxy
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -34,6 +38,16 @@ abstract class ProxyModule {
     @Singleton
     @Binds
     abstract fun bindLocalPartyPhotoProxy(impl: PartyPhotoLocalProxy): PartyPhotoProxy
+
+    @DatabaseProxy
+    @Singleton
+    @Binds
+    abstract fun bindLocalQuestionPackProxy(impl: QuestionPackLocalProxy): QuestionPackProxy
+
+    @DatabaseProxy
+    @Singleton
+    @Binds
+    abstract fun bindLocalQuestionProxy(impl: QuestionLocalProxy): QuestionProxy
 }
 
 // TODO: Implement a remote module to fetch data from an api

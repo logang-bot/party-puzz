@@ -112,6 +112,18 @@ CreatePlayerScreen
 
 ---
 
+## Name Field
+
+**File:** `ui/views/createPlayer/NameOptionsContainer.kt`
+
+A `TextField` with its own indicators and container switched off, sitting inside a `Row` that supplies the visuals: a filled surface (`onBackground` at 4 %), a 1 dp outline, and a 16 dp corner radius. A hairline divider separates the field from the shuffle button so the button reads as part of the field.
+
+The outline animates between `onBackground` at 12 % and `colorScheme.primary` on focus (`tween 180 ms`).
+
+> Previously the container was fully transparent and the border was `Color.Transparent` unless focused, so at rest the field read as a floating hairline with no clear boundary. It now always sits on a visible surface, matching the design's `rgba(255,255,255,0.04)` + 1 px line.
+
+---
+
 ## Random Name Generator
 
 `CreatePlayerViewModel.generateRandomName()` produces a 2- or 3-word name by combining entries from two string-array resources:
@@ -187,3 +199,5 @@ Both selectors accept a nullable selected value (`Gender?` and `InterestedIn?`) 
 | 5 | Both `gender` and `interestedIn` columns present on `players`; `gender` is optional (`Unknown` default), `interestedIn` is required. |
 | 6 | Added `PartyPhotoEntity` (`party_photos` table) for the photo album feature. See `photo-album.md`. |
 | 7 | Added `lastUsedAt: Long?` and `lastGameModeNameRes: Int?` to `PartyEntity`. `lastGameModeNameRes` is written by `GameConfigViewModel.onStartGame()` and read by party cards to display a mode-specific gradient. |
+| 8 | Added the `question_packs` table (see [question-packs.md](question-packs.md)). **First version with a real `Migration`** — `MIGRATION_7_8` creates the table and leaves everything else alone, so parties and photos survive the upgrade. `fallbackToDestructiveMigration()` is still registered as the catch-all for any other path. |
+| 9 | Added the `questions` table — one row per question, with a `packId` foreign key (`ON DELETE CASCADE`) and an index on it. `MIGRATION_8_9` creates the shape only; `QuestionPackSeeder` fills the rows from the catalog on next launch. |

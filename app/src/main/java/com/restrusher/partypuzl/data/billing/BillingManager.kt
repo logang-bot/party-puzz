@@ -54,8 +54,16 @@ class BillingManager @Inject constructor(
         })
     }
 
-    fun launchPurchaseFlow(activity: Activity) {
-        val details = productDetails ?: return
+    /** True once the Play Store has returned details for [REMOVE_ADS_PRODUCT_ID]. */
+    val isProductAvailable: Boolean get() = productDetails != null
+
+    /**
+     * @return false when the product isn't available yet (no connection, or the product has not
+     * been created in Play Console), so callers can tell the user instead of appearing to do
+     * nothing.
+     */
+    fun launchPurchaseFlow(activity: Activity): Boolean {
+        val details = productDetails ?: return false
         val params = BillingFlowParams.newBuilder()
             .setProductDetailsParamsList(
                 listOf(
@@ -66,6 +74,7 @@ class BillingManager @Inject constructor(
             )
             .build()
         billingClient.launchBillingFlow(activity, params)
+        return true
     }
 
     override fun onPurchasesUpdated(result: BillingResult, purchases: List<Purchase>?) {

@@ -24,7 +24,7 @@ Game session (CHALLENGE_SHOWN)
                 │
                 └─ User taps anywhere else  ──► dismissed, no photo saved
                         │
-                        └─ Turn advances to PASS
+                        └─ Turn returns to the deal picker
 ```
 
 ---
@@ -40,7 +40,7 @@ The camera request only fires when **all** of the following are true:
 | Camera permission is granted | Checked **twice**: at `CHALLENGE_SHOWN` time (if missing, `pendingCameraRequest` stays `false` and the card never appears) and again when the user taps "Take Photo" (safety net in case permission was revoked mid-session) |
 | Trigger point reached | Dare dismissed **or** Sticky Dare dismissed **or** Bar / Couples mode event dismissed |
 
-> The roll is decided at `CHALLENGE_SHOWN` time (start of the challenge phase), not at dismissal. This ensures the game knows upfront whether a camera card will follow, allowing a smooth transition without flashing the pass-the-phone screen in between.
+> The roll is decided at `CHALLENGE_SHOWN` time (start of the challenge phase), not at dismissal. This ensures the game knows upfront whether a camera card will follow, allowing a smooth transition without flashing the deal picker in between.
 
 ---
 
@@ -83,7 +83,7 @@ Tapping **anywhere on the card** (not just the button) calls `onCameraRequestDis
 While the camera card is visible, `dealPhase` remains `CHALLENGE_SHOWN`. This keeps the challenge card visible beneath the camera card, avoiding a jarring flash of the idle state:
 
 ```
-[current phase — pass / picker / challenge]   always rendered
+[current phase — picker / challenge]           always rendered
 [challenge card]                               visible while dealPhase == CHALLENGE_SHOWN
 [camera request card]                          on top when showCameraRequest == true
 ```
@@ -186,7 +186,9 @@ PartyPhotoDao
 
 ### Database version
 
-Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list. The database is currently at **v7** (see `create-player-feature-spec.md` for the full version history).
+Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list. The database is currently at **v9** (see `create-player-feature-spec.md` for the full version history).
+
+> From v8 onward the database ships real `Migration` objects (`MIGRATION_7_8`, `MIGRATION_8_9`) alongside the destructive fallback, so photos and parties now survive an upgrade instead of being wiped on every version bump.
 
 ### `PartyWithPlayers` — eager photo loading
 

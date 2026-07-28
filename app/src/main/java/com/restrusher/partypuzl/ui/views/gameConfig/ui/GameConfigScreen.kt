@@ -1,5 +1,8 @@
 package com.restrusher.partypuzl.ui.views.gameConfig.ui
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -32,6 +35,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,10 +46,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
@@ -60,9 +67,12 @@ import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
+import com.restrusher.partypuzl.ui.common.rememberRewardedAd
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.views.gameConfig.GameConfigViewModel
 import kotlinx.coroutines.delay
+
+private const val MIN_PLAYERS_TO_START = 2
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -89,6 +99,22 @@ fun SharedTransitionScope.GameConfigScreen(
         GameOptionsSource.currentGameModeNameRes = gameModeName
     }
 
+    val context = LocalContext.current
+    val activity = remember(context) { context.findActivity() }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Loaded up front so the unlock sheet can offer the ad immediately rather than after a wait.
+    val rewardedAdUnitId = AdUnitIds.PACK_UNLOCK_REWARDED
+    val rewardedAd = rememberRewardedAd(rewardedAdUnitId)
+
+    uiState.messageRes?.let { messageRes ->
+        val message = stringResource(messageRes)
+        LaunchedEffect(messageRes) {
+            snackbarHostState.showSnackbar(message)
+            viewModel.onMessageShown()
+        }
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -98,48 +124,11 @@ fun SharedTransitionScope.GameConfigScreen(
                     .weight(1f)
                     .verticalScroll(rememberScrollState())
             ) {
-                GameConfigSectionLabel(stringResource(R.string.mode_selected))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = gameModeName),
-                        style = MaterialTheme.typography.displayMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.Bold,
-                        fontStyle = FontStyle.Italic,
-                        modifier = Modifier
-                            .weight(1f)
-                            .sharedElement(
-                                state = rememberSharedContentState(key = "game/${gameModeName}"),
-                                animatedVisibilityScope = animatedVisibilityScope,
-                                boundsTransform = { _, _ -> tween(durationMillis = 400) }
-                            )
-                    )
-                    Image(
-                        painter = painterResource(id = gameModeImage),
-                        contentDescription = stringResource(id = R.string.game_mode_image),
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .size(72.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(id = gameModeDescription),
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.ExtraLight,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .sharedElement(
-                            state = rememberSharedContentState(key = "game/${gameModeDescription}"),
-                            animatedVisibilityScope = animatedVisibilityScope,
-                            boundsTransform = { _, _ -> tween(durationMillis = 400) }
-                        )
+                GameModeHeader(
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    gameModeName = gameModeName,
+                    gameModeImage = gameModeImage,
+                    gameModeDescription = gameModeDescription
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
@@ -154,20 +143,37 @@ fun SharedTransitionScope.GameConfigScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(20.dp))
+                QuestionPacksSection(
+                    officialPacks = uiState.officialPacks,
+                    premiumPacks = uiState.premiumPacks,
+                    onTogglePack = viewModel::onTogglePack,
+                    onUnlockPack = viewModel::onUnlockRequested
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
                 MiniGamesHintBox()
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
             StartGameButton(
                 onClick = { viewModel.onStartGame(onStartGameClick) },
-                enabled = GamePlayersList.PlayersList.size >= 2,
+                enabled = GamePlayersList.PlayersList.size >= MIN_PLAYERS_TO_START &&
+                        uiState.hasEnabledPack,
                 modifier = Modifier
                     .fillMaxWidth()
                     .navigationBarsPadding()
                     .padding(horizontal = 16.dp, vertical = 10.dp)
             )
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 72.dp)
+        )
 
         if (uiState.isLoading) {
             Box(
@@ -180,109 +186,35 @@ fun SharedTransitionScope.GameConfigScreen(
             }
         }
     }
-}
 
-@Composable
-internal fun GameConfigSectionLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        letterSpacing = 1.5.sp,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-        modifier = modifier.padding(vertical = 6.dp)
-    )
-}
-
-@Composable
-private fun MiniGamesHintBox(modifier: Modifier = Modifier) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_lightbulb),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimaryContainer),
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = stringResource(R.string.mini_games_hint),
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+    uiState.unlockTarget?.let { target ->
+        UnlockChoiceBottomSheet(
+            pack = target,
+            isAdReady = rewardedAd.isReady,
+            activity = activity,
+            onWatchAd = {
+                activity?.let { host ->
+                    rewardedAd.show(host) {
+                        viewModel.onRewardEarned(target.id)
+                        // show() consumes the ad; reload so another pack can be unlocked too.
+                        rewardedAd.load(rewardedAdUnitId)
+                    }
+                }
+            },
+            onPurchase = { host -> viewModel.onPurchaseRequested(host) },
+            onDismiss = viewModel::onUnlockDismissed
         )
     }
 }
 
-@Composable
-fun StartGameButton(
-    onClick: () -> Unit,
-    enabled: Boolean = true,
-    modifier: Modifier = Modifier
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val primary = MaterialTheme.colorScheme.primary
-    val onPrimary = MaterialTheme.colorScheme.onPrimary
-    val disabledBg = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-    val disabledText = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
-
-    val animatedBgColor by animateColorAsState(
-        targetValue = if (isPressed) onPrimary else primary,
-        animationSpec = tween(durationMillis = 300),
-        label = "bg color"
-    )
-    val animatedTextColor by animateColorAsState(
-        targetValue = if (isPressed) primary else onPrimary,
-        animationSpec = tween(durationMillis = 300),
-        label = "text color"
-    )
-
-    val bgColor = if (enabled) animatedBgColor else disabledBg
-    val textColor = if (enabled) animatedTextColor else disabledText
-
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .defaultMinSize(minHeight = 52.dp)
-            .background(color = bgColor, shape = RoundedCornerShape(50))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                enabled = enabled,
-                onClick = onClick
-            )
-            .padding(horizontal = 24.dp, vertical = 8.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_play_arrow),
-                contentDescription = null,
-                tint = textColor,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = stringResource(id = R.string.start_the_party).uppercase(),
-                fontWeight = FontWeight.Bold,
-                color = textColor
-            )
-        }
+/** Unwraps the Activity the composable is hosted in — needed to show ads and billing flows. */
+private fun Context.findActivity(): Activity? {
+    var current = this
+    while (current is ContextWrapper) {
+        if (current is Activity) return current
+        current = current.baseContext
     }
+    return null
 }
 
 @OptIn(ExperimentalSharedTransitionApi::class)

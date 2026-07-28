@@ -1,5 +1,6 @@
 package com.restrusher.partypuzl.ui.views.game.gameScreen
 
+import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.Player
 
 internal const val SURPRISE_SHUFFLE_DURATION_MS = 1600L
@@ -8,6 +9,15 @@ internal const val OUTCOME_SPIN_DURATION_MS = 1800L
 enum class GameDealPhase { DEAL_CHOICE, SURPRISE_SHUFFLE, CHALLENGE_SHOWN }
 
 enum class GameDealType { TRUTH_OR_DARE, STICKY_DARE, GENERAL_KNOWLEDGE, MINI_GAME }
+
+/** Which pack category feeds this deal. */
+val GameDealType.packCategory: PackCategory
+    get() = when (this) {
+        GameDealType.TRUTH_OR_DARE -> PackCategory.TRUTH_OR_DARE
+        GameDealType.STICKY_DARE -> PackCategory.STICKY_DARE
+        GameDealType.GENERAL_KNOWLEDGE -> PackCategory.GENERAL_KNOWLEDGE
+        GameDealType.MINI_GAME -> PackCategory.MINI_GAME
+    }
 
 enum class OutcomeStage { SPINNING, REVEALED }
 
@@ -43,6 +53,9 @@ data class LoserMiniGameResult(
 
 data class GameScreenState(
     val players: List<Player> = emptyList(),
+    // Deals the enabled question packs can actually supply. Defaults to everything so the first
+    // frame renders normally; narrowed once QuestionPackContentLoader reports back.
+    val enabledCategories: Set<PackCategory> = PackCategory.entries.toSet(),
     val dealPhase: GameDealPhase = GameDealPhase.DEAL_CHOICE,
     val roundNumber: Int = 0,
     val selectedPlayer: Player? = null,
@@ -87,12 +100,15 @@ data class GameScreenState(
         get() = couplesMode.activeEvent?.category ?: barMode.activeEvent?.category
 
     val availableDealTypes: List<GameDealType>
-        get() = GameDealType.entries.filter {
-            it != GameDealType.MINI_GAME || players.size >= MINI_GAME_MIN_PLAYERS
+        get() = GameDealType.entries.filter { dealType ->
+            dealType.packCategory in enabledCategories &&
+                    (dealType != GameDealType.MINI_GAME || players.size >= MINI_GAME_MIN_PLAYERS)
         }
 
     val resolvedHeroDealType: GameDealType
-        get() = heroDealType.takeIf { it in availableDealTypes } ?: GameDealType.TRUTH_OR_DARE
+        get() = heroDealType.takeIf { it in availableDealTypes }
+            ?: availableDealTypes.firstOrNull()
+            ?: GameDealType.TRUTH_OR_DARE
 
     val compactDealTypes: List<GameDealType>
         get() = availableDealTypes - resolvedHeroDealType

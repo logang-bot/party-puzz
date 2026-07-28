@@ -1,6 +1,6 @@
 # Ads
 
-The app monetises with Google AdMob. Three ad formats are integrated: banner ads on informational screens, an App Open Ad on every app launch / foreground return, and a rewarded ad infrastructure ready to be wired up.
+The app monetises with Google AdMob. Three ad formats are integrated: banner ads on informational screens, an App Open Ad on every app launch / foreground return, and a rewarded ad that unlocks premium question packs.
 
 ---
 
@@ -41,8 +41,9 @@ All IDs live in `AdUnitIds` inside `AdBannerView.kt`.
 | `SETTINGS_BANNER` | Banner | `SettingsScreen` |
 | `GAME_CONFIG_BANNER` | Banner | `GameConfigScreen` |
 | `APP_OPEN` | App Open | App launch / foreground |
+| `PACK_UNLOCK_REWARDED` | Rewarded | `GameConfigScreen` — premium pack unlock |
 
-All values are currently set to Google's **test IDs**. Replace each constant with the matching production ad unit ID from the AdMob dashboard before releasing.
+Banner and App Open constants have real production IDs alongside Google's test IDs, selected by `BuildConfig.USE_TEST_ADS`. `PACK_UNLOCK_REWARDED` is still on the test ID in both build types — see the TODO under [Rewarded Ad](#rewarded-ad).
 
 ---
 
@@ -60,7 +61,7 @@ All values are currently set to Google's **test IDs**. Replace each constant wit
 | `PartiesScreen` | Pinned at the bottom | Same overlay pattern; `LazyColumn` uses `contentPadding = PaddingValues(bottom = 50.dp)` |
 | `PartyDetailScreen` | Pinned at the bottom | Same overlay pattern; scrollable `Column` padding adjusted to `bottom = 50.dp` |
 | `SettingsScreen` | Pinned at the bottom | Root `Column` wrapped in a `Box`; `padding(bottom = 50.dp)` on the inner `Column` |
-| `GameConfigScreen` | Inline, between the options grid and the players section | Placed directly inside the scrollable `Column`, not as an overlay |
+| `GameConfigScreen` | Inline, between the mode header and the players section | Placed directly inside the scrollable `Column`, not as an overlay |
 
 The standard banner height is 50 dp (`AdSize.BANNER`).
 
@@ -107,9 +108,9 @@ After the ad is dismissed `isAdVisible` returns to `false` and the overlay is re
 
 ---
 
-## Rewarded Ad (infrastructure)
+## Rewarded Ad
 
-`RewardedAdCard.kt` (`ui/common/`) contains the full rewarded ad system, ready to be wired into any screen.
+`RewardedAdCard.kt` (`ui/common/`) contains the rewarded ad system.
 
 | Class / function | Purpose |
 |---|---|
@@ -119,13 +120,23 @@ After the ad is dismissed `isAdVisible` returns to `false` and the overlay is re
 
 The card shows a fire icon, title (`rewarded_ad_title`), subtitle (`rewarded_ad_subtitle`), and a **WATCH** button that is enabled only once the ad has loaded. Tapping it shows the rewarded video; the `onRewarded` callback is the hook for granting the reward in-game.
 
-> This system is not currently wired into any screen. To activate it, call `rememberRewardedAd(AdUnitIds.GAME_CONFIG_REWARDED)` at the top of the target composable and place `RewardedAdCard(rewardedAdState)` in the layout. Add `GAME_CONFIG_REWARDED` back to `AdUnitIds` with the test rewarded ID `ca-app-pub-3940256099942544/5224354917`.
+### Where it is used
+
+`GameConfigScreen` calls `rememberRewardedAd(AdUnitIds.PACK_UNLOCK_REWARDED)` on composition — up front, not when the sheet opens, so the option is usually ready by the time the user asks for it. `UnlockChoiceBottomSheet` offers it as "Watch a short ad"; granting the reward unlocks that premium question pack **for the session only** via `SessionUnlocksSource`. See [question-packs.md](question-packs.md).
+
+`RewardedAdState.show()` consumes the ad, so the screen reloads it in the reward callback and a second pack can be unlocked in the same session. While a load is in flight the sheet keeps the option visible but disabled with a "Loading ad…" subtitle.
+
+`RewardedAdCard` — the standalone card composable — is still unused; the unlock sheet has its own presentation.
+
+> **TODO:** `PACK_UNLOCK_REWARDED` currently points at Google's test rewarded unit in *both* build types. Create a Rewarded ad unit in the AdMob dashboard and paste its id into `AdUnitIds.Production`. Until then the unlock flow works end to end in release builds but earns nothing.
 
 ---
 
 ## Remove Ads — In-App Purchase
 
 The app has a single "Remove Ads" one-time purchase. There is only one app listing on the Play Store; ads are toggled at runtime based on purchase state.
+
+It doubles as the **full unlock**: owning it unlocks every premium question pack permanently. This is deliberate — one SKU, presented in the unlock sheet as "Unlock everything · all packs, no ads", rather than a second product to create and maintain. See [question-packs.md](question-packs.md).
 
 ### Product ID
 
@@ -141,6 +152,8 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 4. The Settings screen exposes a **Remove Ads** row (under the "Purchases" section). Tapping it calls `BillingManager.launchPurchaseFlow(activity)`.
 5. On successful purchase, `onPurchasesUpdated` fires, the purchase is acknowledged, and `isAdFree` flips to `true` app-wide immediately.
 
+`launchPurchaseFlow(activity)` returns `false` when the Play Store has no details for the product yet — no billing connection, or the product was never created in Play Console. `GameConfigScreen` surfaces that as a snackbar rather than appearing to do nothing.
+
 ### How `isAdFree` propagates
 
 | Layer | Mechanism |
@@ -149,6 +162,7 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 | `AppOpenAdManager` | Collects `isAdFree` via a coroutine scope; `loadAd()` and `showWhenReady()` no-op when true |
 | Banner composables | `LocalIsAdFree` CompositionLocal provided in `MainActivity`; `AdBannerView` returns early when true |
 | Settings screen | Reads `uiState.isAdFree` from `SettingsViewModel`; bottom padding removed when true |
+| Question packs | `GameConfigViewModel` treats `isAdFree` as "all premium unlocked", and mirrors it onto the `question_packs` rows once so it survives a reset of the flag |
 
 ### Build types
 
@@ -167,6 +181,8 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 | `ui/common/AdBannerView.kt` | `AdBannerView` composable + `AdUnitIds` constants |
 | `ui/common/AppOpenAdManager.kt` | App Open Ad load / show lifecycle manager |
 | `ui/common/RewardedAdCard.kt` | `RewardedAdState`, `rememberRewardedAd`, `RewardedAdCard` |
+| `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt` | Rewarded-ad vs. purchase choice for premium packs |
+| `data/local/appData/appDataSource/SessionUnlocksSource.kt` | In-memory session unlocks earned from rewarded ads |
 | `PartyPuzzApplication.kt` | `MobileAds.initialize()` + `appOpenAdManager.loadAd()` on app start |
 | `ui/MainActivity.kt` | `showWhenReady` / `clearPendingActivity` hooks + full-screen overlay |
 | `AndroidManifest.xml` | `APPLICATION_ID` meta-data |

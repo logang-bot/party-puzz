@@ -1,5 +1,41 @@
 package com.restrusher.partypuzl.ui.views.gameConfig
 
-data class GameConfigState(
-    val isLoading: Boolean = false
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.Color
+import com.restrusher.partypuzl.data.models.PackTier
+
+/**
+ * A pack as the setup screen needs it — catalog metadata joined with the user's stored state
+ * and any session unlock earned from a rewarded ad.
+ */
+data class PackUiModel(
+    val id: String,
+    val tier: PackTier,
+    @StringRes val nameRes: Int,
+    @DrawableRes val iconRes: Int,
+    val accent: Color,
+    val promptCount: Int,
+    val isEnabled: Boolean,
+    /** True if the pack is playable — free, purchased, or unlocked for this session. */
+    val isUnlocked: Boolean,
+    /** True only when the unlock came from a rewarded ad and dies with the process. */
+    val isSessionUnlocked: Boolean = false
 )
+
+data class GameConfigState(
+    val isLoading: Boolean = false,
+    val officialPacks: List<PackUiModel> = emptyList(),
+    val premiumPacks: List<PackUiModel> = emptyList(),
+    /** Non-null while the unlock bottom sheet is open, holding the pack being unlocked. */
+    val unlockTarget: PackUiModel? = null,
+    /** One-shot message resource; cleared by [GameConfigViewModel.onMessageShown]. */
+    @StringRes val messageRes: Int? = null
+) {
+    /**
+     * The game needs something to draw from. Gates the Start button alongside the player count,
+     * since every pack can now be switched off.
+     */
+    val hasEnabledPack: Boolean
+        get() = officialPacks.any { it.isEnabled } || premiumPacks.any { it.isEnabled }
+}

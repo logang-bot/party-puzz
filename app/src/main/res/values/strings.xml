@@ -81,7 +81,7 @@
     <string name="mode_selected">Mode selected</string>
     <string name="added">added</string>
     <string name="start_the_party">Start the party</string>
-    <string name="mini_games_hint">The phone passes between players each turn — set it on the table, screen up. Tap to flip the prompt, hand it on.</string>
+    <string name="mini_games_hint">The phone passes between players each turn — on your turn, pick your deal, take it on, then hand the phone to the next player.</string>
     <string name="bar_mode">Bar Mode</string>
     <string name="can_skip_questions">Can skip questions</string>
     <string name="unlimited_mode">No-end mode</string>
@@ -755,6 +755,186 @@
         <item>Make a love declaration</item>
         <item>Do an act of love</item>
         <item>Choose the lovers</item>
+    </string-array>
+
+    <!-- ============================================================
+         Question packs — setup screen
+         ============================================================ -->
+    <string name="choose_your_packs">Choose your packs</string>
+    <string name="choose_your_packs_subtitle">Curated by PartyPuzz or written by you — everything shuffles into its matching deal.</string>
+    <string name="pack_group_official">Official</string>
+    <string name="pack_group_premium">Premium</string>
+    <string name="pack_group_custom">Custom</string>
+    <string name="pack_group_custom_count">Custom · %1$d/%2$d</string>
+    <string name="pack_prompts_count">%1$d prompts</string>
+    <string name="pack_unlock">Unlock</string>
+    <string name="pack_unlocked_session">Unlocked for this session</string>
+    <string name="pack_enabled_content_description">%1$s enabled</string>
+    <string name="pack_disabled_content_description">%1$s disabled</string>
+    <string name="pack_write_first">Write your first pack</string>
+    <string name="pack_write_first_subtitle">Truth or Dare for your friend group, sticky dares for the bachelorette — your room, your prompts.</string>
+    <string name="pack_coming_soon">Coming soon</string>
+    <string name="packs_none_enabled_warning">Turn on at least one pack to start the party.</string>
+
+    <!-- Pack names -->
+    <string name="pack_icebreakers">Icebreakers</string>
+    <string name="pack_confessions">Confessions</string>
+    <string name="pack_party_animals">Party Animals</string>
+    <string name="pack_this_room">This Room</string>
+    <string name="pack_voices_accents">Voices &amp; Accents</string>
+    <string name="pack_verbal_tics">Verbal Tics</string>
+    <string name="pack_body_persona">Body &amp; Persona</string>
+    <string name="pack_world_geography">World Geography</string>
+    <string name="pack_space_science">Space &amp; Science</string>
+    <string name="pack_mixed_bag">Mixed Bag</string>
+    <string name="pack_mini_games">Mini-games</string>
+    <string name="pack_movie_night">Movie Night</string>
+    <string name="pack_spicy">Spicy</string>
+    <string name="pack_nsfw_confessions">NSFW Confessions</string>
+
+    <!-- Unlock bottom sheet -->
+    <string name="unlock_sheet_kicker">Premium</string>
+    <string name="unlock_sheet_title">Unlock %1$s</string>
+    <string name="unlock_sheet_subtitle">Choose how you\'d like to unlock it.</string>
+    <string name="unlock_option_ad_title">Watch a short ad</string>
+    <string name="unlock_option_ad_subtitle">Free · unlocks for this session</string>
+    <string name="unlock_option_ad_loading">Loading ad…</string>
+    <string name="unlock_option_purchase_title">Unlock everything</string>
+    <string name="unlock_option_purchase_subtitle">One-time purchase · all packs, no ads</string>
+    <string name="unlock_not_now">Not now</string>
+    <string name="unlock_purchase_unavailable">Purchases are unavailable right now. Try again later.</string>
+
+    <!-- ============================================================
+         Premium pack content
+         Parallel arrays follow the same rules as the official decks:
+         indices must stay in sync within each pack.
+         ============================================================ -->
+
+    <!-- Movie Night (premium · General Knowledge) -->
+    <string-array name="movie_gk_questions">
+        <item>Which movie features a character named Forrest Gump?</item>
+        <item>What is the name of the lion in The Lion King?</item>
+        <item>Which film won the first ever Best Picture Oscar for a streaming service?</item>
+        <item>In The Matrix, which pill does Neo take?</item>
+        <item>What is the highest-grossing film of all time?</item>
+        <item>Which director made Jaws?</item>
+        <item>What is the name of the hotel in The Shining?</item>
+        <item>Which animated film features a rat who wants to be a chef?</item>
+        <item>In Titanic, what is the name of Kate Winslet\'s character?</item>
+        <item>Which superhero is known as the Caped Crusader?</item>
+        <item>What is the name of the fictional African country in Black Panther?</item>
+        <item>Which film opens with the line \"A long time ago in a galaxy far, far away\"?</item>
+    </string-array>
+    <string-array name="movie_gk_options_a">
+        <item>Forrest Gump</item>
+        <item>Mufasa</item>
+        <item>Roma</item>
+        <item>Blue</item>
+        <item>Avengers: Endgame</item>
+        <item>Steven Spielberg</item>
+        <item>The Overlook</item>
+        <item>Ratatouille</item>
+        <item>Rose</item>
+        <item>Batman</item>
+        <item>Wakanda</item>
+        <item>Star Wars</item>
+    </string-array>
+    <string-array name="movie_gk_options_b">
+        <item>Cast Away</item>
+        <item>Simba</item>
+        <item>CODA</item>
+        <item>Red</item>
+        <item>Avatar</item>
+        <item>Martin Scorsese</item>
+        <item>The Bates</item>
+        <item>Flushed Away</item>
+        <item>Ruth</item>
+        <item>Superman</item>
+        <item>Zamunda</item>
+        <item>Star Trek</item>
+    </string-array>
+    <!-- "A" or "B" — must match movie_gk_questions order -->
+    <string-array name="movie_gk_correct_options">
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+        <item>A</item>
+    </string-array>
+
+    <!-- Spicy (premium · Sticky Dares) -->
+    <string-array name="spicy_sticky_dares">
+        <item>For 3 minutes the player must compliment everyone who speaks to them</item>
+        <item>For 2 minutes the player must answer only with a wink</item>
+        <item>For 5 minutes the player must call everyone \"darling\"</item>
+        <item>For 3 minutes the player must speak only in pickup lines</item>
+        <item>For 2 minutes the player must blow a kiss before every sentence</item>
+        <item>For 5 minutes the player must rate everything out of ten, out loud</item>
+        <item>For 3 minutes the player must whisper every answer</item>
+        <item>For 2 minutes the player must strike a pose whenever someone laughs</item>
+    </string-array>
+    <string-array name="spicy_sticky_dares_present_continuous">
+        <item>complimenting everyone who speaks to them</item>
+        <item>answering only with a wink</item>
+        <item>calling everyone \"darling\"</item>
+        <item>speaking only in pickup lines</item>
+        <item>blowing a kiss before every sentence</item>
+        <item>rating everything out of ten, out loud</item>
+        <item>whispering every answer</item>
+        <item>striking a pose whenever someone laughs</item>
+    </string-array>
+    <string-array name="spicy_sticky_dares_duration_labels">
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+    </string-array>
+    <integer-array name="spicy_sticky_dares_duration_seconds">
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+    </integer-array>
+
+    <!-- NSFW Confessions (premium · Truth or Dare) -->
+    <string-array name="nsfw_truth_texts">
+        <item>What is the boldest thing you have ever done to get someone\'s attention?</item>
+        <item>Who in this room would you most want to be stuck in an elevator with?</item>
+        <item>What is the most embarrassing thing in your search history?</item>
+        <item>Tell us about the worst date you have ever been on.</item>
+        <item>What is a secret you have never told anyone in this room?</item>
+        <item>Who was your most inappropriate crush?</item>
+        <item>What is the biggest lie you have told to get out of plans?</item>
+        <item>What is the most reckless thing you have done on a night out?</item>
+        <item>Which of your exes would you least want to run into tomorrow?</item>
+        <item>What is something you have done that you would never admit to your parents?</item>
+    </string-array>
+    <string-array name="nsfw_dare_texts">
+        <item>Read out the last message you sent, in a dramatic voice.</item>
+        <item>Let the group pick your next social media caption.</item>
+        <item>Show the last photo you took to everyone in the room.</item>
+        <item>Text a friend a compliment so over the top it is suspicious.</item>
+        <item>Give the most flirtatious compliment you can to the person on your left.</item>
+        <item>Let the person to your right rate your outfit out loud.</item>
+        <item>Do your most convincing impression of someone you have dated.</item>
+        <item>Confess your most-used emoji and act it out.</item>
+        <item>Let the group choose a new nickname for you for the rest of the night.</item>
+        <item>Whisper a secret to the player of the group\'s choosing.</item>
     </string-array>
 
 </resources>

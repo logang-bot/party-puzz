@@ -3,6 +3,8 @@
 A **game deal** is one player's turn, from the deal picker appearing to the challenge being dismissed. Each turn picks one player using a **round-based** system, and the player then picks their own deal type.
 
 > Deal types used to be drawn randomly, and the categories in play were pre-selected on the config screen. Both are gone: the player chooses live, every turn. See [game-config.md](game-config.md).
+>
+> Which deals are *offered* is still decided up front, but by the enabled question packs rather than by category toggles. See [question-packs.md](question-packs.md).
 
 ---
 
@@ -79,7 +81,7 @@ The player picks their own deal. Whichever category was played **last — by any
 | Truth or Dare | **Two** hero cards, Truth and Dare, so the player commits to a side up front |
 | General Knowledge / Sticky Dares / Mini-games | One hero card |
 
-`heroDealType` is stored in `GameScreenState` and updated in `startChallenge()`, so it survives across turns. On the very first turn there is no previous pick, so `GameScreenViewModel.init` seeds it at **random** from `availableDealTypes`. `resolvedHeroDealType` falls back to Truth or Dare if the stored hero later becomes unavailable.
+`heroDealType` is stored in `GameScreenState` and updated in `startChallenge()`, so it survives across turns. On the very first turn there is no previous pick, so `GameScreenViewModel` seeds it at **random** from `availableDealTypes` — done once the pack content has loaded, since that is what decides which deals exist. `resolvedHeroDealType` falls back to the first available deal if the stored hero later becomes unavailable.
 
 | User action | Resulting `truthOrDareChoice` |
 |---|---|
@@ -88,7 +90,14 @@ The player picks their own deal. Whichever category was played **last — by any
 | Compact **Truth or Dare** tile | Random |
 | Surprise reel lands on Truth or Dare | Random |
 
-**Availability:** all four deals are always offered, except `MINI_GAME`, which needs at least 2 players (`availableDealTypes`). The compact row therefore renders either 2 or 3 tiles.
+**Availability:** a deal is offered only when both hold (`availableDealTypes`):
+
+1. At least one **enabled question pack** feeds its category. Packs are chosen on the setup screen and pooled by `QuestionPackContentLoader` into `GameScreenState.enabledCategories`; a deal whose packs are all switched off never appears on the choice screen or in the surprise reel. See [question-packs.md](question-packs.md).
+2. For `MINI_GAME` only, there are at least 2 players.
+
+The compact row therefore renders between 0 and 3 tiles. `enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns — a few milliseconds, and the player cannot reach a challenge before then.
+
+The setup screen refuses to start a game with no packs enabled, so `availableDealTypes` is never empty in practice.
 
 **Surprise me** picks the target first, moves to `SURPRISE_SHUFFLE`, spins a `SlotReel` onto that target, and then starts the challenge. A surprise result counts as a pick, so it becomes the next turn's hero.
 
@@ -233,8 +242,9 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `stickyDareDurationSeconds` | `Int?` | Duration in seconds; copied into `ActiveStickyDare` on dismissal |
 | `activeStickyDares` | `List<ActiveStickyDare>` | All currently running sticky dare timers |
 | `outcomeStage` | `OutcomeStage?` | `SPINNING` / `REVEALED` while a reward or punishment is on screen |
-| `availableDealTypes` | `List<GameDealType>` (computed) | All four, minus `MINI_GAME` under 2 players |
-| `resolvedHeroDealType` | `GameDealType` (computed) | `heroDealType`, or Truth or Dare if unavailable |
+| `enabledCategories` | `Set<PackCategory>` | Categories the enabled packs can supply; defaults to all four until loaded |
+| `availableDealTypes` | `List<GameDealType>` (computed) | Deals in `enabledCategories`, minus `MINI_GAME` under 2 players |
+| `resolvedHeroDealType` | `GameDealType` (computed) | `heroDealType`, or the first available deal if unavailable |
 | `compactDealTypes` | `List<GameDealType>` (computed) | `availableDealTypes` minus the hero |
 | `activeEventCategory` | `EventCategory?` (computed) | Reward vs punishment of the active event |
 | `isChallengeDismissible` | `Boolean` (computed) | `true` when tapping should end the challenge |

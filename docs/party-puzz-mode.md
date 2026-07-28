@@ -91,17 +91,17 @@ user taps Skip / Finish / card (GK only)
       │
 random handler chosen
       │
-      ├─ NoOpModeHandler  ──▶  no event; turn advances to PASS
+      ├─ NoOpModeHandler  ──▶  no event; turn returns to the deal picker
       │
-      ├─ BarModeHandler   ──▶  barMode.activeEvent set  ──▶  BarEventDialog appears
-      │                        user resolves bar event (OK / Give)
+      ├─ BarModeHandler   ──▶  barMode.activeEvent set  ──▶  outcome overlay spins, then lands
+      │                        user resolves bar event (tap / Give)
       │                        onModeEventDismissed()
-      │                        both activeEvents cleared  +  turn advances to PASS
+      │                        both activeEvents cleared  +  turn returns to the deal picker
       │
-      └─ CouplesModeHandler ▶  couplesMode.activeEvent set  ──▶  CouplesEventDialog appears
-                               user taps card
+      └─ CouplesModeHandler ▶  couplesMode.activeEvent set  ──▶  outcome overlay spins, then lands
+                               user taps the landed outcome
                                onModeEventDismissed()
-                               both activeEvents cleared  +  turn advances to PASS
+                               both activeEvents cleared  +  turn returns to the deal picker
 ```
 
 `hasActiveModeEvent` (checks both `barMode.activeEvent` and `couplesMode.activeEvent`) is the single guard used throughout the UI to detect a pending event regardless of which sub-mode produced it.
@@ -125,9 +125,9 @@ private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameMo
 }
 ```
 
-### No new dialog
+### No new overlay
 
-Party Puzl produces no new overlay. `GameScreen` already mounts `BarEventDialog` and `CouplesEventDialog` via `AnimatedVisibility`; whichever dialog's backing event is set will appear automatically.
+Party Puzl produces no new overlay. The shared outcome overlay (`OutcomeSpinContent` → `OutcomeRevealContent`, mounted in `GameDealSection`) renders whichever sub-mode's event is set, themed by that event's mode and reward/punishment category. See [outcome-presentation.md](outcome-presentation.md).
 
 ---
 
@@ -138,7 +138,8 @@ Party Puzl produces no new overlay. `GameScreen` already mounts `BarEventDialog`
 | `GameModeHandler.kt` | `PartyPuzzModeHandler` implementation |
 | `GameScreenViewModel.kt` | Routes `party_puzz_game_mode` to `PartyPuzzModeHandler`; activates both sub-modes |
 | `BarModeState.kt` / `CouplesModeState.kt` | Sub-mode states that Party Puzl can populate |
-| `BarEventDialog.kt` / `CouplesEventDialog.kt` | Dialogs reused as-is by Party Puzl |
+| `outcome/OutcomeSpinContent.kt` / `outcome/OutcomeRevealContent.kt` | Shared roll + reveal, reused as-is by Party Puzl |
+| `outcome/OutcomeTheme.kt` | `activeOutcomeMode` resolves Couples first when both sub-mode events are set |
 | `GameScreenState.kt` | `hasActiveModeEvent` and `isModeActive` already cover both sub-modes |
 
 ---
