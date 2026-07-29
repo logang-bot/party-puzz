@@ -16,16 +16,19 @@ play-services-ads = { group = "com.google.android.gms", name = "play-services-ad
 
 ### Manifest
 
+The App ID is a manifest placeholder rather than a literal, so debug and staging get Google's sample
+app id and only `release` carries the real one (`app/build.gradle.kts`, per-build-type
+`manifestPlaceholders`):
+
 ```xml
-<!-- TODO: Replace with your production AdMob App ID -->
 <meta-data
     android:name="com.google.android.gms.ads.APPLICATION_ID"
-    android:value="ca-app-pub-3940256099942544~3347511713" />
+    android:value="${admobAppId}" />
 ```
 
 ### Initialisation
 
-`MobileAds.initialize(this)` is called in `PartyPuzzApplication.onCreate()` — the earliest possible point in the app lifecycle, before any Activity exists.
+`MobileAds.initialize(this)` is called in `PartyPuzlApplication.onCreate()` — the earliest possible point in the app lifecycle, before any Activity exists.
 
 ---
 
@@ -128,7 +131,9 @@ The card shows a fire icon, title (`rewarded_ad_title`), subtitle (`rewarded_ad_
 
 `RewardedAdCard` — the standalone card composable — is still unused; the unlock sheet has its own presentation.
 
-> **TODO:** `PACK_UNLOCK_REWARDED` currently points at Google's test rewarded unit in *both* build types. Create a Rewarded ad unit in the AdMob dashboard and paste its id into `AdUnitIds.Production`. Until then the unlock flow works end to end in release builds but earns nothing.
+> **TODO:** `PACK_UNLOCK_REWARDED` currently points at Google's test rewarded unit in *both* build types. Create a Rewarded ad unit in the AdMob dashboard and paste its id into `AdUnitIds.Production` (`ui/common/AdBannerView.kt`). Until then the unlock flow works end to end in release builds but earns nothing.
+>
+> This is the only ad placement without a production id. It is tracked as setup step 5 and on the first-release checklist in [release.md](release.md).
 
 ---
 
@@ -138,15 +143,19 @@ The app has a single "Remove Ads" one-time purchase. There is only one app listi
 
 It doubles as the **full unlock**: owning it unlocks every premium question pack permanently. This is deliberate — one SKU, presented in the unlock sheet as "Unlock everything · all packs, no ads", rather than a second product to create and maintain. See [question-packs.md](question-packs.md).
 
+Only `PackTier.PREMIUM` is gated. Official packs are free, and custom packs the user wrote are always unlocked — nothing to sell, so they carry no lock, no badge affordance and never reach the unlock sheet. See [custom-packs.md](custom-packs.md).
+
 ### Product ID
 
 `remove_ads` — create this as a **one-time product (INAPP)** in Play Console → Monetize → Products → In-app products.
 
-> **TODO:** Go to Play Console → your app → Monetize → Products → In-app products → Create product. Set the product ID to exactly `remove_ads`, type **One-time**, set the price, and activate it. The billing client will fail silently to find the product until this is done.
+> **TODO:** Go to Play Console → your app → Monetize → Products → In-app products → Create product. Set the product ID to exactly `remove_ads`, type **One-time**, set the price, and activate it. The billing client will fail silently to find the product until this is done. Tracked as setup step 4 in [release.md](release.md).
+>
+> `launchPurchaseFlow` returns `false` while the product is missing, and `GameConfigScreen` shows the `unlock_purchase_unavailable` snackbar rather than appearing to do nothing.
 
 ### Purchase flow
 
-1. `BillingManager.connect()` is called in `PartyPuzzApplication.onCreate()`.
+1. `BillingManager.connect()` is called in `PartyPuzlApplication.onCreate()`.
 2. On connection it queries existing purchases and product details from the Play Store.
 3. If the user already owns `remove_ads`, `UserPreferencesRepository.setAdFree(true)` is called and the state is persisted in DataStore.
 4. The Settings screen exposes a **Remove Ads** row (under the "Purchases" section). Tapping it calls `BillingManager.launchPurchaseFlow(activity)`.
@@ -183,7 +192,7 @@ It doubles as the **full unlock**: owning it unlocks every premium question pack
 | `ui/common/RewardedAdCard.kt` | `RewardedAdState`, `rememberRewardedAd`, `RewardedAdCard` |
 | `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt` | Rewarded-ad vs. purchase choice for premium packs |
 | `data/local/appData/appDataSource/SessionUnlocksSource.kt` | In-memory session unlocks earned from rewarded ads |
-| `PartyPuzzApplication.kt` | `MobileAds.initialize()` + `appOpenAdManager.loadAd()` on app start |
+| `PartyPuzlApplication.kt` | `MobileAds.initialize()` + `appOpenAdManager.loadAd()` on app start |
 | `ui/MainActivity.kt` | `showWhenReady` / `clearPendingActivity` hooks + full-screen overlay |
 | `AndroidManifest.xml` | `APPLICATION_ID` meta-data |
 | `gradle/libs.versions.toml` | `play-services-ads` version entry |

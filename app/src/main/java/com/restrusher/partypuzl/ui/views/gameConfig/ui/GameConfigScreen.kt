@@ -71,6 +71,7 @@ import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.rememberRewardedAd
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.views.gameConfig.GameConfigViewModel
+import com.restrusher.partypuzl.ui.views.gameConfig.text
 import kotlinx.coroutines.delay
 
 private const val MIN_PLAYERS_TO_START = 2
@@ -86,6 +87,7 @@ fun SharedTransitionScope.GameConfigScreen(
     onCreatePlayerClick: () -> Unit,
     onEditPlayerClick: (Int) -> Unit,
     onStartGameClick: () -> Unit,
+    onManagePacksClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: GameConfigViewModel = hiltViewModel()
 ) {
@@ -148,8 +150,10 @@ fun SharedTransitionScope.GameConfigScreen(
                 QuestionPacksSection(
                     officialPacks = uiState.officialPacks,
                     premiumPacks = uiState.premiumPacks,
+                    customPacks = uiState.customPacks,
                     onTogglePack = viewModel::onTogglePack,
-                    onUnlockPack = viewModel::onUnlockRequested
+                    onUnlockPack = viewModel::onUnlockRequested,
+                    onManagePacks = onManagePacksClick
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -226,7 +230,8 @@ fun GameConfigScreenPreview() {
                     gameModeDescription = R.string.party_puzz_description,
                     onCreatePlayerClick = {},
                     onEditPlayerClick = {},
-                    onStartGameClick = {}
+                    onStartGameClick = {},
+                    onManagePacksClick = {}
                 )
             }
         }

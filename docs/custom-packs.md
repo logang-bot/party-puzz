@@ -130,13 +130,22 @@ The statements were verified against Room's own generated schema rather than han
 | `data/packs/QuestionPackContentLoader.kt` | Second pass that pools authored entries into the same deck |
 | `data/local/dao/QuestionPackDao.kt` | `deleteRetiredCatalogPacks` — the `tier != 'CUSTOM'` guard |
 | `navigation/CustomPacksGraph.kt` | The four destinations |
+| `ui/views/gameConfig/PackLabel.kt` | Resource-or-literal pack name, so one row serves built-in and custom |
+| `ui/views/gameConfig/ui/CustomPackGroup.kt` | The Custom group on the setup screen |
 | `ui/views/customPacks/model/CustomPackLook.kt` | Spice/type → icon, accent, labels |
 
 ---
 
-## Not done yet
+## On the setup screen
 
-Authored packs do not appear in the setup screen's **Custom** group — that section still shows the dashed empty state. Wiring it needs `PackUiModel.nameRes` (an `@StringRes Int`) to accept a raw `String`, plus a `customPacks` field on `GameConfigState` and a second path in `GameConfigViewModel.toUiModels()`, which currently iterates `QuestionPackCatalog.all` exclusively and drops any row without a catalog entry. Until then packs are toggled from the manager, and `hasEnabledPack` does not count them. See [game-config.md](game-config.md).
+Authored packs appear in the **Custom** group alongside the official and premium ones, with the same row design, a live `Custom · 1/2` count, and a **Manage** link into the authoring flow. Toggling a row there is a per-session choice exactly as it is for a built-in pack — both write `question_packs.isEnabled`.
+
+Two things had to change for that to work:
+
+- **`PackUiModel.name`** was an `@StringRes Int` and could not hold a user-typed name. It is now a sealed `PackLabel` — `Resource` or `Literal` — resolved by `PackLabel.text()` at the render site.
+- **`GameConfigState.hasEnabledPack`** counted only official and premium packs. Since the content loader pools authored entries into the same deck, an enabled custom pack is a playable game; leaving them out meant turning every official pack off disabled Start on a non-empty deck.
+
+Details in [game-config.md](game-config.md).
 
 ---
 

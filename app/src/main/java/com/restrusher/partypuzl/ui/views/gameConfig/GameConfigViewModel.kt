@@ -11,18 +11,22 @@ import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.data.local.appData.appDataSource.QuestionPackCatalog
 import com.restrusher.partypuzl.data.local.appData.appDataSource.SessionUnlocksSource
 import com.restrusher.partypuzl.data.local.appData.appModels.QuestionPackDefinition
+import com.restrusher.partypuzl.data.local.dao.CustomPackSummary
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.PackTier
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
+import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.PartyRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.PlayerRepository
 import com.restrusher.partypuzl.data.packs.QuestionPackSeeder
 import com.restrusher.partypuzl.data.repositories.interfaces.QuestionPackRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.QuestionRepository
 import com.restrusher.partypuzl.navigation.GameConfigScreen
+import com.restrusher.partypuzl.ui.views.customPacks.model.accent
+import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.game.gameScreen.MiniGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -41,6 +45,7 @@ class GameConfigViewModel @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val questionPackRepository: QuestionPackRepository,
     private val questionRepository: QuestionRepository,
+    private val customPackRepository: CustomPackRepository,
     private val questionPackSeeder: QuestionPackSeeder,
     private val billingManager: BillingManager,
     private val userPreferencesRepository: UserPreferencesRepository,
@@ -96,33 +101,50 @@ class GameConfigViewModel @Inject constructor(
             combine(
                 questionPackRepository.getPacks(),
                 SessionUnlocksSource.unlockedPackIds,
-                userPreferencesRepository.isAdFree
-            ) { packs, sessionUnlocks, isAdFree ->
+                userPreferencesRepository.isAdFree,
+                customPackRepository.getSummaries()
+            ) { packs, sessionUnlocks, isAdFree, customSummaries ->
                 // Purchased but the rows don't say so yet — mirror it once so the unlock holds
                 // independently of the flag. Guarded on "still locked" so writing the rows (which
                 // re-emits this flow) doesn't schedule another write.
                 val needsPurchaseSync =
                     isAdFree && packs.any { it.tier == PackTier.PREMIUM && !it.isUnlocked }
-                packs.toUiModels(sessionUnlocks, isAdFree) to needsPurchaseSync
-            }.collect { (models, needsPurchaseSync) ->
-                if (needsPurchaseSync) persistPurchaseUnlock()
+                PackModels(
+                    catalog = packs.toCatalogUiModels(sessionUnlocks, isAdFree),
+                    custom = customSummaries.map { it.toUiModel() },
+                    needsPurchaseSync = needsPurchaseSync
+                )
+            }.collect { models ->
+                if (models.needsPurchaseSync) persistPurchaseUnlock()
                 _uiState.update { state ->
                     state.copy(
-                        officialPacks = models.filter { it.tier == PackTier.OFFICIAL },
-                        premiumPacks = models.filter { it.tier == PackTier.PREMIUM }
+                        officialPacks = models.catalog.filter { it.tier == PackTier.OFFICIAL },
+                        premiumPacks = models.catalog.filter { it.tier == PackTier.PREMIUM },
+                        customPacks = models.custom
                     )
                 }
             }
         }
     }
 
-    private fun List<QuestionPackEntity>.toUiModels(
+    /** Bundles one emission of the four-flow combine, which has outgrown a Triple. */
+    private data class PackModels(
+        val catalog: List<PackUiModel>,
+        val custom: List<PackUiModel>,
+        val needsPurchaseSync: Boolean
+    )
+
+    /**
+     * Built-in packs only. Custom rows are deliberately skipped here — they carry no catalog entry,
+     * so they are mapped separately by [CustomPackSummary.toUiModel].
+     */
+    private fun List<QuestionPackEntity>.toCatalogUiModels(
         sessionUnlocks: Set<String>,
         isAdFree: Boolean
     ): List<PackUiModel> {
         val byId = associateBy { it.id }
-        // Catalog order is the display order. A DB row with no catalog entry is a pack that was
-        // removed in a later release, so it is simply not shown.
+        // Catalog order is the display order. A DB row with no catalog entry is either a pack that
+        // was removed in a later release or a custom pack, so it is not shown by this pass.
         return QuestionPackCatalog.all.mapNotNull { definition ->
             val entity = byId[definition.id] ?: return@mapNotNull null
             val sessionUnlocked = definition.id in sessionUnlocks
@@ -131,7 +153,7 @@ class GameConfigViewModel @Inject constructor(
             PackUiModel(
                 id = definition.id,
                 tier = definition.tier,
-                nameRes = definition.nameRes,
+                name = PackLabel.Resource(definition.nameRes),
                 iconRes = definition.iconRes,
                 accent = definition.accent,
                 promptCount = definition.promptCount(),
@@ -151,8 +173,26 @@ class GameConfigViewModel @Inject constructor(
         if (category == PackCategory.MINI_GAME) MiniGame.entries.size
         else promptCounts[id] ?: 0
 
+    /**
+     * A custom pack gets its name, look and count from the user's own rows rather than the catalog.
+     * Always unlocked — the user wrote it, there is nothing to buy. The count comes from the live
+     * summary flow rather than the one-shot [promptCounts] map, so it refreshes when they come back
+     * from adding an entry.
+     */
+    private fun CustomPackSummary.toUiModel() = PackUiModel(
+        id = packId,
+        tier = PackTier.CUSTOM,
+        name = PackLabel.Literal(name),
+        iconRes = spice.iconRes,
+        accent = spice.accent,
+        promptCount = entryCount,
+        isEnabled = isEnabled,
+        isUnlocked = true
+    )
+
     fun onTogglePack(packId: String) {
-        val pack = (uiState.value.officialPacks + uiState.value.premiumPacks)
+        val state = uiState.value
+        val pack = (state.officialPacks + state.premiumPacks + state.customPacks)
             .firstOrNull { it.id == packId } ?: return
         if (!pack.isUnlocked) return
         viewModelScope.launch { questionPackRepository.setEnabled(packId, !pack.isEnabled) }

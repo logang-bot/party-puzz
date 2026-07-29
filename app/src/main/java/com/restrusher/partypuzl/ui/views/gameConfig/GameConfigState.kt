@@ -12,7 +12,8 @@ import com.restrusher.partypuzl.data.models.PackTier
 data class PackUiModel(
     val id: String,
     val tier: PackTier,
-    @StringRes val nameRes: Int,
+    /** A resource for built-in packs, a literal for the ones the user wrote. */
+    val name: PackLabel,
     @DrawableRes val iconRes: Int,
     val accent: Color,
     val promptCount: Int,
@@ -27,6 +28,7 @@ data class GameConfigState(
     val isLoading: Boolean = false,
     val officialPacks: List<PackUiModel> = emptyList(),
     val premiumPacks: List<PackUiModel> = emptyList(),
+    val customPacks: List<PackUiModel> = emptyList(),
     /** Non-null while the unlock bottom sheet is open, holding the pack being unlocked. */
     val unlockTarget: PackUiModel? = null,
     /** One-shot message resource; cleared by [GameConfigViewModel.onMessageShown]. */
@@ -35,7 +37,13 @@ data class GameConfigState(
     /**
      * The game needs something to draw from. Gates the Start button alongside the player count,
      * since every pack can now be switched off.
+     *
+     * Custom packs count: `QuestionPackContentLoader` pools their entries into the same deck, so a
+     * lone enabled custom pack is a perfectly playable game. Leaving them out blocked Start on a
+     * non-empty deck.
      */
     val hasEnabledPack: Boolean
-        get() = officialPacks.any { it.isEnabled } || premiumPacks.any { it.isEnabled }
+        get() = officialPacks.any { it.isEnabled } ||
+                premiumPacks.any { it.isEnabled } ||
+                customPacks.any { it.isEnabled }
 }

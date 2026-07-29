@@ -37,6 +37,16 @@ Play Console → your app → **Monetize → Products → In-app products → Cr
 
 See `docs/ads.md` for more context.
 
+### 5. Create the Rewarded ad unit
+
+AdMob dashboard → your app → **Ad units → Add ad unit → Rewarded**, then paste its id into
+`AdUnitIds.Production.PACK_UNLOCK_REWARDED` (`ui/common/AdBannerView.kt`).
+
+**This is currently outstanding.** That constant still points at Google's *test* rewarded unit in
+both build types, deliberately — the premium-pack unlock works end to end in release builds but
+earns nothing. It is the one ad placement without a production id. See the TODO in
+[ads.md](ads.md#rewarded-ad).
+
 ---
 
 ## Every release
@@ -76,6 +86,12 @@ Install from the internal testing track on a real device and verify:
 - [ ] "Remove Ads" purchase flow opens correctly
 - [ ] App open ad does not show after purchasing Remove Ads
 - [ ] Banners do not show after purchasing Remove Ads
+- [ ] Premium packs appear locked on the setup screen; tapping one opens the unlock sheet
+- [ ] "Watch a short ad" grants the pack for the session (a real rewarded unit is still pending — see setup step 5)
+- [ ] Purchasing Remove Ads unlocks all three premium packs permanently
+- [ ] **Upgrading over an existing install keeps saved parties and photos** — the v10 migration adds the custom-pack tables; a wrong statement throws on open. See [custom-packs.md](custom-packs.md)
+- [ ] Settings → Your packs: write a pack, add one entry of each type, confirm it plays in-game
+- [ ] Force-stop and relaunch: the custom pack and its entries survive (regression test for the seeder's `tier != 'CUSTOM'` guard)
 
 ### 5. Promote to production
 
@@ -94,5 +110,6 @@ On the very first release there are extra steps before promoting to production:
 - [ ] **Closed testing** — create a closed testing track with at least **20 testers** who must opt in and stay enrolled for **14 consecutive days** before the production track unlocks (required for personal Google accounts)
 - [ ] Wait for AdMob to approve the app (they crawl the Play Store listing — can take a few days)
 - [ ] Verify the `remove_ads` in-app product is created and active in Play Console
+- [ ] Create the Rewarded ad unit in AdMob and replace the test id in `AdUnitIds.Production.PACK_UNLOCK_REWARDED` (setup step 5) — until then the premium unlock earns nothing
 - [ ] Test the Remove Ads purchase using a Play Store license tester account
 - [ ] Once AdMob approves and the 14-day closed testing period is complete → promote to production

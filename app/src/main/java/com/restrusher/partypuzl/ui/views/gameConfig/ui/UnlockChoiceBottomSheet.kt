@@ -43,6 +43,7 @@ import com.restrusher.partypuzl.ui.theme.BrandTeal
 import com.restrusher.partypuzl.ui.theme.BrandTealShade
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
+import com.restrusher.partypuzl.ui.views.gameConfig.text
 
 /**
  * Shown when a locked premium pack is tapped. Two ways out, per the design: watch a rewarded
@@ -84,7 +85,7 @@ internal fun UnlockChoiceBottomSheet(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = stringResource(R.string.unlock_sheet_title, stringResource(pack.nameRes)),
+                text = stringResource(R.string.unlock_sheet_title, pack.name.text()),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,

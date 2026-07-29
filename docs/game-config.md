@@ -46,11 +46,23 @@ Three groups — **Official** (11 packs), **Premium** (3) and **Custom** — sha
 | Official | Check circle (accent fill) | Check | Tinted with the pack's accent at 8 % |
 | Premium, unlocked | Check circle | — | Tinted |
 | Premium, locked | **Unlock** pill | Padlock | Untinted, whole row at 70 % opacity |
-| Custom | — | — | Empty state only |
+| Custom | Check circle (spice accent) | Check | Tinted |
 
 Tapping an unlocked row toggles it. Tapping a locked premium row opens `UnlockChoiceBottomSheet`.
 
-The Custom group still renders the design's dashed "Write your first pack" panel here. The authoring flow itself now exists and is reached from **Settings → Your packs** ([custom-packs.md](custom-packs.md)); wiring authored packs into *this* section — rows, counts, and per-session toggles alongside the official ones — is the remaining piece. `PackUiModel.nameRes` is an `@StringRes Int`, so it has to accept a raw `String` before a user-typed name can appear in a row.
+### The Custom group
+
+Written by the user and toggled per session exactly like the official ones. Group chrome lives in `PackGroupContainers.kt`; the group itself in `CustomPackGroup.kt`.
+
+- Its label carries a live enabled/total count (`Custom · 1/2`) and a **Manage** link into `CustomPacksRoute`.
+- With nothing written yet it shows the design's dashed "Write your first pack" panel — now a live button into the manager rather than a *Coming soon* placeholder.
+- A custom row's name, icon and accent come from the user's own `custom_packs` row, not the catalog; its meta count is the pack's entry count.
+
+Authoring itself is documented in [custom-packs.md](custom-packs.md).
+
+**`PackLabel`** is what makes one row design serve both. `PackUiModel.name` was an `@StringRes Int`, which could not hold a user-typed name; it is now a sealed `PackLabel` — `Resource(@StringRes Int)` for built-in packs, `Literal(String)` for custom ones — resolved by the `@Composable PackLabel.text()` helper at the render site.
+
+`GameConfigViewModel` therefore maps packs in two passes: `toCatalogUiModels()` walks `QuestionPackCatalog.all` (so a row with no catalog entry is skipped, which is exactly right for custom rows), and `CustomPackSummary.toUiModel()` handles the rest. Both arrive through one four-flow `combine` — packs, session unlocks, `isAdFree`, and the custom summaries.
 
 Each row's meta line shows the prompt count, read from the `questions` table once after seeding. The Mini-games pack has no question rows, so it reports `MiniGame.entries.size` instead of zero.
 
@@ -81,9 +93,11 @@ A small informational row below the packs section. An icon (`ic_lightbulb`) sits
 Pinned at the bottom of the screen, above the navigation bar (`navigationBarsPadding`). Enabled when **both**:
 
 - at least 2 players are registered (`GamePlayersList.PlayersList.size >= 2`), and
-- at least one pack is enabled (`GameConfigState.hasEnabledPack`).
+- at least one pack is enabled (`GameConfigState.hasEnabledPack`) — official, premium **or** custom.
 
 > The second condition replaces the old "at least one category enabled" check that was dropped with the categories section. It is meaningful again now that every pack can be switched off — without it the game would open with nothing to draw.
+
+> Custom packs must be counted here. `QuestionPackContentLoader` pools their entries into the same deck, so a lone enabled custom pack is a playable game; while `hasEnabledPack` ignored them, turning every official pack off left Start disabled on a non-empty deck.
 
 **Disabled styling:** the button keeps its solid `primary` fill and dims the whole composable to 45 % alpha, matching the design's `.pp-btn:disabled { opacity: 0.45 }`. It previously used the Material default — an `onSurface.copy(alpha = 0.12f)` background — which read as a translucent bar with the screen background showing through it.
 
@@ -109,7 +123,8 @@ The callback navigates **straight to `GameScreen`**. The intermediate `LoadingSc
 | `pack_prompts_count` | "%1$d prompts" |
 | `pack_unlock` | "Unlock" |
 | `pack_unlocked_session` | "Unlocked for this session" |
-| `pack_write_first` / `_subtitle` / `pack_coming_soon` | Custom empty state |
+| `pack_write_first` / `_subtitle` | Custom empty state (tappable — opens the manager) |
+| `pack_manage` | "Manage" link on the Custom group label |
 | `unlock_sheet_*`, `unlock_option_*`, `unlock_not_now` | Unlock bottom sheet |
 | `pack_truth_or_dare`, `pack_movie_night`, … | Pack names |
 
@@ -126,6 +141,9 @@ Removed with the categories section: `pick_what_to_play`, `categories_count_on`,
 | `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, snackbar, unlock sheet host |
 | `ui/views/gameConfig/ui/GameConfigComponents.kt` | `GameModeHeader`, `GameConfigSectionLabel`, `MiniGamesHintBox`, `StartGameButton` |
 | `ui/views/gameConfig/ui/QuestionPacksSection.kt` | Official / Premium / Custom groups |
+| `ui/views/gameConfig/ui/PackGroupContainers.kt` | `PackGroupLabel` + `PackGroup` chrome shared by all three groups |
+| `ui/views/gameConfig/ui/CustomPackGroup.kt` | Custom rows, the Manage link, the tappable empty state |
+| `ui/views/gameConfig/PackLabel.kt` | Resource-or-literal pack name |
 | `ui/views/gameConfig/ui/PackRow.kt` | Shared pack row layout |
 | `ui/views/gameConfig/ui/PackRowControls.kt` | Icon tile, tier badge, check control, Unlock pill, badge colours |
 | `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt` | Rewarded ad vs. purchase sheet |

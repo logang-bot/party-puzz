@@ -780,9 +780,9 @@
     <string name="pack_unlocked_session">Unlocked for this session</string>
     <string name="pack_enabled_content_description">%1$s enabled</string>
     <string name="pack_disabled_content_description">%1$s disabled</string>
+    <string name="pack_manage">Manage</string>
     <string name="pack_write_first">Write your first pack</string>
     <string name="pack_write_first_subtitle">Truth or Dare for your friend group, sticky dares for the bachelorette — your room, your prompts.</string>
-    <string name="pack_coming_soon">Coming soon</string>
     <string name="packs_none_enabled_warning">Turn on at least one pack to start the party.</string>
 
     <!-- Custom packs · manager -->

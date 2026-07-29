@@ -776,9 +776,9 @@
     <string name="pack_unlocked_session">Desbloqueado por esta sesión</string>
     <string name="pack_enabled_content_description">%1$s activado</string>
     <string name="pack_disabled_content_description">%1$s desactivado</string>
+    <string name="pack_manage">Gestionar</string>
     <string name="pack_write_first">Escribe tu primer paquete</string>
     <string name="pack_write_first_subtitle">Verdad o Reto para tu grupo, retos persistentes para la despedida — tu sala, tus preguntas.</string>
-    <string name="pack_coming_soon">Próximamente</string>
     <string name="packs_none_enabled_warning">Activa al menos un paquete para comenzar la fiesta.</string>
 
     <!-- Paquetes personalizados · gestor -->

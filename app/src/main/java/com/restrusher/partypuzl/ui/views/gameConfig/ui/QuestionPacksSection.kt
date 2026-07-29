@@ -27,19 +27,22 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.ui.theme.appCard
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
+import com.restrusher.partypuzl.ui.views.gameConfig.text
 
 /**
  * "Choose your packs" — the setup screen's replacement for the old deal-category toggles.
  *
- * Three groups, one row design: Official (free), Premium (needs unlocking) and Custom (no
- * authoring flow yet, so it shows the design's empty state).
+ * Three groups, one row design: Official (free), Premium (needs unlocking) and Custom (written by
+ * the user). Group chrome lives in `PackGroupContainers`, the custom group in `CustomPackGroup`.
  */
 @Composable
 internal fun QuestionPacksSection(
     officialPacks: List<PackUiModel>,
     premiumPacks: List<PackUiModel>,
+    customPacks: List<PackUiModel>,
     onTogglePack: (String) -> Unit,
     onUnlockPack: (PackUiModel) -> Unit,
+    onManagePacks: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -55,7 +58,7 @@ internal fun QuestionPacksSection(
             PackGroup {
                 officialPacks.forEachIndexed { index, pack ->
                     PackRow(
-                        name = stringResource(pack.nameRes),
+                        name = pack.name.text(),
                         meta = stringResource(R.string.pack_prompts_count, pack.promptCount),
                         accent = pack.accent,
                         iconRes = pack.iconRes,
@@ -76,7 +79,7 @@ internal fun QuestionPacksSection(
             PackGroup {
                 premiumPacks.forEachIndexed { index, pack ->
                     PackRow(
-                        name = stringResource(pack.nameRes),
+                        name = pack.name.text(),
                         meta = premiumMeta(pack),
                         accent = pack.accent,
                         iconRes = pack.iconRes,
@@ -95,8 +98,11 @@ internal fun QuestionPacksSection(
             }
         }
 
-        PackGroupLabel(stringResource(R.string.pack_group_custom_count, 0, 0))
-        CustomPacksEmptyState()
+        CustomPackGroup(
+            customPacks = customPacks,
+            onTogglePack = onTogglePack,
+            onManagePacks = onManagePacks
+        )
     }
 }
 
@@ -108,87 +114,5 @@ private fun premiumMeta(pack: PackUiModel): String {
         "$prompts · ${stringResource(R.string.pack_unlocked_session)}"
     } else {
         prompts
-    }
-}
-
-@Composable
-private fun PackGroupLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        fontSize = 10.sp,
-        letterSpacing = 1.6.sp,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f),
-        modifier = modifier.padding(top = 18.dp, bottom = 2.dp)
-    )
-}
-
-/** Rounded container the rows share, so dividers read as one grouped card. */
-@Composable
-private fun PackGroup(content: @Composable () -> Unit) {
-    Column(
-        modifier = Modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth()
-            .appCard(RoundedCornerShape(16.dp))
-    ) {
-        content()
-    }
-}
-
-/**
- * Custom packs have no authoring flow yet, so the group shows the design's dashed prompt with
- * a "coming soon" note rather than a dead button.
- */
-@Composable
-private fun CustomPacksEmptyState(modifier: Modifier = Modifier) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = modifier
-            .padding(top = 8.dp)
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .border(
-                width = 1.5.dp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.18f),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(horizontal = 16.dp, vertical = 22.dp)
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_plus),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f),
-            modifier = Modifier.size(22.dp)
-        )
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.pack_write_first),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
-            )
-            Spacer(modifier = Modifier.size(6.dp))
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.appColors.badgeCustom.copy(alpha = 0.14f))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.pack_coming_soon).uppercase(),
-                    style = MaterialTheme.typography.labelSmall,
-                    fontSize = 9.sp,
-                    letterSpacing = 1.sp,
-                    color = MaterialTheme.appColors.badgeCustom
-                )
-            }
-        }
-        Text(
-            text = stringResource(R.string.pack_write_first_subtitle),
-            style = MaterialTheme.typography.labelSmall,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-        )
     }
 }

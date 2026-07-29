@@ -208,6 +208,9 @@ fun HomeNavigation(
                             onStartGameClick = {
                                 navController.navigate(GameScreen)
                             },
+                            onManagePacksClick = {
+                                navController.navigate(CustomPacksRoute)
+                            },
                             modifier = Modifier.fillMaxSize()
                         )
                     }

@@ -56,7 +56,9 @@ As a backstop, `QuestionPackSeeder` drops any index that no longer resolves and 
 
 ## The packs
 
-11 official + 3 premium. Official packs are the original flat decks split by theme, so a group can pick the *kind* of night they want.
+14 built-in packs — 11 official + 3 premium — plus however many the user writes themselves. Official packs are the original flat decks split by theme, so a group can pick the *kind* of night they want.
+
+The three values of `PackTier` are what the setup screen groups by: `OFFICIAL` (free, on by default), `PREMIUM` (needs unlocking) and `CUSTOM` (authored, always unlocked).
 
 ### Truth or Dare — `truth_texts` (40) + `dare_texts` (52)
 
@@ -98,6 +100,10 @@ Every Truth-or-Dare pack deliberately holds **both** halves — see the empty-po
 | **NSFW Confessions** | Truth or Dare | `nsfw_truth_texts` + `nsfw_dare_texts` (10 + 10) |
 
 Premium packs own their arrays outright, so they take every index.
+
+### Custom
+
+Written by the user, so they have no catalog entry, no fixed count and no string arrays — their prompts are stored verbatim in `custom_entries`. They are always unlocked and are never touched by the seeder. Everything about them is in [custom-packs.md](custom-packs.md).
 
 ---
 
@@ -172,7 +178,9 @@ Because both passes feed one set of pools, the game screen never learns that cus
 | `data/packs/QuestionPackContentLoader.kt` | Enabled packs → playable deck |
 | `data/models/PackPrompts.kt` | `EnabledPackContent` and the empty-pool rule |
 | `data/local/appData/appDataSource/SessionUnlocksSource.kt` | Rewarded-ad unlocks |
-| `ui/views/gameConfig/ui/QuestionPacksSection.kt` | The three groups |
+| `ui/views/gameConfig/ui/QuestionPacksSection.kt` | The three groups — Official, Premium, Custom |
+| `ui/views/gameConfig/ui/CustomPackGroup.kt` | The Custom group's rows, count and Manage link |
+| `ui/views/gameConfig/PackLabel.kt` | Resource-or-literal pack name, so one row serves built-in and custom |
 
 ---
 
