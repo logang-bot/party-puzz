@@ -561,6 +561,10 @@
         <item quantity="one">%d segundo</item>
         <item quantity="other">%d segundos</item>
     </plurals>
+    <plurals name="sticky_dare_duration_minutes">
+        <item quantity="one">%d minuto</item>
+        <item quantity="other">%d minutos</item>
+    </plurals>
 
     <!-- Mini-games -->
     <string name="follow_the_spot">Sigue el punto</string>
@@ -776,6 +780,90 @@
     <string name="pack_write_first_subtitle">Verdad o Reto para tu grupo, retos persistentes para la despedida — tu sala, tus preguntas.</string>
     <string name="pack_coming_soon">Próximamente</string>
     <string name="packs_none_enabled_warning">Activa al menos un paquete para comenzar la fiesta.</string>
+
+    <!-- Paquetes personalizados · gestor -->
+    <string name="custom_packs_title">Tus paquetes</string>
+    <string name="custom_packs_active_count">%1$d activos</string>
+    <string name="custom_packs_summary">%1$d paquetes · %2$d preguntas</string>
+    <string name="custom_packs_headline">Pon tus propias preguntas</string>
+    <string name="custom_packs_intro">Escribe preguntas para cualquier categoría. Activa o desactiva paquetes en cada partida — se mezclan con los mazos incluidos.</string>
+    <string name="custom_packs_empty_title">Aún no hay paquetes</string>
+    <string name="custom_packs_empty_subtitle">Chistes privados, retos picantes para una cita, trivia sobre tus amigos — lo que quieras.</string>
+    <string name="custom_packs_create_cta">Crear paquete nuevo</string>
+    <string name="custom_pack_entries_count">%1$d entradas</string>
+    <string name="custom_pack_edit">Editar</string>
+    <string name="custom_pack_delete">Eliminar</string>
+    <string name="custom_pack_delete_title">¿Eliminar este paquete?</string>
+    <string name="custom_pack_delete_message">«%1$s» y todo lo escrito en él desaparecerán. No se puede deshacer.</string>
+    <string name="custom_pack_delete_confirm">Eliminar paquete</string>
+    <string name="custom_pack_cancel">Cancelar</string>
+    <string name="custom_pack_warning_empty">Vacío — añade una entrada para que el paquete pueda jugarse.</string>
+    <string name="custom_pack_warning_truths_only">Solo verdades — añade un reto, o combínalo con un paquete que los tenga.</string>
+    <string name="custom_pack_warning_dares_only">Solo retos — añade una verdad, o combínalo con un paquete que las tenga.</string>
+
+    <!-- Paquetes personalizados · crear y editar el paquete -->
+    <string name="custom_pack_new_title">Paquete nuevo</string>
+    <string name="custom_pack_edit_title">Editar paquete</string>
+    <string name="custom_pack_step">Paso %1$s · %2$s</string>
+    <string name="custom_pack_step_name">Ponle nombre</string>
+    <string name="custom_pack_name_hint">p. ej. Retos de despedida</string>
+    <string name="custom_pack_step_category">¿A qué categoría alimenta?</string>
+    <string name="custom_pack_step_category_sub">Las entradas que escribas salen en esa parte del juego. Aun así puedes mezclar otros tipos después.</string>
+    <string name="custom_pack_step_spice">Nivel de picante</string>
+    <string name="custom_pack_step_spice_sub">Define el color y el icono del paquete. No cambia lo que sale en el juego.</string>
+    <string name="custom_pack_step_description">Descríbelo</string>
+    <string name="custom_pack_step_description_sub">Una línea que la sala verá en la tarjeta del paquete — ¿de qué va?</string>
+    <string name="custom_pack_description_hint">p. ej. Preguntas profundas sobre el grupo — mitad nostalgia, mitad chantaje.</string>
+    <string name="custom_pack_counter">%1$d/%2$d</string>
+    <string name="custom_pack_create_footnote">Después añadirás las entradas una a una. Los paquetes nuevos quedan activados para tu próxima partida.</string>
+    <string name="custom_pack_create_action">Crear paquete</string>
+    <string name="custom_pack_save_action">Guardar cambios</string>
+    <string name="spice_mild">Suave</string>
+    <string name="spice_medium">Medio</string>
+    <string name="spice_spicy">Picante</string>
+
+    <!-- Paquetes personalizados · contenido de un paquete -->
+    <string name="custom_pack_editor_title">Paquete</string>
+    <string name="custom_pack_add">Añadir</string>
+    <string name="custom_pack_add_entry">Añadir una entrada</string>
+    <string name="custom_pack_entries_empty_title">Aquí todavía no hay nada</string>
+    <string name="custom_pack_entries_empty_subtitle">Añade una verdad, un reto, un reto persistente o una pregunta de cultura general.</string>
+    <string name="custom_entry_delete_title">¿Eliminar esta entrada?</string>
+    <string name="custom_entry_delete_message">Se quitará del paquete definitivamente.</string>
+
+    <!-- Paquetes personalizados · una entrada -->
+    <string name="custom_entry_new_title">Entrada nueva</string>
+    <string name="custom_entry_edit_title">Editar entrada</string>
+    <string name="custom_entry_adding_to">Añadiendo a</string>
+    <string name="custom_entry_step_type">¿Qué tipo de jugada?</string>
+    <string name="custom_entry_type_truth">Verdad</string>
+    <string name="custom_entry_type_truth_hint">Una pregunta, respondida al momento.</string>
+    <string name="custom_entry_type_dare">Reto</string>
+    <string name="custom_entry_type_dare_hint">Algo que hacer, ya, delante de todos.</string>
+    <string name="custom_entry_type_sticky">Reto persistente</string>
+    <string name="custom_entry_type_sticky_hint">Corre con temporizador — acompaña al jugador hasta que termina.</string>
+    <string name="custom_entry_type_trivia">Pregunta de cultura</string>
+    <string name="custom_entry_type_trivia_hint">Dos opciones, una es la correcta.</string>
+    <string name="custom_entry_step_truth">Escribe la pregunta</string>
+    <string name="custom_entry_step_dare">Escribe el reto</string>
+    <string name="custom_entry_truth_hint">p. ej. ¿A quién de esta sala le has mentido más recientemente?</string>
+    <string name="custom_entry_dare_hint">p. ej. Llama al último número que marcaste y canta el estribillo.</string>
+    <string name="custom_entry_step_sticky">Escribe el reto</string>
+    <string name="custom_entry_step_sticky_sub">Tiene que aguantar un rato — una regla, una voz, una manía.</string>
+    <string name="custom_entry_sticky_hint">p. ej. Termina cada frase con «…presuntamente».</string>
+    <string name="custom_entry_step_duration">¿Cuánto dura?</string>
+    <string name="custom_entry_step_duration_sub">Una cuenta atrás corre en el marcador y sobre el avatar del jugador hasta que se acaba.</string>
+    <string name="custom_entry_step_trivia">Escribe la pregunta</string>
+    <string name="custom_entry_trivia_hint">p. ej. ¿Qué país bebe más vino por habitante?</string>
+    <string name="custom_entry_step_options">Dos opciones</string>
+    <string name="custom_entry_step_options_sub">Solo dos respuestas por pregunta — toca un círculo para marcar la correcta.</string>
+    <string name="custom_entry_option_a">Opción A</string>
+    <string name="custom_entry_option_b">Opción B</string>
+    <string name="custom_entry_step_preview">Cómo se jugará</string>
+    <string name="custom_entry_preview_placeholder">Tu entrada aparecerá aquí, en la tarjeta que lee la sala.</string>
+    <string name="custom_entry_preview_quoted">«%1$s»</string>
+    <string name="custom_entry_preview_clock">%1$s en el reloj</string>
+    <string name="custom_entry_save">Guardar entrada</string>
 
     <!-- Nombres de paquetes -->
     <string name="pack_icebreakers">Para romper el hielo</string>

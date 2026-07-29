@@ -20,6 +20,12 @@ Navigation uses Jetpack Navigation Compose with **type-safe serializable routes*
 | `SimonSaysRoute` | `data object` | — (ViewModel reads all players from `GamePlayersList` directly) |
 | `TapWarRoute` | `data class` | `player1Name`, `player1PhotoPath?`, `player1AvatarName?`, `player2Name`, `player2PhotoPath?`, `player2AvatarName?` |
 | `CircleMasterRoute` | `data object` | — (ViewModel reads all players from `GamePlayersList` directly) |
+| `CustomPacksRoute` | `data object` | — |
+| `CreateCustomPackRoute` | `data class` | `packId: String? = null` (null = create, otherwise edit the shell) |
+| `CustomPackEditorRoute` | `data class` | `packId: String` |
+| `CreateCustomEntryRoute` | `data class` | `packId: String`, `entryId: String? = null` (null = new entry) |
+
+The four custom-pack destinations are registered by `customPacksGraph()` in `CustomPacksGraph.kt` rather than inline, so `HomeNavigation.kt` gains one call instead of sixty lines. See [custom-packs.md](custom-packs.md).
 
 ---
 
@@ -35,6 +41,14 @@ HomeScreen
                             │       └─► back to GameScreen  (p1Score, p2Score via SavedStateHandle)
                             └─► HotPotatoRoute  (global mini-game)
                                     └─► back to GameScreen  (loserName via SavedStateHandle)
+
+SettingsScreen
+    └─► CustomPacksRoute
+            ├─► CreateCustomPackRoute()          (new pack)
+            │       └─► CustomPackEditorRoute(id)  (replaces itself on the back stack)
+            ├─► CreateCustomPackRoute(packId)    (edit the pack's name/category/spice/description)
+            └─► CustomPackEditorRoute(packId)
+                    └─► CreateCustomEntryRoute(packId, entryId?)
 ```
 
 ---

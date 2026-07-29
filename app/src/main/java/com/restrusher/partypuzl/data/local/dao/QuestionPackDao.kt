@@ -40,7 +40,13 @@ interface QuestionPackDao {
     @Query("DELETE FROM question_packs WHERE id = :id")
     suspend fun delete(id: String)
 
-    /** Retires packs the catalog no longer defines; their questions cascade away. */
-    @Query("DELETE FROM question_packs WHERE id NOT IN (:keepIds)")
-    suspend fun deleteNotIn(keepIds: List<String>)
+    /**
+     * Retires packs the catalog no longer defines; their questions cascade away.
+     *
+     * Custom packs are exempt: they exist precisely *because* they are not in the catalog, so
+     * without the tier guard every user-authored pack would be deleted on the next launch — along
+     * with its `custom_packs` and `custom_entries` rows, through the foreign key.
+     */
+    @Query("DELETE FROM question_packs WHERE tier != 'CUSTOM' AND id NOT IN (:keepIds)")
+    suspend fun deleteRetiredCatalogPacks(keepIds: List<String>)
 }

@@ -366,9 +366,14 @@ fun HomeNavigation(
                     composable<SettingsScreen> {
                         SettingsScreen(
                             setAppBarTitle = { title -> appBarTitle = title },
+                            onManagePacksClick = { navController.navigate(CustomPacksRoute) },
                             modifier = Modifier.fillMaxSize()
                         )
                     }
+                    customPacksGraph(
+                        navController = navController,
+                        setAppBarTitle = { title -> appBarTitle = title }
+                    )
                 }
             }
         }

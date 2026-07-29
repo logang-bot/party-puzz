@@ -86,6 +86,23 @@ class QuestionPromptResolver @Inject constructor(
         return TriviaPrompt(question, optionA, optionB, correct)
     }
 
+    /**
+     * Duration label for an authored sticky dare, e.g. "5 minutes".
+     *
+     * Official sticky dares carry a hand-written label in a parallel array. A custom one only has
+     * the seconds the author picked, so the label is generated here — through a plurals resource,
+     * so it still reads correctly in the user's language even though the dare text itself does not
+     * translate.
+     */
+    fun durationLabel(seconds: Int): String {
+        val minutes = (seconds / SECONDS_PER_MINUTE).coerceAtLeast(1)
+        return context.resources.getQuantityString(
+            R.plurals.sticky_dare_duration_minutes,
+            minutes,
+            minutes
+        )
+    }
+
     private fun primaryArrayOf(source: QuestionSource): Int = when (source) {
         QuestionSource.OFFICIAL_TRUTHS -> R.array.truth_texts
         QuestionSource.OFFICIAL_DARES -> R.array.dare_texts
@@ -112,4 +129,8 @@ class QuestionPromptResolver @Inject constructor(
         val optionsB: Int,
         val correct: Int
     )
+
+    private companion object {
+        const val SECONDS_PER_MINUTE = 60
+    }
 }

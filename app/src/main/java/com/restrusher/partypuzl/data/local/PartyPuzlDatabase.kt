@@ -6,11 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.restrusher.partypuzl.data.local.dao.CustomEntryDao
+import com.restrusher.partypuzl.data.local.dao.CustomPackDao
 import com.restrusher.partypuzl.data.local.dao.PartyDao
 import com.restrusher.partypuzl.data.local.dao.PartyPhotoDao
 import com.restrusher.partypuzl.data.local.dao.PlayerDao
 import com.restrusher.partypuzl.data.local.dao.QuestionDao
 import com.restrusher.partypuzl.data.local.dao.QuestionPackDao
+import com.restrusher.partypuzl.data.local.entities.CustomEntryEntity
+import com.restrusher.partypuzl.data.local.entities.CustomPackEntity
 import com.restrusher.partypuzl.data.local.entities.PartyEntity
 import com.restrusher.partypuzl.data.local.entities.PartyPhotoEntity
 import com.restrusher.partypuzl.data.local.entities.PartyPlayerCrossRef
@@ -27,9 +31,11 @@ import kotlinx.coroutines.internal.synchronized
         PartyPlayerCrossRef::class,
         PartyPhotoEntity::class,
         QuestionPackEntity::class,
-        QuestionEntity::class
+        QuestionEntity::class,
+        CustomPackEntity::class,
+        CustomEntryEntity::class
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 abstract class PartyPuzlDatabase : RoomDatabase() {
@@ -39,6 +45,8 @@ abstract class PartyPuzlDatabase : RoomDatabase() {
     abstract fun partyPhotoDao(): PartyPhotoDao
     abstract fun questionPackDao(): QuestionPackDao
     abstract fun questionDao(): QuestionDao
+    abstract fun customPackDao(): CustomPackDao
+    abstract fun customEntryDao(): CustomEntryDao
 
     companion object {
         @Volatile
@@ -90,11 +98,60 @@ abstract class PartyPuzlDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Adds the two custom-pack tables. Both hang off `question_packs` so deleting a pack takes
+         * its authored content with it.
+         *
+         * `custom_entries` is the only table in the schema that stores prompt text — official
+         * prompts stay in `strings.xml` and are pointed at by `questions`. Keeping authored text
+         * here also puts it out of reach of `QuestionDao.replaceAll()`.
+         *
+         * The statements are copied verbatim from Room's exported schema for v10; they have to
+         * match exactly or Room throws on open, and `fallbackToDestructiveMigration()` does not
+         * rescue a registered migration.
+         */
+        private val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `custom_packs` (" +
+                            "`packId` TEXT NOT NULL, " +
+                            "`name` TEXT NOT NULL, " +
+                            "`description` TEXT NOT NULL, " +
+                            "`category` TEXT NOT NULL, " +
+                            "`spice` TEXT NOT NULL, " +
+                            "`createdAt` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`packId`), " +
+                            "FOREIGN KEY(`packId`) REFERENCES `question_packs`(`id`) " +
+                            "ON UPDATE NO ACTION ON DELETE CASCADE )"
+                )
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `custom_entries` (" +
+                            "`id` TEXT NOT NULL, " +
+                            "`packId` TEXT NOT NULL, " +
+                            "`type` TEXT NOT NULL, " +
+                            "`text` TEXT NOT NULL, " +
+                            "`durationSeconds` INTEGER, " +
+                            "`optionA` TEXT, " +
+                            "`optionB` TEXT, " +
+                            "`correctOption` TEXT, " +
+                            "`isEnabled` INTEGER NOT NULL, " +
+                            "`position` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`id`), " +
+                            "FOREIGN KEY(`packId`) REFERENCES `question_packs`(`id`) " +
+                            "ON UPDATE NO ACTION ON DELETE CASCADE )"
+                )
+                db.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_custom_entries_packId` " +
+                            "ON `custom_entries` (`packId`)"
+                )
+            }
+        }
+
         @OptIn(InternalCoroutinesApi::class)
         fun getDatabase(context: Context): PartyPuzlDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, PartyPuzlDatabase::class.java, "app_database")
-                    .addMigrations(MIGRATION_7_8, MIGRATION_8_9)
+                    .addMigrations(MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }

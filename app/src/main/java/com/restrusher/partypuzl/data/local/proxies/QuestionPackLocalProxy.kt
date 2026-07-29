@@ -25,5 +25,6 @@ class QuestionPackLocalProxy @Inject constructor(
 
     override suspend fun unlockAllPremium() = questionPackDao.unlockAllPremium()
 
-    override suspend fun deleteNotIn(keepIds: List<String>) = questionPackDao.deleteNotIn(keepIds)
+    override suspend fun deleteRetiredCatalogPacks(keepIds: List<String>) =
+        questionPackDao.deleteRetiredCatalogPacks(keepIds)
 }

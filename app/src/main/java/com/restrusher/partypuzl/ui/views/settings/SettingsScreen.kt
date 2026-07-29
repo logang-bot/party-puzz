@@ -47,6 +47,7 @@ import com.restrusher.partypuzl.ui.common.AdUnitIds
 @Composable
 fun SettingsScreen(
     setAppBarTitle: (String) -> Unit,
+    onManagePacksClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
@@ -80,6 +81,16 @@ fun SettingsScreen(
                 subtitle = uiState.appLanguage.toDisplayString(),
                 iconRes = R.drawable.ic_flag_system,
                 onClick = viewModel::openLanguageSheet
+            )
+
+            SettingsRow(
+                title = stringResource(id = R.string.custom_packs_title),
+                subtitle = stringResource(
+                    id = R.string.custom_packs_active_count,
+                    uiState.activeCustomPacks
+                ),
+                iconRes = R.drawable.ic_chat_bubble,
+                onClick = onManagePacksClick
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -163,69 +174,6 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsSectionHeader(title: String) {
-    Text(
-        text = title.uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        letterSpacing = 1.5.sp,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-        modifier = Modifier.padding(start = 16.dp, top = 28.dp, bottom = 6.dp)
-    )
-}
-
-@Composable
-private fun SettingsRow(
-    title: String,
-    subtitle: String,
-    @DrawableRes iconRes: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-        ) {
-            Icon(
-                painter = painterResource(id = iconRes),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(22.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
-            )
-        }
-        Icon(
-            painter = painterResource(R.drawable.ic_keyboard_arrow_right),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
-            modifier = Modifier.size(20.dp)
-        )
-    }
-}
-
-@Composable
 private fun SettingsOptionsDialog(
     title: String,
     onDismiss: () -> Unit,
@@ -252,50 +200,6 @@ private fun SettingsOptionsDialog(
     }
 }
 
-@Composable
-private fun OptionRowWithIcon(
-    label: String,
-    @DrawableRes iconRes: Int,
-    selected: Boolean,
-    onClick: () -> Unit,
-    tintIcon: Boolean = true
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(
-                if (selected) MaterialTheme.colorScheme.primaryContainer
-                else Color.Transparent
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 10.dp)
-    ) {
-        Icon(
-            painter = painterResource(id = iconRes),
-            contentDescription = null,
-            tint = if (!tintIcon) Color.Unspecified
-            else if (selected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurface
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 12.dp)
-        )
-        if (selected) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_check),
-                contentDescription = null,
-                tint = MaterialTheme.appColors.brandAccent
-            )
-        }
-    }
-}
-
 @DrawableRes
 private fun ThemeMode.toDisplayIconRes(): Int = when (this) {
     ThemeMode.SYSTEM -> R.drawable.ic_theme_auto
@@ -308,58 +212,6 @@ private fun AppLanguage.toDisplayIconRes(): Int = when (this) {
     AppLanguage.SYSTEM -> R.drawable.ic_flag_system
     AppLanguage.ENGLISH -> R.drawable.ic_flag_us
     AppLanguage.SPANISH -> R.drawable.ic_flag_es
-}
-
-@Composable
-private fun RemoveAdsRow(
-    isAdFree: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .then(if (!isAdFree) Modifier.clickable(onClick = onClick) else Modifier)
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-    ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(44.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-        ) {
-            Icon(
-                painter = if (isAdFree) painterResource(R.drawable.ic_check_circle) else painterResource(R.drawable.ic_block),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(22.dp)
-            )
-        }
-        Spacer(modifier = Modifier.width(14.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = stringResource(if (isAdFree) R.string.ads_removed else R.string.remove_ads),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = stringResource(if (isAdFree) R.string.ads_removed_subtitle else R.string.remove_ads_subtitle),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
-            )
-        }
-        if (!isAdFree) {
-            Icon(
-                painter = painterResource(R.drawable.ic_keyboard_arrow_right),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    }
 }
 
 @Composable

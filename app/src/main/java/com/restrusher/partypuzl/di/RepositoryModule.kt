@@ -1,15 +1,18 @@
 package com.restrusher.partypuzl.di
 
+import com.restrusher.partypuzl.data.proxies.CustomPackProxy
 import com.restrusher.partypuzl.data.proxies.PartyPhotoProxy
 import com.restrusher.partypuzl.data.proxies.PartyProxy
 import com.restrusher.partypuzl.data.proxies.PlayerProxy
 import com.restrusher.partypuzl.data.proxies.QuestionPackProxy
 import com.restrusher.partypuzl.data.proxies.QuestionProxy
+import com.restrusher.partypuzl.data.repositories.CustomPackRepositoryImpl
 import com.restrusher.partypuzl.data.repositories.PartyPhotoRepositoryImpl
 import com.restrusher.partypuzl.data.repositories.PartyRepositoryImpl
 import com.restrusher.partypuzl.data.repositories.PlayerRepositoryImpl
 import com.restrusher.partypuzl.data.repositories.QuestionPackRepositoryImpl
 import com.restrusher.partypuzl.data.repositories.QuestionRepositoryImpl
+import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.PartyPhotoRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.PartyRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.PlayerRepository
@@ -57,5 +60,13 @@ object RepositoryModule {
         @DatabaseProxy questionProxy: QuestionProxy
     ): QuestionRepository {
         return QuestionRepositoryImpl(questionProxy)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomPackRepository(
+        @DatabaseProxy customPackProxy: CustomPackProxy
+    ): CustomPackRepository {
+        return CustomPackRepositoryImpl(customPackProxy)
     }
 }

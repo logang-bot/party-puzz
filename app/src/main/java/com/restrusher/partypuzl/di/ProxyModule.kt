@@ -1,10 +1,12 @@
 package com.restrusher.partypuzl.di
 
+import com.restrusher.partypuzl.data.local.proxies.CustomPackLocalProxy
 import com.restrusher.partypuzl.data.local.proxies.PartyLocalProxy
 import com.restrusher.partypuzl.data.local.proxies.PartyPhotoLocalProxy
 import com.restrusher.partypuzl.data.local.proxies.PlayerLocalProxy
 import com.restrusher.partypuzl.data.local.proxies.QuestionLocalProxy
 import com.restrusher.partypuzl.data.local.proxies.QuestionPackLocalProxy
+import com.restrusher.partypuzl.data.proxies.CustomPackProxy
 import com.restrusher.partypuzl.data.proxies.PartyPhotoProxy
 import com.restrusher.partypuzl.data.proxies.PartyProxy
 import com.restrusher.partypuzl.data.proxies.PlayerProxy
@@ -48,6 +50,11 @@ abstract class ProxyModule {
     @Singleton
     @Binds
     abstract fun bindLocalQuestionProxy(impl: QuestionLocalProxy): QuestionProxy
+
+    @DatabaseProxy
+    @Singleton
+    @Binds
+    abstract fun bindLocalCustomPackProxy(impl: CustomPackLocalProxy): CustomPackProxy
 }
 
 // TODO: Implement a remote module to fetch data from an api

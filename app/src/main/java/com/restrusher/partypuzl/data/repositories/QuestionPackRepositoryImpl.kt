@@ -28,6 +28,6 @@ class QuestionPackRepositoryImpl(
 
     override suspend fun unlockAllPremium() = questionPackLocalProxy.unlockAllPremium()
 
-    override suspend fun deleteNotIn(keepIds: List<String>) =
-        questionPackLocalProxy.deleteNotIn(keepIds)
+    override suspend fun deleteRetiredCatalogPacks(keepIds: List<String>) =
+        questionPackLocalProxy.deleteRetiredCatalogPacks(keepIds)
 }

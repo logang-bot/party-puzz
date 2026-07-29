@@ -15,5 +15,5 @@ interface QuestionPackRepository {
     suspend fun unlockAllPremium()
 
     /** Removes packs the catalog no longer defines. */
-    suspend fun deleteNotIn(keepIds: List<String>)
+    suspend fun deleteRetiredCatalogPacks(keepIds: List<String>)
 }

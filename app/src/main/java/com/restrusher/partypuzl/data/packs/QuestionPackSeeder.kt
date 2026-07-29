@@ -26,9 +26,13 @@ class QuestionPackSeeder @Inject constructor(
     suspend fun seedIfNeeded() {
         // Packs: add anything new, drop anything the catalog no longer defines. The second half
         // matters because splitting the flat decks retired the old one-pack-per-deal ids, and a
-        // stale row would keep its questions alive through the foreign key.
+        // stale row would keep its questions alive through the foreign key. Custom packs are
+        // exempt from that sweep — they are never in the catalog by definition.
+        //
+        // `replaceAll` below only rebuilds the `questions` table, so authored text in
+        // `custom_entries` is untouched by a mapping-version bump.
         questionPackRepository.seedFromCatalog()
-        questionPackRepository.deleteNotIn(QuestionPackCatalog.all.map { it.id })
+        questionPackRepository.deleteRetiredCatalogPacks(QuestionPackCatalog.all.map { it.id })
 
         val storedVersion = userPreferencesRepository.getQuestionMappingVersion()
         val hasQuestions = questionRepository.count() > 0

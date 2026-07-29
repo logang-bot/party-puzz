@@ -13,10 +13,12 @@ A question is split across three places. This is the central design decision, so
 | Part | Where | Why |
 |---|---|---|
 | **Text** | `res/values*/strings.xml` | Prompts must stay translatable. Moving them into Room would freeze them in whichever language was active at seed time. |
-| **Pack membership** | Room table `questions` | This is what the user reorganises, and what custom packs will need. |
+| **Pack membership** | Room table `questions` | This is what the user reorganises. |
 | **Enabled / unlocked** | Room table `question_packs` | The only pack state the user changes. |
 
 A `QuestionEntity` therefore carries **no text**. It points at a position in a source array, and `QuestionPromptResolver` reads the text at draw time in the current locale.
+
+> This split applies to **built-in** packs only. A prompt the user wrote has no translation to point at, so custom packs store their text verbatim in their own tables — see [custom-packs.md](custom-packs.md).
 
 ```kotlin
 @Entity(tableName = "questions", foreignKeys = [ForeignKey(
@@ -116,7 +118,7 @@ The other three categories need only their own list to be non-empty.
 5. **Bump `QuestionCatalog.MAPPING_VERSION`.**
 6. Add the pack's name string (`pack_*`) in both languages.
 
-No database migration is needed. Packs are seeded with `INSERT OR IGNORE` so existing toggles survive, and `deleteNotIn` retires packs the catalog no longer defines — their questions cascade away.
+No database migration is needed. Packs are seeded with `INSERT OR IGNORE` so existing toggles survive, and `deleteRetiredCatalogPacks` retires packs the catalog no longer defines — their questions cascade away. That query skips `PackTier.CUSTOM`, which is never in the catalog; see [custom-packs.md](custom-packs.md).
 
 ---
 
@@ -142,6 +144,9 @@ A pack unlocked by ad is switched **on** immediately, and its meta line reads "U
 1. Runs `QuestionPackSeeder.seedIfNeeded()`.
 2. Reads `getPlayableQuestions()` — questions in enabled packs, not individually muted (one JOIN, done in SQL).
 3. Resolves each row's text through `QuestionPromptResolver` and pools it by category.
+4. Reads `getPlayableEntries()` — the same JOIN over `custom_entries` — and pools authored text into the *same* lists, bypassing the resolver. See [custom-packs.md](custom-packs.md).
+
+Because both passes feed one set of pools, the game screen never learns that custom packs exist; it just asks for a deck.
 
 `GameScreenViewModel` calls it once in `init` — packs cannot be toggled mid-game — and stores the result in `packContent`. Two things follow:
 
@@ -163,7 +168,7 @@ A pack unlocked by ad is switched **on** immediately, and its meta line reads "U
 | `data/local/entities/QuestionPackEntity.kt` | Pack enabled / unlocked row |
 | `data/local/dao/QuestionDao.kt` | Playable-question JOIN, counts, `replaceAll` |
 | `data/packs/QuestionPromptResolver.kt` | Source + index → text (the only `R.array` map) |
-| `data/packs/QuestionPackSeeder.kt` | Keeps both tables in sync with the catalog |
+| `data/packs/QuestionPackSeeder.kt` | Keeps both tables in sync with the catalog — skips `PackTier.CUSTOM` |
 | `data/packs/QuestionPackContentLoader.kt` | Enabled packs → playable deck |
 | `data/models/PackPrompts.kt` | `EnabledPackContent` and the empty-pool rule |
 | `data/local/appData/appDataSource/SessionUnlocksSource.kt` | Rewarded-ad unlocks |
@@ -173,6 +178,7 @@ A pack unlocked by ad is switched **on** immediately, and its meta line reads "U
 
 ## Related
 
+- [custom-packs.md](custom-packs.md) — packs the user writes themselves
 - [game-config.md](game-config.md) — the setup screen the packs live on
 - [game-deal-flow.md](game-deal-flow.md) — how deal availability is consumed
 - [ads.md](ads.md) — rewarded ad and the `remove_ads` purchase

@@ -2,6 +2,8 @@ package com.restrusher.partypuzl.di
 
 import android.content.Context
 import com.restrusher.partypuzl.data.local.PartyPuzlDatabase
+import com.restrusher.partypuzl.data.local.dao.CustomEntryDao
+import com.restrusher.partypuzl.data.local.dao.CustomPackDao
 import com.restrusher.partypuzl.data.local.dao.PartyDao
 import com.restrusher.partypuzl.data.local.dao.PartyPhotoDao
 import com.restrusher.partypuzl.data.local.dao.PlayerDao
@@ -40,6 +42,16 @@ object DatabaseModule {
     @Provides
     fun provideQuestionDao(database: PartyPuzlDatabase): QuestionDao {
         return database.questionDao()
+    }
+
+    @Provides
+    fun provideCustomPackDao(database: PartyPuzlDatabase): CustomPackDao {
+        return database.customPackDao()
+    }
+
+    @Provides
+    fun provideCustomEntryDao(database: PartyPuzlDatabase): CustomEntryDao {
+        return database.customEntryDao()
     }
 
     @Provides

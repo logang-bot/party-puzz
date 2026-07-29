@@ -7,6 +7,7 @@ import com.restrusher.partypuzl.data.billing.BillingManager
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
+import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
+    private val customPackRepository: CustomPackRepository,
     private val billingManager: BillingManager
 ) : ViewModel() {
 
@@ -34,6 +36,17 @@ class SettingsViewModel @Inject constructor(
                 .collect { (theme, language, isAdFree) ->
                     _uiState.update { it.copy(themeMode = theme, appLanguage = language, isAdFree = isAdFree) }
                 }
+        }
+        observeCustomPacks()
+    }
+
+    /** Collected separately so the row's count refreshes when the user comes back from managing. */
+    private fun observeCustomPacks() {
+        viewModelScope.launch {
+            customPackRepository.getSummaries().collect { summaries ->
+                val active = summaries.count { it.isEnabled }
+                _uiState.update { it.copy(activeCustomPacks = active) }
+            }
         }
     }
 

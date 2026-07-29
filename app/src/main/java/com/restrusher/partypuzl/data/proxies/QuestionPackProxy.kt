@@ -10,5 +10,5 @@ interface QuestionPackProxy {
     suspend fun setEnabled(id: String, enabled: Boolean)
     suspend fun setUnlocked(id: String, unlocked: Boolean)
     suspend fun unlockAllPremium()
-    suspend fun deleteNotIn(keepIds: List<String>)
+    suspend fun deleteRetiredCatalogPacks(keepIds: List<String>)
 }

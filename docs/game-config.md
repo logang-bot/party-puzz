@@ -48,7 +48,9 @@ Three groups — **Official** (11 packs), **Premium** (3) and **Custom** — sha
 | Premium, locked | **Unlock** pill | Padlock | Untinted, whole row at 70 % opacity |
 | Custom | — | — | Empty state only |
 
-Tapping an unlocked row toggles it. Tapping a locked premium row opens `UnlockChoiceBottomSheet`. The Custom group renders the design's dashed "Write your first pack" panel with a *Coming soon* chip — there is no authoring flow yet.
+Tapping an unlocked row toggles it. Tapping a locked premium row opens `UnlockChoiceBottomSheet`.
+
+The Custom group still renders the design's dashed "Write your first pack" panel here. The authoring flow itself now exists and is reached from **Settings → Your packs** ([custom-packs.md](custom-packs.md)); wiring authored packs into *this* section — rows, counts, and per-session toggles alongside the official ones — is the remaining piece. `PackUiModel.nameRes` is an `@StringRes Int`, so it has to accept a raw `String` before a user-typed name can appear in a row.
 
 Each row's meta line shows the prompt count, read from the `questions` table once after seeding. The Mini-games pack has no question rows, so it reports `MiniGame.entries.size` instead of zero.
 

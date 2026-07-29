@@ -8,5 +8,7 @@ data class SettingsState(
     val appLanguage: AppLanguage = AppLanguage.SYSTEM,
     val isThemeSheetOpen: Boolean = false,
     val isLanguageSheetOpen: Boolean = false,
-    val isAdFree: Boolean = false
+    val isAdFree: Boolean = false,
+    /** How many of the user's own packs are switched on — the "Custom packs" row's subtitle. */
+    val activeCustomPacks: Int = 0
 )

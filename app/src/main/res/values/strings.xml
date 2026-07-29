@@ -560,6 +560,15 @@
         <item quantity="one">%d second</item>
         <item quantity="other">%d seconds</item>
     </plurals>
+    <!--
+        How long an authored sticky dare lasts, e.g. "5 minutes". Official sticky dares carry a
+        hand-written label; a custom one only knows the seconds the author picked, so the label is
+        generated from this. Kept apart from remaining_minutes, which counts down.
+    -->
+    <plurals name="sticky_dare_duration_minutes">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
 
     <!-- Mini-games -->
     <string name="follow_the_spot">Follow The Spot</string>
@@ -775,6 +784,90 @@
     <string name="pack_write_first_subtitle">Truth or Dare for your friend group, sticky dares for the bachelorette — your room, your prompts.</string>
     <string name="pack_coming_soon">Coming soon</string>
     <string name="packs_none_enabled_warning">Turn on at least one pack to start the party.</string>
+
+    <!-- Custom packs · manager -->
+    <string name="custom_packs_title">Your packs</string>
+    <string name="custom_packs_active_count">%1$d active</string>
+    <string name="custom_packs_summary">%1$d packs · %2$d prompts</string>
+    <string name="custom_packs_headline">Bring your own questions</string>
+    <string name="custom_packs_intro">Write prompts for any category. Switch packs on or off per session — they shuffle in alongside the built-in decks.</string>
+    <string name="custom_packs_empty_title">No packs yet</string>
+    <string name="custom_packs_empty_subtitle">Inside jokes, spicy dares for date night, trivia about your friends — anything goes.</string>
+    <string name="custom_packs_create_cta">Create new pack</string>
+    <string name="custom_pack_entries_count">%1$d entries</string>
+    <string name="custom_pack_edit">Edit</string>
+    <string name="custom_pack_delete">Delete</string>
+    <string name="custom_pack_delete_title">Delete this pack?</string>
+    <string name="custom_pack_delete_message">“%1$s” and everything written in it will be gone. This can\'t be undone.</string>
+    <string name="custom_pack_delete_confirm">Delete pack</string>
+    <string name="custom_pack_cancel">Cancel</string>
+    <string name="custom_pack_warning_empty">Empty — add an entry before this pack can play.</string>
+    <string name="custom_pack_warning_truths_only">Truths only — add a dare, or pair it with a pack that has some.</string>
+    <string name="custom_pack_warning_dares_only">Dares only — add a truth, or pair it with a pack that has some.</string>
+
+    <!-- Custom packs · create and edit the pack itself -->
+    <string name="custom_pack_new_title">New pack</string>
+    <string name="custom_pack_edit_title">Edit pack</string>
+    <string name="custom_pack_step">Step %1$s · %2$s</string>
+    <string name="custom_pack_step_name">Name your pack</string>
+    <string name="custom_pack_name_hint">e.g. Bachelorette dares</string>
+    <string name="custom_pack_step_category">Which category does it feed?</string>
+    <string name="custom_pack_step_category_sub">Entries you write play during that part of the game. You can still mix in other kinds later.</string>
+    <string name="custom_pack_step_spice">Spice level</string>
+    <string name="custom_pack_step_spice_sub">Sets the pack\'s colour and icon. It doesn\'t change what gets drawn.</string>
+    <string name="custom_pack_step_description">Describe it</string>
+    <string name="custom_pack_step_description_sub">One line the room sees on the pack card — what is this pack about?</string>
+    <string name="custom_pack_description_hint">e.g. Deep-cut questions about the group — half nostalgia, half blackmail.</string>
+    <string name="custom_pack_counter">%1$d/%2$d</string>
+    <string name="custom_pack_create_footnote">Next you\'ll add entries one at a time. New packs are switched on for your next game.</string>
+    <string name="custom_pack_create_action">Create pack</string>
+    <string name="custom_pack_save_action">Save changes</string>
+    <string name="spice_mild">Mild</string>
+    <string name="spice_medium">Medium</string>
+    <string name="spice_spicy">Spicy</string>
+
+    <!-- Custom packs · a pack's contents -->
+    <string name="custom_pack_editor_title">Pack</string>
+    <string name="custom_pack_add">Add</string>
+    <string name="custom_pack_add_entry">Add an entry</string>
+    <string name="custom_pack_entries_empty_title">Nothing in here yet</string>
+    <string name="custom_pack_entries_empty_subtitle">Add a truth, a dare, a sticky dare, or a general-knowledge question.</string>
+    <string name="custom_entry_delete_title">Delete this entry?</string>
+    <string name="custom_entry_delete_message">It will be removed from the pack for good.</string>
+
+    <!-- Custom packs · one entry -->
+    <string name="custom_entry_new_title">New entry</string>
+    <string name="custom_entry_edit_title">Edit entry</string>
+    <string name="custom_entry_adding_to">Adding to</string>
+    <string name="custom_entry_step_type">What kind of game deal?</string>
+    <string name="custom_entry_type_truth">Truth</string>
+    <string name="custom_entry_type_truth_hint">A question, answered on the spot.</string>
+    <string name="custom_entry_type_dare">Dare</string>
+    <string name="custom_entry_type_dare_hint">Something to do, right now, in front of everyone.</string>
+    <string name="custom_entry_type_sticky">Sticky dare</string>
+    <string name="custom_entry_type_sticky_hint">Runs on a timer — stays on the player until it ends.</string>
+    <string name="custom_entry_type_trivia">GK question</string>
+    <string name="custom_entry_type_trivia_hint">Two options, one of them is correct.</string>
+    <string name="custom_entry_step_truth">Write the question</string>
+    <string name="custom_entry_step_dare">Write the dare</string>
+    <string name="custom_entry_truth_hint">e.g. Who in this room have you lied to most recently?</string>
+    <string name="custom_entry_dare_hint">e.g. Call the last number you dialled and sing the chorus.</string>
+    <string name="custom_entry_step_sticky">Write the dare</string>
+    <string name="custom_entry_step_sticky_sub">It has to be doable for a stretch of time — a rule, a voice, a habit.</string>
+    <string name="custom_entry_sticky_hint">e.g. End every sentence with “…allegedly.”</string>
+    <string name="custom_entry_step_duration">How long does it stick?</string>
+    <string name="custom_entry_step_duration_sub">A live countdown runs in the ticker and on the player\'s avatar until time is up.</string>
+    <string name="custom_entry_step_trivia">Write the question</string>
+    <string name="custom_entry_trivia_hint">e.g. Which country drinks the most wine per capita?</string>
+    <string name="custom_entry_step_options">Two options</string>
+    <string name="custom_entry_step_options_sub">Only two answers per question — tap a circle to mark the correct one.</string>
+    <string name="custom_entry_option_a">Option A</string>
+    <string name="custom_entry_option_b">Option B</string>
+    <string name="custom_entry_step_preview">How it will play</string>
+    <string name="custom_entry_preview_placeholder">Your entry shows up here, on the card the room reads.</string>
+    <string name="custom_entry_preview_quoted">“%1$s”</string>
+    <string name="custom_entry_preview_clock">%1$s on the clock</string>
+    <string name="custom_entry_save">Save entry</string>
 
     <!-- Pack names -->
     <string name="pack_icebreakers">Icebreakers</string>
