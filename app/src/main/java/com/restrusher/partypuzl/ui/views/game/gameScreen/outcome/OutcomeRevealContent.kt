@@ -39,6 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.views.game.gameScreen.BarEvent
@@ -102,7 +104,7 @@ internal fun OutcomeRevealContent(
                     Icon(
                         painter = painterResource(theme.iconRes),
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.appColors.onAccentSurface,
                         modifier = Modifier.size(42.dp)
                     )
                 }
@@ -180,7 +182,7 @@ private fun couplesMessage(event: CouplesEvent): String = when (event) {
 @Composable
 private fun OutcomeRevealBarPunishmentDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             OutcomeRevealContent(
                 uiState = GameScreenState(
                     barMode = BarModeState(isActive = true, activeEvent = BarEvent.TakeDrinks(amount = 3))
@@ -195,7 +197,7 @@ private fun OutcomeRevealBarPunishmentDarkPreview() {
 @Composable
 private fun OutcomeRevealCouplesRewardLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFFFFF5E6)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             OutcomeRevealContent(
                 uiState = GameScreenState(
                     couplesMode = CouplesModeState(isActive = true, activeEvent = CouplesEvent.GiveAKiss)

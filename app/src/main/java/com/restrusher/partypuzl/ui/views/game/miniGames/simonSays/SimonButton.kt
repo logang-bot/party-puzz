@@ -31,15 +31,14 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.SimonBlue
+import com.restrusher.partypuzl.ui.theme.SimonGreen
+import com.restrusher.partypuzl.ui.theme.SimonRed
+import com.restrusher.partypuzl.ui.theme.SimonYellow
 import kotlin.math.hypot
 import kotlinx.coroutines.launch
 
-internal val SimonColors = listOf(
-    Color(0xFF4CAF50),  // Green
-    Color(0xFFF44336),  // Red
-    Color(0xFF2196F3),  // Blue
-    Color(0xFFFFEB3B),  // Yellow
-)
+internal val SimonColors = listOf(SimonGreen, SimonRed, SimonBlue, SimonYellow)
 
 // Outward scatter direction per card index (matches 2×2 grid layout)
 private val ScatterDirs = listOf(

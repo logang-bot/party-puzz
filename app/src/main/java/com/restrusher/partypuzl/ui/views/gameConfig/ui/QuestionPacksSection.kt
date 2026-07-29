@@ -24,6 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appCard
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
 
 /**
@@ -58,7 +60,7 @@ internal fun QuestionPacksSection(
                         accent = pack.accent,
                         iconRes = pack.iconRes,
                         badgeLabel = stringResource(R.string.pack_group_official),
-                        badgeColor = OfficialBadgeColor,
+                        badgeColor = MaterialTheme.appColors.badgeOfficial,
                         isEnabled = pack.isEnabled,
                         isFirst = index == 0,
                         cornerIcon = R.drawable.ic_check,
@@ -79,12 +81,12 @@ internal fun QuestionPacksSection(
                         accent = pack.accent,
                         iconRes = pack.iconRes,
                         badgeLabel = stringResource(R.string.pack_group_premium),
-                        badgeColor = PremiumBadgeColor,
+                        badgeColor = MaterialTheme.appColors.badgePremium,
                         isEnabled = pack.isEnabled,
                         isLocked = !pack.isUnlocked,
                         isFirst = index == 0,
                         cornerIcon = if (pack.isUnlocked) null else R.drawable.ic_lock,
-                        cornerColor = PremiumBadgeColor,
+                        cornerColor = MaterialTheme.appColors.badgePremium,
                         onClick = {
                             if (pack.isUnlocked) onTogglePack(pack.id) else onUnlockPack(pack)
                         }
@@ -128,13 +130,7 @@ private fun PackGroup(content: @Composable () -> Unit) {
         modifier = Modifier
             .padding(top = 8.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.03f))
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f),
-                shape = RoundedCornerShape(16.dp)
-            )
+            .appCard(RoundedCornerShape(16.dp))
     ) {
         content()
     }
@@ -176,7 +172,7 @@ private fun CustomPacksEmptyState(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(50))
-                    .background(CustomBadgeColor.copy(alpha = 0.14f))
+                    .background(MaterialTheme.appColors.badgeCustom.copy(alpha = 0.14f))
                     .padding(horizontal = 6.dp, vertical = 2.dp)
             ) {
                 Text(
@@ -184,7 +180,7 @@ private fun CustomPacksEmptyState(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.labelSmall,
                     fontSize = 9.sp,
                     letterSpacing = 1.sp,
-                    color = CustomBadgeColor
+                    color = MaterialTheme.appColors.badgeCustom
                 )
             }
         }

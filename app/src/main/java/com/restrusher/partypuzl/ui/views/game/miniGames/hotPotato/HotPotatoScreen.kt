@@ -37,18 +37,12 @@ import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.common.BackPressToExit
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
+import com.restrusher.partypuzl.ui.theme.MiniGameAccents
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.views.game.common.MiniGameCountdownOverlay
 import kotlinx.coroutines.delay
 
 private const val BG_COLOR_STEP_MS = 600
-
-private val BgColors = listOf(
-    Color(0xFFFF80AB),
-    Color(0xFF80D8FF),
-    Color(0xFFCCFF90),
-    Color(0xFFFFFF8D),
-)
 
 @Composable
 fun HotPotatoScreen(
@@ -83,12 +77,12 @@ internal fun HotPotatoContent(
         if (uiState.isGameRunning) {
             while (true) {
                 delay(BG_COLOR_STEP_MS.toLong())
-                colorIndex = (colorIndex + 1) % BgColors.size
+                colorIndex = (colorIndex + 1) % MiniGameAccents.size
             }
         }
     }
     val bgColor by animateColorAsState(
-        targetValue = BgColors[colorIndex],
+        targetValue = MiniGameAccents[colorIndex],
         animationSpec = tween(durationMillis = BG_COLOR_STEP_MS, easing = LinearEasing),
         label = "bgColor"
     )

@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 
@@ -128,7 +129,7 @@ private fun DealReelRow(dealType: GameDealType, modifier: Modifier = Modifier) {
 @Composable
 private fun SurpriseShuffleLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFFFFF5E6)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             SurpriseShuffleContent(
                 dealTypes = GameDealType.entries,
                 targetDealType = GameDealType.STICKY_DARE
@@ -141,7 +142,7 @@ private fun SurpriseShuffleLightPreview() {
 @Composable
 private fun SurpriseShuffleDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             SurpriseShuffleContent(
                 dealTypes = GameDealType.entries,
                 targetDealType = GameDealType.MINI_GAME

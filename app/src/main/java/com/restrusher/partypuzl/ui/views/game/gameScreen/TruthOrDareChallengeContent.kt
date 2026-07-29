@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
@@ -101,7 +102,7 @@ private val previewPlayer = Player(1, "Alice", Gender.Female, InterestedIn.Man)
 @Composable
 private fun TruthOrDareTruthLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFFFFF5E6)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             TruthOrDareChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer,
@@ -118,7 +119,7 @@ private fun TruthOrDareTruthLightPreview() {
 @Composable
 private fun TruthOrDareDareDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             TruthOrDareChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer,

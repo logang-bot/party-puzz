@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 
 @Composable
 internal fun StickyDarePill(
@@ -44,7 +45,7 @@ internal fun StickyDarePill(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .clip(RoundedCornerShape(50))
-                    .background(Color.Black.copy(alpha = 0.72f))
+                    .background(MaterialTheme.appColors.chipScrim)
                     .clickable(interactionSource = interactionSource, indication = null) { onClick() }
                     .padding(horizontal = 12.dp, vertical = 5.dp)
             ) {
@@ -57,7 +58,7 @@ internal fun StickyDarePill(
                     ),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Medium,
-                    color = Color.White,
+                    color = MaterialTheme.appColors.onAccentSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

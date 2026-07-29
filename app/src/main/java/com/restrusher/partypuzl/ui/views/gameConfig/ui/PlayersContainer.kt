@@ -36,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
@@ -76,7 +77,7 @@ fun SharedTransitionScope.PlayersContainer(
             Text(
                 text = " · ${GamePlayersList.PlayersList.size} ${stringResource(R.string.added)}",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.appColors.brandAccent
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

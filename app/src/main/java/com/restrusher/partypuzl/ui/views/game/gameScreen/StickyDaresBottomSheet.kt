@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.common.ClockHandAnimation
 
@@ -93,7 +94,7 @@ internal fun StickyDaresBottomSheet(
                                 .padding(vertical = 10.dp)
                         ) {
                             ClockHandAnimation(
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.appColors.brandAccent,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(Modifier.width(12.dp))
@@ -119,7 +120,7 @@ internal fun StickyDaresBottomSheet(
                                 text = dare.remainingSeconds.toRemainingTimeLabel(),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.appColors.brandAccent
                             )
                             Spacer(Modifier.width(4.dp))
                             IconButton(onClick = { onCancelDare(dare.id) }) {

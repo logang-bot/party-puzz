@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
 
@@ -139,14 +140,7 @@ fun PartyDetailScreen(
         )
 
         if (uiState.isSaving || uiState.isDeleting) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f)),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            LoadingScrim()
         }
     }
 

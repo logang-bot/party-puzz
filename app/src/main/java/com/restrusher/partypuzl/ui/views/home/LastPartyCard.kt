@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.local.entities.PartyEntity
 import com.restrusher.partypuzl.data.local.entities.PartyWithPlayers
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
@@ -92,7 +93,7 @@ fun LastPartyCard(
                 painter = painterResource(theme.iconId),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                colorFilter = ColorFilter.tint(Color.White),
+                colorFilter = ColorFilter.tint(MaterialTheme.appColors.onAccentSurface),
                 modifier = Modifier.size(32.dp)
             )
         }

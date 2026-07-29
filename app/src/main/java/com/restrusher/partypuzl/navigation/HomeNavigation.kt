@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -80,7 +81,7 @@ fun HomeNavigation(
     val scope = rememberCoroutineScope()
     val drawerItemColors = NavigationDrawerItemDefaults.colors(
         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-        unselectedContainerColor = androidx.compose.ui.graphics.Color.Transparent,
+        unselectedContainerColor = Color.Transparent,
         selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
         unselectedIconColor = MaterialTheme.colorScheme.onSurface,
         selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -152,7 +153,7 @@ fun HomeNavigation(
         }
     ) {
         Scaffold(
-            containerColor = androidx.compose.ui.graphics.Color.Transparent,
+            containerColor = Color.Transparent,
             contentWindowInsets = WindowInsets(0),
             modifier = Modifier.fillMaxSize().appBackground(),
             topBar = {

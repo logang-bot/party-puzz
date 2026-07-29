@@ -38,6 +38,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.common.AdBannerView
@@ -289,7 +290,7 @@ private fun OptionRowWithIcon(
             Icon(
                 painter = painterResource(id = R.drawable.ic_check),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = MaterialTheme.appColors.brandAccent
             )
         }
     }

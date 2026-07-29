@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
@@ -198,7 +199,7 @@ private fun ScoreRevealFooter(score: Int, modifier: Modifier = Modifier) {
             text = "$score%",
             style = MaterialTheme.typography.displayMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.appColors.brandAccent
         )
         Text(
             text = stringResource(scoreLabelRes(score)),

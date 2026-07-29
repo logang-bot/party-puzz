@@ -20,10 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.AnswerWrongRed
+import com.restrusher.partypuzl.ui.theme.AnswerCorrectGreen
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 
-private val correctAnswerColor = Color(0xFF2E7D32)
-private val wrongAnswerColor = Color(0xFFC62828)
+private val correctAnswerColor = AnswerCorrectGreen
+private val wrongAnswerColor = AnswerWrongRed
 
 @Composable
 internal fun DealOptionButton(
@@ -71,7 +75,7 @@ internal fun AnswerOptionButton(
         else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
     }
     val contentColor = when {
-        isAnswered && (isCorrect || isWrongPick) -> Color.White
+        isAnswered && (isCorrect || isWrongPick) -> MaterialTheme.appColors.onAccentSurface
         else -> MaterialTheme.colorScheme.onSurface
     }
 
@@ -100,7 +104,7 @@ internal fun AnswerOptionButton(
 @Composable
 private fun DealOptionButtonLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFFFFF5E6)).padding(16.dp)) {
+        Box(Modifier.appBackground().padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 DealOptionButton(text = "Truth", onClick = {}, modifier = Modifier.weight(1f))
                 DealOptionButton(text = "Dare", onClick = {}, isSelected = true, modifier = Modifier.weight(1f))
@@ -113,7 +117,7 @@ private fun DealOptionButtonLightPreview() {
 @Composable
 private fun AnswerOptionButtonDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24)).padding(16.dp)) {
+        Box(Modifier.appBackground().padding(16.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 AnswerOptionButton(
                     text = "Paris",
@@ -140,7 +144,7 @@ private fun AnswerOptionButtonDarkPreview() {
 @Composable
 private fun DealOptionButtonSelectedDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24)).padding(16.dp)) {
+        Box(Modifier.appBackground().padding(16.dp)) {
             DealOptionButton(
                 text = "Skip",
                 onClick = {},

@@ -5,6 +5,14 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.AccentPink
+import com.restrusher.partypuzl.ui.theme.AccentRose
+import com.restrusher.partypuzl.ui.theme.AccentViolet
+import com.restrusher.partypuzl.ui.theme.AccentYellow
+import com.restrusher.partypuzl.ui.theme.OutcomePunishCrimson
+import com.restrusher.partypuzl.ui.theme.OutcomePunishMidnight
+import com.restrusher.partypuzl.ui.theme.OutcomePunishPlum
+import com.restrusher.partypuzl.ui.theme.OutcomePunishRoseDeep
 import com.restrusher.partypuzl.ui.views.game.gameScreen.BarEvent
 import com.restrusher.partypuzl.ui.views.game.gameScreen.CouplesEvent
 import com.restrusher.partypuzl.ui.views.game.gameScreen.EventCategory
@@ -36,32 +44,32 @@ internal data class OutcomeTheme(
 )
 
 private val couplesReward = OutcomeTheme(
-    gradient = listOf(Color(0xFFFF5B8A), Color(0xFF8B6CFF)),
-    tone = Color(0xFFFF5B8A),
+    gradient = listOf(AccentPink, AccentViolet),
+    tone = AccentPink,
     iconRes = R.drawable.ic_couples,
     kickerRes = R.string.outcome_reward,
     rollingRes = R.string.outcome_rolling_reward
 )
 
 private val couplesPunishment = OutcomeTheme(
-    gradient = listOf(Color(0xFF7A2140), Color(0xFF3A1030)),
-    tone = Color(0xFFC23368),
+    gradient = listOf(OutcomePunishRoseDeep, OutcomePunishPlum),
+    tone = AccentRose,
     iconRes = R.drawable.ic_couples,
     kickerRes = R.string.outcome_punishment,
     rollingRes = R.string.outcome_rolling_punishment
 )
 
 private val barReward = OutcomeTheme(
-    gradient = listOf(Color(0xFFFFD25A), Color(0xFFFF5B8A)),
-    tone = Color(0xFFFFD25A),
+    gradient = listOf(AccentYellow, AccentPink),
+    tone = AccentYellow,
     iconRes = R.drawable.ic_sports_bar,
     kickerRes = R.string.outcome_reward,
     rollingRes = R.string.outcome_rolling_reward
 )
 
 private val barPunishment = OutcomeTheme(
-    gradient = listOf(Color(0xFFFF2E63), Color(0xFF1A0B2E)),
-    tone = Color(0xFFFF2E63),
+    gradient = listOf(OutcomePunishCrimson, OutcomePunishMidnight),
+    tone = OutcomePunishCrimson,
     iconRes = R.drawable.ic_whatshot,
     kickerRes = R.string.outcome_punishment,
     rollingRes = R.string.outcome_rolling_punishment

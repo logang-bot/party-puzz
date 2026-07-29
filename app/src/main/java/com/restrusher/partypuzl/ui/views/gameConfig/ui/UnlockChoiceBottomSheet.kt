@@ -37,6 +37,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.AccentCoral
+import com.restrusher.partypuzl.ui.theme.AccentYellow
+import com.restrusher.partypuzl.ui.theme.BrandTeal
+import com.restrusher.partypuzl.ui.theme.BrandTealShade
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
 
 /**
@@ -75,7 +80,7 @@ internal fun UnlockChoiceBottomSheet(
                 text = stringResource(R.string.unlock_sheet_kicker).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 letterSpacing = 2.sp,
-                color = PremiumBadgeColor
+                color = MaterialTheme.appColors.badgePremium
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -95,7 +100,7 @@ internal fun UnlockChoiceBottomSheet(
             Spacer(modifier = Modifier.height(18.dp))
             UnlockOption(
                 iconRes = R.drawable.ic_play_arrow,
-                gradient = listOf(Color(0xFF2EB6C6), Color(0xFF1C4F5C)),
+                gradient = listOf(BrandTeal, BrandTealShade),
                 title = stringResource(R.string.unlock_option_ad_title),
                 subtitle = stringResource(
                     if (isAdReady) R.string.unlock_option_ad_subtitle
@@ -108,7 +113,7 @@ internal fun UnlockChoiceBottomSheet(
             Spacer(modifier = Modifier.height(10.dp))
             UnlockOption(
                 iconRes = R.drawable.ic_partypuzz,
-                gradient = listOf(Color(0xFFFFD25A), Color(0xFFFF8A5C)),
+                gradient = listOf(AccentYellow, AccentCoral),
                 title = stringResource(R.string.unlock_option_purchase_title),
                 subtitle = stringResource(R.string.unlock_option_purchase_subtitle),
                 highlighted = true,
@@ -144,9 +149,9 @@ private fun UnlockOption(
     modifier: Modifier = Modifier,
     highlighted: Boolean = false
 ) {
-    val borderColor = if (highlighted) PremiumBadgeColor.copy(alpha = 0.3f)
+    val borderColor = if (highlighted) MaterialTheme.appColors.badgePremium.copy(alpha = 0.3f)
     else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.16f)
-    val containerColor = if (highlighted) PremiumBadgeColor.copy(alpha = 0.08f)
+    val containerColor = if (highlighted) MaterialTheme.appColors.badgePremium.copy(alpha = 0.08f)
     else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f)
 
     Row(
@@ -171,7 +176,7 @@ private fun UnlockOption(
             Icon(
                 painter = painterResource(iconRes),
                 contentDescription = null,
-                tint = Color.White,
+                tint = MaterialTheme.appColors.onAccentSurface,
                 modifier = Modifier.size(20.dp)
             )
         }

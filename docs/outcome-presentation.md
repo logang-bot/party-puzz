@@ -35,14 +35,22 @@ The reel lands on **what actually happened**, not a random slot: `BarEvent.reelI
 
 `EventCategory` (`REWARD` / `PUNISHMENT`) was declared long before anything read it. It now drives the entire look of the reveal, so the two read differently across a noisy room before anybody parses the text.
 
+Colours are named tokens from `ui/theme/Color.kt` — see [theming.md](theming.md).
+
 | Mode | Category | Gradient | Tone | Icon |
 |---|---|---|---|---|
-| Couples | Reward | `#FF5B8A` → `#8B6CFF` | `#FF5B8A` | `ic_couples` |
-| Couples | Punishment | `#7A2140` → `#3A1030` | `#C23368` | `ic_couples` |
-| Bar | Reward | `#FFD25A` → `#FF5B8A` | `#FFD25A` | `ic_sports_bar` |
-| Bar | Punishment | `#FF2E63` → `#1A0B2E` | `#FF2E63` | `ic_whatshot` |
+| Couples | Reward | `AccentPink` → `AccentViolet` | `AccentPink` | `ic_couples` |
+| Couples | Punishment | `OutcomePunishRoseDeep` → `OutcomePunishPlum` | `AccentRose` | `ic_couples` |
+| Bar | Reward | `AccentYellow` → `AccentPink` | `AccentYellow` | `ic_sports_bar` |
+| Bar | Punishment | `OutcomePunishCrimson` → `OutcomePunishMidnight` | `OutcomePunishCrimson` | `ic_whatshot` |
 
-Rewards run bright and warm; punishments run dark and saturated. The tone colour is used for the reel highlight, the rolling label and the `REWARD` / `PUNISHMENT` kicker.
+<details><summary>Hex values</summary>
+
+`AccentPink` `#FF5B8A` · `AccentViolet` `#8B6CFF` · `AccentYellow` `#FFD25A` · `AccentRose` `#C23368` · `OutcomePunishRoseDeep` `#7A2140` · `OutcomePunishPlum` `#3A1030` · `OutcomePunishCrimson` `#FF2E63` · `OutcomePunishMidnight` `#1A0B2E`
+
+</details>
+
+Rewards run bright and warm; punishments run dark and saturated. The tone colour is used for the reel highlight, the rolling label and the `REWARD` / `PUNISHMENT` kicker. These four palettes are identical in light and dark — the medallion icon on top is `appColors.onAccentSurface`.
 
 When Party Puzl leaves both sub-modes active, `activeOutcomeMode` resolves Couples first — its artwork is the more specific of the two.
 

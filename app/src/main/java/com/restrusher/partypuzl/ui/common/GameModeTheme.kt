@@ -3,6 +3,15 @@ package com.restrusher.partypuzl.ui.common
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.AccentCoral
+import com.restrusher.partypuzl.ui.theme.AccentLime
+import com.restrusher.partypuzl.ui.theme.AccentPink
+import com.restrusher.partypuzl.ui.theme.AccentViolet
+import com.restrusher.partypuzl.ui.theme.BrandTeal
+import com.restrusher.partypuzl.ui.theme.BrandTealDeep
+import com.restrusher.partypuzl.ui.theme.BrandTealShade
+import com.restrusher.partypuzl.ui.theme.ModeFallbackEnd
+import com.restrusher.partypuzl.ui.theme.ModeFallbackStart
 
 data class GameModeTheme(
     val gradientColors: List<Color>,
@@ -10,27 +19,27 @@ data class GameModeTheme(
 )
 
 private val StandardModeTheme = GameModeTheme(
-    gradientColors = listOf(Color(0xFF2EB6C6), Color(0xFF1C4F5C)),
+    gradientColors = listOf(BrandTeal, BrandTealShade),
     iconId = R.drawable.ic_standard
 )
 
 private val BarModeTheme = GameModeTheme(
-    gradientColors = listOf(Color(0xFFFF8A5C), Color(0xFFFF5B8A)),
+    gradientColors = listOf(AccentCoral, AccentPink),
     iconId = R.drawable.ic_bar
 )
 
 private val CouplesModeTheme = GameModeTheme(
-    gradientColors = listOf(Color(0xFFFF5B8A), Color(0xFF8B6CFF)),
+    gradientColors = listOf(AccentPink, AccentViolet),
     iconId = R.drawable.ic_couples
 )
 
 private val PartyPuzlModeTheme = GameModeTheme(
-    gradientColors = listOf(Color(0xFFA8E063), Color(0xFF1C7A87)),
+    gradientColors = listOf(AccentLime, BrandTealDeep),
     iconId = R.drawable.ic_partypuzz
 )
 
 private val DefaultModeTheme = GameModeTheme(
-    gradientColors = listOf(Color(0xFF2A4060), Color(0xFF162840)),
+    gradientColors = listOf(ModeFallbackStart, ModeFallbackEnd),
     iconId = R.drawable.ic_standard
 )
 

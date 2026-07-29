@@ -38,6 +38,8 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.AccentCoral
+import com.restrusher.partypuzl.ui.theme.appColors
 
 class RewardedAdState(private val context: Context) {
     var rewardedAd by mutableStateOf<RewardedAd?>(null)
@@ -94,12 +96,12 @@ fun RewardedAdCard(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(48.dp)
-                    .background(Color(0xFFFF5722), RoundedCornerShape(12.dp))
+                    .background(AccentCoral, RoundedCornerShape(12.dp))
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_whatshot),
                     contentDescription = null,
-                    tint = Color.White,
+                    tint = MaterialTheme.appColors.onAccentSurface,
                     modifier = Modifier.size(28.dp)
                 )
             }

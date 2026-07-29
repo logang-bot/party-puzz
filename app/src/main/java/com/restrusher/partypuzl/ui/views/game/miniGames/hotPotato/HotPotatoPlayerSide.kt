@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
@@ -93,7 +94,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         text = holder?.nickName.orEmpty(),
         style = MaterialTheme.typography.displaySmall,
         fontWeight = FontWeight.Bold,
-        color = Color.White,
+        color = MaterialTheme.appColors.onAccentSurface,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(8.dp))
@@ -103,7 +104,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         text = stringResource(R.string.hot_potato_tap_to_pass),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.SemiBold,
-        color = Color.White.copy(alpha = 0.85f),
+        color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.85f),
         textAlign = TextAlign.Center
     )
     if (nextHolder != null) {
@@ -111,7 +112,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         Text(
             text = stringResource(R.string.hot_potato_next),
             style = MaterialTheme.typography.labelMedium,
-            color = Color.White.copy(alpha = 0.50f),
+            color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.50f),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
@@ -123,7 +124,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
             Text(
                 text = nextHolder.nickName,
                 style = MaterialTheme.typography.labelLarge,
-                color = Color.White.copy(alpha = 0.65f)
+                color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.65f)
             )
         }
     }

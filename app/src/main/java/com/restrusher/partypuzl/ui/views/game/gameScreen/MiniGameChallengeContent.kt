@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
@@ -299,7 +300,7 @@ private val previewPlayer3 = Player(3, "Carol", Gender.Female, InterestedIn.Both
 @Composable
 private fun MiniGameSelectionLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFF162447)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             MiniGameChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer1,
@@ -319,7 +320,7 @@ private fun MiniGameSelectionLightPreview() {
 @Composable
 private fun MiniGameResultDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF162447)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             MiniGameChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer1,
@@ -345,7 +346,7 @@ private fun MiniGameResultDarkPreview() {
 @Composable
 private fun MiniGameTapWarResultDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF162447)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             MiniGameChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer1,
@@ -372,7 +373,7 @@ private fun MiniGameTapWarResultDarkPreview() {
 @Composable
 private fun MiniGameHotPotatoLoserDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF162447)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             MiniGameChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer1,

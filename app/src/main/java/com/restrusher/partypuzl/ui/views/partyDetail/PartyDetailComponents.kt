@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.appCard
 import com.restrusher.partypuzl.data.local.entities.PartyPhotoEntity
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import java.io.File
@@ -117,7 +119,7 @@ fun PartyNameSection(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_outline_edit),
                         contentDescription = stringResource(id = R.string.edit_party_name),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.appColors.brandAccent
                     )
                 }
             }
@@ -151,8 +153,7 @@ private fun StatCard(count: Int, label: String, modifier: Modifier = Modifier) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.06f))
+            .appCard(RoundedCornerShape(12.dp))
             .padding(vertical = 16.dp)
     ) {
         Text(

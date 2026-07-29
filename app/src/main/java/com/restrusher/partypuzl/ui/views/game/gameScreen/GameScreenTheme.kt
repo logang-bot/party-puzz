@@ -12,9 +12,18 @@ import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.ui.common.gameModeTheme
+import com.restrusher.partypuzl.ui.theme.AccentLime
+import com.restrusher.partypuzl.ui.theme.AccentPink
+import com.restrusher.partypuzl.ui.theme.AccentViolet
+import com.restrusher.partypuzl.ui.theme.AccentYellow
+import com.restrusher.partypuzl.ui.theme.AccentCoral
+import com.restrusher.partypuzl.ui.theme.BrandTeal
+import com.restrusher.partypuzl.ui.theme.BrandTealDeep
+import com.restrusher.partypuzl.ui.theme.BrandTealShade
 import com.restrusher.partypuzl.ui.theme.LocalDarkTheme
 import com.restrusher.partypuzl.ui.theme.backgroundGradientDarkEnd
-import com.restrusher.partypuzl.ui.theme.backgroundGradientDarkStart
+import com.restrusher.partypuzl.ui.theme.backgroundGradientDarkMid
+import com.restrusher.partypuzl.ui.theme.backgroundGradientDarkTop
 import com.restrusher.partypuzl.ui.theme.backgroundGradientLightEnd
 import com.restrusher.partypuzl.ui.theme.backgroundGradientLightMid
 import com.restrusher.partypuzl.ui.theme.backgroundGradientLightStart
@@ -35,9 +44,9 @@ internal fun rememberBackgroundGradient(gameModeNameRes: Int? = GameOptionsSourc
         if (isDark) {
             Brush.verticalGradient(
                 colors = listOf(
-                    tint.copy(alpha = DARK_MODE_TINT_ALPHA).compositeOver(backgroundGradientDarkEnd),
-                    backgroundGradientDarkEnd,
-                    backgroundGradientDarkStart
+                    tint.copy(alpha = DARK_MODE_TINT_ALPHA).compositeOver(backgroundGradientDarkTop),
+                    backgroundGradientDarkMid,
+                    backgroundGradientDarkEnd
                 )
             )
         } else {
@@ -63,8 +72,8 @@ internal data class DealAccent(
 )
 
 internal val truthAccent = DealAccent(
-    tone = Color(0xFF2EB6C6),
-    gradient = listOf(Color(0xFF2EB6C6), Color(0xFF1C4F5C)),
+    tone = BrandTeal,
+    gradient = listOf(BrandTeal, BrandTealShade),
     iconRes = R.drawable.ic_chat_bubble,
     labelRes = R.string.truth,
     kickerRes = R.string.deal_kicker_truth,
@@ -72,8 +81,8 @@ internal val truthAccent = DealAccent(
 )
 
 internal val dareAccent = DealAccent(
-    tone = Color(0xFFFF5B8A),
-    gradient = listOf(Color(0xFFFF5B8A), Color(0xFF8B6CFF)),
+    tone = AccentPink,
+    gradient = listOf(AccentPink, AccentViolet),
     iconRes = R.drawable.ic_whatshot,
     labelRes = R.string.dare,
     kickerRes = R.string.deal_kicker_dare,
@@ -81,8 +90,8 @@ internal val dareAccent = DealAccent(
 )
 
 private val truthOrDareAccent = DealAccent(
-    tone = Color(0xFFFF5B8A),
-    gradient = listOf(Color(0xFFFF5B8A), Color(0xFF8B6CFF)),
+    tone = AccentPink,
+    gradient = listOf(AccentPink, AccentViolet),
     iconRes = R.drawable.ic_whatshot,
     labelRes = R.string.truth_or_dare,
     kickerRes = R.string.deal_kicker_dare,
@@ -90,8 +99,8 @@ private val truthOrDareAccent = DealAccent(
 )
 
 private val generalKnowledgeAccent = DealAccent(
-    tone = Color(0xFFA8E063),
-    gradient = listOf(Color(0xFFA8E063), Color(0xFF1C7A87)),
+    tone = AccentLime,
+    gradient = listOf(AccentLime, BrandTealDeep),
     iconRes = R.drawable.ic_lightbulb,
     labelRes = R.string.general_knowledge_title,
     kickerRes = R.string.deal_kicker_general_knowledge,
@@ -99,8 +108,8 @@ private val generalKnowledgeAccent = DealAccent(
 )
 
 private val stickyDareAccent = DealAccent(
-    tone = Color(0xFF8B6CFF),
-    gradient = listOf(Color(0xFF8B6CFF), Color(0xFF1C4F5C)),
+    tone = AccentViolet,
+    gradient = listOf(AccentViolet, BrandTealShade),
     iconRes = R.drawable.ic_hourglass,
     labelRes = R.string.sticky_dares,
     kickerRes = R.string.deal_kicker_sticky_dare,
@@ -108,8 +117,8 @@ private val stickyDareAccent = DealAccent(
 )
 
 private val miniGameAccent = DealAccent(
-    tone = Color(0xFFFFD25A),
-    gradient = listOf(Color(0xFFFFD25A), Color(0xFFFF8A5C)),
+    tone = AccentYellow,
+    gradient = listOf(AccentYellow, AccentCoral),
     iconRes = R.drawable.ic_random,
     labelRes = R.string.mini_games,
     kickerRes = R.string.deal_kicker_mini_game,

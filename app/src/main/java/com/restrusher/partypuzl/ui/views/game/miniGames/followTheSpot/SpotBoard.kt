@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.restrusher.partypuzl.ui.theme.MiniGameAccents
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import kotlinx.coroutines.delay
 
@@ -44,13 +45,6 @@ private val SPOT_DIAMETER = 56.dp
 private val BORDER_WIDTH = 3.dp
 private val DIVIDER_GRADIENT_HEIGHT = 48.dp
 private const val BORDER_COLOR_STEP_MS = 600
-
-private val BorderColors = listOf(
-    Color(0xFFFF80AB), // light pink
-    Color(0xFF80D8FF), // light blue
-    Color(0xFFCCFF90), // light green
-    Color(0xFFFFFF8D), // light yellow
-)
 
 internal enum class DividerEdge { Top, Bottom }
 
@@ -68,18 +62,18 @@ internal fun SpotBoard(
     var boardSize by remember { mutableStateOf(IntSize.Zero) }
     val spotDiameterPx = remember(density) { with(density) { SPOT_DIAMETER.roundToPx() } }
 
-    // Cycles through BorderColors while the game is running
+    // Cycles through MiniGameAccents while the game is running
     var colorIndex by remember { mutableIntStateOf(0) }
     LaunchedEffect(isActive) {
         if (isActive) {
             while (true) {
                 delay(BORDER_COLOR_STEP_MS.toLong())
-                colorIndex = (colorIndex + 1) % BorderColors.size
+                colorIndex = (colorIndex + 1) % MiniGameAccents.size
             }
         }
     }
     val loopingBorderColor by animateColorAsState(
-        targetValue = BorderColors[colorIndex],
+        targetValue = MiniGameAccents[colorIndex],
         animationSpec = tween(durationMillis = BORDER_COLOR_STEP_MS, easing = LinearEasing),
         label = "borderColor"
     )

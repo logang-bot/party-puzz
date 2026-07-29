@@ -93,8 +93,8 @@ Bar events are rendered by the shared outcome overlay, not by a bespoke dialog. 
 
 | Category | Gradient | Tone | Icon |
 |---|---|---|---|
-| Reward (`NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`) | `#FFD25A` → `#FF5B8A` | `#FFD25A` | `ic_sports_bar` |
-| Punishment (`TakeDrinks`) | `#FF2E63` → `#1A0B2E` | `#FF2E63` | `ic_whatshot` |
+| Reward (`NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`) | `AccentYellow` → `AccentPink` | `AccentYellow` | `ic_sports_bar` |
+| Punishment (`TakeDrinks`) | `OutcomePunishCrimson` → `OutcomePunishMidnight` | `OutcomePunishCrimson` | `ic_whatshot` |
 
 **Reel:** `R.array.outcome_reel_bar`, ordered `NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`, `TakeDrinks` — matching `BarEvent.reelIndex`, so the reel stops on the event that actually fired.
 

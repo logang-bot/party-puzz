@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -67,7 +68,7 @@ internal fun SlotReel(
             .fillMaxWidth()
             .height(windowHeight)
             .clip(reelShape)
-            .background(Color.White.copy(alpha = 0.05f))
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
             .border(1.dp, tone.copy(alpha = 0.4f), reelShape)
     ) {
         // requiredHeight, not height: the parent Box is only `windowHeight` tall, and a plain

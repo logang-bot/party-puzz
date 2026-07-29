@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import java.io.File
@@ -108,7 +109,7 @@ fun PlayerDataCard(
                     .fillMaxWidth()
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, colorResource(id = R.color.black))
+                            colors = listOf(Color.Transparent, MaterialTheme.appColors.chipScrim.copy(alpha = 0.85f))
                         )
                     )
                     .padding(top = 20.dp, start = 6.dp, end = 6.dp, bottom = 5.dp)
@@ -118,7 +119,7 @@ fun PlayerDataCard(
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = colorResource(id = R.color.white)
+                    color = MaterialTheme.appColors.onAccentSurface
                 )
             }
             Box(

@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
@@ -162,7 +163,7 @@ private val previewPlayers = listOf(
 @Composable
 private fun DealChoiceTruthOrDareLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFFFFF5E6)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             DealChoiceContent(
                 uiState = GameScreenState(
                     players = previewPlayers,
@@ -180,7 +181,7 @@ private fun DealChoiceTruthOrDareLightPreview() {
 @Composable
 private fun DealChoiceMiniGameDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             DealChoiceContent(
                 uiState = GameScreenState(
                     players = previewPlayers,

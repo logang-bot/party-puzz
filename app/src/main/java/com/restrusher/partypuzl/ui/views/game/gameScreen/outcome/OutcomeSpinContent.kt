@@ -29,6 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.views.game.gameScreen.EventCategory
 import com.restrusher.partypuzl.ui.views.game.gameScreen.OUTCOME_SPIN_DURATION_MS
@@ -64,7 +66,7 @@ internal fun OutcomeSpinContent(
             Icon(
                 painter = painterResource(theme.iconRes),
                 contentDescription = null,
-                tint = Color.White,
+                tint = MaterialTheme.appColors.onAccentSurface,
                 modifier = Modifier.size(28.dp)
             )
         }
@@ -101,7 +103,7 @@ internal fun OutcomeSpinContent(
 @Composable
 private fun OutcomeSpinBarPunishmentDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             OutcomeSpinContent(
                 mode = OutcomeMode.BAR,
                 category = EventCategory.PUNISHMENT,
@@ -115,7 +117,7 @@ private fun OutcomeSpinBarPunishmentDarkPreview() {
 @Composable
 private fun OutcomeSpinCouplesRewardLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.background(Color(0xFFFFF5E6)).fillMaxSize()) {
+        Box(Modifier.appBackground().fillMaxSize()) {
             OutcomeSpinContent(
                 mode = OutcomeMode.COUPLES,
                 category = EventCategory.REWARD,

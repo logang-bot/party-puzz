@@ -39,8 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.data.models.Gender
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
+import com.restrusher.partypuzl.ui.theme.MiniGameAccents
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 import kotlinx.coroutines.delay
@@ -49,13 +51,6 @@ import kotlinx.coroutines.launch
 private const val BORDER_COLOR_STEP_MS = 600
 private const val RIPPLE_RADIUS_DP = 200f
 private const val RIPPLE_DURATION_MS = 500
-
-private val BorderColors = listOf(
-    Color(0xFFFF80AB),
-    Color(0xFF80D8FF),
-    Color(0xFFCCFF90),
-    Color(0xFFFFFF8D),
-)
 
 internal enum class TapWarDividerEdge { Top, Bottom }
 
@@ -86,11 +81,11 @@ internal fun TapWarSide(
     LaunchedEffect(isActive) {
         if (isActive) while (true) {
             delay(BORDER_COLOR_STEP_MS.toLong())
-            colorIndex = (colorIndex + 1) % BorderColors.size
+            colorIndex = (colorIndex + 1) % MiniGameAccents.size
         }
     }
     val borderColor by animateColorAsState(
-        targetValue = BorderColors[colorIndex],
+        targetValue = MiniGameAccents[colorIndex],
         animationSpec = tween(BORDER_COLOR_STEP_MS, easing = LinearEasing),
         label = "borderColor"
     )
@@ -99,6 +94,7 @@ internal fun TapWarSide(
         animationSpec = tween(500),
         label = "borderAlpha"
     )
+    val rippleColor = MaterialTheme.appColors.onAccentSurface
     val backgroundColor by animateColorAsState(
         targetValue = if (isActive) Color.Transparent else MaterialTheme.colorScheme.surface,
         animationSpec = tween(500),
@@ -152,7 +148,7 @@ internal fun TapWarSide(
         }
         Canvas(modifier = Modifier.fillMaxSize()) {
             drawCircle(
-                color = Color.White.copy(alpha = currentRippleAlpha),
+                color = rippleColor.copy(alpha = currentRippleAlpha),
                 radius = currentRippleRadius.dp.toPx(),
                 center = tapOffset
             )

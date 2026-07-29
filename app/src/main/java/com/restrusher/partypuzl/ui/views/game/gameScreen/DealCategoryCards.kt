@@ -33,6 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 
 /** Large promoted card for the deal that was played last, party-wide. */
@@ -53,7 +55,7 @@ internal fun DealHeroCard(
         Icon(
             painter = painterResource(accent.iconRes),
             contentDescription = null,
-            tint = Color.White,
+            tint = MaterialTheme.appColors.onAccentSurface,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .offset(x = 18.dp, y = (-18).dp)
@@ -65,7 +67,7 @@ internal fun DealHeroCard(
                 text = stringResource(accent.kickerRes).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 letterSpacing = 2.sp,
-                color = Color.White.copy(alpha = 0.75f)
+                color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.75f)
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -73,13 +75,13 @@ internal fun DealHeroCard(
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,
-                color = Color.White
+                color = MaterialTheme.appColors.onAccentSurface
             )
             Spacer(Modifier.height(6.dp))
             Text(
                 text = stringResource(accent.blurbRes),
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.White.copy(alpha = 0.85f)
+                color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.85f)
             )
         }
     }
@@ -127,7 +129,7 @@ private fun DealCardsLightPreview() {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
-                .background(Color(0xFFFFF5E6))
+                .appBackground()
                 .padding(16.dp)
         ) {
             DealHeroCard(accent = truthAccent, onClick = {})
@@ -154,7 +156,7 @@ private fun DealCardsDarkPreview() {
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
-                .background(Color(0xFF0B1F24))
+                .appBackground()
                 .padding(16.dp)
         ) {
             DealHeroCard(accent = dareAccent, onClick = {})

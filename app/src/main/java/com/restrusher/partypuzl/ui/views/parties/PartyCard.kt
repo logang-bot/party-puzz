@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.local.entities.PartyWithPlayers
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import com.restrusher.partypuzl.ui.common.gameModeTheme
@@ -82,7 +83,7 @@ fun PartyCard(
             painter = painterResource(theme.iconId),
             contentDescription = null,
             alpha = 0.25f,
-            colorFilter = ColorFilter.tint(Color.White),
+            colorFilter = ColorFilter.tint(MaterialTheme.appColors.onAccentSurface),
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .size(140.dp)
@@ -105,20 +106,20 @@ fun PartyCard(
                         text = if (gameModeNameRes != null)
                             stringResource(gameModeNameRes).uppercase()
                         else "",
-                        color = Color.White.copy(alpha = 0.75f),
+                        color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelSmall,
                         letterSpacing = 1.5.sp
                     )
                     Text(
                         text = dateFormat.format(Date(displayDate)),
-                        color = Color.White.copy(alpha = 0.75f),
+                        color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.75f),
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
                     text = party.party.name,
-                    color = Color.White,
+                    color = MaterialTheme.appColors.onAccentSurface,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     fontStyle = FontStyle.Italic,
@@ -132,7 +133,7 @@ fun PartyCard(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.Black.copy(alpha = 0.25f))
+                    .background(MaterialTheme.appColors.chipScrim.copy(alpha = 0.25f))
                     .padding(horizontal = 14.dp, vertical = 10.dp)
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy((-12).dp)) {
@@ -143,7 +144,7 @@ fun PartyCard(
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
                     text = namesText,
-                    color = Color.White.copy(alpha = 0.85f),
+                    color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.85f),
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -153,13 +154,13 @@ fun PartyCard(
                     Icon(
                         painter = painterResource(R.drawable.ic_camera),
                         contentDescription = null,
-                        tint = Color.White.copy(alpha = 0.7f),
+                        tint = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.7f),
                         modifier = Modifier.size(13.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
                         text = "${party.photos.size}",
-                        color = Color.White.copy(alpha = 0.7f),
+                        color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.7f),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

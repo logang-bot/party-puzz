@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.ui.common.AdBannerView
@@ -176,14 +177,7 @@ fun SharedTransitionScope.GameConfigScreen(
         )
 
         if (uiState.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f)),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            LoadingScrim()
         }
     }
 

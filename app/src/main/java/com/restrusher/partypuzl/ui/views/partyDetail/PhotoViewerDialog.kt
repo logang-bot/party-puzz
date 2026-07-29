@@ -63,6 +63,8 @@ fun PhotoViewerDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        // Deliberately black and white-on-black in both themes: this is a photo
+        // lightbox, and a cream backdrop would cast the photos it surrounds.
         Box(
             modifier = Modifier
                 .fillMaxSize()

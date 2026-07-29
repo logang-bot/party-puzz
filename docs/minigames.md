@@ -143,11 +143,12 @@ Reusable full-screen countdown overlay used by all mini-games that have a pre-ga
 |---|---|
 | `countdownValue` | `Int` — current value (≥1 shows number, 0 shows "Go!") |
 
-**Visual design:**
-- Background: `Brush.verticalGradient` with soft white alpha (frosted-glass look)
-- Top specular edge: 1 dp horizontal gradient, transparent → white → transparent
-- Bottom specular edge: 1 dp solid white at 30 % opacity
-- Text color: `MaterialTheme.colorScheme.onPrimaryContainer` with a white `Shadow`
+**Visual design** — the frosted panel is theme-aware, via `appColors.glassTint` / `glassEdge` / `onGlass` (see [theming.md](theming.md)). A white wash works over the dark theme but is invisible over the light theme's cream, so light mode uses a heavier white with dark ink instead:
+
+- Background: `Brush.verticalGradient` from `glassTint`, keeping a 1 : 0.45 : 0.73 alpha falloff — white @ 22 % in dark, white @ 62 % in light
+- Top specular edge: 1 dp horizontal gradient, transparent → `glassEdge` → transparent
+- Bottom specular edge: 1 dp `glassEdge` at 35 % of its alpha
+- Text colour: `onGlass` (white in dark, `#0E2630` in light), with a `Shadow` in the same colour for the glow
 
 **Transitions (inside `AnimatedContent`):**
 

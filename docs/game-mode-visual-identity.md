@@ -1,6 +1,6 @@
 # Game Mode Visual Identity
 
-Each game mode has a fixed visual identity — a gradient palette and a vector icon — that appears consistently across every screen that references a game mode. These values are **not theme-dependent**: the same colors and icon are used regardless of the active Material3 theme or dark/light mode.
+Each game mode has a fixed visual identity — a gradient palette and a vector icon — that appears consistently across every screen that references a game mode. These values are **not theme-dependent**: the same colors and icon are used regardless of the active Material3 theme or dark/light mode. That is exactly why they live as plain top-level values in `ui/theme/Color.kt` rather than in the per-theme `AppColors` bag — see [theming.md](theming.md).
 
 ---
 
@@ -29,13 +29,15 @@ val theme = gameModeTheme(gameModeNameRes)
 
 ## Mode Definitions
 
-| Mode | Gradient (start → end) | Icon |
-|---|---|---|
-| Standard | `#2EB6C6` → `#1C4F5C` | `ic_standard` |
-| Bar | `#FF8A5C` → `#FF5B8A` | `ic_bar` |
-| Couples | `#FF5B8A` → `#8B6CFF` | `ic_couples` |
-| Party Puzl | `#A8E063` → `#1C7A87` | `ic_partypuzz` |
-| *(fallback)* | `#2A4060` → `#162840` | `ic_standard` |
+Gradient stops are named tokens from `ui/theme/Color.kt`, not literals — see [theming.md](theming.md).
+
+| Mode | Gradient (start → end) | Hex | Icon |
+|---|---|---|---|
+| Standard | `BrandTeal` → `BrandTealShade` | `#2EB6C6` → `#1C4F5C` | `ic_standard` |
+| Bar | `AccentCoral` → `AccentPink` | `#FF8A5C` → `#FF5B8A` | `ic_bar` |
+| Couples | `AccentPink` → `AccentViolet` | `#FF5B8A` → `#8B6CFF` | `ic_couples` |
+| Party Puzl | `AccentLime` → `BrandTealDeep` | `#A8E063` → `#1C7A87` | `ic_partypuzz` |
+| *(fallback)* | `ModeFallbackStart` → `ModeFallbackEnd` | `#2A4060` → `#162840` | `ic_standard` |
 
 All four icons are **XML vector drawables** in `res/drawable/`. The `ic_standard` star path was scaled to fill its 16×16 viewport (the original 24×24 viewport left 33% empty space, making the star visually smaller than the other icons).
 
@@ -45,9 +47,9 @@ All four icons are **XML vector drawables** in `res/drawable/`. The `ic_standard
 
 | Screen / Component | Icon size | Position | Tint | Alpha | Notes |
 |---|---|---|---|---|---|
-| `GameModeCard` | `fillMaxHeight(0.42f)` + `aspectRatio(1f)` | `TopEnd` + `offset(x=56, y=-48)` | `Color.White` | `0.25f` | Clipped at top-right corner by the card's `clip(RoundedCornerShape(20.dp))` |
-| `PartyCard` | `size(150.dp)` | `TopEnd` + `offset(x=48, y=-40)` | `Color.White` | `0.25f` | Same corner treatment as `GameModeCard` |
-| `LastPartyCard` | `size(32.dp)` | Centered inside a 52 dp gradient box | `Color.White` | *(none)* | Icon sits fully inside the colored thumbnail |
+| `GameModeCard` | `fillMaxHeight(0.42f)` + `aspectRatio(1f)` | `TopEnd` + `offset(x=56, y=-48)` | `appColors.onAccentSurface` | `0.25f` | Clipped at top-right corner by the card's `clip(RoundedCornerShape(20.dp))` |
+| `PartyCard` | `size(150.dp)` | `TopEnd` + `offset(x=48, y=-40)` | `appColors.onAccentSurface` | `0.25f` | Same corner treatment as `GameModeCard` |
+| `LastPartyCard` | `size(32.dp)` | Centered inside a 52 dp gradient box | `appColors.onAccentSurface` | *(none)* | Icon sits fully inside the colored thumbnail |
 | `GameConfigScreen` | `size(72.dp)` | Inline in the header Row | *(none — original colors)* | *(none)* | Displayed as a bare image, no background container |
 
 > **Corner icon effect** (`GameModeCard`, `PartyCard`): the icon is placed at `Alignment.TopEnd` and then shifted further outside via `offset`. The parent Box's `clip(RoundedCornerShape(...))` crops whatever extends beyond the card boundary, creating the intentional partially-visible corner decoration.
@@ -67,11 +69,11 @@ val cardGradient = theme.gradientColors.map { it.copy(alpha = 0.9f) }
 Modifier.background(Brush.linearGradient(cardGradient))
 ```
 
-Text on gradient backgrounds is always fixed `Color.White` (with alpha variants for supporting copy) and is never driven by `MaterialTheme.colorScheme`.
+Text on gradient backgrounds is always `MaterialTheme.appColors.onAccentSurface` (with alpha variants for supporting copy) and is never driven by `MaterialTheme.colorScheme`. That token is white in both themes — it exists so the intent reads as "ink on an accent fill" rather than an unexplained literal.
 
 ### `PartyCard`
 
-Gradient applied at full opacity directly on the card `Box`. All text uses fixed `Color.White` and `Color.White.copy(alpha = ...)`.
+Gradient applied at full opacity directly on the card `Box`. All text uses `appColors.onAccentSurface`, with `.copy(alpha = ...)` for supporting copy. The photo-count chip sits on `appColors.chipScrim` at 25 %.
 
 ### `LastPartyCard`
 
@@ -118,9 +120,12 @@ The in-game background is the one place the mode palette is used as an atmospher
 
 The effect is that Bar mode plays under a warm orange sky and Couples under a pink one, while the surface colours underneath stay the standard themed ones. Before this, every mode played on the same fixed navy.
 
+The three stops it fades to are the shared background tokens — `backgroundGradientDarkTop` → `Mid` → `End` in dark, and the `…LightStart` / `Mid` / `End` trio in light. This is the game screen's own gradient; every other route inherits `Modifier.appBackground()` instead, which in dark is radial rather than vertical. See [theming.md](theming.md).
+
 ---
 
 ## Related
 
+- [theming.md](theming.md) — Colour tokens, `AppColors`, and the two elevation models
 - [game-deal-flow.md](game-deal-flow.md) — Where the background is applied
 - [outcome-presentation.md](outcome-presentation.md) — Per-mode reward and punishment theming

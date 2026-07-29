@@ -31,19 +31,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appColors
 
 @Composable
 fun MiniGameCountdownOverlay(
     countdownValue: Int,
     modifier: Modifier = Modifier
 ) {
+    // The frosted panel is a light wash in dark mode and a heavier white one in
+    // light mode, where a 22% white veil over cream would be invisible. The wash
+    // keeps its original 1 : 0.45 : 0.73 alpha falloff either way.
+    val glass = MaterialTheme.appColors.glassTint
+    val glassEdge = MaterialTheme.appColors.glassEdge
+    val onGlass = MaterialTheme.appColors.onGlass
+
     Box(
         modifier = modifier.background(
             Brush.verticalGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.22f),
-                    Color.White.copy(alpha = 0.10f),
-                    Color.White.copy(alpha = 0.16f)
+                    glass,
+                    glass.copy(alpha = glass.alpha * 0.45f),
+                    glass.copy(alpha = glass.alpha * 0.73f)
                 )
             )
         ),
@@ -58,7 +66,7 @@ fun MiniGameCountdownOverlay(
                     Brush.horizontalGradient(
                         colors = listOf(
                             Color.Transparent,
-                            Color.White.copy(alpha = 0.85f),
+                            glassEdge,
                             Color.Transparent
                         )
                     )
@@ -70,7 +78,7 @@ fun MiniGameCountdownOverlay(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(1.dp)
-                .background(Color.White.copy(alpha = 0.30f))
+                .background(glassEdge.copy(alpha = glassEdge.alpha * 0.35f))
                 .align(Alignment.BottomCenter)
         )
 
@@ -96,13 +104,13 @@ fun MiniGameCountdownOverlay(
                     text = if (value > 0) stringResource(R.string.ready) else stringResource(R.string.go),
                     style = MaterialTheme.typography.displayLarge.copy(
                         shadow = Shadow(
-                            color = Color.White.copy(alpha = 0.6f),
+                            color = onGlass.copy(alpha = 0.6f),
                             offset = Offset.Zero,
                             blurRadius = 24f
                         )
                     ),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = onGlass
                 )
                 if (value > 0) {
                     Spacer(Modifier.height(16.dp))
@@ -110,13 +118,13 @@ fun MiniGameCountdownOverlay(
                         text = value.toString(),
                         style = MaterialTheme.typography.displayMedium.copy(
                             shadow = Shadow(
-                                color = Color.White.copy(alpha = 0.4f),
+                                color = onGlass.copy(alpha = 0.4f),
                                 offset = Offset.Zero,
                                 blurRadius = 16f
                             )
                         ),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = onGlass
                     )
                 }
             }

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.appColors
 
 /**
  * The small controls a [PackRow] is assembled from — icon tile, tier badge, selection check and
@@ -131,7 +132,7 @@ internal fun PackCheck(isEnabled: Boolean, accent: Color) {
 /** Replaces the check on a locked premium row; tapping the row opens the unlock sheet. */
 @Composable
 internal fun UnlockPill() {
-    val tone = PremiumBadgeColor
+    val tone = MaterialTheme.appColors.badgePremium
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -155,8 +156,3 @@ internal fun UnlockPill() {
         )
     }
 }
-
-/** Tier badge colours, taken straight from the design. */
-internal val OfficialBadgeColor = Color(0xFF9FDCE4)
-internal val PremiumBadgeColor = Color(0xFFFFD25A)
-internal val CustomBadgeColor = Color(0xFF8B6CFF)

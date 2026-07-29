@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.data.models.Gender
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.ThemeMode
@@ -101,10 +103,10 @@ private fun PlayerAvatarCard(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.45f))
+                    .background(MaterialTheme.appColors.chipScrim.copy(alpha = 0.45f))
             ) {
                 ClockHandAnimation(
-                    color = Color.White,
+                    color = MaterialTheme.appColors.onAccentSurface,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -136,7 +138,7 @@ private fun PlayersListRowLightPreview() {
 @Composable
 private fun PlayersListRowDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.background(Color(0xFF0B1F24))) {
+        Box(Modifier.appBackground()) {
             PlayersListRow(
                 players = previewPlayers,
                 selectedPlayer = previewPlayers.first(),
