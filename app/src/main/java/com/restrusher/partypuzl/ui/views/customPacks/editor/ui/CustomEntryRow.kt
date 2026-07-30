@@ -39,6 +39,7 @@ import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
+import com.restrusher.partypuzl.ui.views.customPacks.previewTrivia
 import com.restrusher.partypuzl.ui.views.customPacks.ui.AccentIconTile
 import com.restrusher.partypuzl.ui.views.customPacks.ui.RowActionButton
 
@@ -147,17 +148,6 @@ private fun TriviaOption(label: String?, isCorrect: Boolean, modifier: Modifier 
         )
     }
 }
-
-private val previewTrivia = CustomEntryEntity(
-    id = "preview",
-    packId = "pack",
-    type = CustomEntryType.TRIVIA,
-    text = "Which country drinks the most wine per capita?",
-    durationSeconds = null,
-    optionA = "Portugal",
-    optionB = "France",
-    correctOption = "A"
-)
 
 @Preview(showBackground = true)
 @Composable

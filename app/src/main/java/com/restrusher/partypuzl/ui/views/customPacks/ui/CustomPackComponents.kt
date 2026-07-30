@@ -1,52 +1,39 @@
 package com.restrusher.partypuzl.ui.views.customPacks.ui
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.AccentPink
 import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.Wash
-import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.theme.wash
 
 /**
- * The pieces the four custom-pack screens share. Kept here rather than in `ui/common` because
- * nothing outside this feature uses them yet.
+ * The text-shaped pieces the four custom-pack screens share. Kept here rather than in `ui/common`
+ * because nothing outside this feature uses them yet. The boxes and tiles live in
+ * `CustomPackTiles.kt`.
  */
 
 /**
@@ -75,33 +62,6 @@ internal fun NumberedStep(
                 color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary)
             )
         }
-    }
-}
-
-/** Rounded tile holding a pack or entry icon, tinted by its accent. */
-@Composable
-internal fun AccentIconTile(
-    accent: Color,
-    iconRes: Int,
-    modifier: Modifier = Modifier,
-    size: Int = 44,
-    filled: Boolean = false
-) {
-    val corner = (size * 0.28f).dp
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(size.dp)
-            .clip(RoundedCornerShape(corner))
-            .background(if (filled) accent else accent.wash(Wash.Fill))
-            .border(1.dp, accent.ink(Ink.Faint), RoundedCornerShape(corner))
-    ) {
-        Icon(
-            painter = painterResource(iconRes),
-            contentDescription = null,
-            tint = if (filled) MaterialTheme.appColors.onAccentSurface else accent,
-            modifier = Modifier.size((size * 0.45f).dp)
-        )
     }
 }
 
@@ -134,72 +94,51 @@ internal fun MetaChip(label: String, modifier: Modifier = Modifier, tone: Color?
     )
 }
 
-/** The design's dashed "nothing here yet" box, shared by the pack list and the pack editor. */
 @Composable
-internal fun DashedEmptyState(
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit = {}
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .border(
-                width = 1.5.dp,
-                color = MaterialTheme.colorScheme.onBackground.wash(Wash.Hairline),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(horizontal = 20.dp, vertical = 28.dp)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground
+private fun NumberedStepSamples() {
+    Column(modifier = Modifier.appBackground().padding(16.dp)) {
+        NumberedStep(number = "01", label = "Name your pack")
+        NumberedStep(
+            number = "02",
+            label = "Pick a category",
+            subtitle = "This decides which game modes can deal your entries."
         )
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
-            textAlign = TextAlign.Center
-        )
-        content()
     }
 }
 
-/** Text button used for the Edit / Delete pair under a pack or entry row. */
+@Preview(name = "NumberedStep – Light", showBackground = true, widthDp = 360)
 @Composable
-internal fun RowActionButton(
-    label: String,
-    iconRes: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    tint: Color? = null
-) {
-    val color = tint ?: MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
+private fun NumberedStepLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { NumberedStepSamples() }
+}
+
+@Preview(name = "NumberedStep – Dark", showBackground = true, widthDp = 360)
+@Composable
+private fun NumberedStepDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { NumberedStepSamples() }
+}
+
+@Composable
+private fun MetaChipSamples() {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 10.dp, vertical = 6.dp)
+        modifier = Modifier.appBackground().padding(16.dp)
     ) {
-        Icon(
-            painter = painterResource(iconRes),
-            contentDescription = null,
-            tint = color,
-            modifier = Modifier.size(13.dp)
-        )
-        Text(
-            text = label.uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            letterSpacing = 1.sp,
-            color = color
-        )
+        MetaChip(label = "Truth or dare", tone = AccentPink)
+        MetaChip(label = "Medium")
+        MetaChip(label = stickyDurationLabel(300))
     }
+}
+
+@Preview(name = "MetaChip – Light", showBackground = true, widthDp = 360)
+@Composable
+private fun MetaChipLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { MetaChipSamples() }
+}
+
+@Preview(name = "MetaChip – Dark", showBackground = true, widthDp = 360)
+@Composable
+private fun MetaChipDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { MetaChipSamples() }
 }

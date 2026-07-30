@@ -1,9 +1,9 @@
 ---
 name: creating-composables
-description: When create a new function that is marked as composable
+description: When creating a new function that is marked as composable. For @Preview functions use creating-preview-of-composable instead.
 ---
 
-When create a composable take into consideration these guidelines
+When creating a composable take into consideration these guidelines
 
 1. **Always put a modifier as the first optional parameter**: If an optional modifier parameter is needed always put as the first optional one
 2. **Split into child composables**: The size of a composable function is not limited but try to split into small composables functions

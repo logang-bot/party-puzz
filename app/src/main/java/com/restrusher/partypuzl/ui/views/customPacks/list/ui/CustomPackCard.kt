@@ -26,8 +26,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.data.models.PackCategory
-import com.restrusher.partypuzl.data.models.SpiceLevel
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
@@ -37,6 +35,8 @@ import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.PackWarning
+import com.restrusher.partypuzl.ui.views.customPacks.list.messageRes
+import com.restrusher.partypuzl.ui.views.customPacks.previewPack
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
@@ -134,13 +134,8 @@ internal fun CustomPackCard(
 
 @Composable
 private fun PackWarningRow(warning: PackWarning, modifier: Modifier = Modifier) {
-    val message = when (warning) {
-        PackWarning.EMPTY -> R.string.custom_pack_warning_empty
-        PackWarning.TRUTHS_ONLY -> R.string.custom_pack_warning_truths_only
-        PackWarning.DARES_ONLY -> R.string.custom_pack_warning_dares_only
-    }
     Text(
-        text = stringResource(message),
+        text = stringResource(warning.messageRes),
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurface.ink(Ink.Standard),
         modifier = modifier
@@ -150,17 +145,6 @@ private fun PackWarningRow(warning: PackWarning, modifier: Modifier = Modifier) 
             .padding(horizontal = 10.dp, vertical = 6.dp)
     )
 }
-
-private val previewPack = CustomPackUiModel(
-    id = "custom_preview",
-    name = "House Rules",
-    description = "Inside jokes from the trip — nobody outside the group will get these.",
-    category = PackCategory.TRUTH_OR_DARE,
-    spice = SpiceLevel.MEDIUM,
-    entryCount = 12,
-    isEnabled = true,
-    warning = PackWarning.TRUTHS_ONLY
-)
 
 @Preview(showBackground = true)
 @Composable

@@ -24,15 +24,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
+import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPacksState
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPacksViewModel
+import com.restrusher.partypuzl.ui.views.customPacks.previewPacksState
 import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.DashedEmptyState
 
@@ -54,15 +60,40 @@ fun CustomPacksScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    CustomPacksContent(
+        state = uiState,
+        onCreatePack = onCreatePack,
+        onOpenPack = onOpenPack,
+        onEditPack = onEditPack,
+        onToggle = viewModel::onToggle,
+        onDeleteRequested = viewModel::onDeleteRequested,
+        onDeleteConfirmed = viewModel::onDeleteConfirmed,
+        onDeleteDismissed = viewModel::onDeleteDismissed,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun CustomPacksContent(
+    state: CustomPacksState,
+    onCreatePack: () -> Unit,
+    onOpenPack: (String) -> Unit,
+    onEditPack: (String) -> Unit,
+    onToggle: (String) -> Unit,
+    onDeleteRequested: (CustomPackUiModel) -> Unit,
+    onDeleteConfirmed: () -> Unit,
+    onDeleteDismissed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            item { PacksHeader(packCount = uiState.packs.size, entryCount = uiState.totalEntries) }
+            item { PacksHeader(packCount = state.packs.size, entryCount = state.totalEntries) }
 
-            if (uiState.packs.isEmpty() && !uiState.isLoading) {
+            if (state.packs.isEmpty() && !state.isLoading) {
                 item {
                     DashedEmptyState(
                         title = stringResource(R.string.custom_packs_empty_title),
@@ -71,13 +102,13 @@ fun CustomPacksScreen(
                 }
             }
 
-            items(uiState.packs, key = { it.id }) { pack ->
+            items(state.packs, key = { it.id }) { pack ->
                 CustomPackCard(
                     pack = pack,
                     onOpen = { onOpenPack(pack.id) },
-                    onToggle = { viewModel.onToggle(pack.id) },
+                    onToggle = { onToggle(pack.id) },
                     onEdit = { onEditPack(pack.id) },
-                    onDelete = { viewModel.onDeleteRequested(pack) }
+                    onDelete = { onDeleteRequested(pack) }
                 )
             }
         }
@@ -94,11 +125,11 @@ fun CustomPacksScreen(
         )
     }
 
-    uiState.deleteTarget?.let { target ->
+    state.deleteTarget?.let { target ->
         DeletePackDialog(
             pack = target,
-            onConfirm = viewModel::onDeleteConfirmed,
-            onDismiss = viewModel::onDeleteDismissed
+            onConfirm = onDeleteConfirmed,
+            onDismiss = onDeleteDismissed
         )
     }
 }
@@ -155,4 +186,48 @@ private fun DeletePackDialog(
             }
         }
     )
+}
+
+@Composable
+private fun CustomPacksSample(state: CustomPacksState) {
+    Box(modifier = Modifier.fillMaxSize().appBackground()) {
+        CustomPacksContent(
+            state = state,
+            onCreatePack = {},
+            onOpenPack = {},
+            onEditPack = {},
+            onToggle = {},
+            onDeleteRequested = {},
+            onDeleteConfirmed = {},
+            onDeleteDismissed = {}
+        )
+    }
+}
+
+@Preview(name = "CustomPacks – Light", showBackground = true, widthDp = 360, heightDp = 720)
+@Composable
+private fun CustomPacksLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { CustomPacksSample(previewPacksState) }
+}
+
+@Preview(name = "CustomPacks – Dark", showBackground = true, widthDp = 360, heightDp = 720)
+@Composable
+private fun CustomPacksDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { CustomPacksSample(previewPacksState) }
+}
+
+@Preview(name = "CustomPacks empty – Light", showBackground = true, widthDp = 360, heightDp = 480)
+@Composable
+private fun CustomPacksEmptyLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
+        CustomPacksSample(CustomPacksState(isLoading = false))
+    }
+}
+
+@Preview(name = "CustomPacks empty – Dark", showBackground = true, widthDp = 360, heightDp = 480)
+@Composable
+private fun CustomPacksEmptyDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) {
+        CustomPacksSample(CustomPacksState(isLoading = false))
+    }
 }

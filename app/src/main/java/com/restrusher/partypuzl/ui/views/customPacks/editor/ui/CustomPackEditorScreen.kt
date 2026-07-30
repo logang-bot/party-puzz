@@ -2,16 +2,11 @@ package com.restrusher.partypuzl.ui.views.customPacks.editor.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.AlertDialog
@@ -24,27 +19,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.data.local.entities.CustomEntryEntity
 import com.restrusher.partypuzl.data.models.CustomEntryType
-import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.ReportPageTint
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
-import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.views.customPacks.editor.CustomPackEditorState
 import com.restrusher.partypuzl.ui.views.customPacks.editor.CustomPackEditorViewModel
-import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
-import com.restrusher.partypuzl.ui.views.customPacks.list.PackWarning
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
-import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
-import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
-import com.restrusher.partypuzl.ui.views.customPacks.ui.AccentIconTile
+import com.restrusher.partypuzl.ui.views.customPacks.previewEditorState
+import com.restrusher.partypuzl.ui.views.customPacks.previewPack
 import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.DashedEmptyState
-import com.restrusher.partypuzl.ui.views.customPacks.ui.MetaChip
 import com.restrusher.partypuzl.ui.views.customPacks.ui.stickyDurationLabel
 
 /** A pack's contents. Entries are added one at a time, each type asking only for what it needs. */
@@ -66,18 +59,39 @@ fun CustomPackEditorScreen(
     // The page washes in the pack's own spice accent, the same colour its icon tile uses.
     ReportPageTint(uiState.pack?.spice?.accent)
 
+    CustomPackEditorContent(
+        state = uiState,
+        onAddEntry = onAddEntry,
+        onEditEntry = onEditEntry,
+        onDeleteRequested = viewModel::onDeleteRequested,
+        onDeleteConfirmed = viewModel::onDeleteConfirmed,
+        onDeleteDismissed = viewModel::onDeleteDismissed,
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun CustomPackEditorContent(
+    state: CustomPackEditorState,
+    onAddEntry: () -> Unit,
+    onEditEntry: (String) -> Unit,
+    onDeleteRequested: (CustomEntryEntity) -> Unit,
+    onDeleteConfirmed: () -> Unit,
+    onDeleteDismissed: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.fillMaxSize()
         ) {
-            uiState.pack?.let { pack ->
+            state.pack?.let { pack ->
                 item { PackHeader(pack = pack) }
-                item { EntriesLabel(count = uiState.entries.size, onAdd = onAddEntry) }
+                item { EntriesLabel(count = state.entries.size, onAdd = onAddEntry) }
             }
 
-            if (uiState.entries.isEmpty()) {
+            if (state.entries.isEmpty()) {
                 item {
                     DashedEmptyState(
                         title = stringResource(R.string.custom_pack_entries_empty_title),
@@ -86,7 +100,7 @@ fun CustomPackEditorScreen(
                 }
             }
 
-            itemsIndexed(uiState.entries, key = { _, entry -> entry.id }) { index, entry ->
+            itemsIndexed(state.entries, key = { _, entry -> entry.id }) { index, entry ->
                 CustomEntryRow(
                     entry = entry,
                     position = index + 1,
@@ -94,7 +108,7 @@ fun CustomPackEditorScreen(
                         ?.takeIf { entry.type == CustomEntryType.STICKY_DARE }
                         ?.let { stickyDurationLabel(it) },
                     onEdit = { onEditEntry(entry.id) },
-                    onDelete = { viewModel.onDeleteRequested(entry) }
+                    onDelete = { onDeleteRequested(entry) }
                 )
             }
         }
@@ -111,13 +125,13 @@ fun CustomPackEditorScreen(
         )
     }
 
-    if (uiState.deleteTarget != null) {
+    if (state.deleteTarget != null) {
         AlertDialog(
-            onDismissRequest = viewModel::onDeleteDismissed,
+            onDismissRequest = onDeleteDismissed,
             title = { Text(stringResource(R.string.custom_entry_delete_title)) },
             text = { Text(stringResource(R.string.custom_entry_delete_message)) },
             confirmButton = {
-                TextButton(onClick = viewModel::onDeleteConfirmed) {
+                TextButton(onClick = onDeleteConfirmed) {
                     Text(
                         text = stringResource(R.string.custom_pack_delete_confirm),
                         color = MaterialTheme.colorScheme.error
@@ -125,7 +139,7 @@ fun CustomPackEditorScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = viewModel::onDeleteDismissed) {
+                TextButton(onClick = onDeleteDismissed) {
                     Text(
                         text = stringResource(R.string.custom_pack_cancel),
                         color = MaterialTheme.appColors.brandAccent
@@ -137,73 +151,43 @@ fun CustomPackEditorScreen(
 }
 
 @Composable
-private fun PackHeader(pack: CustomPackUiModel, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxWidth().padding(top = 8.dp)) {
-        Row(verticalAlignment = Alignment.Top) {
-            AccentIconTile(accent = pack.spice.accent, iconRes = pack.spice.iconRes, size = 56)
-            Spacer(modifier = Modifier.size(14.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = pack.name,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    fontStyle = FontStyle.Italic,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    MetaChip(
-                        label = stringResource(pack.category.labelRes),
-                        tone = pack.spice.accent
-                    )
-                    MetaChip(label = stringResource(pack.spice.labelRes))
-                }
-            }
-        }
-        if (pack.description.isNotBlank()) {
-            Spacer(modifier = Modifier.height(14.dp))
-            Text(
-                text = pack.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
-            )
-        }
-        pack.warning?.let { warning ->
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = stringResource(warning.messageRes),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
-            )
-        }
-    }
-}
-
-@Composable
-private fun EntriesLabel(count: Int, onAdd: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxWidth().padding(top = 8.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.custom_pack_entries_count, count).uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
-            modifier = Modifier.weight(1f)
+private fun CustomPackEditorSample(state: CustomPackEditorState) {
+    Box(modifier = Modifier.fillMaxSize().appBackground()) {
+        CustomPackEditorContent(
+            state = state,
+            onAddEntry = {},
+            onEditEntry = {},
+            onDeleteRequested = {},
+            onDeleteConfirmed = {},
+            onDeleteDismissed = {}
         )
-        TextButton(onClick = onAdd) {
-            Text(
-                text = stringResource(R.string.custom_pack_add).uppercase(),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.appColors.brandAccent
-            )
-        }
     }
 }
 
-private val PackWarning.messageRes: Int
-    get() = when (this) {
-        PackWarning.EMPTY -> R.string.custom_pack_warning_empty
-        PackWarning.TRUTHS_ONLY -> R.string.custom_pack_warning_truths_only
-        PackWarning.DARES_ONLY -> R.string.custom_pack_warning_dares_only
+@Preview(name = "CustomPackEditor – Light", showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+private fun CustomPackEditorLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { CustomPackEditorSample(previewEditorState) }
+}
+
+@Preview(name = "CustomPackEditor – Dark", showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+private fun CustomPackEditorDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { CustomPackEditorSample(previewEditorState) }
+}
+
+@Preview(name = "CustomPackEditor empty – Light", showBackground = true, widthDp = 360, heightDp = 560)
+@Composable
+private fun CustomPackEditorEmptyLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
+        CustomPackEditorSample(CustomPackEditorState(pack = previewPack.copy(entryCount = 0)))
     }
+}
+
+@Preview(name = "CustomPackEditor empty – Dark", showBackground = true, widthDp = 360, heightDp = 560)
+@Composable
+private fun CustomPackEditorEmptyDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) {
+        CustomPackEditorSample(CustomPackEditorState(pack = previewPack.copy(entryCount = 0)))
+    }
+}

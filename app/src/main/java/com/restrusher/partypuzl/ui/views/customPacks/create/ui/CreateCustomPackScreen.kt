@@ -18,13 +18,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.SpiceLevel
+import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.views.customPacks.create.CreateCustomPackState
 import com.restrusher.partypuzl.ui.views.customPacks.create.CreateCustomPackViewModel
+import com.restrusher.partypuzl.ui.views.customPacks.previewPackFormState
 import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.NumberedStep
 
@@ -51,6 +59,27 @@ fun CreateCustomPackScreen(
     )
     LaunchedEffect(title) { setAppBarTitle(title) }
 
+    CreateCustomPackContent(
+        state = uiState,
+        onNameChange = viewModel::onNameChange,
+        onCategoryChange = viewModel::onCategoryChange,
+        onSpiceChange = viewModel::onSpiceChange,
+        onDescriptionChange = viewModel::onDescriptionChange,
+        onSave = { viewModel.onSave(onSaved) },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun CreateCustomPackContent(
+    state: CreateCustomPackState,
+    onNameChange: (String) -> Unit,
+    onCategoryChange: (PackCategory) -> Unit,
+    onSpiceChange: (SpiceLevel) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -61,8 +90,8 @@ fun CreateCustomPackScreen(
             NumberedStep(number = "01", label = stringResource(R.string.custom_pack_step_name))
             Spacer(modifier = Modifier.height(10.dp))
             PackTextField(
-                value = uiState.name,
-                onValueChange = viewModel::onNameChange,
+                value = state.name,
+                onValueChange = onNameChange,
                 placeholder = stringResource(R.string.custom_pack_name_hint)
             )
 
@@ -72,7 +101,7 @@ fun CreateCustomPackScreen(
                 subtitle = stringResource(R.string.custom_pack_step_category_sub)
             )
             Spacer(modifier = Modifier.height(10.dp))
-            CategoryPills(selected = uiState.category, onSelect = viewModel::onCategoryChange)
+            CategoryPills(selected = state.category, onSelect = onCategoryChange)
 
             NumberedStep(
                 number = "03",
@@ -80,7 +109,7 @@ fun CreateCustomPackScreen(
                 subtitle = stringResource(R.string.custom_pack_step_spice_sub)
             )
             Spacer(modifier = Modifier.height(10.dp))
-            SpiceSelector(selected = uiState.spice, onSelect = viewModel::onSpiceChange)
+            SpiceSelector(selected = state.spice, onSelect = onSpiceChange)
 
             NumberedStep(
                 number = "04",
@@ -89,15 +118,15 @@ fun CreateCustomPackScreen(
             )
             Spacer(modifier = Modifier.height(10.dp))
             PackTextField(
-                value = uiState.description,
-                onValueChange = viewModel::onDescriptionChange,
+                value = state.description,
+                onValueChange = onDescriptionChange,
                 placeholder = stringResource(R.string.custom_pack_description_hint),
                 singleLine = false,
                 minHeight = 96
             )
-            CharacterCounter(length = uiState.description.length)
+            CharacterCounter(length = state.description.length)
 
-            if (!uiState.isEditing) {
+            if (!state.isEditing) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = stringResource(R.string.custom_pack_create_footnote),
@@ -109,17 +138,51 @@ fun CreateCustomPackScreen(
 
         CustomPackCta(
             label = stringResource(
-                if (uiState.isEditing) R.string.custom_pack_save_action
+                if (state.isEditing) R.string.custom_pack_save_action
                 else R.string.custom_pack_create_action
             ),
             iconRes = R.drawable.ic_check,
-            onClick = { viewModel.onSave(onSaved) },
-            enabled = uiState.canSave,
+            onClick = onSave,
+            enabled = state.canSave,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .padding(horizontal = 16.dp, vertical = 10.dp)
         )
+    }
+}
+
+@Composable
+private fun CreateCustomPackSample(state: CreateCustomPackState) {
+    Box(modifier = Modifier.fillMaxSize().appBackground()) {
+        CreateCustomPackContent(
+            state = state,
+            onNameChange = {},
+            onCategoryChange = {},
+            onSpiceChange = {},
+            onDescriptionChange = {},
+            onSave = {}
+        )
+    }
+}
+
+@Preview(name = "CreateCustomPack – Light", showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+private fun CreateCustomPackLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { CreateCustomPackSample(previewPackFormState) }
+}
+
+@Preview(name = "CreateCustomPack – Dark", showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+private fun CreateCustomPackDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { CreateCustomPackSample(previewPackFormState) }
+}
+
+@Preview(name = "EditCustomPack – Light", showBackground = true, widthDp = 360, heightDp = 800)
+@Composable
+private fun EditCustomPackLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
+        CreateCustomPackSample(previewPackFormState.copy(packId = "custom_preview"))
     }
 }

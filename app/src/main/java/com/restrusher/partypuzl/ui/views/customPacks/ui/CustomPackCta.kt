@@ -8,9 +8,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,7 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
 
 /** Matches the design's `.pp-btn:disabled { opacity: 0.45 }`. */
 private const val DISABLED_ALPHA = 0.45f
@@ -94,4 +102,36 @@ internal fun CustomPackCta(
             Text(text = label.uppercase(), fontWeight = FontWeight.Bold, color = textColor)
         }
     }
+}
+
+@Composable
+private fun CustomPackCtaSamples() {
+    Column(modifier = Modifier.appBackground().padding(16.dp)) {
+        CustomPackCta(
+            label = "Create pack",
+            iconRes = R.drawable.ic_plus,
+            onClick = {},
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        CustomPackCta(
+            label = "Save entry",
+            iconRes = R.drawable.ic_check,
+            onClick = {},
+            enabled = false,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview(name = "CustomPackCta – Light", showBackground = true, widthDp = 360)
+@Composable
+private fun CustomPackCtaLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { CustomPackCtaSamples() }
+}
+
+@Preview(name = "CustomPackCta – Dark", showBackground = true, widthDp = 360)
+@Composable
+private fun CustomPackCtaDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { CustomPackCtaSamples() }
 }

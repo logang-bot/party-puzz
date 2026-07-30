@@ -4,11 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,8 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,13 +26,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.data.models.PACK_DESCRIPTION_MAX
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.SpiceLevel
+import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.theme.wash
@@ -43,62 +44,7 @@ import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
 
-/** The four inputs the create-pack form is built from. */
-
-/**
- * Bordered text field matching `NameOptionsContainer` on the create-player screen: the box draws
- * the border, so the field's own indicators are switched off.
- */
-@Composable
-internal fun PackTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    placeholder: String,
-    modifier: Modifier = Modifier,
-    singleLine: Boolean = true,
-    minHeight: Int = 56,
-    /** Off when the caller already draws a border around the field, as the trivia options do. */
-    bordered: Boolean = true
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .then(
-                if (bordered) {
-                    Modifier.border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.onBackground.wash(Wash.Hairline),
-                        shape = RoundedCornerShape(14.dp)
-                    )
-                } else {
-                    Modifier
-                }
-            )
-    ) {
-        TextField(
-            value = value,
-            onValueChange = onValueChange,
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.ink(Ink.Muted)
-                )
-            },
-            singleLine = singleLine,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minHeight.dp)
-        )
-    }
-}
+/** The two pickers the create-pack form uses for a pack's category and its spice. */
 
 /** Selectable pills for the pack's category. Mini-games are absent — they are code, not prompts. */
 @Composable
@@ -200,18 +146,25 @@ internal fun SpiceSelector(
     }
 }
 
-/** Right-aligned "n/max" counter shown under a length-capped field. */
 @Composable
-internal fun CharacterCounter(
-    length: Int,
-    modifier: Modifier = Modifier,
-    max: Int = PACK_DESCRIPTION_MAX
-) {
-    Text(
-        text = stringResource(R.string.custom_pack_counter, length, max),
-        style = MaterialTheme.typography.labelSmall,
-        textAlign = TextAlign.End,
-        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
-        modifier = modifier.fillMaxWidth().padding(top = 6.dp)
-    )
+private fun PackSelectorSamples() {
+    Column(modifier = Modifier.appBackground().padding(16.dp)) {
+        CategoryPills(selected = PackCategory.TRUTH_OR_DARE, onSelect = {})
+        Spacer(modifier = Modifier.height(16.dp))
+        SpiceSelector(selected = SpiceLevel.MEDIUM, onSelect = {})
+        Spacer(modifier = Modifier.height(12.dp))
+        SpiceSelector(selected = SpiceLevel.SPICY, onSelect = {})
+    }
+}
+
+@Preview(name = "PackSelectors – Light", showBackground = true, widthDp = 360)
+@Composable
+private fun PackSelectorsLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { PackSelectorSamples() }
+}
+
+@Preview(name = "PackSelectors – Dark", showBackground = true, widthDp = 360)
+@Composable
+private fun PackSelectorsDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { PackSelectorSamples() }
 }

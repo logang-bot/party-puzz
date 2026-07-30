@@ -39,6 +39,7 @@ import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryStat
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
+import com.restrusher.partypuzl.ui.views.customPacks.previewEntryState
 import com.restrusher.partypuzl.ui.views.customPacks.ui.stickyDurationLabel
 
 /**
@@ -133,18 +134,12 @@ private fun PreviewOption(value: String, placeholder: String, modifier: Modifier
     )
 }
 
-private val previewState = CreateCustomEntryState(
-    type = CustomEntryType.STICKY_DARE,
-    text = "End every sentence with “…allegedly.”",
-    durationSeconds = 300
-)
-
 @Preview(showBackground = true)
 @Composable
 private fun EntryPreviewCardPreview() {
     PartyPuzlTheme {
         Column(modifier = Modifier.appBackground().padding(16.dp)) {
-            EntryPreviewCard(previewState)
+            EntryPreviewCard(previewEntryState)
         }
     }
 }
@@ -154,7 +149,7 @@ private fun EntryPreviewCardPreview() {
 private fun EntryPreviewCardDarkPreview() {
     PartyPuzlTheme {
         Column(modifier = Modifier.appBackground().padding(16.dp)) {
-            EntryPreviewCard(previewState)
+            EntryPreviewCard(previewEntryState)
         }
     }
 }
