@@ -87,6 +87,9 @@ Install from the internal testing track on a real device and verify:
 - [ ] App open ad does not show after purchasing Remove Ads
 - [ ] Banners do not show after purchasing Remove Ads
 - [ ] Premium packs appear locked on the setup screen; tapping one opens the unlock sheet
+- [ ] Deal several general-knowledge questions: the correct answer lands on the left and right roughly evenly, including on a repeat of a question already seen (the deal-time option swap)
+- [ ] Each premium pack plays enabled on its own — Movie Night offers GK only, Spicy offers sticky dares only, NSFW deals both Truth and Dare and neither card comes back empty
+- [ ] `./gradlew connectedDebugAndroidTest` passes — `QuestionPackIntegrityTest` is the only guard on the catalog-to-array indices
 - [ ] "Watch a short ad" grants the pack for the session (a real rewarded unit is still pending — see setup step 5)
 - [ ] Purchasing Remove Ads unlocks all three premium packs permanently
 - [ ] **Upgrading over an existing install keeps saved parties and photos** — the v10 migration adds the custom-pack tables, the v11 one adds `custom_packs.isAvailable`; a wrong statement throws on open. See [custom-packs.md](custom-packs.md)

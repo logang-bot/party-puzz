@@ -84,7 +84,7 @@ There is deliberately **no mini-game type** — mini-games are code, not prompts
 |---|---|---|
 | `TRUTH` / `DARE` | `text` | Pooled straight into `truths` / `dares`. |
 | `STICKY_DARE` | `text`, `durationSeconds` | Duration is picked from `StickyDurationPresets` — 60 / 300 / 600 / 1800 s. |
-| `TRIVIA` | `text`, `optionA`, `optionB`, `correctOption` | **Two** options, matching `TriviaPrompt` and the two answer cards the game screen renders. |
+| `TRIVIA` | `text`, `optionA`, `optionB`, `correctOption` | **Two** options, matching `TriviaPrompt` and the two answer cards the game screen renders. The game swaps the pair at deal time, so an author who puts the right answer in slot A every time does not make their pack guessable — see [question-packs.md](question-packs.md). |
 
 `correctOption` is stored as a one-character `TEXT` (`"A"` / `"B"`) because Room has no built-in `Char` converter; it is widened back to a `Char` at the boundary.
 

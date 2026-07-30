@@ -211,7 +211,16 @@
         <item>Almost ready to play\u2026</item>
     </string-array>
 
-    <!-- Truth texts -->
+    <!-- ============================================================
+         Official pack content
+         Grouped by deal, and each deck keeps its parallel arrays
+         together: they are addressed by index, so an item added to one
+         and not its neighbours silently mismatches. Arrays are
+         append-only — never reorder or delete an item, and bump
+         QuestionCatalog.MAPPING_VERSION after any edit.
+         ============================================================ -->
+
+    <!-- Truth or Dare -->
     <string-array name="truth_texts">
         <item>Who\'s the last person you searched on social media</item>
         <item>What\'s your relationship dealbreaker</item>
@@ -254,8 +263,6 @@
         <item>What\'s the rudest thought you\'ve ever had about a stranger</item>
         <item>Have you ever faked being busy to avoid answering a call</item>
     </string-array>
-
-    <!-- Dare texts -->
     <string-array name="dare_texts">
         <item>Do 100 squats</item>
         <item>Say yes to everything for the next minute</item>
@@ -311,7 +318,7 @@
         <item>Let the group draw something on your arm with a pen</item>
     </string-array>
 
-    <!-- Sticky dares -->
+    <!-- Sticky dares — text, ticker phrasing, and the duration each runs for -->
     <string-array name="sticky_dares">
         <item>For 1 minute the player must talk with a Hispanic accent</item>
         <item>For 2 minutes the player must end every phrase with \"oh, yeah\"</item>
@@ -336,8 +343,80 @@
         <item>For 3 minutes the player must speak at half their normal speed</item>
         <item>For 2 minutes the player must react to everything with extreme surprise</item>
     </string-array>
+    <string-array name="sticky_dares_present_continuous">
+        <item>talking with a Hispanic accent</item>
+        <item>ending every phrase with "oh, yeah"</item>
+        <item>continuing the party standing up</item>
+        <item>talking in a funny accent</item>
+        <item>speaking only in whispers</item>
+        <item>talking in third person</item>
+        <item>responding to everything with a question</item>
+        <item>speaking in a robot voice</item>
+        <item>narrating everything like a sports commentator</item>
+        <item>starting every sentence with "Actually…"</item>
+        <item>giving a thumbs up every time someone speaks</item>
+        <item>communicating using only hand gestures</item>
+        <item>speaking with a fake British accent</item>
+        <item>calling everyone by the wrong name</item>
+        <item>ending every sentence with "and that\'s a fact"</item>
+        <item>acting extremely formal and proper</item>
+        <item>expressing everything as dramatically as possible</item>
+        <item>avoiding the words "yes" and "no"</item>
+        <item>repeating the last word of every sentence they say</item>
+        <item>clapping once after everything anyone says</item>
+        <item>speaking at half their normal speed</item>
+        <item>reacting to everything with extreme surprise</item>
+    </string-array>
+    <string-array name="sticky_dares_duration_labels">
+        <item>1 minute</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>2 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>5 minutes</item>
+        <item>2 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+    </string-array>
+    <integer-array name="sticky_dares_duration_seconds">
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>120</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>180</item>
+        <item>120</item>
+    </integer-array>
 
-    <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
+    <!-- General knowledge — question, its two options, and the key -->
     <string-array name="gk_questions">
         <item>How many planets are in the solar system?</item>
         <item>What is the capital of France?</item>
@@ -370,7 +449,6 @@
         <item>What is the longest river in the world?</item>
         <item>Which planet is known for its rings?</item>
     </string-array>
-
     <string-array name="gk_options_a">
         <item>8</item>
         <item>London</item>
@@ -403,7 +481,6 @@
         <item>Amazon</item>
         <item>Saturn</item>
     </string-array>
-
     <string-array name="gk_options_b">
         <item>9</item>
         <item>Paris</item>
@@ -436,8 +513,6 @@
         <item>Nile</item>
         <item>Mars</item>
     </string-array>
-
-    <!-- "A" or "B" — must match gk_questions order -->
     <string-array name="gk_correct_options">
         <item>A</item>
         <item>B</item>
@@ -470,82 +545,6 @@
         <item>B</item>
         <item>A</item>
     </string-array>
-
-    <!-- Sticky dare supplementary data (parallel arrays — indices must stay in sync with sticky_dares) -->
-    <string-array name="sticky_dares_present_continuous">
-        <item>talking with a Hispanic accent</item>
-        <item>ending every phrase with "oh, yeah"</item>
-        <item>continuing the party standing up</item>
-        <item>talking in a funny accent</item>
-        <item>speaking only in whispers</item>
-        <item>talking in third person</item>
-        <item>responding to everything with a question</item>
-        <item>speaking in a robot voice</item>
-        <item>narrating everything like a sports commentator</item>
-        <item>starting every sentence with "Actually…"</item>
-        <item>giving a thumbs up every time someone speaks</item>
-        <item>communicating using only hand gestures</item>
-        <item>speaking with a fake British accent</item>
-        <item>calling everyone by the wrong name</item>
-        <item>ending every sentence with "and that\'s a fact"</item>
-        <item>acting extremely formal and proper</item>
-        <item>expressing everything as dramatically as possible</item>
-        <item>avoiding the words "yes" and "no"</item>
-        <item>repeating the last word of every sentence they say</item>
-        <item>clapping once after everything anyone says</item>
-        <item>speaking at half their normal speed</item>
-        <item>reacting to everything with extreme surprise</item>
-    </string-array>
-
-    <string-array name="sticky_dares_duration_labels">
-        <item>1 minute</item>
-        <item>2 minutes</item>
-        <item>5 minutes</item>
-        <item>3 minutes</item>
-        <item>2 minutes</item>
-        <item>5 minutes</item>
-        <item>3 minutes</item>
-        <item>2 minutes</item>
-        <item>3 minutes</item>
-        <item>5 minutes</item>
-        <item>2 minutes</item>
-        <item>2 minutes</item>
-        <item>3 minutes</item>
-        <item>2 minutes</item>
-        <item>5 minutes</item>
-        <item>3 minutes</item>
-        <item>2 minutes</item>
-        <item>3 minutes</item>
-        <item>5 minutes</item>
-        <item>2 minutes</item>
-        <item>3 minutes</item>
-        <item>2 minutes</item>
-    </string-array>
-
-    <integer-array name="sticky_dares_duration_seconds">
-        <item>60</item>
-        <item>120</item>
-        <item>300</item>
-        <item>180</item>
-        <item>120</item>
-        <item>300</item>
-        <item>180</item>
-        <item>120</item>
-        <item>180</item>
-        <item>300</item>
-        <item>120</item>
-        <item>120</item>
-        <item>180</item>
-        <item>120</item>
-        <item>300</item>
-        <item>180</item>
-        <item>120</item>
-        <item>180</item>
-        <item>300</item>
-        <item>120</item>
-        <item>180</item>
-        <item>120</item>
-    </integer-array>
 
     <!-- Game screen UI -->
     <string name="active_dares_title">Active Dares</string>
@@ -902,12 +901,18 @@
          Premium pack content
          Parallel arrays follow the same rules as the official decks:
          indices must stay in sync within each pack.
+
+         One rule these decks add: a premium pack takes *every* index of
+         its arrays, so the range declared in QuestionCatalog must equal
+         the length here. Declaring fewer orphans the extra prompts —
+         they are never dealt and nothing reports it.
+         QuestionPackIntegrityTest fails on any mismatch.
          ============================================================ -->
 
     <!-- Movie Night (premium · General Knowledge) -->
     <string-array name="movie_gk_questions">
-        <item>Which movie features a character named Forrest Gump?</item>
-        <item>What is the name of the lion in The Lion King?</item>
+        <item>In Forrest Gump, what does Forrest say life is like?</item>
+        <item>In The Lion King, who is Simba\'s father?</item>
         <item>Which film won the first ever Best Picture Oscar for a streaming service?</item>
         <item>In The Matrix, which pill does Neo take?</item>
         <item>What is the highest-grossing film of all time?</item>
@@ -917,72 +922,145 @@
         <item>In Titanic, what is the name of Kate Winslet\'s character?</item>
         <item>Which superhero is known as the Caped Crusader?</item>
         <item>What is the name of the fictional African country in Black Panther?</item>
-        <item>Which film opens with the line \"A long time ago in a galaxy far, far away\"?</item>
+        <item>In which film does a character say \"I\'ll be back\"?</item>
+        <item>Which actor plays Jack Sparrow?</item>
+        <item>In Jurassic Park, where is the dinosaur DNA found?</item>
+        <item>Which film features a hotel concierge named Monsieur Gustave?</item>
+        <item>Who directed Pulp Fiction?</item>
+        <item>In Toy Story, what kind of toy is Woody?</item>
+        <item>Which film won Best Picture at the 2020 Oscars?</item>
+        <item>In Back to the Future, what car becomes the time machine?</item>
+        <item>Who composed the score for Star Wars?</item>
+        <item>In The Godfather, what is the family name?</item>
+        <item>Which studio made Spirited Away?</item>
+        <item>In Inception, what object does Cobb use to test reality?</item>
+        <item>Which film introduced the character Hannibal Lecter to audiences?</item>
     </string-array>
     <string-array name="movie_gk_options_a">
-        <item>Forrest Gump</item>
-        <item>Mufasa</item>
-        <item>Roma</item>
+        <item>A box of chocolates</item>
+        <item>Scar</item>
+        <item>CODA</item>
         <item>Blue</item>
         <item>Avengers: Endgame</item>
         <item>Steven Spielberg</item>
         <item>The Overlook</item>
-        <item>Ratatouille</item>
+        <item>Flushed Away</item>
         <item>Rose</item>
-        <item>Batman</item>
-        <item>Wakanda</item>
-        <item>Star Wars</item>
+        <item>Superman</item>
+        <item>Zamunda</item>
+        <item>The Terminator</item>
+        <item>Johnny Depp</item>
+        <item>In ice</item>
+        <item>The Grand Budapest Hotel</item>
+        <item>Guy Ritchie</item>
+        <item>A space ranger</item>
+        <item>Parasite</item>
+        <item>A DeLorean</item>
+        <item>Hans Zimmer</item>
+        <item>Corleone</item>
+        <item>Toei Animation</item>
+        <item>A pocket watch</item>
+        <item>The Silence of the Lambs</item>
     </string-array>
     <string-array name="movie_gk_options_b">
-        <item>Cast Away</item>
-        <item>Simba</item>
-        <item>CODA</item>
+        <item>A long road</item>
+        <item>Mufasa</item>
+        <item>Roma</item>
         <item>Red</item>
         <item>Avatar</item>
         <item>Martin Scorsese</item>
         <item>The Bates</item>
-        <item>Flushed Away</item>
+        <item>Ratatouille</item>
         <item>Ruth</item>
-        <item>Superman</item>
-        <item>Zamunda</item>
-        <item>Star Trek</item>
+        <item>Batman</item>
+        <item>Wakanda</item>
+        <item>Total Recall</item>
+        <item>Orlando Bloom</item>
+        <item>In amber</item>
+        <item>The Darjeeling Limited</item>
+        <item>Quentin Tarantino</item>
+        <item>A cowboy doll</item>
+        <item>1917</item>
+        <item>A Mustang</item>
+        <item>John Williams</item>
+        <item>Soprano</item>
+        <item>Studio Ghibli</item>
+        <item>A spinning top</item>
+        <item>Se7en</item>
     </string-array>
-    <!-- "A" or "B" — must match movie_gk_questions order -->
+    <!-- "A" or "B" — must match movie_gk_questions order. Kept near 12/12 with no run past
+         three; the game also swaps the pair at deal time, so position never leaks the answer. -->
     <string-array name="movie_gk_correct_options">
         <item>A</item>
         <item>B</item>
+        <item>A</item>
         <item>B</item>
         <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>A</item>
+        <item>B</item>
         <item>B</item>
         <item>A</item>
         <item>A</item>
+        <item>B</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
         <item>A</item>
         <item>A</item>
+        <item>B</item>
         <item>A</item>
-        <item>A</item>
+        <item>B</item>
+        <item>B</item>
         <item>A</item>
     </string-array>
 
     <!-- Spicy (premium · Sticky Dares) -->
     <string-array name="spicy_sticky_dares">
-        <item>For 3 minutes the player must compliment everyone who speaks to them</item>
-        <item>For 2 minutes the player must answer only with a wink</item>
+        <item>For 3 minutes the player must hold eye contact with whoever is speaking</item>
+        <item>For 2 minutes the player must answer every question with a compliment about whoever asked</item>
         <item>For 5 minutes the player must call everyone \"darling\"</item>
         <item>For 3 minutes the player must speak only in pickup lines</item>
         <item>For 2 minutes the player must blow a kiss before every sentence</item>
         <item>For 5 minutes the player must rate everything out of ten, out loud</item>
         <item>For 3 minutes the player must whisper every answer</item>
         <item>For 2 minutes the player must strike a pose whenever someone laughs</item>
+        <item>For 5 minutes the player must sit as close as they dare to the person on their left</item>
+        <item>For 3 minutes the player must narrate their own movements like a nature documentary</item>
+        <item>For 2 minutes the player must end every sentence with \"…and I mean that\"</item>
+        <item>For 5 minutes the player must ask the group\'s permission before every drink</item>
+        <item>For 3 minutes the player must describe every outfit in the room as if it were a red carpet</item>
+        <item>For 2 minutes the player must agree enthusiastically with everything the player opposite says</item>
+        <item>For 5 minutes the player must announce who they would pick for every hypothetical they are asked</item>
+        <item>For 3 minutes the player must introduce whoever speaks as if presenting them to royalty</item>
+        <item>For 10 minutes the player must refer to themselves in the third person</item>
+        <item>For 2 minutes the player must offer a slow-dance to whoever speaks to them</item>
+        <item>For 5 minutes the player must find something genuinely attractive to say about each player in turn</item>
+        <item>For 10 minutes the player must let the person on their left answer for them</item>
     </string-array>
     <string-array name="spicy_sticky_dares_present_continuous">
-        <item>complimenting everyone who speaks to them</item>
-        <item>answering only with a wink</item>
+        <item>holding eye contact with whoever is speaking</item>
+        <item>answering every question with a compliment about whoever asked</item>
         <item>calling everyone \"darling\"</item>
         <item>speaking only in pickup lines</item>
         <item>blowing a kiss before every sentence</item>
         <item>rating everything out of ten, out loud</item>
         <item>whispering every answer</item>
         <item>striking a pose whenever someone laughs</item>
+        <item>sitting as close as they dare to the person on their left</item>
+        <item>narrating their own movements like a nature documentary</item>
+        <item>ending every sentence with \"…and I mean that\"</item>
+        <item>asking the group\'s permission before every drink</item>
+        <item>describing every outfit in the room as if it were a red carpet</item>
+        <item>agreeing enthusiastically with everything the player opposite says</item>
+        <item>announcing who they would pick for every hypothetical they are asked</item>
+        <item>introducing whoever speaks as if presenting them to royalty</item>
+        <item>referring to themselves in the third person</item>
+        <item>offering a slow-dance to whoever speaks to them</item>
+        <item>finding something genuinely attractive to say about each player in turn</item>
+        <item>letting the person on their left answer for them</item>
     </string-array>
     <string-array name="spicy_sticky_dares_duration_labels">
         <item>3 minutes</item>
@@ -993,6 +1071,18 @@
         <item>5 minutes</item>
         <item>3 minutes</item>
         <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>3 minutes</item>
+        <item>10 minutes</item>
+        <item>2 minutes</item>
+        <item>5 minutes</item>
+        <item>10 minutes</item>
     </string-array>
     <integer-array name="spicy_sticky_dares_duration_seconds">
         <item>180</item>
@@ -1003,6 +1093,18 @@
         <item>300</item>
         <item>180</item>
         <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>600</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
     </integer-array>
 
     <!-- NSFW Confessions (premium · Truth or Dare) -->
@@ -1017,6 +1119,16 @@
         <item>What is the most reckless thing you have done on a night out?</item>
         <item>Which of your exes would you least want to run into tomorrow?</item>
         <item>What is something you have done that you would never admit to your parents?</item>
+        <item>Who in this room have you thought about more than you would ever admit?</item>
+        <item>What is the pettiest reason you have ended things with someone?</item>
+        <item>What is the most flattering lie anyone has told you — and did you believe it?</item>
+        <item>Which of your friends\' partners did you have doubts about from day one?</item>
+        <item>What is the longest you have gone without telling someone how you felt about them?</item>
+        <item>What is the worst thing you have done out of jealousy?</item>
+        <item>Whose messages do you reread?</item>
+        <item>What is the most desperate thing you have done for someone\'s attention?</item>
+        <item>Which of your own rules have you broken for someone?</item>
+        <item>What do you find attractive about someone here that you have never said out loud?</item>
     </string-array>
     <string-array name="nsfw_dare_texts">
         <item>Read out the last message you sent, in a dramatic voice.</item>
@@ -1029,6 +1141,16 @@
         <item>Confess your most-used emoji and act it out.</item>
         <item>Let the group choose a new nickname for you for the rest of the night.</item>
         <item>Whisper a secret to the player of the group\'s choosing.</item>
+        <item>Say something you genuinely find attractive about each player, in turn.</item>
+        <item>Let the group read out your most recent search.</item>
+        <item>Show the group the last flirty message you sent — or admit you have none.</item>
+        <item>Hold eye contact with the player opposite until someone in the room laughs.</item>
+        <item>Let the player on your left pick any photo from your camera roll for the group to see.</item>
+        <item>Describe your ideal night in, in as much detail as you dare.</item>
+        <item>Let the group ask you one question you are not allowed to dodge.</item>
+        <item>Rank everyone here by who you would trust with your phone unlocked.</item>
+        <item>Do your best impression of the last person who made you nervous.</item>
+        <item>Swap one item of clothing with the player to your right.</item>
     </string-array>
 
 </resources>

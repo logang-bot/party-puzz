@@ -52,6 +52,31 @@ A rebuild resets per-question enable flags. Pack-level toggles and unlocks are u
 
 As a backstop, `QuestionPackSeeder` drops any index that no longer resolves and `QuestionPromptResolver` bounds-checks every read, so an un-bumped edit degrades to a shorter deck rather than a crash mid-party.
 
+### Where the prompts live
+
+Both `strings.xml` files carry two banner-marked sections — **Official pack content** and
+**Premium pack content** — and inside each, arrays are grouped by deck with **every parallel array
+of a deck kept adjacent**:
+
+```
+Official pack content
+  Truth or Dare        truth_texts, dare_texts
+  Sticky dares         sticky_dares, _present_continuous, _duration_labels, _duration_seconds
+  General knowledge    gk_questions, gk_options_a, gk_options_b, gk_correct_options
+Premium pack content
+  Movie Night          movie_gk_questions, _options_a, _options_b, _correct_options
+  Spicy                spicy_sticky_dares, _present_continuous, _duration_labels, _duration_seconds
+  NSFW Confessions     nsfw_truth_texts, nsfw_dare_texts
+```
+
+Adjacency is the point, not tidiness. The sticky-dare text used to sit 136 lines from the three
+arrays it is index-aligned with, separated by the whole general-knowledge deck — append an item to
+one and it is genuinely easy to miss the other three, which is the drift this section is about.
+Keep a deck's arrays together when adding one.
+
+Reordering whole arrays is safe — resources are addressed by name. Reordering **items** inside an
+array is what breaks pack membership.
+
 ---
 
 ## The packs
@@ -95,11 +120,22 @@ Every Truth-or-Dare pack deliberately holds **both** halves — see the empty-po
 
 | Pack | Category | Content |
 |---|---|---|
-| **Movie Night** | General Knowledge | `movie_gk_*` (12) |
-| **Spicy** | Sticky Dare | `spicy_sticky_dares_*` (8) |
-| **NSFW Confessions** | Truth or Dare | `nsfw_truth_texts` + `nsfw_dare_texts` (10 + 10) |
+| **Movie Night** | General Knowledge | `movie_gk_*` (24) |
+| **Spicy** | Sticky Dare | `spicy_sticky_dares_*` (20) |
+| **NSFW Confessions** | Truth or Dare | `nsfw_truth_texts` + `nsfw_dare_texts` (20 + 20) |
 
-Premium packs own their arrays outright, so they take every index.
+Premium packs own their arrays outright, so they take every index — and **the declared range in
+`QuestionCatalog` has to track the array length exactly**. The two failure modes are asymmetric and
+both silent:
+
+- a range **wider** than its array degrades safely — `QuestionPackSeeder` drops what will not
+  resolve, and the deck is just shorter;
+- a range **narrower** than its array **orphans** the extra prompts. They sit in `strings.xml`,
+  never get a `questions` row, and are never dealt. Nothing warns.
+
+`QuestionPackIntegrityTest` (`app/src/androidTest`) asserts the equality in both directions, along
+with parallel-array alignment, A/B keys and both-halves-present for Truth or Dare. It is the only
+automated check on this seam; run it after touching any array.
 
 ### Custom
 
@@ -117,15 +153,16 @@ The other three categories need only their own list to be non-empty.
 
 ## Adding a pack
 
-1. Add prompts to the end of an existing source array, or add a new array to `values/strings.xml` **and** `values-es/strings.xml` (parallel arrays must stay the same length).
+1. Add prompts to the end of an existing source array, or add a new array to `values/strings.xml` **and** `values-es/strings.xml` (parallel arrays must stay the same length). Put it in the right banner section, next to the rest of its deck — see [Where the prompts live](#where-the-prompts-live).
 2. If you added a new array, add a `QuestionSource` constant and wire it up in `QuestionPromptResolver`.
 3. Add a `QuestionPackDefinition` to `QuestionPackCatalog` and list it in `all`. Its `accent` is
    a `PackAccent` **name**, not a colour — `PackAccent.ROSE`, never `AccentRose`. Nothing under
    `data/` imports a Compose `Color`; `PackAccent.color` in `ui/theme` resolves the name at the
    render site. Add a new enum entry only if the design really introduces a new accent.
-4. Add the index list to `QuestionCatalog.byPack`.
+4. Add the index list to `QuestionCatalog.byPack`. For a premium pack this must cover the whole array — see [Premium](#premium).
 5. **Bump `QuestionCatalog.MAPPING_VERSION`.**
 6. Add the pack's name string (`pack_*`) in both languages.
+7. Run `./gradlew connectedDebugAndroidTest`. `QuestionPackIntegrityTest` is what catches a range that does not match its array, a short parallel array, or a Truth-or-Dare pack missing a half.
 
 No database migration is needed. Packs are seeded with `INSERT OR IGNORE` so existing toggles survive, and `deleteRetiredCatalogPacks` retires packs the catalog no longer defines — their questions cascade away. That query skips `PackTier.CUSTOM`, which is never in the catalog; see [custom-packs.md](custom-packs.md).
 
@@ -160,6 +197,7 @@ Because both passes feed one set of pools, the game screen never learns that cus
 `GameScreenViewModel` calls it once in `init` — packs cannot be toggled mid-game — and stores the result in `packContent`. Two things follow:
 
 - **Prompt draws** — `buildChallengeContent()` reads from `packContent`. Two enabled Icebreakers-and-Confessions packs become one pooled truth list; the game doesn't know which pack a prompt came from.
+- **Trivia options are swapped at deal time.** `TriviaPrompt.toQuestion()` flips the pair on a coin toss, so the stored `correctOption` never decides which button the answer sits under. Without it the key is learnable: Movie Night shipped `A` correct 67% of the time, and always tapping the left button won two thirds of the paid pack. The swap covers official, premium and custom trivia alike, so **an authored key no longer has to be balanced to be fair** — though `movie_gk_correct_options` is still kept near 12/12 with no run past three, because a lopsided stored key is a smell. It has to happen when the deal is built, not while rendering; the result is held in state, and re-rolling on recomposition would move the buttons under the player's thumb.
 - **Deal availability** — `availableCategories` is written into `GameScreenState.enabledCategories` and `availableDealTypes` filters on it. See [game-deal-flow.md](game-deal-flow.md).
 
 `enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns.
@@ -170,8 +208,10 @@ Because both passes feed one set of pools, the game screen never learns that cus
 
 | File | Role |
 |---|---|
+| `res/values/strings.xml`, `res/values-es/strings.xml` | **The prompts themselves**, in two banner-marked sections, grouped by deck |
 | `data/models/QuestionSource.kt` | Stable source enum + `QuestionRef` |
 | `data/local/appData/appDataSource/QuestionCatalog.kt` | **The categorisation** — index lists per pack, `MAPPING_VERSION` |
+| `app/src/androidTest/.../QuestionPackIntegrityTest.kt` | The only automated guard on the index seam |
 | `data/local/appData/appDataSource/QuestionPackCatalog.kt` | The 14 pack definitions |
 | `data/local/entities/QuestionEntity.kt` | Question → pack row |
 | `data/local/entities/QuestionPackEntity.kt` | Pack enabled / unlocked row |

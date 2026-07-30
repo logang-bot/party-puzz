@@ -212,7 +212,16 @@
         <item>Casi listos para jugar\u2026</item>
     </string-array>
 
-    <!-- Truth texts -->
+    <!-- ============================================================
+         Contenido de los paquetes oficiales
+         Agrupado por jugada; cada mazo mantiene juntos sus arrays
+         paralelos: se direccionan por índice, así que un elemento
+         añadido a uno y no a sus vecinos desincroniza en silencio.
+         Los arrays son solo de adición — nunca reordenes ni elimines un
+         elemento, y sube QuestionCatalog.MAPPING_VERSION tras editarlos.
+         ============================================================ -->
+
+    <!-- Verdad o Reto -->
     <string-array name="truth_texts">
         <item>¿Quién es la última persona que buscaste en redes sociales?</item>
         <item>¿Cuál es tu línea roja en una relación?</item>
@@ -255,8 +264,6 @@
         <item>¿Cuál es el pensamiento más grosero que has tenido sobre un desconocido?</item>
         <item>¿Alguna vez fingiste estar ocupado para no contestar una llamada?</item>
     </string-array>
-
-    <!-- Dare texts -->
     <string-array name="dare_texts">
         <item>Haz 100 sentadillas</item>
         <item>Di que sí a todo durante el próximo minuto</item>
@@ -312,7 +319,7 @@
         <item>Deja que el grupo te dibuje algo en el brazo con un bolígrafo</item>
     </string-array>
 
-    <!-- Sticky dares -->
+    <!-- Retos persistentes — texto, frase del marcador y cuánto dura cada uno -->
     <string-array name="sticky_dares">
         <item>Durante 1 minuto el jugador debe hablar con acento argentino</item>
         <item>Durante 2 minutos el jugador debe terminar cada frase con "¿o qué?"</item>
@@ -337,8 +344,80 @@
         <item>Durante 3 minutos el jugador debe hablar a la mitad de su velocidad normal</item>
         <item>Durante 2 minutos el jugador debe reaccionar a todo con sorpresa extrema</item>
     </string-array>
+    <string-array name="sticky_dares_present_continuous">
+        <item>hablando con acento argentino</item>
+        <item>terminando cada frase con "¿o qué?"</item>
+        <item>continuando la fiesta de pie</item>
+        <item>hablando con acento extranjero</item>
+        <item>hablando solo en susurros</item>
+        <item>hablando en tercera persona</item>
+        <item>respondiendo todo con una pregunta</item>
+        <item>hablando con voz de robot</item>
+        <item>narrando todo como comentarista deportivo</item>
+        <item>empezando cada frase con "La verdad es que…"</item>
+        <item>haciendo un pulgar arriba cada vez que alguien habla</item>
+        <item>comunicándose solo con gestos</item>
+        <item>hablando con acento español de España</item>
+        <item>llamando a todos por un nombre equivocado</item>
+        <item>terminando cada frase con "y punto"</item>
+        <item>comportándose de forma extremadamente formal</item>
+        <item>exagerando dramáticamente todo lo que dice</item>
+        <item>evitando las palabras "sí" y "no"</item>
+        <item>repitiendo la última palabra de cada frase que dice</item>
+        <item>aplaudiendo una vez cada vez que alguien habla</item>
+        <item>hablando a la mitad de su velocidad normal</item>
+        <item>reaccionando a todo con sorpresa extrema</item>
+    </string-array>
+    <string-array name="sticky_dares_duration_labels">
+        <item>1 minuto</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>5 minutos</item>
+        <item>2 minutos</item>
+        <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>5 minutos</item>
+        <item>2 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+    </string-array>
+    <integer-array name="sticky_dares_duration_seconds">
+        <item>60</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>120</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>180</item>
+        <item>300</item>
+        <item>120</item>
+        <item>180</item>
+        <item>120</item>
+    </integer-array>
 
-    <!-- General knowledge questions (parallel arrays — indices must stay in sync) -->
+    <!-- Cultura general — pregunta, sus dos opciones y la respuesta correcta -->
     <string-array name="gk_questions">
         <item>¿Cuántos planetas hay en el sistema solar?</item>
         <item>¿Cuál es la capital de Francia?</item>
@@ -371,7 +450,6 @@
         <item>¿Cuál es el río más largo del mundo?</item>
         <item>¿Qué planeta es famoso por sus anillos?</item>
     </string-array>
-
     <string-array name="gk_options_a">
         <item>8</item>
         <item>Londres</item>
@@ -404,7 +482,6 @@
         <item>Amazonas</item>
         <item>Saturno</item>
     </string-array>
-
     <string-array name="gk_options_b">
         <item>9</item>
         <item>París</item>
@@ -437,8 +514,6 @@
         <item>Nilo</item>
         <item>Marte</item>
     </string-array>
-
-    <!-- "A" or "B" — must match gk_questions order -->
     <string-array name="gk_correct_options">
         <item>A</item>
         <item>B</item>
@@ -471,82 +546,6 @@
         <item>B</item>
         <item>A</item>
     </string-array>
-
-    <!-- Sticky dare supplementary data (parallel arrays — indices must stay in sync with sticky_dares) -->
-    <string-array name="sticky_dares_present_continuous">
-        <item>hablando con acento argentino</item>
-        <item>terminando cada frase con "¿o qué?"</item>
-        <item>continuando la fiesta de pie</item>
-        <item>hablando con acento extranjero</item>
-        <item>hablando solo en susurros</item>
-        <item>hablando en tercera persona</item>
-        <item>respondiendo todo con una pregunta</item>
-        <item>hablando con voz de robot</item>
-        <item>narrando todo como comentarista deportivo</item>
-        <item>empezando cada frase con "La verdad es que…"</item>
-        <item>haciendo un pulgar arriba cada vez que alguien habla</item>
-        <item>comunicándose solo con gestos</item>
-        <item>hablando con acento español de España</item>
-        <item>llamando a todos por un nombre equivocado</item>
-        <item>terminando cada frase con "y punto"</item>
-        <item>comportándose de forma extremadamente formal</item>
-        <item>exagerando dramáticamente todo lo que dice</item>
-        <item>evitando las palabras "sí" y "no"</item>
-        <item>repitiendo la última palabra de cada frase que dice</item>
-        <item>aplaudiendo una vez cada vez que alguien habla</item>
-        <item>hablando a la mitad de su velocidad normal</item>
-        <item>reaccionando a todo con sorpresa extrema</item>
-    </string-array>
-
-    <string-array name="sticky_dares_duration_labels">
-        <item>1 minuto</item>
-        <item>2 minutos</item>
-        <item>5 minutos</item>
-        <item>3 minutos</item>
-        <item>2 minutos</item>
-        <item>5 minutos</item>
-        <item>3 minutos</item>
-        <item>2 minutos</item>
-        <item>3 minutos</item>
-        <item>5 minutos</item>
-        <item>2 minutos</item>
-        <item>2 minutos</item>
-        <item>3 minutos</item>
-        <item>2 minutos</item>
-        <item>5 minutos</item>
-        <item>3 minutos</item>
-        <item>2 minutos</item>
-        <item>3 minutos</item>
-        <item>5 minutos</item>
-        <item>2 minutos</item>
-        <item>3 minutos</item>
-        <item>2 minutos</item>
-    </string-array>
-
-    <integer-array name="sticky_dares_duration_seconds">
-        <item>60</item>
-        <item>120</item>
-        <item>300</item>
-        <item>180</item>
-        <item>120</item>
-        <item>300</item>
-        <item>180</item>
-        <item>120</item>
-        <item>180</item>
-        <item>300</item>
-        <item>120</item>
-        <item>120</item>
-        <item>180</item>
-        <item>120</item>
-        <item>300</item>
-        <item>180</item>
-        <item>120</item>
-        <item>180</item>
-        <item>300</item>
-        <item>120</item>
-        <item>180</item>
-        <item>120</item>
-    </integer-array>
 
     <!-- Game screen UI -->
     <string name="active_dares_title">Retos activos</string>
@@ -898,12 +897,18 @@
          Contenido de paquetes premium
          Los arreglos paralelos siguen las mismas reglas que los oficiales:
          los índices deben mantenerse sincronizados dentro de cada paquete.
+
+         Estos mazos añaden una regla: un paquete premium usa *todos* los
+         índices de sus arrays, así que el rango declarado en
+         QuestionCatalog debe coincidir con la longitud de aquí. Declarar
+         menos deja huérfanos los elementos sobrantes — nunca se reparten
+         y nada lo avisa. QuestionPackIntegrityTest falla si no coinciden.
          ============================================================ -->
 
     <!-- Noche de Cine (premium · Cultura General) -->
     <string-array name="movie_gk_questions">
-        <item>¿En qué película aparece un personaje llamado Forrest Gump?</item>
-        <item>¿Cómo se llama el león de El Rey León?</item>
+        <item>En Forrest Gump, ¿a qué dice Forrest que se parece la vida?</item>
+        <item>En El Rey León, ¿quién es el padre de Simba?</item>
         <item>¿Qué película ganó el primer Óscar a Mejor Película para una plataforma de streaming?</item>
         <item>En Matrix, ¿qué pastilla toma Neo?</item>
         <item>¿Cuál es la película más taquillera de todos los tiempos?</item>
@@ -913,72 +918,144 @@
         <item>En Titanic, ¿cómo se llama el personaje de Kate Winslet?</item>
         <item>¿Qué superhéroe es conocido como el Caballero Oscuro?</item>
         <item>¿Cuál es el país africano ficticio de Black Panther?</item>
-        <item>¿Qué película empieza con \"Hace mucho tiempo en una galaxia muy, muy lejana\"?</item>
+        <item>¿En qué película alguien dice \"Volveré\"?</item>
+        <item>¿Qué actor interpreta a Jack Sparrow?</item>
+        <item>En Parque Jurásico, ¿dónde se encuentra el ADN de dinosaurio?</item>
+        <item>¿Qué película tiene un conserje de hotel llamado Monsieur Gustave?</item>
+        <item>¿Quién dirigió Pulp Fiction?</item>
+        <item>En Toy Story, ¿qué tipo de juguete es Woody?</item>
+        <item>¿Qué película ganó Mejor Película en los Óscar de 2020?</item>
+        <item>En Regreso al futuro, ¿qué coche se convierte en máquina del tiempo?</item>
+        <item>¿Quién compuso la banda sonora de Star Wars?</item>
+        <item>En El Padrino, ¿cuál es el apellido de la familia?</item>
+        <item>¿Qué estudio hizo El viaje de Chihiro?</item>
+        <item>En Origen, ¿qué objeto usa Cobb para comprobar la realidad?</item>
+        <item>¿Qué película presentó al personaje de Hannibal Lecter al gran público?</item>
     </string-array>
     <string-array name="movie_gk_options_a">
-        <item>Forrest Gump</item>
-        <item>Mufasa</item>
-        <item>Roma</item>
+        <item>A una caja de bombones</item>
+        <item>Scar</item>
+        <item>CODA</item>
         <item>Azul</item>
         <item>Avengers: Endgame</item>
         <item>Steven Spielberg</item>
         <item>El Overlook</item>
-        <item>Ratatouille</item>
+        <item>Lo que el agua se llevó</item>
         <item>Rose</item>
-        <item>Batman</item>
-        <item>Wakanda</item>
-        <item>Star Wars</item>
+        <item>Superman</item>
+        <item>Zamunda</item>
+        <item>Terminator</item>
+        <item>Johnny Depp</item>
+        <item>En hielo</item>
+        <item>El Gran Hotel Budapest</item>
+        <item>Guy Ritchie</item>
+        <item>Un guardián espacial</item>
+        <item>Parásitos</item>
+        <item>Un DeLorean</item>
+        <item>Hans Zimmer</item>
+        <item>Corleone</item>
+        <item>Toei Animation</item>
+        <item>Un reloj de bolsillo</item>
+        <item>El silencio de los corderos</item>
     </string-array>
     <string-array name="movie_gk_options_b">
-        <item>Náufrago</item>
-        <item>Simba</item>
-        <item>CODA</item>
+        <item>A un camino largo</item>
+        <item>Mufasa</item>
+        <item>Roma</item>
         <item>Roja</item>
         <item>Avatar</item>
         <item>Martin Scorsese</item>
         <item>El Bates</item>
-        <item>Lo que el agua se llevó</item>
+        <item>Ratatouille</item>
         <item>Ruth</item>
-        <item>Superman</item>
-        <item>Zamunda</item>
-        <item>Star Trek</item>
+        <item>Batman</item>
+        <item>Wakanda</item>
+        <item>Desafío total</item>
+        <item>Orlando Bloom</item>
+        <item>En ámbar</item>
+        <item>Viaje a Darjeeling</item>
+        <item>Quentin Tarantino</item>
+        <item>Un vaquero de trapo</item>
+        <item>1917</item>
+        <item>Un Mustang</item>
+        <item>John Williams</item>
+        <item>Soprano</item>
+        <item>Studio Ghibli</item>
+        <item>Una peonza</item>
+        <item>Se7en</item>
     </string-array>
     <!-- "A" o "B" — debe coincidir con el orden de movie_gk_questions -->
     <string-array name="movie_gk_correct_options">
         <item>A</item>
         <item>B</item>
+        <item>A</item>
         <item>B</item>
         <item>B</item>
+        <item>A</item>
+        <item>A</item>
+        <item>B</item>
+        <item>A</item>
+        <item>B</item>
         <item>B</item>
         <item>A</item>
         <item>A</item>
+        <item>B</item>
+        <item>A</item>
+        <item>B</item>
+        <item>B</item>
         <item>A</item>
         <item>A</item>
+        <item>B</item>
         <item>A</item>
-        <item>A</item>
+        <item>B</item>
+        <item>B</item>
         <item>A</item>
     </string-array>
 
     <!-- Picante (premium · Retos Persistentes) -->
     <string-array name="spicy_sticky_dares">
-        <item>Durante 3 minutos el jugador debe halagar a todo el que le hable</item>
-        <item>Durante 2 minutos el jugador debe responder solo con un guiño</item>
+        <item>Durante 3 minutos el jugador debe sostener la mirada a quien esté hablando</item>
+        <item>Durante 2 minutos el jugador debe responder cada pregunta con un halago a quien la hizo</item>
         <item>Durante 5 minutos el jugador debe llamar a todos \"cariño\"</item>
         <item>Durante 3 minutos el jugador debe hablar solo con frases de ligue</item>
         <item>Durante 2 minutos el jugador debe lanzar un beso antes de cada frase</item>
         <item>Durante 5 minutos el jugador debe puntuar todo del uno al diez en voz alta</item>
         <item>Durante 3 minutos el jugador debe susurrar todas sus respuestas</item>
         <item>Durante 2 minutos el jugador debe posar cada vez que alguien se ría</item>
+        <item>Durante 5 minutos el jugador debe sentarse tan cerca como se atreva de quien tiene a la izquierda</item>
+        <item>Durante 3 minutos el jugador debe narrar sus propios movimientos como un documental de naturaleza</item>
+        <item>Durante 2 minutos el jugador debe terminar cada frase con \"…y lo digo en serio\"</item>
+        <item>Durante 5 minutos el jugador debe pedirle permiso al grupo antes de cada trago</item>
+        <item>Durante 3 minutos el jugador debe describir cada atuendo de la sala como si fuera una alfombra roja</item>
+        <item>Durante 2 minutos el jugador debe darle la razón con entusiasmo a quien tiene enfrente</item>
+        <item>Durante 5 minutos el jugador debe decir a quién elegiría en cada hipótesis que le planteen</item>
+        <item>Durante 3 minutos el jugador debe presentar a quien hable como si lo presentara ante la realeza</item>
+        <item>Durante 10 minutos el jugador debe hablar de sí mismo en tercera persona</item>
+        <item>Durante 2 minutos el jugador debe ofrecer un baile lento a quien le hable</item>
+        <item>Durante 5 minutos el jugador debe decir algo genuinamente atractivo de cada jugador, por turnos</item>
+        <item>Durante 10 minutos el jugador debe dejar que quien tiene a la izquierda responda por él</item>
     </string-array>
     <string-array name="spicy_sticky_dares_present_continuous">
-        <item>halagando a todo el que le hable</item>
-        <item>respondiendo solo con un guiño</item>
+        <item>sosteniendo la mirada a quien esté hablando</item>
+        <item>respondiendo cada pregunta con un halago a quien la hizo</item>
         <item>llamando a todos \"cariño\"</item>
         <item>hablando solo con frases de ligue</item>
         <item>lanzando un beso antes de cada frase</item>
         <item>puntuando todo del uno al diez en voz alta</item>
         <item>susurrando todas sus respuestas</item>
         <item>posando cada vez que alguien se ría</item>
+        <item>sentándose tan cerca como se atreva de quien tiene a la izquierda</item>
+        <item>narrando sus propios movimientos como un documental de naturaleza</item>
+        <item>terminando cada frase con \"…y lo digo en serio\"</item>
+        <item>pidiéndole permiso al grupo antes de cada trago</item>
+        <item>describiendo cada atuendo de la sala como si fuera una alfombra roja</item>
+        <item>dándole la razón con entusiasmo a quien tiene enfrente</item>
+        <item>diciendo a quién elegiría en cada hipótesis que le planteen</item>
+        <item>presentando a quien hable como si lo presentara ante la realeza</item>
+        <item>hablando de sí mismo en tercera persona</item>
+        <item>ofreciendo un baile lento a quien le hable</item>
+        <item>diciendo algo genuinamente atractivo de cada jugador, por turnos</item>
+        <item>dejando que quien tiene a la izquierda responda por él</item>
     </string-array>
     <string-array name="spicy_sticky_dares_duration_labels">
         <item>3 minutos</item>
@@ -989,6 +1066,18 @@
         <item>5 minutos</item>
         <item>3 minutos</item>
         <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>3 minutos</item>
+        <item>10 minutos</item>
+        <item>2 minutos</item>
+        <item>5 minutos</item>
+        <item>10 minutos</item>
     </string-array>
     <integer-array name="spicy_sticky_dares_duration_seconds">
         <item>180</item>
@@ -999,6 +1088,18 @@
         <item>300</item>
         <item>180</item>
         <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>120</item>
+        <item>300</item>
+        <item>180</item>
+        <item>600</item>
+        <item>120</item>
+        <item>300</item>
+        <item>600</item>
     </integer-array>
 
     <!-- Confesiones +18 (premium · Verdad o Reto) -->
@@ -1013,6 +1114,16 @@
         <item>¿Qué es lo más imprudente que has hecho en una noche de fiesta?</item>
         <item>¿Con cuál de tus ex menos te gustaría cruzarte mañana?</item>
         <item>¿Qué has hecho que jamás le admitirías a tus padres?</item>
+        <item>¿En quién de esta sala has pensado más de lo que admitirías?</item>
+        <item>¿Cuál es la razón más tonta por la que has cortado con alguien?</item>
+        <item>¿Cuál es la mentira más halagadora que te han dicho? ¿Te la creíste?</item>
+        <item>¿De la pareja de cuál de tus amigos dudaste desde el primer día?</item>
+        <item>¿Cuánto tiempo has aguantado sin decirle a alguien lo que sentías?</item>
+        <item>¿Qué es lo peor que has hecho por celos?</item>
+        <item>¿Los mensajes de quién relees?</item>
+        <item>¿Qué es lo más desesperado que has hecho por la atención de alguien?</item>
+        <item>¿Qué regla tuya has roto por alguien?</item>
+        <item>¿Qué te parece atractivo de alguien de aquí y nunca has dicho en voz alta?</item>
     </string-array>
     <string-array name="nsfw_dare_texts">
         <item>Lee en voz dramática el último mensaje que enviaste.</item>
@@ -1025,6 +1136,16 @@
         <item>Confiesa tu emoji más usado y actúalo.</item>
         <item>Deja que el grupo te ponga un apodo para el resto de la noche.</item>
         <item>Susúrrale un secreto al jugador que elija el grupo.</item>
+        <item>Di algo que te parezca genuinamente atractivo de cada jugador, por turnos.</item>
+        <item>Deja que el grupo lea en voz alta tu búsqueda más reciente.</item>
+        <item>Enséñale al grupo el último mensaje coqueto que enviaste — o admite que no tienes ninguno.</item>
+        <item>Sostén la mirada con quien tienes enfrente hasta que alguien de la sala se ría.</item>
+        <item>Deja que quien tienes a la izquierda elija cualquier foto de tu galería para enseñarla al grupo.</item>
+        <item>Describe tu noche ideal en casa, con todo el detalle que te atrevas.</item>
+        <item>Deja que el grupo te haga una pregunta que no puedes esquivar.</item>
+        <item>Ordena a los presentes según a quién le confiarías tu móvil desbloqueado.</item>
+        <item>Haz tu mejor imitación de la última persona que te puso nervioso.</item>
+        <item>Intercambia una prenda con quien tienes a la derecha.</item>
     </string-array>
 
 </resources>

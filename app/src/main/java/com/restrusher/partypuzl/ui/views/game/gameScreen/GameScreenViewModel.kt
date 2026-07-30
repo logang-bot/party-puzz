@@ -12,6 +12,7 @@ import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSour
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.data.models.EnabledPackContent
 import com.restrusher.partypuzl.data.models.Player
+import com.restrusher.partypuzl.data.models.TriviaPrompt
 import com.restrusher.partypuzl.data.packs.QuestionPackContentLoader
 import com.restrusher.partypuzl.data.repositories.interfaces.PartyPhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +29,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.UUID
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class GameScreenViewModel @Inject constructor(
@@ -450,14 +452,7 @@ class GameScreenViewModel @Inject constructor(
             GameDealType.TRUTH_OR_DARE -> buildTruthOrDareContent(request.truthOrDareChoice)
             GameDealType.STICKY_DARE -> buildStickyDareContent(request)
             GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(
-                gkQuestion = packContent.trivia.randomOrNull()?.let {
-                    GeneralKnowledgeQuestion(
-                        question = it.question,
-                        optionA = it.optionA,
-                        optionB = it.optionB,
-                        correctOption = it.correctOption
-                    )
-                }
+                gkQuestion = packContent.trivia.randomOrNull()?.toQuestion()
             )
             GameDealType.MINI_GAME -> ChallengeContent(
                 miniGame = MiniGame.entries
@@ -501,3 +496,27 @@ class GameScreenViewModel @Inject constructor(
         super.onCleared()
     }
 }
+
+/**
+ * Lays a trivia prompt out for the screen, swapping the two answers half the time.
+ *
+ * A pack's stored key is fixed, so without this the position of the right answer is learnable —
+ * if a pack leans one way, always tapping the left button wins. Swapping here makes position
+ * carry no information whatever the authored key looks like, for official, premium and custom
+ * questions alike.
+ *
+ * It has to happen as the deal is built, not while rendering: this result is stored in state and
+ * read back, so a swap at render time would re-roll on every recomposition and move the buttons
+ * under the player's thumb.
+ */
+private fun TriviaPrompt.toQuestion(): GeneralKnowledgeQuestion {
+    val swap = Random.nextBoolean()
+    return GeneralKnowledgeQuestion(
+        question = question,
+        optionA = if (swap) optionB else optionA,
+        optionB = if (swap) optionA else optionB,
+        correctOption = if (swap) correctOption.flip() else correctOption
+    )
+}
+
+private fun Char.flip(): Char = if (this == 'A') 'B' else 'A'
