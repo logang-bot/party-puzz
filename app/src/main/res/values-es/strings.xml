@@ -891,6 +891,9 @@
     <string name="unlock_option_purchase_title">Desbloquear todo</string>
     <string name="unlock_option_purchase_subtitle">Pago único · todos los paquetes, sin anuncios</string>
     <string name="unlock_not_now">Ahora no</string>
+    <!-- Temporal — lo muestran ambas opciones de desbloqueo mientras siga activo
+         FeatureFlags.PACK_UNLOCK_COMING_SOON. Eliminar junto con el flag. -->
+    <string name="coming_soon">¡Muy pronto!</string>
     <string name="unlock_purchase_unavailable">Las compras no están disponibles ahora. Inténtalo más tarde.</string>
 
     <!-- ============================================================

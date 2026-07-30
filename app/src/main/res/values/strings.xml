@@ -895,6 +895,9 @@
     <string name="unlock_option_purchase_title">Unlock everything</string>
     <string name="unlock_option_purchase_subtitle">One-time purchase · all packs, no ads</string>
     <string name="unlock_not_now">Not now</string>
+    <!-- Temporary — shown by both unlock options while FeatureFlags.PACK_UNLOCK_COMING_SOON
+         stands. Remove with the flag. -->
+    <string name="coming_soon">Coming soon!</string>
     <string name="unlock_purchase_unavailable">Purchases are unavailable right now. Try again later.</string>
 
     <!-- ============================================================

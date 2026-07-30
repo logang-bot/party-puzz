@@ -170,6 +170,12 @@ No database migration is needed. Packs are seeded with `INSERT OR IGNORE` so exi
 
 ## Unlocking a premium pack
 
+> ⚠️ **Neither option works today.** `FeatureFlags.PACK_UNLOCK_COMING_SOON` replaces both with a
+> "Coming soon!" toast until the real rewarded ad unit and the `remove_ads` product exist, so
+> **premium packs cannot currently be unlocked at all**. The wiring below is intact and unchanged —
+> only the two click handlers are stubbed. Full reasoning and the undo steps are in
+> [ads.md](ads.md).
+
 Tapping a locked row opens `UnlockChoiceBottomSheet` with two options:
 
 | Option | Grants | Persisted where |

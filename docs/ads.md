@@ -4,6 +4,39 @@ The app monetises with Google AdMob. Three ad formats are integrated: banner ads
 
 ---
 
+## The pack unlock is switched off
+
+⚠️ **Both** routes into unlocking a premium pack — "watch a short ad" *and* the one-time purchase —
+currently do nothing but raise a **"Coming soon!"** toast, gated by
+`FeatureFlags.PACK_UNLOCK_COMING_SOON`. This is deliberate and **temporary**.
+
+**Why.** Neither route can earn yet. `PACK_UNLOCK_REWARDED` still points at Google's *test*
+rewarded unit in both build types (TODO under [Rewarded Ad](#rewarded-ad)), and the `remove_ads`
+product is not set up in Play Console (TODO under [Remove Ads — In-App Purchase](#remove-ads--in-app-purchase)). A release build would have
+run the whole flow and made nothing, and a paid door that leads nowhere is worse than no door.
+
+**What is stubbed.** Only the two click handlers, in `GameConfigScreen`. Everything underneath —
+`RewardedAdState`, `BillingManager`, `SessionUnlocksSource`, `onRewardEarned`, the sheet itself —
+is untouched and still wired. The sheet is deliberately left standing: it is the finished design,
+and seeing it lets the premium tier land before it can be bought. The screen also **skips
+preloading the rewarded ad** while the flag is on, so no ad requests are made for a flow nothing
+can reach.
+
+**To undo:**
+
+1. Create the Rewarded ad unit in AdMob, paste its id into `AdUnitIds.Production`
+   (`ui/common/AdBannerView.kt`), replacing the TODO.
+2. Create and activate `remove_ads` in Play Console (setup step 4 in [release.md](release.md)).
+3. Delete `PACK_UNLOCK_COMING_SOON` from `ui/common/FeatureFlags.kt` and the `comingSoon` branches
+   in `GameConfigScreen` that read it. The original wiring is still there underneath.
+4. Delete the `coming_soon` string from both `strings.xml` files.
+5. Delete this section, and the note in [question-packs.md](question-packs.md).
+
+Verify with the release checklist items that reference the unlock sheet — they are written to fail
+while this flag stands.
+
+---
+
 ## Setup
 
 ### Dependency
@@ -126,6 +159,8 @@ The card shows a fire icon, title (`rewarded_ad_title`), subtitle (`rewarded_ad_
 ### Where it is used
 
 `GameConfigScreen` calls `rememberRewardedAd(AdUnitIds.PACK_UNLOCK_REWARDED)` on composition — up front, not when the sheet opens, so the option is usually ready by the time the user asks for it. `UnlockChoiceBottomSheet` offers it as "Watch a short ad"; granting the reward unlocks that premium question pack **for the session only** via `SessionUnlocksSource`. See [question-packs.md](question-packs.md).
+
+> This describes the wiring, which is intact — but none of it runs today: `PACK_UNLOCK_COMING_SOON` skips the preload and replaces the click with a toast. See [the section at the top](#the-pack-unlock-is-switched-off).
 
 `RewardedAdState.show()` consumes the ad, so the screen reloads it in the reward callback and a second pack can be unlocked in the same session. While a load is in flight the sheet keeps the option visible but disabled with a "Loading ad…" subtitle.
 

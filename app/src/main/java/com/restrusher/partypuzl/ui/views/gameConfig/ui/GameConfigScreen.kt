@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -66,6 +67,7 @@ import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSour
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.FeatureFlags
 import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.gameModeTheme
@@ -113,8 +115,12 @@ fun SharedTransitionScope.GameConfigScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     // Loaded up front so the unlock sheet can offer the ad immediately rather than after a wait.
+    // While the unlock is stubbed out nothing will ever show it, so skip the request entirely
+    // rather than fetch a rewarded ad on every visit to this screen. The flag is a compile-time
+    // constant, so this branch is fixed for the process and never restructures the composition.
     val rewardedAdUnitId = AdUnitIds.PACK_UNLOCK_REWARDED
-    val rewardedAd = rememberRewardedAd(rewardedAdUnitId)
+    val rewardedAd =
+        if (FeatureFlags.PACK_UNLOCK_COMING_SOON) null else rememberRewardedAd(rewardedAdUnitId)
 
     uiState.messageRes?.let { messageRes ->
         val message = stringResource(messageRes)
@@ -192,23 +198,37 @@ fun SharedTransitionScope.GameConfigScreen(
     }
 
     uiState.unlockTarget?.let { target ->
+        val comingSoon = FeatureFlags.PACK_UNLOCK_COMING_SOON
         UnlockChoiceBottomSheet(
             pack = target,
-            isAdReady = rewardedAd.isReady,
+            // Coming-soon: there is no ad to wait for, so the row reads ready rather than
+            // "Loading…" and stays tappable — a dead button would swallow the toast.
+            isAdReady = comingSoon || rewardedAd?.isReady == true,
             activity = activity,
             onWatchAd = {
-                activity?.let { host ->
-                    rewardedAd.show(host) {
-                        viewModel.onRewardEarned(target.id)
-                        // show() consumes the ad; reload so another pack can be unlocked too.
-                        rewardedAd.load(rewardedAdUnitId)
+                if (comingSoon) {
+                    context.showComingSoon()
+                } else {
+                    activity?.let { host ->
+                        rewardedAd?.show(host) {
+                            viewModel.onRewardEarned(target.id)
+                            // show() consumes the ad; reload so another pack can be unlocked too.
+                            rewardedAd.load(rewardedAdUnitId)
+                        }
                     }
                 }
             },
-            onPurchase = { host -> viewModel.onPurchaseRequested(host) },
+            onPurchase = { host ->
+                if (comingSoon) context.showComingSoon() else viewModel.onPurchaseRequested(host)
+            },
             onDismiss = viewModel::onUnlockDismissed
         )
     }
+}
+
+/** Both unlock routes while [FeatureFlags.PACK_UNLOCK_COMING_SOON] stands. Delete with the flag. */
+private fun Context.showComingSoon() {
+    Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show()
 }
 
 /** Unwraps the Activity the composable is hosted in — needed to show ads and billing flows. */
