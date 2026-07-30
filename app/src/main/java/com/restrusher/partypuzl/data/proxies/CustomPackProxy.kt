@@ -17,7 +17,7 @@ interface CustomPackProxy {
     suspend fun insertPack(packRow: QuestionPackEntity, customRow: CustomPackEntity)
     suspend fun upsertPack(customRow: CustomPackEntity)
     suspend fun deletePack(packId: String)
-    suspend fun setPackEnabled(packId: String, enabled: Boolean)
+    suspend fun setPackAvailable(packId: String, available: Boolean)
 
     fun getEntries(packId: String): Flow<List<CustomEntryEntity>>
     suspend fun getEntry(id: String): CustomEntryEntity?

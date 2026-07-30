@@ -1,5 +1,6 @@
 package com.restrusher.partypuzl.data.local.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
@@ -39,5 +40,18 @@ data class CustomPackEntity(
      */
     val category: PackCategory,
     val spice: SpiceLevel,
-    val createdAt: Long
+    val createdAt: Long,
+    /**
+     * Whether the pack is offered on the setup screen at all — the switch in the pack manager.
+     *
+     * Deliberately *not* the same thing as `question_packs.isEnabled`, which is the per-session
+     * pick made on the setup screen itself. A built-in pack only needs the second, because the
+     * catalog decides which packs exist; an authored pack needs both, so the user can retire one
+     * without deleting it and without it cluttering every future setup screen.
+     *
+     * The SQL default is declared, not just the Kotlin one: `MIGRATION_10_11` adds the column with
+     * `DEFAULT 1`, and Room compares default values when it validates the schema on open.
+     */
+    @ColumnInfo(defaultValue = "1")
+    val isAvailable: Boolean = true
 )

@@ -111,7 +111,10 @@ class GameConfigViewModel @Inject constructor(
                     isAdFree && packs.any { it.tier == PackTier.PREMIUM && !it.isUnlocked }
                 PackModels(
                     catalog = packs.toCatalogUiModels(sessionUnlocks, isAdFree),
-                    custom = customSummaries.map { it.toUiModel() },
+                    // A pack the user has withdrawn in the manager is not offered here at all.
+                    // The catalog plays that role for built-in packs; authored packs have no
+                    // catalog, so `isAvailable` is what decides they exist for this screen.
+                    custom = customSummaries.filter { it.isAvailable }.map { it.toUiModel() },
                     needsPurchaseSync = needsPurchaseSync
                 )
             }.collect { models ->

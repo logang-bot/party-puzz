@@ -53,8 +53,8 @@ class CustomPackRepositoryImpl(
 
     override suspend fun deletePack(packId: String) = customPackLocalProxy.deletePack(packId)
 
-    override suspend fun setEnabled(packId: String, enabled: Boolean) =
-        customPackLocalProxy.setPackEnabled(packId, enabled)
+    override suspend fun setAvailable(packId: String, available: Boolean) =
+        customPackLocalProxy.setPackAvailable(packId, available)
 
     override fun getEntries(packId: String): Flow<List<CustomEntryEntity>> =
         customPackLocalProxy.getEntries(packId)

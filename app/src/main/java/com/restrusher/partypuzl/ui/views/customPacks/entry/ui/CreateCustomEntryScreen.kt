@@ -29,8 +29,10 @@ import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryState
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryViewModel
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
+import com.restrusher.partypuzl.ui.views.customPacks.model.EntryDeal
 import com.restrusher.partypuzl.ui.views.customPacks.previewEntryState
 import com.restrusher.partypuzl.ui.views.customPacks.previewTriviaEntryState
+import com.restrusher.partypuzl.ui.views.customPacks.previewTruthOrDareEntryState
 import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.NumberedStep
 
@@ -55,12 +57,14 @@ fun CreateCustomEntryScreen(
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // The page follows the entry type picked in step 01, so switching type re-tints the screen.
-    ReportPageTint(uiState.type.accent)
+    // The page follows the deal picked in step 01, so switching card re-tints the screen. Swapping
+    // truth for dare does not: they are one deal, and one tone.
+    ReportPageTint(uiState.deal.accent)
 
     CreateCustomEntryContent(
         state = uiState,
-        onTypeChange = viewModel::onTypeChange,
+        onDealChange = viewModel::onDealChange,
+        onKindChange = viewModel::onKindChange,
         onTextChange = viewModel::onTextChange,
         onDurationChange = viewModel::onDurationChange,
         onOptionAChange = viewModel::onOptionAChange,
@@ -74,7 +78,8 @@ fun CreateCustomEntryScreen(
 @Composable
 private fun CreateCustomEntryContent(
     state: CreateCustomEntryState,
-    onTypeChange: (CustomEntryType) -> Unit,
+    onDealChange: (EntryDeal) -> Unit,
+    onKindChange: (CustomEntryType) -> Unit,
     onTextChange: (String) -> Unit,
     onDurationChange: (Int) -> Unit,
     onOptionAChange: (String) -> Unit,
@@ -95,10 +100,11 @@ private fun CreateCustomEntryContent(
 
             NumberedStep(number = "01", label = stringResource(R.string.custom_entry_step_type))
             Spacer(modifier = Modifier.height(10.dp))
-            EntryTypeCards(selected = state.type, onSelect = onTypeChange)
+            EntryTypeCards(selected = state.deal, onSelect = onDealChange)
 
             EntryForm(
                 state = state,
+                onKindChange = onKindChange,
                 onTextChange = onTextChange,
                 onDurationChange = onDurationChange,
                 onOptionAChange = onOptionAChange,
@@ -106,10 +112,10 @@ private fun CreateCustomEntryContent(
                 onCorrectChange = onCorrectChange
             )
 
+            // Every deal asks for two things between the picker and here, so the preview is
+            // always step 04.
             NumberedStep(
-                number = if (state.type == CustomEntryType.TRIVIA ||
-                    state.type == CustomEntryType.STICKY_DARE
-                ) "04" else "03",
+                number = "04",
                 label = stringResource(R.string.custom_entry_step_preview)
             )
             Spacer(modifier = Modifier.height(10.dp))
@@ -130,10 +136,11 @@ private fun CreateCustomEntryContent(
     }
 }
 
-/** Steps 02 onwards — each type asks only for what it actually needs. */
+/** Steps 02 and 03 — each deal asks only for what it actually needs. */
 @Composable
 private fun EntryForm(
     state: CreateCustomEntryState,
+    onKindChange: (CustomEntryType) -> Unit,
     onTextChange: (String) -> Unit,
     onDurationChange: (Int) -> Unit,
     onOptionAChange: (String) -> Unit,
@@ -144,6 +151,7 @@ private fun EntryForm(
     when (state.type) {
         CustomEntryType.TRUTH, CustomEntryType.DARE -> TruthOrDareForm(
             state = state,
+            onKindChange = onKindChange,
             onTextChange = onTextChange,
             modifier = modifier
         )
@@ -171,7 +179,8 @@ private fun CreateCustomEntrySample(state: CreateCustomEntryState) {
     Box(modifier = Modifier.fillMaxSize().appBackground()) {
         CreateCustomEntryContent(
             state = state,
-            onTypeChange = {},
+            onDealChange = {},
+            onKindChange = {},
             onTextChange = {},
             onDurationChange = {},
             onOptionAChange = {},
@@ -179,6 +188,22 @@ private fun CreateCustomEntrySample(state: CreateCustomEntryState) {
             onCorrectChange = {},
             onSave = {}
         )
+    }
+}
+
+@Preview(name = "CreateCustomEntry truth or dare – Light", showBackground = true, widthDp = 360, heightDp = 900)
+@Composable
+private fun CreateCustomEntryTruthOrDareLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
+        CreateCustomEntrySample(previewTruthOrDareEntryState)
+    }
+}
+
+@Preview(name = "CreateCustomEntry truth or dare – Dark", showBackground = true, widthDp = 360, heightDp = 900)
+@Composable
+private fun CreateCustomEntryTruthOrDareDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) {
+        CreateCustomEntrySample(previewTruthOrDareEntryState)
     }
 }
 

@@ -43,8 +43,9 @@ import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.DashedEmptyState
 
 /**
- * The custom-pack manager — every pack the user has written, with its on/off switch and the way
- * in to editing or deleting it. Reached from Settings.
+ * The custom-pack manager — every pack the user has written, with the switch that decides whether
+ * it is offered when setting up a game, and the way in to editing or deleting it. Reached from
+ * Settings.
  */
 @Composable
 fun CustomPacksScreen(

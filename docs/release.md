@@ -89,8 +89,12 @@ Install from the internal testing track on a real device and verify:
 - [ ] Premium packs appear locked on the setup screen; tapping one opens the unlock sheet
 - [ ] "Watch a short ad" grants the pack for the session (a real rewarded unit is still pending — see setup step 5)
 - [ ] Purchasing Remove Ads unlocks all three premium packs permanently
-- [ ] **Upgrading over an existing install keeps saved parties and photos** — the v10 migration adds the custom-pack tables; a wrong statement throws on open. See [custom-packs.md](custom-packs.md)
+- [ ] **Upgrading over an existing install keeps saved parties and photos** — the v10 migration adds the custom-pack tables, the v11 one adds `custom_packs.isAvailable`; a wrong statement throws on open. See [custom-packs.md](custom-packs.md)
+- [ ] **Upgrading keeps authored packs** — install the previous release, write a pack, then upgrade. The pack is still there and still available. Losing it means `MIGRATION_10_11` failed validation and the destructive fallback ran
 - [ ] Settings → Your packs: write a pack, add one entry of each type, confirm it plays in-game
+- [ ] New entry screen offers **three** deal cards; Truth or Dare asks which half in step 02, and every path runs 01–04
+- [ ] Switching a pack off in Your packs removes it from the setup screen's Custom group entirely, and its entries never come up in a game; switching it back on restores it, already selected
+- [ ] Toggling a custom pack's row *on the setup screen* does not flip its switch in Your packs — they are separate flags
 - [ ] Force-stop and relaunch: the custom pack and its entries survive (regression test for the seeder's `tier != 'CUSTOM'` guard)
 
 ### 5. Promote to production

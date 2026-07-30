@@ -790,7 +790,7 @@
     <string name="custom_packs_active_count">%1$d active</string>
     <string name="custom_packs_summary">%1$d packs · %2$d prompts</string>
     <string name="custom_packs_headline">Bring your own questions</string>
-    <string name="custom_packs_intro">Write prompts for any category. Switch packs on or off per session — they shuffle in alongside the built-in decks.</string>
+    <string name="custom_packs_intro">Write prompts for any category. The switch decides whether a pack is offered when you set up a game — the ones you keep on shuffle in alongside the built-in decks.</string>
     <string name="custom_packs_empty_title">No packs yet</string>
     <string name="custom_packs_empty_subtitle">Inside jokes, spicy dares for date night, trivia about your friends — anything goes.</string>
     <string name="custom_packs_create_cta">Create new pack</string>
@@ -831,7 +831,7 @@
     <string name="custom_pack_add">Add</string>
     <string name="custom_pack_add_entry">Add an entry</string>
     <string name="custom_pack_entries_empty_title">Nothing in here yet</string>
-    <string name="custom_pack_entries_empty_subtitle">Add a truth, a dare, a sticky dare, or a general-knowledge question.</string>
+    <string name="custom_pack_entries_empty_subtitle">Add a truth or dare, a sticky dare, or a general-knowledge question.</string>
     <string name="custom_entry_delete_title">Delete this entry?</string>
     <string name="custom_entry_delete_message">It will be removed from the pack for good.</string>
 
@@ -841,13 +841,14 @@
     <string name="custom_entry_adding_to">Adding to</string>
     <string name="custom_entry_step_type">What kind of game deal?</string>
     <string name="custom_entry_type_truth">Truth</string>
-    <string name="custom_entry_type_truth_hint">A question, answered on the spot.</string>
     <string name="custom_entry_type_dare">Dare</string>
-    <string name="custom_entry_type_dare_hint">Something to do, right now, in front of everyone.</string>
+    <string name="custom_entry_type_truth_or_dare_hint">One prompt, answered on the spot.</string>
     <string name="custom_entry_type_sticky">Sticky dare</string>
     <string name="custom_entry_type_sticky_hint">Runs on a timer — stays on the player until it ends.</string>
     <string name="custom_entry_type_trivia">GK question</string>
     <string name="custom_entry_type_trivia_hint">Two options, one of them is correct.</string>
+    <string name="custom_entry_step_kind">Truth or dare?</string>
+    <string name="custom_entry_step_kind_sub">Players see this tag before they commit.</string>
     <string name="custom_entry_step_truth">Write the question</string>
     <string name="custom_entry_step_dare">Write the dare</string>
     <string name="custom_entry_truth_hint">e.g. Who in this room have you lied to most recently?</string>

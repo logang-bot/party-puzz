@@ -14,7 +14,11 @@ interface CustomPackRepository {
     /** Creates the pack and returns its new id, or updates it when the draft carries one. */
     suspend fun savePack(draft: CustomPackDraft): String
     suspend fun deletePack(packId: String)
-    suspend fun setEnabled(packId: String, enabled: Boolean)
+    /**
+     * The manager's switch: whether the pack is offered on the setup screen at all. The
+     * per-session pick made there is `QuestionPackRepository.setEnabled` instead.
+     */
+    suspend fun setAvailable(packId: String, available: Boolean)
 
     fun getEntries(packId: String): Flow<List<CustomEntryEntity>>
     suspend fun getEntry(id: String): CustomEntryEntity?

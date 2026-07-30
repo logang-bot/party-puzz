@@ -11,8 +11,12 @@ import com.restrusher.partypuzl.data.models.SpiceLevel
 import kotlinx.coroutines.flow.Flow
 
 /**
- * A custom pack as every screen needs it: its authored metadata, its on/off flag from
- * `question_packs`, and the entry counts.
+ * A custom pack as every screen needs it: its authored metadata, both of its flags, and the entry
+ * counts.
+ *
+ * The two flags answer different questions and are never interchangeable — [isAvailable] is
+ * "offer this pack on the setup screen", set in the manager; [isEnabled] is "play it this
+ * session", set on the setup screen itself.
  *
  * The per-type counts are here rather than derived later because the manager screen needs them to
  * warn about a pack that holds only truths or only dares — a Truth-or-Dare deck needs both halves
@@ -25,6 +29,7 @@ data class CustomPackSummary(
     val category: PackCategory,
     val spice: SpiceLevel,
     val createdAt: Long,
+    val isAvailable: Boolean,
     val isEnabled: Boolean,
     val entryCount: Int,
     val truthCount: Int,
@@ -39,6 +44,7 @@ private const val SUMMARY_QUERY = """
         c.category AS category,
         c.spice AS spice,
         c.createdAt AS createdAt,
+        c.isAvailable AS isAvailable,
         p.isEnabled AS isEnabled,
         (SELECT COUNT(*) FROM custom_entries e
             WHERE e.packId = c.packId AND e.isEnabled = 1) AS entryCount,
@@ -85,4 +91,20 @@ interface CustomPackDao {
 
     @Query("UPDATE question_packs SET isEnabled = :enabled WHERE id = :packId")
     suspend fun setEnabled(packId: String, enabled: Boolean)
+
+    @Query("UPDATE custom_packs SET isAvailable = :available WHERE packId = :packId")
+    suspend fun setAvailable(packId: String, available: Boolean)
+
+    /**
+     * The manager's switch. Withdrawing a pack also drops it from the current session, since a
+     * pack that is not offered must not still be dealing; putting it back switches it on, which is
+     * how a freshly written pack arrives too.
+     *
+     * Both writes together, so the two flags can never be observed disagreeing.
+     */
+    @Transaction
+    suspend fun setAvailability(packId: String, available: Boolean) {
+        setAvailable(packId, available)
+        setEnabled(packId, available)
+    }
 }

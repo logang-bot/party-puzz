@@ -75,7 +75,7 @@ private fun CustomPackSummary.toUiModel(entries: List<CustomEntryEntity>) = Cust
     category = category,
     spice = spice,
     entryCount = entries.count { it.isEnabled },
-    isEnabled = isEnabled,
+    isAvailable = isAvailable,
     warning = entries.warning()
 )
 

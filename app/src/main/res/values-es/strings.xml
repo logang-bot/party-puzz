@@ -786,7 +786,7 @@
     <string name="custom_packs_active_count">%1$d activos</string>
     <string name="custom_packs_summary">%1$d paquetes · %2$d preguntas</string>
     <string name="custom_packs_headline">Pon tus propias preguntas</string>
-    <string name="custom_packs_intro">Escribe preguntas para cualquier categoría. Activa o desactiva paquetes en cada partida — se mezclan con los mazos incluidos.</string>
+    <string name="custom_packs_intro">Escribe preguntas para cualquier categoría. El interruptor decide si un paquete se ofrece al preparar la partida — los que dejes activados se mezclan con los mazos incluidos.</string>
     <string name="custom_packs_empty_title">Aún no hay paquetes</string>
     <string name="custom_packs_empty_subtitle">Chistes privados, retos picantes para una cita, trivia sobre tus amigos — lo que quieras.</string>
     <string name="custom_packs_create_cta">Crear paquete nuevo</string>
@@ -827,7 +827,7 @@
     <string name="custom_pack_add">Añadir</string>
     <string name="custom_pack_add_entry">Añadir una entrada</string>
     <string name="custom_pack_entries_empty_title">Aquí todavía no hay nada</string>
-    <string name="custom_pack_entries_empty_subtitle">Añade una verdad, un reto, un reto persistente o una pregunta de cultura general.</string>
+    <string name="custom_pack_entries_empty_subtitle">Añade una verdad o reto, un reto persistente o una pregunta de cultura general.</string>
     <string name="custom_entry_delete_title">¿Eliminar esta entrada?</string>
     <string name="custom_entry_delete_message">Se quitará del paquete definitivamente.</string>
 
@@ -837,13 +837,14 @@
     <string name="custom_entry_adding_to">Añadiendo a</string>
     <string name="custom_entry_step_type">¿Qué tipo de jugada?</string>
     <string name="custom_entry_type_truth">Verdad</string>
-    <string name="custom_entry_type_truth_hint">Una pregunta, respondida al momento.</string>
     <string name="custom_entry_type_dare">Reto</string>
-    <string name="custom_entry_type_dare_hint">Algo que hacer, ya, delante de todos.</string>
+    <string name="custom_entry_type_truth_or_dare_hint">Una consigna, resuelta al momento.</string>
     <string name="custom_entry_type_sticky">Reto persistente</string>
     <string name="custom_entry_type_sticky_hint">Corre con temporizador — acompaña al jugador hasta que termina.</string>
     <string name="custom_entry_type_trivia">Pregunta de cultura</string>
     <string name="custom_entry_type_trivia_hint">Dos opciones, una es la correcta.</string>
+    <string name="custom_entry_step_kind">¿Verdad o reto?</string>
+    <string name="custom_entry_step_kind_sub">Los jugadores ven esta etiqueta antes de comprometerse.</string>
     <string name="custom_entry_step_truth">Escribe la pregunta</string>
     <string name="custom_entry_step_dare">Escribe el reto</string>
     <string name="custom_entry_truth_hint">p. ej. ¿A quién de esta sala le has mentido más recientemente?</string>

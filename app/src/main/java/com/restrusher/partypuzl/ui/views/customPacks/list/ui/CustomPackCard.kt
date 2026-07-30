@@ -46,7 +46,10 @@ import com.restrusher.partypuzl.ui.views.customPacks.ui.RowActionButton
 
 /**
  * One pack in the manager: what it is, how much is in it, whether it will play, and the three
- * things you can do to it — switch it off, edit it, delete it.
+ * things you can do to it — withdraw it, edit it, delete it.
+ *
+ * The switch is availability, not this session's pick: off means the pack stops being offered on
+ * the setup screen at all. Choosing which of the offered packs plays tonight happens there.
  */
 @Composable
 internal fun CustomPackCard(
@@ -102,7 +105,7 @@ internal fun CustomPackCard(
                 }
             }
             Switch(
-                checked = pack.isEnabled,
+                checked = pack.isAvailable,
                 onCheckedChange = { onToggle() },
                 colors = SwitchDefaults.colors(
                     checkedTrackColor = accent,

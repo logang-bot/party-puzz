@@ -27,7 +27,11 @@ data class CustomPackUiModel(
     val category: PackCategory,
     val spice: SpiceLevel,
     val entryCount: Int,
-    val isEnabled: Boolean,
+    /**
+     * Whether the pack is offered on the setup screen — what the switch on the card sets. Not the
+     * same as the setup screen's own per-session toggle; see `CustomPackSummary`.
+     */
+    val isAvailable: Boolean,
     val warning: PackWarning?
 )
 

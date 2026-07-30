@@ -11,7 +11,6 @@ import com.restrusher.partypuzl.data.models.packAccent
 import com.restrusher.partypuzl.ui.theme.AccentLime
 import com.restrusher.partypuzl.ui.theme.AccentPink
 import com.restrusher.partypuzl.ui.theme.AccentViolet
-import com.restrusher.partypuzl.ui.theme.BrandTeal
 import com.restrusher.partypuzl.ui.theme.color
 
 /**
@@ -66,10 +65,14 @@ val CustomEntryType.iconRes: Int
         CustomEntryType.TRIVIA -> R.drawable.ic_chat_bubble
     }
 
+/**
+ * Truths and dares share a tone: they are one deal ([EntryDeal.TRUTH_OR_DARE]) wherever a colour
+ * is drawn, and the half is told apart by the label instead. Teal survives as the Truth side of
+ * the step-02 toggle, which is the one place the two are being contrasted.
+ */
 val CustomEntryType.accent: Color
     get() = when (this) {
-        CustomEntryType.TRUTH -> BrandTeal
-        CustomEntryType.DARE -> AccentPink
+        CustomEntryType.TRUTH, CustomEntryType.DARE -> AccentPink
         CustomEntryType.STICKY_DARE -> AccentViolet
         CustomEntryType.TRIVIA -> AccentLime
     }
@@ -81,13 +84,4 @@ val CustomEntryType.labelRes: Int
         CustomEntryType.DARE -> R.string.custom_entry_type_dare
         CustomEntryType.STICKY_DARE -> R.string.custom_entry_type_sticky
         CustomEntryType.TRIVIA -> R.string.custom_entry_type_trivia
-    }
-
-@get:StringRes
-val CustomEntryType.hintRes: Int
-    get() = when (this) {
-        CustomEntryType.TRUTH -> R.string.custom_entry_type_truth_hint
-        CustomEntryType.DARE -> R.string.custom_entry_type_dare_hint
-        CustomEntryType.STICKY_DARE -> R.string.custom_entry_type_sticky_hint
-        CustomEntryType.TRIVIA -> R.string.custom_entry_type_trivia_hint
     }

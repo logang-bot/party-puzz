@@ -52,13 +52,14 @@ Tapping an unlocked row toggles it. Tapping a locked premium row opens `UnlockCh
 
 ### The Custom group
 
-Written by the user and toggled per session exactly like the official ones. Group chrome lives in `PackGroupContainers.kt`; the group itself in `CustomPackGroup.kt`.
+Written by the user and, once offered, toggled per session exactly like the official ones. Group chrome lives in `PackGroupContainers.kt`; the group itself in `CustomPackGroup.kt`.
 
 - Its label carries a live enabled/total count (`Custom · 1/2`) and a **Manage** link into `CustomPacksRoute`.
 - With nothing written yet it shows the design's dashed "Write your first pack" panel — now a live button into the manager rather than a *Coming soon* placeholder.
 - A custom row's name, icon and accent come from the user's own `custom_packs` row, not the catalog; its meta count is the pack's entry count.
+- **Only packs marked available in the manager are listed**, and the `Custom · 1/2` count is over those. `QuestionPackCatalog` decides which built-in packs exist; authored packs have no catalog, so `custom_packs.isAvailable` plays that role — `observePacks` filters on it before mapping. The row toggle here remains the per-session pick, a genuinely separate flag.
 
-Authoring itself is documented in [custom-packs.md](custom-packs.md).
+Authoring itself, and the difference between the two flags, is documented in [custom-packs.md](custom-packs.md).
 
 **`PackLabel`** is what makes one row design serve both. `PackUiModel.name` was an `@StringRes Int`, which could not hold a user-typed name; it is now a sealed `PackLabel` — `Resource(@StringRes Int)` for built-in packs, `Literal(String)` for custom ones — resolved by the `@Composable PackLabel.text()` helper at the render site.
 

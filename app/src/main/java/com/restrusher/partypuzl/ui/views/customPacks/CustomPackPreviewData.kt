@@ -26,7 +26,7 @@ internal val previewPack = CustomPackUiModel(
     category = PackCategory.TRUTH_OR_DARE,
     spice = SpiceLevel.MEDIUM,
     entryCount = 12,
-    isEnabled = true,
+    isAvailable = true,
     warning = PackWarning.TRUTHS_ONLY
 )
 
@@ -39,7 +39,7 @@ internal val previewPacks = listOf(
         category = PackCategory.STICKY_DARE,
         spice = SpiceLevel.SPICY,
         entryCount = 7,
-        isEnabled = false,
+        isAvailable = false,
         warning = null
     ),
     CustomPackUiModel(
@@ -49,7 +49,7 @@ internal val previewPacks = listOf(
         category = PackCategory.GENERAL_KNOWLEDGE,
         spice = SpiceLevel.MILD,
         entryCount = 0,
-        isEnabled = true,
+        isAvailable = true,
         warning = PackWarning.EMPTY
     )
 )
@@ -98,6 +98,14 @@ internal val previewEntryState = CreateCustomEntryState(
     type = CustomEntryType.STICKY_DARE,
     text = "End every sentence with “…allegedly.”",
     durationSeconds = 300
+)
+
+/** A dare mid-write — the path with the step-02 truth/dare toggle showing. */
+internal val previewTruthOrDareEntryState = CreateCustomEntryState(
+    packId = "pack",
+    packName = "House Rules",
+    type = CustomEntryType.DARE,
+    text = "Call the last number you dialled and sing the chorus."
 )
 
 internal val previewTriviaEntryState = CreateCustomEntryState(

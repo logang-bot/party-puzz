@@ -153,7 +153,7 @@ A pack unlocked by ad is switched **on** immediately, and its meta line reads "U
 1. Runs `QuestionPackSeeder.seedIfNeeded()`.
 2. Reads `getPlayableQuestions()` — questions in enabled packs, not individually muted (one JOIN, done in SQL).
 3. Resolves each row's text through `QuestionPromptResolver` and pools it by category.
-4. Reads `getPlayableEntries()` — the same JOIN over `custom_entries` — and pools authored text into the *same* lists, bypassing the resolver. See [custom-packs.md](custom-packs.md).
+4. Reads `getPlayableEntries()` — the same idea over `custom_entries`, joining `custom_packs` too so a pack the user has withdrawn in the manager cannot deal — and pools authored text into the *same* lists, bypassing the resolver. See [custom-packs.md](custom-packs.md).
 
 Because both passes feed one set of pools, the game screen never learns that custom packs exist; it just asks for a deck.
 

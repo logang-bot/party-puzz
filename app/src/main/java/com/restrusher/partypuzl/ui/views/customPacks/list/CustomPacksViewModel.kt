@@ -32,7 +32,7 @@ class CustomPacksViewModel @Inject constructor(
 
     fun onToggle(packId: String) {
         val pack = uiState.value.packs.firstOrNull { it.id == packId } ?: return
-        viewModelScope.launch { customPackRepository.setEnabled(packId, !pack.isEnabled) }
+        viewModelScope.launch { customPackRepository.setAvailable(packId, !pack.isAvailable) }
     }
 
     fun onDeleteRequested(pack: CustomPackUiModel) {
@@ -59,7 +59,7 @@ private fun CustomPackSummary.toUiModel() = CustomPackUiModel(
     category = category,
     spice = spice,
     entryCount = entryCount,
-    isEnabled = isEnabled,
+    isAvailable = isAvailable,
     warning = warning()
 )
 

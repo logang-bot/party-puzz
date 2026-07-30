@@ -199,7 +199,7 @@ rather than on each screen is deliberate: the background has to paint behind the
 app bar too, and a per-screen background leaves a seam under the bar.
 
 Five screens tint from data a route cannot see — the mode the home carousel is
-showing, a party's last mode, a pack's spice accent, the entry type being
+showing, a party's last mode, a pack's spice accent, the kind of game deal being
 written. They call `ReportPageTint(colour)` (`ui/theme/PageTintState.kt`), which
 writes into a `PageTintState` the root scaffold provides and reads back:
 

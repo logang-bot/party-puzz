@@ -19,12 +19,19 @@ interface CustomEntryDao {
     /**
      * Entries belonging to packs the user has switched on, and not individually muted. The custom
      * mirror of `QuestionDao.getPlayableQuestions()`.
+     *
+     * `isAvailable` is checked here as well as by `CustomPackDao.setAvailability`, which already
+     * clears `isEnabled` when a pack is withdrawn. That is deliberate: a pack the user has taken
+     * off the setup screen must not be able to deal, and making that structural rather than
+     * trusting one transaction to have run is the same guarantee `deleteRetiredCatalogPacks` gets
+     * from its `tier != 'CUSTOM'` clause.
      */
     @Query(
         """
         SELECT e.* FROM custom_entries e
         INNER JOIN question_packs p ON p.id = e.packId
-        WHERE p.isEnabled = 1 AND e.isEnabled = 1
+        INNER JOIN custom_packs c ON c.packId = e.packId
+        WHERE p.isEnabled = 1 AND c.isAvailable = 1 AND e.isEnabled = 1
         """
     )
     suspend fun getPlayableEntries(): List<CustomEntryEntity>

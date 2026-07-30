@@ -35,7 +35,7 @@ import kotlinx.coroutines.internal.synchronized
         CustomPackEntity::class,
         CustomEntryEntity::class
     ],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 abstract class PartyPuzlDatabase : RoomDatabase() {
@@ -147,11 +147,31 @@ abstract class PartyPuzlDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Adds `custom_packs.isAvailable` — whether a pack is offered on the setup screen at all,
+         * as opposed to `question_packs.isEnabled`, which is only this session's pick.
+         *
+         * Existing packs default to available, so nothing the user wrote disappears on upgrade.
+         */
+        private val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "ALTER TABLE `custom_packs` " +
+                            "ADD COLUMN `isAvailable` INTEGER NOT NULL DEFAULT 1"
+                )
+            }
+        }
+
         @OptIn(InternalCoroutinesApi::class)
         fun getDatabase(context: Context): PartyPuzlDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, PartyPuzlDatabase::class.java, "app_database")
-                    .addMigrations(MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10)
+                    .addMigrations(
+                        MIGRATION_7_8,
+                        MIGRATION_8_9,
+                        MIGRATION_9_10,
+                        MIGRATION_10_11
+                    )
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }

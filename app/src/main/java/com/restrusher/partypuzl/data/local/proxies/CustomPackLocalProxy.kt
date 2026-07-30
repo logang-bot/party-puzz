@@ -30,8 +30,8 @@ class CustomPackLocalProxy @Inject constructor(
 
     override suspend fun deletePack(packId: String) = customPackDao.deletePackRow(packId)
 
-    override suspend fun setPackEnabled(packId: String, enabled: Boolean) =
-        customPackDao.setEnabled(packId, enabled)
+    override suspend fun setPackAvailable(packId: String, available: Boolean) =
+        customPackDao.setAvailability(packId, available)
 
     override fun getEntries(packId: String): Flow<List<CustomEntryEntity>> =
         customEntryDao.getForPack(packId)

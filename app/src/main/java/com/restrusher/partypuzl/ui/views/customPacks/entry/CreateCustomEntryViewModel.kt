@@ -9,6 +9,8 @@ import com.restrusher.partypuzl.data.models.ENTRY_TEXT_MAX
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.TRIVIA_TEXT_MAX
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
+import com.restrusher.partypuzl.ui.views.customPacks.model.EntryDeal
+import com.restrusher.partypuzl.ui.views.customPacks.model.defaultType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -54,7 +56,16 @@ class CreateCustomEntryViewModel @Inject constructor(
         }
     }
 
-    fun onTypeChange(value: CustomEntryType) = _uiState.update { it.copy(type = value) }
+    /**
+     * Step 01. Re-picking the card the entry is already on is a no-op, so tapping "Truth or Dare"
+     * while writing a dare does not silently flip it back to a truth.
+     */
+    fun onDealChange(value: EntryDeal) = _uiState.update {
+        if (value == it.deal) it else it.copy(type = value.defaultType)
+    }
+
+    /** Step 02, and only for the truth-or-dare card — which of the two pools the entry joins. */
+    fun onKindChange(value: CustomEntryType) = _uiState.update { it.copy(type = value) }
 
     fun onTextChange(value: String) = _uiState.update {
         val max = if (it.type == CustomEntryType.TRIVIA) TRIVIA_TEXT_MAX else ENTRY_TEXT_MAX

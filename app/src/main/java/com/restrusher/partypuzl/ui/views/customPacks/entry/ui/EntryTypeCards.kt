@@ -1,6 +1,5 @@
 package com.restrusher.partypuzl.ui.views.customPacks.entry.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -28,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.data.models.CustomEntryType
+import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.Wash
@@ -36,6 +35,7 @@ import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.theme.wash
+import com.restrusher.partypuzl.ui.views.customPacks.model.EntryDeal
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.hintRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
@@ -45,25 +45,24 @@ import com.restrusher.partypuzl.ui.views.customPacks.ui.AccentIconTile
 /**
  * Step 01 of the entry form — one full-width card per kind of game deal.
  *
- * Truth and Dare are separate cards rather than a sub-toggle because they are separate pools in
- * the deck: the reveal screen draws from one or the other, and a pack holding only one half is
- * worth flagging.
+ * Truth and Dare share a card: they are one deal at the table, and which half it is is asked next,
+ * in step 02. See [EntryDeal] for why they remain two types underneath.
  */
 @Composable
 internal fun EntryTypeCards(
-    selected: CustomEntryType,
-    onSelect: (CustomEntryType) -> Unit,
+    selected: EntryDeal,
+    onSelect: (EntryDeal) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        CustomEntryType.entries.forEach { type ->
+        EntryDeal.entries.forEach { deal ->
             EntryTypeCard(
-                type = type,
-                isSelected = type == selected,
-                onClick = { onSelect(type) }
+                deal = deal,
+                isSelected = deal == selected,
+                onClick = { onSelect(deal) }
             )
         }
     }
@@ -71,12 +70,12 @@ internal fun EntryTypeCards(
 
 @Composable
 private fun EntryTypeCard(
-    type: CustomEntryType,
+    deal: EntryDeal,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val accent = type.accent
+    val accent = deal.accent
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
@@ -97,20 +96,20 @@ private fun EntryTypeCard(
     ) {
         AccentIconTile(
             accent = accent,
-            iconRes = type.iconRes,
+            iconRes = deal.iconRes,
             size = 38,
             filled = isSelected
         )
         Spacer(modifier = Modifier.size(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = stringResource(type.labelRes),
+                text = stringResource(deal.labelRes),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = stringResource(type.hintRes),
+                text = stringResource(deal.hintRes),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
             )
@@ -146,22 +145,22 @@ private fun SelectionDot(isSelected: Boolean, accent: Color) {
     }
 }
 
-@Preview(showBackground = true)
+@Preview(name = "EntryTypeCards – Light", showBackground = true, widthDp = 360)
 @Composable
-private fun EntryTypeCardsPreview() {
-    PartyPuzlTheme {
-        Column(modifier = Modifier.appBackground().padding(16.dp)) {
-            EntryTypeCards(selected = CustomEntryType.DARE, onSelect = {})
+private fun EntryTypeCardsLightPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
+        Box(modifier = Modifier.appBackground().padding(16.dp)) {
+            EntryTypeCards(selected = EntryDeal.TRUTH_OR_DARE, onSelect = {})
         }
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "EntryTypeCards – Dark", showBackground = true, widthDp = 360)
 @Composable
 private fun EntryTypeCardsDarkPreview() {
-    PartyPuzlTheme {
-        Column(modifier = Modifier.appBackground().padding(16.dp)) {
-            EntryTypeCards(selected = CustomEntryType.DARE, onSelect = {})
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) {
+        Box(modifier = Modifier.appBackground().padding(16.dp)) {
+            EntryTypeCards(selected = EntryDeal.TRUTH_OR_DARE, onSelect = {})
         }
     }
 }
