@@ -30,11 +30,13 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.SimonBlue
 import com.restrusher.partypuzl.ui.theme.SimonGreen
 import com.restrusher.partypuzl.ui.theme.SimonRed
 import com.restrusher.partypuzl.ui.theme.SimonYellow
+import com.restrusher.partypuzl.ui.theme.ink
 import kotlin.math.hypot
 import kotlinx.coroutines.launch
 
@@ -98,7 +100,7 @@ internal fun SimonButton(
     // ── Color ─────────────────────────────────────────────────────────────────
     val baseColor = SimonColors[colorIndex]
     val animatedColor by animateColorAsState(
-        targetValue = if (isHighlighted) baseColor else baseColor.copy(alpha = 0.25f),
+        targetValue = if (isHighlighted) baseColor else baseColor.ink(Ink.Faint),
         animationSpec = tween(120),
         label = "simonButtonColor"
     )

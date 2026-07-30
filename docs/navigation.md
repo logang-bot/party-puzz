@@ -72,6 +72,8 @@ val isFullScreenRoute =
 
 The app bar title is managed via a `var appBarTitle` state in `HomeNavigation`. Screens that need a title call the `setAppBarTitle` lambda passed to them (e.g. `GameConfigScreen`, `CreatePlayerScreen`).
 
+The `Scaffold` also paints the page background, via `pageBackgroundFor(currentScreen, …)` in `PageBackgrounds.kt` — once, at the root, so it sits behind the app bar and leaves no seam. Screens whose background colour comes from their data rather than their route do **not** get a lambda for it: they call `ReportPageTint(colour)`, which writes into a `PageTintState` provided around the `NavHost`. That asymmetry with `setAppBarTitle` is deliberate — a tint has to stop applying when its screen leaves, and `ReportPageTint` clears it on disposal instead of leaning on a route comparison. See [theming.md](theming.md).
+
 ---
 
 ## Route-level Transitions

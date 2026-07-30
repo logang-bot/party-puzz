@@ -27,13 +27,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.data.models.Gender
-import com.restrusher.partypuzl.ui.theme.appBackground
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.common.ClockHandAnimation
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
 private val avatarSize = 46.dp
@@ -103,7 +105,7 @@ private fun PlayerAvatarCard(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.appColors.chipScrim.copy(alpha = 0.45f))
+                    .background(MaterialTheme.appColors.chipScrim.ink(Ink.Tertiary))
             ) {
                 ClockHandAnimation(
                     color = MaterialTheme.appColors.onAccentSurface,

@@ -7,6 +7,7 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,11 +25,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -48,7 +48,11 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
+import com.restrusher.partypuzl.ui.common.gameModeTheme
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.ReportPageTint
+import com.restrusher.partypuzl.ui.theme.ink
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -70,12 +74,16 @@ fun SharedTransitionScope.HomeScreen(
         } else {
             Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 50.dp)) {
                 val pagerState = rememberPagerState(initialPage = 0) { uiState.gameModes.size }
+                // The page background picks up whichever mode card the carousel is showing,
+                // so swiping the carousel washes the whole screen in that mode's colour.
+                val visibleMode = uiState.gameModes.getOrNull(pagerState.currentPage)
+                ReportPageTint(visibleMode?.let { gameModeTheme(it.name).gradientColors.first() })
                 Column(modifier = Modifier.padding(start = 20.dp, top = 8.dp, bottom = 16.dp)) {
                     Text(
                         text = "${stringResource(R.string.tonight_mode)} · ${pagerState.currentPage + 1}/${uiState.gameModes.size}",
                         style = MaterialTheme.typography.labelMedium,
                         letterSpacing = 2.sp,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
                     )
                     Text(
                         text = "${stringResource(R.string.whats_the)} ${stringResource(R.string.vibe)}",
@@ -127,7 +135,7 @@ fun SharedTransitionScope.HomeScreen(
                                     if (isSelected)
                                         MaterialTheme.colorScheme.onBackground
                                     else
-                                        MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                                        MaterialTheme.colorScheme.onBackground.ink(Ink.Muted)
                                 )
                         )
                     }
@@ -148,7 +156,7 @@ fun SharedTransitionScope.HomeScreen(
                         Text(
                             text = stringResource(R.string.x_sessions, uiState.allParties.size),
                             style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -167,7 +175,7 @@ fun SharedTransitionScope.HomeScreen(
                         onClick = viewModel::openDialog,
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f)
+                            contentColor = MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent)
                         )
                     ) {
                         Text(

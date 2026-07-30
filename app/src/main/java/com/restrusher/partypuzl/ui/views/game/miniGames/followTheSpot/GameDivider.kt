@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,7 +80,7 @@ internal fun GameDivider(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0f))
+            .background(Color.Transparent)
             .then(
                 if (!isGameRunning) Modifier.clickable(
                     interactionSource = remember { MutableInteractionSource() },

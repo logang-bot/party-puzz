@@ -36,9 +36,11 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.LoadingScrim
+import com.restrusher.partypuzl.ui.common.gameModeTheme
+import com.restrusher.partypuzl.ui.theme.ReportPageTint
 
 @Composable
 fun PartyDetailScreen(
@@ -78,6 +80,11 @@ fun PartyDetailScreen(
     LaunchedEffect(uiState.navigateBack) {
         if (uiState.navigateBack) navigateBack()
     }
+
+    // The scrapbook takes its wash from the mode the party was last played in, so a
+    // party's page keeps the colour of the night it came from.
+    val partyModeRes = uiState.party?.party?.lastGameModeNameRes
+    ReportPageTint(partyModeRes?.let { gameModeTheme(it).gradientColors.first() })
 
     Box(
         modifier = modifier

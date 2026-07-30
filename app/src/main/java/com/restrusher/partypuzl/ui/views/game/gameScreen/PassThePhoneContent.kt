@@ -34,12 +34,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.common.gameModeTheme
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.PageBackground
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.TintStrength
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
 /**
@@ -63,6 +69,8 @@ internal fun PassThePhoneContent(
             .fillMaxSize()
             .clickable(interactionSource = interactionSource, indication = null) { onContinue() }
     ) {
+        // Each half carries its own ramp so the wash runs *away* from the divider in both
+        // directions — the rotation is what mirrors it for the player across the table.
         PassHalf(player = player, modifier = Modifier.rotate(180f))
         RoundDivider(roundNumber = roundNumber)
         PassHalf(player = player)
@@ -71,19 +79,27 @@ internal fun PassThePhoneContent(
 
 @Composable
 private fun ColumnScope.PassHalf(player: Player?, modifier: Modifier = Modifier) {
+    val modeTint = gameModeTheme(GameOptionsSource.currentGameModeNameRes).gradientColors.first()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = modifier
             .weight(1f)
             .fillMaxWidth()
+            .appBackground(
+                PageBackground.Tinted(
+                    tint = modeTint,
+                    strength = TintStrength.Prominent,
+                    baseStop = PASS_HALF_BASE_STOP
+                )
+            )
             .padding(horizontal = 24.dp)
     ) {
         Text(
             text = stringResource(R.string.pass_the_phone_to).uppercase(),
             style = MaterialTheme.typography.labelSmall,
             letterSpacing = 2.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(18.dp))
@@ -100,7 +116,7 @@ private fun ColumnScope.PassHalf(player: Player?, modifier: Modifier = Modifier)
                 style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
         }
@@ -121,7 +137,7 @@ private fun ColumnScope.PassHalf(player: Player?, modifier: Modifier = Modifier)
 
 @Composable
 private fun RoundDivider(roundNumber: Int, modifier: Modifier = Modifier) {
-    val lineColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.25f)
+    val lineColor = MaterialTheme.colorScheme.onBackground.ink(Ink.Faint)
 
     Box(
         contentAlignment = Alignment.Center,
@@ -142,7 +158,7 @@ private fun RoundDivider(roundNumber: Int, modifier: Modifier = Modifier) {
             text = stringResource(R.string.round_number, roundNumber).uppercase(),
             style = MaterialTheme.typography.labelSmall,
             letterSpacing = 1.5.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent),
             modifier = Modifier
                 .clip(RoundedCornerShape(50))
                 .background(MaterialTheme.colorScheme.surface)
@@ -150,6 +166,9 @@ private fun RoundDivider(roundNumber: Int, modifier: Modifier = Modifier) {
         )
     }
 }
+
+/** Each half holds its wash almost to the divider before settling on the page base. */
+private const val PASS_HALF_BASE_STOP = 0.78f
 
 private val previewPlayer = Player(1, "Alice", Gender.Female, InterestedIn.Man)
 

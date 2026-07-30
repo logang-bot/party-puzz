@@ -23,7 +23,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.ink
 
 class SegmentItem(
     @DrawableRes val iconRes: Int,
@@ -56,7 +58,7 @@ private fun SelectorItem(
 ) {
     val bgColor = if (item.selected) MaterialTheme.colorScheme.primary else Color.Transparent
     val contentColor = if (item.selected) MaterialTheme.colorScheme.onPrimary
-    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+    else MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,

@@ -21,12 +21,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.ink
 
 @Composable
 internal fun StickyDareChallengeContent(
@@ -46,7 +48,7 @@ internal fun StickyDareChallengeContent(
                 text = stringResource(R.string.sticky_dare_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard),
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(16.dp))
@@ -54,14 +56,14 @@ internal fun StickyDareChallengeContent(
                 text = uiState.challengeText.orEmpty(),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(16.dp))
             Text(
                 text = stringResource(R.string.tap_to_dismiss),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
                 textAlign = TextAlign.Center
             )
             if (uiState.isModeActive) {
@@ -78,7 +80,7 @@ internal fun StickyDareChallengeContent(
                 text = player.nickName,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Strong),
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 24.dp)

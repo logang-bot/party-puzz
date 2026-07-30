@@ -20,11 +20,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.data.preferences.ThemeMode
-import com.restrusher.partypuzl.ui.theme.appBackground
-import com.restrusher.partypuzl.ui.theme.AnswerWrongRed
 import com.restrusher.partypuzl.ui.theme.AnswerCorrectGreen
-import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.AnswerWrongRed
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 
 private val correctAnswerColor = AnswerCorrectGreen
 private val wrongAnswerColor = AnswerWrongRed
@@ -40,10 +44,10 @@ internal fun DealOptionButton(
         onClick = onClick,
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onSurface.copy(
-                alpha = if (isSelected) 0.24f else 0.12f
-            ),
-            contentColor = MaterialTheme.colorScheme.onSurface
+            containerColor = with(MaterialTheme.appColors) {
+                if (isSelected) panelFillSelected else panelFillRaised
+            },
+            contentColor = MaterialTheme.colorScheme.onBackground
         ),
         modifier = modifier.height(56.dp)
     ) {
@@ -69,14 +73,14 @@ internal fun AnswerOptionButton(
     val isWrongPick = isAnswered && option == selectedOption && !isCorrect
 
     val containerColor = when {
-        !isAnswered -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-        isCorrect -> correctAnswerColor.copy(alpha = 0.85f)
-        isWrongPick -> wrongAnswerColor.copy(alpha = 0.85f)
-        else -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f)
+        !isAnswered -> MaterialTheme.colorScheme.onBackground.wash(Wash.Fill)
+        isCorrect -> correctAnswerColor.ink(Ink.Strong)
+        isWrongPick -> wrongAnswerColor.ink(Ink.Strong)
+        else -> MaterialTheme.colorScheme.onBackground.wash(Wash.Faint)
     }
     val contentColor = when {
         isAnswered && (isCorrect || isWrongPick) -> MaterialTheme.appColors.onAccentSurface
-        else -> MaterialTheme.colorScheme.onSurface
+        else -> MaterialTheme.colorScheme.onBackground
     }
 
     Button(

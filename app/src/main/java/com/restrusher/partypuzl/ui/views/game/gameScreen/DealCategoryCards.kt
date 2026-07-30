@@ -33,9 +33,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
-import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 
 /** Large promoted card for the deal that was played last, party-wide. */
 @Composable
@@ -67,7 +71,7 @@ internal fun DealHeroCard(
                 text = stringResource(accent.kickerRes).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 letterSpacing = 2.sp,
-                color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.75f)
+                color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Prominent)
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -81,7 +85,7 @@ internal fun DealHeroCard(
             Text(
                 text = stringResource(accent.blurbRes),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.85f)
+                color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Strong)
             )
         }
     }
@@ -100,8 +104,8 @@ internal fun DealCompactCard(
         modifier = modifier
             .defaultMinSize(minHeight = 86.dp)
             .clip(dealCompactShape)
-            .background(accent.tone.copy(alpha = 0.14f))
-            .border(1.dp, accent.tone.copy(alpha = 0.45f), dealCompactShape)
+            .background(accent.tone.wash(Wash.Hairline))
+            .border(1.dp, accent.tone.ink(Ink.Tertiary), dealCompactShape)
             .clickable { onClick() }
             .padding(horizontal = 8.dp, vertical = 14.dp)
     ) {
@@ -116,7 +120,7 @@ internal fun DealCompactCard(
             text = stringResource(accent.labelRes),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
     }

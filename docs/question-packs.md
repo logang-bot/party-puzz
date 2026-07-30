@@ -119,7 +119,10 @@ The other three categories need only their own list to be non-empty.
 
 1. Add prompts to the end of an existing source array, or add a new array to `values/strings.xml` **and** `values-es/strings.xml` (parallel arrays must stay the same length).
 2. If you added a new array, add a `QuestionSource` constant and wire it up in `QuestionPromptResolver`.
-3. Add a `QuestionPackDefinition` to `QuestionPackCatalog` and list it in `all`.
+3. Add a `QuestionPackDefinition` to `QuestionPackCatalog` and list it in `all`. Its `accent` is
+   a `PackAccent` **name**, not a colour — `PackAccent.ROSE`, never `AccentRose`. Nothing under
+   `data/` imports a Compose `Color`; `PackAccent.color` in `ui/theme` resolves the name at the
+   render site. Add a new enum entry only if the design really introduces a new accent.
 4. Add the index list to `QuestionCatalog.byPack`.
 5. **Bump `QuestionCatalog.MAPPING_VERSION`.**
 6. Add the pack's name string (`pack_*`) in both languages.

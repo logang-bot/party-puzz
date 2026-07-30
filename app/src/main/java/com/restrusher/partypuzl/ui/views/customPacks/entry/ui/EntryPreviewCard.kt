@@ -28,8 +28,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.CustomEntryType
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryState
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
@@ -47,8 +52,8 @@ internal fun EntryPreviewCard(state: CreateCustomEntryState, modifier: Modifier 
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .background(accent.copy(alpha = 0.10f))
-            .border(1.dp, accent.copy(alpha = 0.30f), RoundedCornerShape(20.dp))
+            .background(accent.wash(Wash.Fill))
+            .border(1.dp, accent.ink(Ink.Muted), RoundedCornerShape(20.dp))
             .padding(18.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -78,9 +83,8 @@ internal fun EntryPreviewCard(state: CreateCustomEntryState, modifier: Modifier 
             style = MaterialTheme.typography.titleLarge,
             fontStyle = FontStyle.Italic,
             fontWeight = FontWeight.SemiBold,
-            color = MaterialTheme.colorScheme.onBackground.copy(
-                alpha = if (text.isNotEmpty()) 1f else 0.45f
-            )
+            color = MaterialTheme.colorScheme.onBackground
+                .let { if (text.isNotEmpty()) it else it.ink(Ink.Tertiary) }
         )
 
         when (state.type) {
@@ -95,7 +99,7 @@ internal fun EntryPreviewCard(state: CreateCustomEntryState, modifier: Modifier 
                     color = accent,
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(accent.copy(alpha = 0.14f))
+                        .background(accent.wash(Wash.Hairline))
                         .padding(horizontal = 11.dp, vertical = 6.dp)
                 )
             }
@@ -119,11 +123,12 @@ private fun PreviewOption(value: String, placeholder: String, modifier: Modifier
     Text(
         text = if (filled) value else placeholder,
         style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = if (filled) 1f else 0.4f),
+        color = MaterialTheme.colorScheme.onBackground
+            .let { if (filled) it else it.ink(Ink.Tertiary) },
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(10.dp))
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f))
+            .background(MaterialTheme.appColors.panelFill)
             .padding(horizontal = 12.dp, vertical = 8.dp)
     )
 }

@@ -38,6 +38,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 
 /**
  * The pieces the four custom-pack screens share. Kept here rather than in `ui/common` because
@@ -60,14 +65,14 @@ internal fun NumberedStep(
             text = stringResource(R.string.custom_pack_step, number, label).uppercase(),
             style = MaterialTheme.typography.labelSmall,
             letterSpacing = 1.5.sp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
         )
         if (subtitle != null) {
             Spacer(modifier = Modifier.size(4.dp))
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary)
             )
         }
     }
@@ -88,13 +93,13 @@ internal fun AccentIconTile(
         modifier = modifier
             .size(size.dp)
             .clip(RoundedCornerShape(corner))
-            .background(if (filled) accent else accent.copy(alpha = 0.13f))
-            .border(1.dp, accent.copy(alpha = 0.25f), RoundedCornerShape(corner))
+            .background(if (filled) accent else accent.wash(Wash.Fill))
+            .border(1.dp, accent.ink(Ink.Faint), RoundedCornerShape(corner))
     ) {
         Icon(
             painter = painterResource(iconRes),
             contentDescription = null,
-            tint = if (filled) MaterialTheme.colorScheme.background else accent,
+            tint = if (filled) MaterialTheme.appColors.onAccentSurface else accent,
             modifier = Modifier.size((size * 0.45f).dp)
         )
     }
@@ -115,7 +120,7 @@ private const val SECONDS_PER_MINUTE = 60
 /** Small pill used for a pack's category and spice, and an entry's type. */
 @Composable
 internal fun MetaChip(label: String, modifier: Modifier = Modifier, tone: Color? = null) {
-    val color = tone ?: MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+    val color = tone ?: MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
     Text(
         text = label.uppercase(),
         style = MaterialTheme.typography.labelSmall,
@@ -124,7 +129,7 @@ internal fun MetaChip(label: String, modifier: Modifier = Modifier, tone: Color?
         color = color,
         modifier = modifier
             .clip(CircleShape)
-            .background(color.copy(alpha = 0.14f))
+            .background(color.wash(Wash.Hairline))
             .padding(horizontal = 8.dp, vertical = 3.dp)
     )
 }
@@ -145,7 +150,7 @@ internal fun DashedEmptyState(
             .clip(RoundedCornerShape(16.dp))
             .border(
                 width = 1.5.dp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.18f),
+                color = MaterialTheme.colorScheme.onBackground.wash(Wash.Hairline),
                 shape = RoundedCornerShape(16.dp)
             )
             .padding(horizontal = 20.dp, vertical = 28.dp)
@@ -159,7 +164,7 @@ internal fun DashedEmptyState(
         Text(
             text = subtitle,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
             textAlign = TextAlign.Center
         )
         content()
@@ -175,7 +180,7 @@ internal fun RowActionButton(
     modifier: Modifier = Modifier,
     tint: Color? = null
 ) {
-    val color = tint ?: MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+    val color = tint ?: MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(6.dp),

@@ -39,7 +39,9 @@ import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.ui.theme.AccentCoral
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 
 class RewardedAdState(private val context: Context) {
     var rewardedAd by mutableStateOf<RewardedAd?>(null)
@@ -116,7 +118,7 @@ fun RewardedAdCard(
                 Text(
                     text = stringResource(R.string.rewarded_ad_subtitle),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                    color = MaterialTheme.colorScheme.onSurface.ink(Ink.Standard)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))

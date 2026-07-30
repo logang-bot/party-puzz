@@ -116,9 +116,9 @@ CreatePlayerScreen
 
 **File:** `ui/views/createPlayer/NameOptionsContainer.kt`
 
-A `TextField` with its own indicators and container switched off, sitting inside a `Row` that supplies the visuals: a filled surface (`onBackground` at 4 %), a 1 dp outline, and a 16 dp corner radius. A hairline divider separates the field from the shuffle button so the button reads as part of the field.
+A `TextField` with its own indicators and container switched off, sitting inside a `Row` that supplies the visuals: a filled surface (`appColors.panelFill`), a 1 dp outline, and a 16 dp corner radius. A hairline divider separates the field from the shuffle button so the button reads as part of the field.
 
-The outline animates between `onBackground` at 12 % and `colorScheme.primary` on focus (`tween 180 ms`).
+The outline animates between `onBackground.wash(Wash.Fill)` and `colorScheme.primary` on focus (`tween 180 ms`).
 
 > Previously the container was fully transparent and the border was `Color.Transparent` unless focused, so at rest the field read as a floating hairline with no clear boundary. It now always sits on a visible surface, matching the design's `rgba(255,255,255,0.04)` + 1 px line.
 

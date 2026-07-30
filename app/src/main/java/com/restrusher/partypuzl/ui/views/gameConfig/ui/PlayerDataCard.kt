@@ -46,9 +46,13 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.Player
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import java.io.File
 
 internal val CARD_WIDTH = 80.dp
@@ -109,7 +113,7 @@ fun PlayerDataCard(
                     .fillMaxWidth()
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(Color.Transparent, MaterialTheme.appColors.chipScrim.copy(alpha = 0.85f))
+                            colors = listOf(Color.Transparent, MaterialTheme.appColors.chipScrim.ink(Ink.Strong))
                         )
                     )
                     .padding(top = 20.dp, start = 6.dp, end = 6.dp, bottom = 5.dp)
@@ -128,7 +132,7 @@ fun PlayerDataCard(
                     .align(Alignment.TopEnd)
                     .size(22.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
+                    .background(MaterialTheme.colorScheme.surface.ink(Ink.Strong))
                     .clickable { onDeleteClick() }
             ) {
                 Image(
@@ -155,7 +159,7 @@ fun SharedTransitionScope.AddPlayerCard(
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(15.dp))
-                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f))
+                .background(MaterialTheme.colorScheme.tertiary.wash(Wash.Fill))
                 .padding(horizontal = 10.dp, vertical = 25.dp)
 
         ) {

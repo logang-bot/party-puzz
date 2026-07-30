@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.ink
 
 @Composable
 internal fun CircleCanvas(
@@ -48,7 +50,7 @@ internal fun CircleCanvas(
     ) {
         // Outer glow ring around center dot
         drawCircle(
-            color = dotColor.copy(alpha = 0.2f),
+            color = dotColor.ink(Ink.Faint),
             radius = 14.dp.toPx(),
             center = center
         )

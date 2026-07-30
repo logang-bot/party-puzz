@@ -24,10 +24,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.appCard
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
 import com.restrusher.partypuzl.ui.views.gameConfig.text
+import com.restrusher.partypuzl.ui.theme.color
 
 /**
  * "Choose your packs" — the setup screen's replacement for the old deal-category toggles.
@@ -50,7 +53,7 @@ internal fun QuestionPacksSection(
         Text(
             text = stringResource(R.string.choose_your_packs_subtitle),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
         )
 
         if (officialPacks.isNotEmpty()) {
@@ -60,14 +63,14 @@ internal fun QuestionPacksSection(
                     PackRow(
                         name = pack.name.text(),
                         meta = stringResource(R.string.pack_prompts_count, pack.promptCount),
-                        accent = pack.accent,
+                        accent = pack.accent.color,
                         iconRes = pack.iconRes,
                         badgeLabel = stringResource(R.string.pack_group_official),
                         badgeColor = MaterialTheme.appColors.badgeOfficial,
                         isEnabled = pack.isEnabled,
                         isFirst = index == 0,
                         cornerIcon = R.drawable.ic_check,
-                        cornerColor = pack.accent,
+                        cornerColor = pack.accent.color,
                         onClick = { onTogglePack(pack.id) }
                     )
                 }
@@ -81,7 +84,7 @@ internal fun QuestionPacksSection(
                     PackRow(
                         name = pack.name.text(),
                         meta = premiumMeta(pack),
-                        accent = pack.accent,
+                        accent = pack.accent.color,
                         iconRes = pack.iconRes,
                         badgeLabel = stringResource(R.string.pack_group_premium),
                         badgeColor = MaterialTheme.appColors.badgePremium,

@@ -364,7 +364,7 @@ A global mini-game (all registered players participate). The phone is passed aro
 - Footer (`PhaseFooter`): flexible height; always renders a `PlayerInfo` (64 dp circle photo + `headlineSmall` message) or an invisible placeholder during COUNTDOWN to prevent the grid from jumping.
 
 **`SimonButton`:**
-- Dim state: `baseColor.copy(alpha = 0.25f)`; highlighted state: `baseColor` (full opacity). Animates via `animateColorAsState(tween(120))`.
+- Dim state: `baseColor.ink(Ink.Faint)`; highlighted state: `baseColor` (full opacity). Animates via `animateColorAsState(tween(120))`.
 - Tap ripple: expands from tap point to fill the full card using `hypot(width, height)` as max radius; ripple colour = `baseColor` at 50 % alpha fading to 0 over 400 ms.
 - Scatter (GAME_OVER): each button translates outward in its corner direction and fades to 0 alpha over 350 ms via `animateFloatAsState` + `graphicsLayer`.
 

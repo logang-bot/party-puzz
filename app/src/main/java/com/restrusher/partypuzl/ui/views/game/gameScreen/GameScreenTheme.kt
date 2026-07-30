@@ -5,58 +5,60 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.ui.common.gameModeTheme
+import com.restrusher.partypuzl.ui.theme.AccentCoral
 import com.restrusher.partypuzl.ui.theme.AccentLime
 import com.restrusher.partypuzl.ui.theme.AccentPink
 import com.restrusher.partypuzl.ui.theme.AccentViolet
 import com.restrusher.partypuzl.ui.theme.AccentYellow
-import com.restrusher.partypuzl.ui.theme.AccentCoral
 import com.restrusher.partypuzl.ui.theme.BrandTeal
 import com.restrusher.partypuzl.ui.theme.BrandTealDeep
 import com.restrusher.partypuzl.ui.theme.BrandTealShade
-import com.restrusher.partypuzl.ui.theme.LocalDarkTheme
-import com.restrusher.partypuzl.ui.theme.backgroundGradientDarkEnd
-import com.restrusher.partypuzl.ui.theme.backgroundGradientDarkMid
-import com.restrusher.partypuzl.ui.theme.backgroundGradientDarkTop
-import com.restrusher.partypuzl.ui.theme.backgroundGradientLightEnd
-import com.restrusher.partypuzl.ui.theme.backgroundGradientLightMid
-import com.restrusher.partypuzl.ui.theme.backgroundGradientLightStart
+import com.restrusher.partypuzl.ui.theme.PageBackground
+import com.restrusher.partypuzl.ui.theme.TintStrength
 
-private const val DARK_MODE_TINT_ALPHA = 0.38f
-private const val LIGHT_MODE_TINT_ALPHA = 0.22f
+/** The turn phases reach the page base higher up than a normal screen does. */
+private const val TURN_BASE_STOP = 0.55f
+
+/** The photo moment blooms from just below the top rather than from the very edge. */
+private const val PHOTO_GLOW_CENTER_Y = 0.2f
+private const val PHOTO_BASE_STOP = 0.7f
 
 /**
- * Background for the whole game screen, tinted by the game mode being played so Bar, Couples and
- * Party Puzl each feel like their own room. The mode palette is the same one the mode cards and
- * party cards use, from [gameModeTheme].
+ * Background for the game screen, which changes with the turn rather than staying put.
+ *
+ * Picking a deal washes the screen in the game mode's colour, so Bar, Couples and Party Puzl each
+ * feel like their own room; revealing a challenge switches the wash to that deal's own accent, so
+ * a truth and a dare do not look alike. Reward/punishment drops to the flat base, because the
+ * medallion it spins carries all the colour the moment needs.
+ *
+ * The mode palette is the same one the mode cards and party cards use, from [gameModeTheme].
  */
 @Composable
-internal fun rememberBackgroundGradient(gameModeNameRes: Int? = GameOptionsSource.currentGameModeNameRes): Brush {
-    val isDark = LocalDarkTheme.current
-    val tint = gameModeTheme(gameModeNameRes).gradientColors.first()
-    return remember(isDark, tint) {
-        if (isDark) {
-            Brush.verticalGradient(
-                colors = listOf(
-                    tint.copy(alpha = DARK_MODE_TINT_ALPHA).compositeOver(backgroundGradientDarkTop),
-                    backgroundGradientDarkMid,
-                    backgroundGradientDarkEnd
-                )
+internal fun rememberGameBackground(
+    uiState: GameScreenState,
+    gameModeNameRes: Int? = GameOptionsSource.currentGameModeNameRes,
+): PageBackground {
+    val modeTint = gameModeTheme(gameModeNameRes).gradientColors.first()
+    // Once a truth-or-dare pick is made, the reveal follows the pick's own accent rather than the
+    // shared truth-or-dare pink — a truth reads teal, a dare reads pink.
+    val dealTint = uiState.truthOrDareChoice?.accent?.tone ?: uiState.dealType?.accent?.tone
+    return remember(uiState.dealPhase, uiState.hasActiveModeEvent, uiState.showCameraRequest, modeTint, dealTint) {
+        when {
+            uiState.hasActiveModeEvent -> PageBackground.Flat
+            uiState.showCameraRequest -> PageBackground.TintedGlow(
+                tint = modeTint,
+                strength = TintStrength.Prominent,
+                centerYRatio = PHOTO_GLOW_CENTER_Y,
+                baseStop = PHOTO_BASE_STOP,
             )
-        } else {
-            Brush.verticalGradient(
-                colors = listOf(
-                    tint.copy(alpha = LIGHT_MODE_TINT_ALPHA).compositeOver(backgroundGradientLightStart),
-                    backgroundGradientLightMid,
-                    backgroundGradientLightEnd
-                )
-            )
+            uiState.dealPhase == GameDealPhase.CHALLENGE_SHOWN ->
+                PageBackground.TintedGlow(tint = dealTint)
+            else -> PageBackground.Tinted(tint = modeTint, baseStop = TURN_BASE_STOP)
         }
     }
 }

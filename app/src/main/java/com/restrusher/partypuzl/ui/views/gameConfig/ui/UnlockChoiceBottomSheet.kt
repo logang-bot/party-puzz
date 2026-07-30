@@ -41,7 +41,11 @@ import com.restrusher.partypuzl.ui.theme.AccentCoral
 import com.restrusher.partypuzl.ui.theme.AccentYellow
 import com.restrusher.partypuzl.ui.theme.BrandTeal
 import com.restrusher.partypuzl.ui.theme.BrandTealShade
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
 import com.restrusher.partypuzl.ui.views.gameConfig.text
 
@@ -89,13 +93,13 @@ internal fun UnlockChoiceBottomSheet(
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = stringResource(R.string.unlock_sheet_subtitle),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.ink(Ink.Standard)
             )
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -127,7 +131,7 @@ internal fun UnlockChoiceBottomSheet(
                 text = stringResource(R.string.unlock_not_now).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 1.5.sp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(50))
@@ -150,10 +154,10 @@ private fun UnlockOption(
     modifier: Modifier = Modifier,
     highlighted: Boolean = false
 ) {
-    val borderColor = if (highlighted) MaterialTheme.appColors.badgePremium.copy(alpha = 0.3f)
-    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.16f)
-    val containerColor = if (highlighted) MaterialTheme.appColors.badgePremium.copy(alpha = 0.08f)
-    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f)
+    val borderColor = if (highlighted) MaterialTheme.appColors.badgePremium.ink(Ink.Muted)
+    else MaterialTheme.colorScheme.onSurface.wash(Wash.Hairline)
+    val containerColor = if (highlighted) MaterialTheme.appColors.badgePremium.wash(Wash.Soft)
+    else MaterialTheme.colorScheme.onSurface.wash(Wash.Faint)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -186,19 +190,19 @@ private fun UnlockOption(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onSurface.ink(Ink.Standard)
             )
         }
         Icon(
             painter = painterResource(R.drawable.ic_keyboard_arrow_right),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+            tint = MaterialTheme.colorScheme.onSurface.ink(Ink.Tertiary),
             modifier = Modifier.size(16.dp)
         )
     }

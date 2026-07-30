@@ -25,9 +25,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
 import com.restrusher.partypuzl.ui.views.gameConfig.text
+import com.restrusher.partypuzl.ui.theme.color
 
 /**
  * The **Custom** group on the setup screen — the user's own packs, toggled per session exactly like
@@ -66,14 +71,14 @@ internal fun CustomPackGroup(
                     PackRow(
                         name = pack.name.text(),
                         meta = stringResource(R.string.pack_prompts_count, pack.promptCount),
-                        accent = pack.accent,
+                        accent = pack.accent.color,
                         iconRes = pack.iconRes,
                         badgeLabel = stringResource(R.string.pack_group_custom),
                         badgeColor = MaterialTheme.appColors.badgeCustom,
                         isEnabled = pack.isEnabled,
                         isFirst = index == 0,
                         cornerIcon = R.drawable.ic_check,
-                        cornerColor = pack.accent,
+                        cornerColor = pack.accent.color,
                         onClick = { onTogglePack(pack.id) }
                     )
                 }
@@ -120,7 +125,7 @@ private fun CustomPacksEmptyState(onClick: () -> Unit, modifier: Modifier = Modi
             .clip(RoundedCornerShape(16.dp))
             .border(
                 width = 1.5.dp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.18f),
+                color = MaterialTheme.colorScheme.onBackground.wash(Wash.Hairline),
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable(onClick = onClick)
@@ -131,7 +136,7 @@ private fun CustomPacksEmptyState(onClick: () -> Unit, modifier: Modifier = Modi
             modifier = Modifier
                 .size(36.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.appColors.badgeCustom.copy(alpha = 0.14f))
+                .background(MaterialTheme.appColors.badgeCustom.wash(Wash.Hairline))
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_plus),
@@ -150,7 +155,7 @@ private fun CustomPacksEmptyState(onClick: () -> Unit, modifier: Modifier = Modi
             text = stringResource(R.string.pack_write_first_subtitle),
             style = MaterialTheme.typography.labelSmall,
             textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
         )
     }
 }

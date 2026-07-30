@@ -28,7 +28,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPacksViewModel
 import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
@@ -107,7 +109,7 @@ private fun PacksHeader(packCount: Int, entryCount: Int, modifier: Modifier = Mo
         Text(
             text = stringResource(R.string.custom_packs_summary, packCount, entryCount).uppercase(),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
@@ -121,7 +123,7 @@ private fun PacksHeader(packCount: Int, entryCount: Int, modifier: Modifier = Mo
         Text(
             text = stringResource(R.string.custom_packs_intro),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
         )
     }
 }

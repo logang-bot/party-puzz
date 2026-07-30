@@ -25,6 +25,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 
 @Composable
 fun PartiesScreen(
@@ -46,7 +49,7 @@ fun PartiesScreen(
                 style = MaterialTheme.typography.bodyLarge,
                 fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+                color = MaterialTheme.appColors.brandAccent.ink(Ink.Prominent),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(20.dp)
@@ -68,7 +71,7 @@ fun PartiesScreen(
                         ).uppercase(),
                         style = MaterialTheme.typography.labelSmall,
                         letterSpacing = 1.5.sp,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
                         modifier = Modifier.padding(bottom = 4.dp)
                     )
                 }

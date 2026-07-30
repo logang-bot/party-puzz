@@ -26,7 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 
 /**
  * The small controls a [PackRow] is assembled from — icon tile, tier badge, selection check and
@@ -47,8 +51,8 @@ internal fun PackIconTile(
             modifier = Modifier
                 .size(36.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(accent.copy(alpha = 0.13f))
-                .border(1.dp, accent.copy(alpha = 0.25f), RoundedCornerShape(12.dp))
+                .background(accent.wash(Wash.Fill))
+                .border(1.dp, accent.ink(Ink.Faint), RoundedCornerShape(12.dp))
         ) {
             Icon(
                 painter = painterResource(iconRes),
@@ -66,12 +70,12 @@ internal fun PackIconTile(
                     .size(16.dp)
                     .clip(CircleShape)
                     .background(cornerColor)
-                    .border(2.dp, MaterialTheme.colorScheme.background, CircleShape)
+                    .border(2.dp, MaterialTheme.appColors.onAccentSurface, CircleShape)
             ) {
                 Icon(
                     painter = painterResource(cornerIcon),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.background,
+                    tint = MaterialTheme.appColors.onAccentSurface,
                     modifier = Modifier.size(9.dp)
                 )
             }
@@ -90,7 +94,7 @@ internal fun PackBadge(label: String, color: Color) {
         color = color,
         modifier = Modifier
             .clip(CircleShape)
-            .background(color.copy(alpha = 0.14f))
+            .background(color.wash(Wash.Hairline))
             .padding(horizontal = 6.dp, vertical = 2.dp)
     )
 }
@@ -105,7 +109,7 @@ internal fun PackCheck(isEnabled: Boolean, accent: Color) {
     )
     val borderColor by animateColorAsState(
         targetValue = if (isEnabled) Color.Transparent
-        else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.25f),
+        else MaterialTheme.colorScheme.onBackground.ink(Ink.Faint),
         animationSpec = tween(durationMillis = 150),
         label = "pack check border"
     )
@@ -122,7 +126,7 @@ internal fun PackCheck(isEnabled: Boolean, accent: Color) {
             Icon(
                 painter = painterResource(R.drawable.ic_check),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.background,
+                tint = MaterialTheme.appColors.onAccentSurface,
                 modifier = Modifier.size(14.dp)
             )
         }
@@ -138,7 +142,7 @@ internal fun UnlockPill() {
         horizontalArrangement = Arrangement.spacedBy(5.dp),
         modifier = Modifier
             .clip(CircleShape)
-            .background(tone.copy(alpha = 0.14f))
+            .background(tone.wash(Wash.Hairline))
             .padding(horizontal = 10.dp, vertical = 6.dp)
     ) {
         Icon(

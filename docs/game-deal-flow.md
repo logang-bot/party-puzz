@@ -215,7 +215,7 @@ See [minigames.md](minigames.md).
 
 ## Presentation
 
-The glass card that used to hold every prompt is gone. Challenge content renders full-bleed on the screen background, which is a vertical gradient tinted by the game mode being played (`rememberBackgroundGradient()` in `GameScreenTheme.kt`, reusing the `gameModeTheme()` palette — see [game-mode-visual-identity.md](game-mode-visual-identity.md)).
+The glass card that used to hold every prompt is gone. Challenge content renders full-bleed on the screen background, which is tinted by the deal or mode in play — `rememberGameBackground(uiState)` in `GameScreenTheme.kt` picks a `PageBackground` per deal phase, reusing the `gameModeTheme()` palette. Because that content sits on the page rather than on a card, its ink is `colorScheme.onBackground`. See [game-mode-visual-identity.md](game-mode-visual-identity.md) and [theming.md](theming.md).
 
 - **Phase transitions:** `AnimatedContent`, fade + scale from 94 % (320 ms in / 220 ms out)
 - **Dismissal guard:** `isChallengeDismissible` prevents taps from going through before the deal type allows it

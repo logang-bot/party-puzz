@@ -24,6 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,24 +35,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.NavDestination.Companion.hasRoute
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.common.HomeAppBar
+import com.restrusher.partypuzl.ui.theme.LocalPageTint
+import com.restrusher.partypuzl.ui.theme.PageBackground
+import com.restrusher.partypuzl.ui.theme.PageTintState
+import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.views.createPlayer.CreatePlayerScreen as CreatePlayerScreenComposable
+import com.restrusher.partypuzl.ui.views.game.gameScreen.GameScreen
+import com.restrusher.partypuzl.ui.views.game.gameScreen.MiniGame
 import com.restrusher.partypuzl.ui.views.game.miniGames.circleMaster.CircleMasterScreen
 import com.restrusher.partypuzl.ui.views.game.miniGames.followTheSpot.FollowTheSpotScreen
 import com.restrusher.partypuzl.ui.views.game.miniGames.hotPotato.HotPotatoScreen
 import com.restrusher.partypuzl.ui.views.game.miniGames.simonSays.SimonSaysScreen
 import com.restrusher.partypuzl.ui.views.game.miniGames.tapWar.TapWarScreen
-import com.restrusher.partypuzl.ui.views.game.gameScreen.GameScreen
-import com.restrusher.partypuzl.ui.views.game.gameScreen.MiniGame
 import com.restrusher.partypuzl.ui.views.gameConfig.ui.GameConfigScreen
 import com.restrusher.partypuzl.ui.views.home.HomeScreen
 import com.restrusher.partypuzl.ui.views.parties.PartiesScreen
@@ -67,6 +71,10 @@ fun HomeNavigation(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = backStackEntry?.destination
     var appBarTitle by remember { mutableStateOf("") }
+    // Filled in by the screens whose background tint comes from their data rather than
+    // their route — the home carousel's visible mode, a party's mode, a pack's accent.
+    // They write to it with ReportPageTint; see PageTintState.
+    val pageTint = remember { PageTintState() }
 
     val isFullScreenRoute = currentScreen?.hasRoute(GameScreen::class) == true ||
             currentScreen?.hasRoute(FollowTheSpotRoute::class) == true ||
@@ -83,9 +91,9 @@ fun HomeNavigation(
         selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
         unselectedContainerColor = Color.Transparent,
         selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        unselectedIconColor = MaterialTheme.colorScheme.onSurface,
+        unselectedIconColor = MaterialTheme.colorScheme.onBackground,
         selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        unselectedTextColor = MaterialTheme.colorScheme.onSurface,
+        unselectedTextColor = MaterialTheme.colorScheme.onBackground,
     )
 
     ModalNavigationDrawer(
@@ -93,8 +101,11 @@ fun HomeNavigation(
         gesturesEnabled = isHomeScreen,
         drawerContent = {
             ModalDrawerSheet(
-                drawerContainerColor = MaterialTheme.colorScheme.background,
-                windowInsets = WindowInsets(0)
+                // The design gives the sheet its own ramp, and the sheet only takes a
+                // flat color — so it draws transparent and the ramp goes on the content.
+                drawerContainerColor = Color.Transparent,
+                windowInsets = WindowInsets(0),
+                modifier = Modifier.appBackground(PageBackground.Drawer)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.img_partypuzl_logo),
@@ -155,7 +166,9 @@ fun HomeNavigation(
         Scaffold(
             containerColor = Color.Transparent,
             contentWindowInsets = WindowInsets(0),
-            modifier = Modifier.fillMaxSize().appBackground(),
+            modifier = Modifier
+                .fillMaxSize()
+                .appBackground(pageBackgroundFor(currentScreen, pageTint.tint)),
             topBar = {
                 AnimatedVisibility(
                     visible = !isFullScreenRoute,
@@ -172,211 +185,214 @@ fun HomeNavigation(
                 }
             }
         ) { innerPadding ->
-            SharedTransitionLayout {
-                NavHost(
-                    navController = navController,
-                    startDestination = HomeScreen,
-                    modifier = Modifier.padding(innerPadding),
-                ) {
-                    composable<HomeScreen> {
-                        HomeScreen(
-                            animatedVisibilityScope = this,
-                            onGameOptionSelected = { name, image, description, partyId ->
-                                navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image, gameModeDescription = description, partyId = partyId))
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<GameConfigScreen>(
-                        exitTransition = { fadeOut(tween(300)) }
-                    ) {
-                        val args = it.toRoute<GameConfigScreen>()
-                        GameConfigScreen(
-                            setAppBarTitle = { title ->
-                                appBarTitle = title
-                            },
-                            animatedVisibilityScope = this,
-                            gameModeName = args.gameModeName,
-                            gameModeImage = args.gameModeImage,
-                            gameModeDescription = args.gameModeDescription,
-                            onCreatePlayerClick = {
-                                navController.navigate(CreatePlayerScreen(isCouplesMode = args.gameModeName == R.string.couples_game_mode))
-                            },
-                            onEditPlayerClick = { playerId ->
-                                navController.navigate(CreatePlayerScreen(playerId = playerId, isCouplesMode = args.gameModeName == R.string.couples_game_mode))
-                            },
-                            onStartGameClick = {
-                                navController.navigate(GameScreen)
-                            },
-                            onManagePacksClick = {
-                                navController.navigate(CustomPacksRoute)
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<CreatePlayerScreen> {
-                        val playerId = it.toRoute<CreatePlayerScreen>().playerId
-                        CreatePlayerScreenComposable(
-                            setAppBarTitle = { title ->
-                                appBarTitle = title
-                            },
-                            animatedVisibilityScope = this,
-                            playerId = playerId,
-                            navigateBack = { navController.popBackStack() }
-                        )
-                    }
-                    // LoadingScreen is intentionally not in the graph — GameConfigScreen navigates
-                    // straight to GameScreen, keeping the slide-up transition the loading step used.
-                    // LoadingScreen.kt and its route are kept for future reuse.
-                    composable<GameScreen>(
-                        enterTransition = { slideInVertically(tween(400)) { it } + fadeIn(tween(400)) }
-                    ) {
-                        GameScreen(
-                            onNavigateBack = { navController.popBackStack() },
-                            onNavigateToMiniGame = { miniGame, challenger, opponent ->
-                                when (miniGame) {
-                                    MiniGame.FOLLOW_THE_SPOT -> navController.navigate(
-                                        FollowTheSpotRoute(
-                                            player1Name = challenger.nickName,
-                                            player1PhotoPath = challenger.photoPath,
-                                            player1AvatarName = challenger.avatarName,
-                                            player2Name = opponent.nickName,
-                                            player2PhotoPath = opponent.photoPath,
-                                            player2AvatarName = opponent.avatarName
-                                        )
-                                    )
-                                    MiniGame.TAP_WAR -> navController.navigate(
-                                        TapWarRoute(
-                                            player1Name = challenger.nickName,
-                                            player1PhotoPath = challenger.photoPath,
-                                            player1AvatarName = challenger.avatarName,
-                                            player2Name = opponent.nickName,
-                                            player2PhotoPath = opponent.photoPath,
-                                            player2AvatarName = opponent.avatarName
-                                        )
-                                    )
-                                    else -> Unit
-                                }
-                            },
-                            onNavigateToGlobalMiniGame = { miniGame ->
-                                when (miniGame) {
-                                    MiniGame.HOT_POTATO -> navController.navigate(HotPotatoRoute)
-                                    MiniGame.SIMON_SAYS -> navController.navigate(SimonSaysRoute)
-                                    MiniGame.CIRCLE_MASTER -> navController.navigate(CircleMasterRoute)
-                                    else -> Unit
-                                }
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<FollowTheSpotRoute> {
-                        FollowTheSpotScreen(
-                            onGameFinished = { player1Score, player2Score ->
-                                navController.previousBackStackEntry?.savedStateHandle?.apply {
-                                    set("mini_game_p1_score", player1Score)
-                                    set("mini_game_p2_score", player2Score)
-                                }
-                                navController.popBackStack()
-                            },
-                            onAbortGame = {
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("mini_game_aborted", true)
-                                navController.popBackStack()
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<HotPotatoRoute> {
-                        HotPotatoScreen(
-                            onGameFinished = { loserName ->
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("hot_potato_loser", loserName)
-                                navController.popBackStack()
-                            },
-                            onAbortGame = {
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("mini_game_aborted", true)
-                                navController.popBackStack()
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<SimonSaysRoute> {
-                        SimonSaysScreen(
-                            onGameFinished = { loserName ->
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("simon_says_loser", loserName)
-                                navController.popBackStack()
-                            },
-                            onAbortGame = {
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("mini_game_aborted", true)
-                                navController.popBackStack()
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<CircleMasterRoute> {
-                        CircleMasterScreen(
-                            onGameFinished = { loserName ->
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("circle_master_loser", loserName)
-                                navController.popBackStack()
-                            },
-                            onAbortGame = {
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("mini_game_aborted", true)
-                                navController.popBackStack()
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<TapWarRoute> {
-                        TapWarScreen(
-                            onGameFinished = { player1Score, player2Score ->
-                                navController.previousBackStackEntry?.savedStateHandle?.apply {
-                                    set("mini_game_p1_score", player1Score)
-                                    set("mini_game_p2_score", player2Score)
-                                }
-                                navController.popBackStack()
-                            },
-                            onAbortGame = {
-                                navController.previousBackStackEntry?.savedStateHandle
-                                    ?.set("mini_game_aborted", true)
-                                navController.popBackStack()
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<PartiesScreen> {
-                        PartiesScreen(
-                            setAppBarTitle = { title -> appBarTitle = title },
-                            onPartyClick = { partyId ->
-                                navController.navigate(PartyDetailScreen(partyId = partyId))
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<PartyDetailScreen> {
-                        val partyId = it.toRoute<PartyDetailScreen>().partyId
-                        PartyDetailScreen(
-                            partyId = partyId,
-                            setAppBarTitle = { title -> appBarTitle = title },
-                            navigateBack = { navController.popBackStack() },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    composable<SettingsScreen> {
-                        SettingsScreen(
-                            setAppBarTitle = { title -> appBarTitle = title },
-                            onManagePacksClick = { navController.navigate(CustomPacksRoute) },
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                    customPacksGraph(
+            // Provided around the routes, read by the scaffold's own background modifier above.
+            CompositionLocalProvider(LocalPageTint provides pageTint) {
+                SharedTransitionLayout {
+                    NavHost(
                         navController = navController,
-                        setAppBarTitle = { title -> appBarTitle = title }
-                    )
+                        startDestination = HomeScreen,
+                        modifier = Modifier.padding(innerPadding),
+                    ) {
+                        composable<HomeScreen> {
+                            HomeScreen(
+                                animatedVisibilityScope = this,
+                                onGameOptionSelected = { name, image, description, partyId ->
+                                    navController.navigate(GameConfigScreen(gameModeName = name, gameModeImage = image, gameModeDescription = description, partyId = partyId))
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<GameConfigScreen>(
+                            exitTransition = { fadeOut(tween(300)) }
+                        ) {
+                            val args = it.toRoute<GameConfigScreen>()
+                            GameConfigScreen(
+                                setAppBarTitle = { title ->
+                                    appBarTitle = title
+                                },
+                                animatedVisibilityScope = this,
+                                gameModeName = args.gameModeName,
+                                gameModeImage = args.gameModeImage,
+                                gameModeDescription = args.gameModeDescription,
+                                onCreatePlayerClick = {
+                                    navController.navigate(CreatePlayerScreen(isCouplesMode = args.gameModeName == R.string.couples_game_mode))
+                                },
+                                onEditPlayerClick = { playerId ->
+                                    navController.navigate(CreatePlayerScreen(playerId = playerId, isCouplesMode = args.gameModeName == R.string.couples_game_mode))
+                                },
+                                onStartGameClick = {
+                                    navController.navigate(GameScreen)
+                                },
+                                onManagePacksClick = {
+                                    navController.navigate(CustomPacksRoute)
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<CreatePlayerScreen> {
+                            val playerId = it.toRoute<CreatePlayerScreen>().playerId
+                            CreatePlayerScreenComposable(
+                                setAppBarTitle = { title ->
+                                    appBarTitle = title
+                                },
+                                animatedVisibilityScope = this,
+                                playerId = playerId,
+                                navigateBack = { navController.popBackStack() }
+                            )
+                        }
+                        // LoadingScreen is intentionally not in the graph — GameConfigScreen navigates
+                        // straight to GameScreen, keeping the slide-up transition the loading step used.
+                        // LoadingScreen.kt and its route are kept for future reuse.
+                        composable<GameScreen>(
+                            enterTransition = { slideInVertically(tween(400)) { it } + fadeIn(tween(400)) }
+                        ) {
+                            GameScreen(
+                                onNavigateBack = { navController.popBackStack() },
+                                onNavigateToMiniGame = { miniGame, challenger, opponent ->
+                                    when (miniGame) {
+                                        MiniGame.FOLLOW_THE_SPOT -> navController.navigate(
+                                            FollowTheSpotRoute(
+                                                player1Name = challenger.nickName,
+                                                player1PhotoPath = challenger.photoPath,
+                                                player1AvatarName = challenger.avatarName,
+                                                player2Name = opponent.nickName,
+                                                player2PhotoPath = opponent.photoPath,
+                                                player2AvatarName = opponent.avatarName
+                                            )
+                                        )
+                                        MiniGame.TAP_WAR -> navController.navigate(
+                                            TapWarRoute(
+                                                player1Name = challenger.nickName,
+                                                player1PhotoPath = challenger.photoPath,
+                                                player1AvatarName = challenger.avatarName,
+                                                player2Name = opponent.nickName,
+                                                player2PhotoPath = opponent.photoPath,
+                                                player2AvatarName = opponent.avatarName
+                                            )
+                                        )
+                                        else -> Unit
+                                    }
+                                },
+                                onNavigateToGlobalMiniGame = { miniGame ->
+                                    when (miniGame) {
+                                        MiniGame.HOT_POTATO -> navController.navigate(HotPotatoRoute)
+                                        MiniGame.SIMON_SAYS -> navController.navigate(SimonSaysRoute)
+                                        MiniGame.CIRCLE_MASTER -> navController.navigate(CircleMasterRoute)
+                                        else -> Unit
+                                    }
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<FollowTheSpotRoute> {
+                            FollowTheSpotScreen(
+                                onGameFinished = { player1Score, player2Score ->
+                                    navController.previousBackStackEntry?.savedStateHandle?.apply {
+                                        set("mini_game_p1_score", player1Score)
+                                        set("mini_game_p2_score", player2Score)
+                                    }
+                                    navController.popBackStack()
+                                },
+                                onAbortGame = {
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("mini_game_aborted", true)
+                                    navController.popBackStack()
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<HotPotatoRoute> {
+                            HotPotatoScreen(
+                                onGameFinished = { loserName ->
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("hot_potato_loser", loserName)
+                                    navController.popBackStack()
+                                },
+                                onAbortGame = {
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("mini_game_aborted", true)
+                                    navController.popBackStack()
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<SimonSaysRoute> {
+                            SimonSaysScreen(
+                                onGameFinished = { loserName ->
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("simon_says_loser", loserName)
+                                    navController.popBackStack()
+                                },
+                                onAbortGame = {
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("mini_game_aborted", true)
+                                    navController.popBackStack()
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<CircleMasterRoute> {
+                            CircleMasterScreen(
+                                onGameFinished = { loserName ->
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("circle_master_loser", loserName)
+                                    navController.popBackStack()
+                                },
+                                onAbortGame = {
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("mini_game_aborted", true)
+                                    navController.popBackStack()
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<TapWarRoute> {
+                            TapWarScreen(
+                                onGameFinished = { player1Score, player2Score ->
+                                    navController.previousBackStackEntry?.savedStateHandle?.apply {
+                                        set("mini_game_p1_score", player1Score)
+                                        set("mini_game_p2_score", player2Score)
+                                    }
+                                    navController.popBackStack()
+                                },
+                                onAbortGame = {
+                                    navController.previousBackStackEntry?.savedStateHandle
+                                        ?.set("mini_game_aborted", true)
+                                    navController.popBackStack()
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<PartiesScreen> {
+                            PartiesScreen(
+                                setAppBarTitle = { title -> appBarTitle = title },
+                                onPartyClick = { partyId ->
+                                    navController.navigate(PartyDetailScreen(partyId = partyId))
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<PartyDetailScreen> {
+                            val partyId = it.toRoute<PartyDetailScreen>().partyId
+                            PartyDetailScreen(
+                                partyId = partyId,
+                                setAppBarTitle = { title -> appBarTitle = title },
+                                navigateBack = { navController.popBackStack() },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<SettingsScreen> {
+                            SettingsScreen(
+                                setAppBarTitle = { title -> appBarTitle = title },
+                                onManagePacksClick = { navController.navigate(CustomPacksRoute) },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        customPacksGraph(
+                            navController = navController,
+                            setAppBarTitle = { title -> appBarTitle = title }
+                        )
+                    }
                 }
             }
         }

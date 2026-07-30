@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,7 +40,9 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
 @Composable
@@ -88,7 +91,7 @@ internal fun TugOfWarBar(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0f))
+            .background(Color.Transparent)
             .then(
                 if (!isGameRunning) Modifier.clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -149,7 +152,7 @@ private fun IndicatorTrack(animatedPosition: Float, modifier: Modifier = Modifie
                 .fillMaxWidth()
                 .height(4.dp)
                 .clip(RoundedCornerShape(50))
-                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.3f))
+                .background(MaterialTheme.colorScheme.outline.ink(Ink.Muted))
         )
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Spacer(Modifier.weight(leftWeight))

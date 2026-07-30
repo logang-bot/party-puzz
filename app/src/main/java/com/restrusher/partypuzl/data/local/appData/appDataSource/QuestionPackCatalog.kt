@@ -5,14 +5,7 @@ import com.restrusher.partypuzl.data.local.appData.appModels.QuestionPackDefinit
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.PackTier
-import com.restrusher.partypuzl.ui.theme.AccentCoral
-import com.restrusher.partypuzl.ui.theme.AccentLime
-import com.restrusher.partypuzl.ui.theme.AccentPink
-import com.restrusher.partypuzl.ui.theme.AccentRose
-import com.restrusher.partypuzl.ui.theme.AccentSky
-import com.restrusher.partypuzl.ui.theme.AccentViolet
-import com.restrusher.partypuzl.ui.theme.AccentYellow
-import com.restrusher.partypuzl.ui.theme.BrandTeal
+import com.restrusher.partypuzl.data.models.PackAccent
 
 /**
  * The built-in question packs.
@@ -35,7 +28,7 @@ object QuestionPackCatalog {
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_icebreakers,
         iconRes = R.drawable.ic_outline_mood,
-        accent = BrandTeal
+        accent = PackAccent.TEAL
     )
 
     val OFFICIAL_CONFESSIONS = QuestionPackDefinition(
@@ -44,7 +37,7 @@ object QuestionPackCatalog {
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_confessions,
         iconRes = R.drawable.ic_chat_bubble,
-        accent = AccentPink
+        accent = PackAccent.PINK
     )
 
     val OFFICIAL_PARTY_ANIMALS = QuestionPackDefinition(
@@ -53,7 +46,7 @@ object QuestionPackCatalog {
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_party_animals,
         iconRes = R.drawable.ic_whatshot,
-        accent = AccentCoral
+        accent = PackAccent.CORAL
     )
 
     val OFFICIAL_THIS_ROOM = QuestionPackDefinition(
@@ -62,7 +55,7 @@ object QuestionPackCatalog {
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_this_room,
         iconRes = R.drawable.ic_couples,
-        accent = AccentViolet
+        accent = PackAccent.VIOLET
     )
 
     // ── Official · Sticky dares ──────────────────────────────────────────────
@@ -73,7 +66,7 @@ object QuestionPackCatalog {
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_voices_accents,
         iconRes = R.drawable.ic_hourglass,
-        accent = AccentViolet
+        accent = PackAccent.VIOLET
     )
 
     val OFFICIAL_VERBAL_TICS = QuestionPackDefinition(
@@ -82,7 +75,7 @@ object QuestionPackCatalog {
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_verbal_tics,
         iconRes = R.drawable.ic_hourglass,
-        accent = AccentSky
+        accent = PackAccent.SKY
     )
 
     val OFFICIAL_BODY_PERSONA = QuestionPackDefinition(
@@ -91,7 +84,7 @@ object QuestionPackCatalog {
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_body_persona,
         iconRes = R.drawable.ic_hourglass,
-        accent = AccentRose
+        accent = PackAccent.ROSE
     )
 
     // ── Official · Trivia ────────────────────────────────────────────────────
@@ -102,7 +95,7 @@ object QuestionPackCatalog {
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_world_geography,
         iconRes = R.drawable.ic_lightbulb,
-        accent = AccentLime
+        accent = PackAccent.LIME
     )
 
     val OFFICIAL_SPACE_SCIENCE = QuestionPackDefinition(
@@ -111,7 +104,7 @@ object QuestionPackCatalog {
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_space_science,
         iconRes = R.drawable.ic_lightbulb,
-        accent = BrandTeal
+        accent = PackAccent.TEAL
     )
 
     val OFFICIAL_MIXED_BAG = QuestionPackDefinition(
@@ -120,7 +113,7 @@ object QuestionPackCatalog {
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_mixed_bag,
         iconRes = R.drawable.ic_lightbulb,
-        accent = AccentYellow
+        accent = PackAccent.YELLOW
     )
 
     // ── Official · Mini-games ────────────────────────────────────────────────
@@ -132,7 +125,7 @@ object QuestionPackCatalog {
         category = PackCategory.MINI_GAME,
         nameRes = R.string.pack_mini_games,
         iconRes = R.drawable.ic_random,
-        accent = AccentYellow
+        accent = PackAccent.YELLOW
     )
 
     // ── Premium ──────────────────────────────────────────────────────────────
@@ -143,7 +136,7 @@ object QuestionPackCatalog {
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_movie_night,
         iconRes = R.drawable.ic_lightbulb,
-        accent = AccentSky
+        accent = PackAccent.SKY
     )
 
     val PREMIUM_SPICY = QuestionPackDefinition(
@@ -152,7 +145,7 @@ object QuestionPackCatalog {
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_spicy,
         iconRes = R.drawable.ic_hourglass,
-        accent = AccentCoral
+        accent = PackAccent.CORAL
     )
 
     val PREMIUM_NSFW = QuestionPackDefinition(
@@ -161,7 +154,7 @@ object QuestionPackCatalog {
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_nsfw_confessions,
         iconRes = R.drawable.ic_whatshot,
-        accent = AccentRose
+        accent = PackAccent.ROSE
     )
 
     /** Display order on the setup screen: official grouped by deal, then premium. */

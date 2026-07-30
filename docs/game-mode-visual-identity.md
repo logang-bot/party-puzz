@@ -62,18 +62,18 @@ Gradients use `Brush.linearGradient(theme.gradientColors)` (default top-left →
 
 ### `GameModeCard`
 
-The gradient colors have `alpha = 0.9f` applied before being passed to the brush. This adds slight transparency to the card background (letting the app background show through faintly) without affecting the text or icon, which remain fully opaque:
+The gradient colors are washed to `Ink.Strong` before being passed to the brush. This adds slight transparency to the card background (letting the app background show through faintly) without affecting the text or icon, which remain fully opaque:
 
 ```kotlin
-val cardGradient = theme.gradientColors.map { it.copy(alpha = 0.9f) }
+val cardGradient = theme.gradientColors.map { it.ink(Ink.Strong) }
 Modifier.background(Brush.linearGradient(cardGradient))
 ```
 
-Text on gradient backgrounds is always `MaterialTheme.appColors.onAccentSurface` (with alpha variants for supporting copy) and is never driven by `MaterialTheme.colorScheme`. That token is white in both themes — it exists so the intent reads as "ink on an accent fill" rather than an unexplained literal.
+Text on gradient backgrounds is always `MaterialTheme.appColors.onAccentSurface` (at an `Ink` rung for supporting copy) and is never driven by `MaterialTheme.colorScheme`. That token is white in both themes — it exists so the intent reads as "ink on an accent fill" rather than an unexplained literal.
 
 ### `PartyCard`
 
-Gradient applied at full opacity directly on the card `Box`. All text uses `appColors.onAccentSurface`, with `.copy(alpha = ...)` for supporting copy. The photo-count chip sits on `appColors.chipScrim` at 25 %.
+Gradient applied at full opacity directly on the card `Box`. All text uses `appColors.onAccentSurface`, at an `Ink` rung for supporting copy. The photo-count chip sits on `appColors.chipScrim` at `Ink.Faint`.
 
 ### `LastPartyCard`
 
@@ -116,11 +116,18 @@ Gradient applied to the 52 dp square thumbnail box only. Party name, subtitle, a
 
 ## Game screen background
 
-The in-game background is the one place the mode palette is used as an atmosphere rather than an accent. `rememberBackgroundGradient()` takes the first stop of the mode's gradient, composites it over the app background base at 38 % (dark) or 22 % (light), and runs it as a three-stop vertical gradient down to the plain background colour.
+The in-game background is the one place the mode palette is used as an atmosphere rather than an accent. It is also the one screen that does not take its background from its route, because it follows the **turn** instead: `rememberGameBackground(uiState)` in `GameScreenTheme.kt` returns a `PageBackground` per deal phase, which `Modifier.appBackground()` then draws like any other screen's.
+
+| Phase | Variant | Tint |
+|---|---|---|
+| A mode event is showing (bar deal, outcome) | `Flat` | — the outcome screens paint their own |
+| Photo moment | `TintedGlow` at `TintStrength.Prominent`, centred 20 % down, base by 70 % | The **mode**'s first gradient stop |
+| Challenge revealed | `TintedGlow` | The **deal**'s own tone — a truth reads teal, a dare pink |
+| Between turns | `Tinted`, base by 55 % | The mode's first gradient stop |
 
 The effect is that Bar mode plays under a warm orange sky and Couples under a pink one, while the surface colours underneath stay the standard themed ones. Before this, every mode played on the same fixed navy.
 
-The three stops it fades to are the shared background tokens — `backgroundGradientDarkTop` → `Mid` → `End` in dark, and the `…LightStart` / `Mid` / `End` trio in light. This is the game screen's own gradient; every other route inherits `Modifier.appBackground()` instead, which in dark is radial rather than vertical. See [theming.md](theming.md).
+Note the tint switches source mid-turn: the reveal follows the *deal* rather than the mode, so picking Truth or Dare recolours the screen. See [theming.md](theming.md) for the variants themselves and `TintStrength`.
 
 ---
 

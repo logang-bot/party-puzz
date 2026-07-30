@@ -179,7 +179,7 @@ internal fun SpotBoard(
                 }
                 .size(SPOT_DIAMETER)
                 .scale(spotScale.value)
-                .background(MaterialTheme.colorScheme.onSurface, CircleShape)
+                .background(MaterialTheme.colorScheme.onBackground, CircleShape)
                 .then(
                     if (isActive) Modifier.clickable(
                         interactionSource = interactionSource,

@@ -13,11 +13,11 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.ink
 
 /** Matches the design's `.pp-btn:disabled { opacity: 0.45 }`. */
 private const val DISABLED_ALPHA = 0.45f
@@ -51,7 +53,7 @@ internal fun GameConfigSectionLabel(text: String, modifier: Modifier = Modifier)
         text = text.uppercase(),
         style = MaterialTheme.typography.labelSmall,
         letterSpacing = 1.5.sp,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
         modifier = modifier.padding(vertical = 6.dp)
     )
 }
@@ -82,7 +84,7 @@ internal fun MiniGamesHintBox(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(R.string.mini_games_hint),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
         )
     }
 }
@@ -197,7 +199,7 @@ internal fun SharedTransitionScope.GameModeHeader(
             text = stringResource(id = gameModeDescription),
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.ExtraLight,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Strong),
             modifier = Modifier
                 .fillMaxWidth()
                 .sharedElement(

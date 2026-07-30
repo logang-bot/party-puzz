@@ -10,7 +10,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.appCard
+import com.restrusher.partypuzl.ui.theme.ink
 
 /** Chrome the three pack groups share — the tier label and the rounded card the rows sit in. */
 
@@ -22,7 +24,7 @@ internal fun PackGroupLabel(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.labelSmall,
         fontSize = 10.sp,
         letterSpacing = 1.6.sp,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f),
+        color = MaterialTheme.colorScheme.onSurface.ink(Ink.Tertiary),
         modifier = modifier.padding(top = 18.dp, bottom = 2.dp)
     )
 }

@@ -22,7 +22,7 @@ fun LoadingScrim(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.appColors.scrim),
+            .background(MaterialTheme.appColors.pageScrim),
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()

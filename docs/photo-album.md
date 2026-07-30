@@ -56,22 +56,33 @@ When the card enters, a `FlipCard` animates from its front (blank) to its back f
 
 ### Background
 
-Solid `MaterialTheme.colorScheme.surface` — opaque, unlike the glass-style challenge card. This makes the camera card visually distinct and signals a different kind of interaction.
+The photo moment gets the whole page rather than a card: `rememberGameBackground` returns
+`PageBackground.TintedGlow` in the **mode's** colour at `TintStrength.Prominent`, its glow
+anchored a fifth of the way down and reaching the page base by 70 %. That is a stronger,
+higher-anchored bloom than any other phase of the turn, which is what makes the moment read
+as an interruption rather than another card.
+
+(`CameraRequestContent`'s `@Preview` pins `AccentPink` so the artboard has something to show;
+production takes the live mode's tint.)
+
+Because the content sits straight on that background and not on a card, its ink is
+`colorScheme.onBackground` — see the `onBackground` / `onSurface` rule in
+[theming.md](theming.md).
 
 ### Content
 
 ```
 ┌─────────────────────────────────────┐
 │                                     │
-│   Freeze this moment forever        │  headlineMedium / Bold / onSurface
+│   Freeze this moment forever        │  headlineMedium / Bold / onBackground
 │                                     │
-│   Some memories are worth keeping   │  bodyMedium / onSurface 65 %
+│   Some memories are worth keeping   │  bodyMedium / onBackground Ink.Standard
 │   — take a photo before it slips    │
 │   away.                             │
 │                                     │
 │         [ 📷  Take a photo ]        │  filled Button (theme defaults)
 │                                     │
-│        Tap anywhere to skip         │  bodySmall / onSurface 45 %
+│        Tap anywhere to skip         │  bodySmall / onBackground Ink.Tertiary
 │                                     │
 └─────────────────────────────────────┘
 ```

@@ -33,14 +33,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.local.entities.PartyEntity
 import com.restrusher.partypuzl.data.local.entities.PartyWithPlayers
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.ui.common.gameModeTheme
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -64,7 +67,7 @@ fun LastPartyCard(
         targetValue = if (isSelected)
             MaterialTheme.colorScheme.outline
         else
-            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f),
+            MaterialTheme.colorScheme.outlineVariant.ink(Ink.Tertiary),
         animationSpec = tween(durationMillis = 400),
         label = "border"
     )
@@ -78,7 +81,7 @@ fun LastPartyCard(
         modifier = modifier
             .clip(cardShape)
             .border(1.dp, borderColor, cardShape)
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f))
+            .background(MaterialTheme.appColors.panelFill)
             .clickable { onCardClick() }
             .padding(12.dp)
     ) {
@@ -105,14 +108,14 @@ fun LastPartyCard(
                 text = party.party.name,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )

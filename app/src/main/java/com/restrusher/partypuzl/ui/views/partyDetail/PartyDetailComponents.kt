@@ -46,10 +46,13 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appColors
-import com.restrusher.partypuzl.ui.theme.appCard
 import com.restrusher.partypuzl.data.local.entities.PartyPhotoEntity
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.appCard
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -78,7 +81,7 @@ fun PartyNameSection(
             text = headerText,
             style = MaterialTheme.typography.labelSmall,
             letterSpacing = 1.5.sp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row(
@@ -160,13 +163,13 @@ private fun StatCard(count: Int, label: String, modifier: Modifier = Modifier) {
             text = count.toString(),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSurface
         )
         Text(
             text = label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
             letterSpacing = 1.5.sp,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary)
         )
     }
 }
@@ -256,7 +259,7 @@ fun PartyPhotoAlbumSection(
             Text(
                 text = stringResource(R.string.x_moments, photos.size),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
@@ -274,7 +277,7 @@ fun PartyPhotoAlbumSection(
             Text(
                 text = stringResource(id = R.string.party_album_empty),
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
             )
         } else {
             FlowRow(
@@ -307,8 +310,8 @@ fun DeletePartyButton(
         onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.07f),
-            contentColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+            containerColor = MaterialTheme.appColors.panelFillRaised,
+            contentColor = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
         )
     ) {
         Text(

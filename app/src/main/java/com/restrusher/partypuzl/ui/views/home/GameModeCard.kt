@@ -46,10 +46,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.local.appData.appModels.GameMode
 import com.restrusher.partypuzl.ui.common.gameModeTheme
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -62,7 +64,7 @@ fun SharedTransitionScope.GameModeCard(
 ) {
     val theme = gameModeTheme(gameMode.name)
     // Apply slight transparency only to the background, keeping text fully opaque
-    val cardGradient = theme.gradientColors.map { it.copy(alpha = 0.9f) }
+    val cardGradient = theme.gradientColors.map { it.ink(Ink.Strong) }
 
     Box(
         modifier = modifier
@@ -93,7 +95,7 @@ fun SharedTransitionScope.GameModeCard(
                     text = stringResource(R.string.card_mode_label),
                     style = MaterialTheme.typography.labelMedium,
                     letterSpacing = 2.sp,
-                    color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.6f)
+                    color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Standard)
                 )
                 Spacer(modifier = Modifier.height(24.dp))
                 Text(
@@ -112,7 +114,7 @@ fun SharedTransitionScope.GameModeCard(
                 Text(
                     text = stringResource(id = gameMode.description),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.8f),
+                    color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Strong),
                     modifier = Modifier.sharedElement(
                         state = rememberSharedContentState(key = "game/${gameMode.description}"),
                         animatedVisibilityScope = animatedVisibilityScope,
@@ -137,7 +139,7 @@ fun SharedTransitionScope.GameModeCard(
                     text = text,
                     style = MaterialTheme.typography.labelLarge,
                     letterSpacing = 1.sp,
-                    color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.7f),
+                    color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Prominent),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )

@@ -7,11 +7,12 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.CustomEntryType
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.SpiceLevel
-import com.restrusher.partypuzl.ui.theme.AccentCoral
+import com.restrusher.partypuzl.data.models.packAccent
 import com.restrusher.partypuzl.ui.theme.AccentLime
 import com.restrusher.partypuzl.ui.theme.AccentPink
 import com.restrusher.partypuzl.ui.theme.AccentViolet
 import com.restrusher.partypuzl.ui.theme.BrandTeal
+import com.restrusher.partypuzl.ui.theme.color
 
 /**
  * How a custom pack and its entries look.
@@ -37,11 +38,7 @@ val SpiceLevel.iconRes: Int
     }
 
 val SpiceLevel.accent: Color
-    get() = when (this) {
-        SpiceLevel.MILD -> BrandTeal
-        SpiceLevel.MEDIUM -> AccentViolet
-        SpiceLevel.SPICY -> AccentCoral
-    }
+    get() = packAccent.color
 
 @get:StringRes
 val SpiceLevel.labelRes: Int

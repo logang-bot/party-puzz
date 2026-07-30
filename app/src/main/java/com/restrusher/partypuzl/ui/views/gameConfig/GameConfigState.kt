@@ -2,7 +2,7 @@ package com.restrusher.partypuzl.ui.views.gameConfig
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.Color
+import com.restrusher.partypuzl.data.models.PackAccent
 import com.restrusher.partypuzl.data.models.PackTier
 
 /**
@@ -15,7 +15,7 @@ data class PackUiModel(
     /** A resource for built-in packs, a literal for the ones the user wrote. */
     val name: PackLabel,
     @DrawableRes val iconRes: Int,
-    val accent: Color,
+    val accent: PackAccent,
     val promptCount: Int,
     val isEnabled: Boolean,
     /** True if the pack is playable — free, purchased, or unlocked for this session. */

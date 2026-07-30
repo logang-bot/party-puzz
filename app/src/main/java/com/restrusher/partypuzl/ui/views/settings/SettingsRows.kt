@@ -26,7 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 
 /** The row shapes `SettingsScreen` is assembled from, split out to keep that file readable. */
 
@@ -36,7 +38,7 @@ internal fun SettingsSectionHeader(title: String, modifier: Modifier = Modifier)
         text = title.uppercase(),
         style = MaterialTheme.typography.labelSmall,
         letterSpacing = 1.5.sp,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
         modifier = modifier.padding(start = 16.dp, top = 28.dp, bottom = 6.dp)
     )
 }
@@ -68,13 +70,13 @@ internal fun SettingsRow(
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
             )
         }
         Icon(
             painter = painterResource(R.drawable.ic_keyboard_arrow_right),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+            tint = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
             modifier = Modifier.size(20.dp)
         )
     }
@@ -123,7 +125,7 @@ internal fun OptionRowWithIcon(
             contentDescription = null,
             tint = if (!tintIcon) Color.Unspecified
             else if (selected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurface
+            else MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = label,
@@ -171,14 +173,14 @@ internal fun RemoveAdsRow(
                     if (isAdFree) R.string.ads_removed_subtitle else R.string.remove_ads_subtitle
                 ),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
             )
         }
         if (!isAdFree) {
             Icon(
                 painter = painterResource(R.drawable.ic_keyboard_arrow_right),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+                tint = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
                 modifier = Modifier.size(20.dp)
             )
         }

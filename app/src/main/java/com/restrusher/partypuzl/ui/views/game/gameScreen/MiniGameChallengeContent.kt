@@ -27,12 +27,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.ink
 
 @Composable
 internal fun MiniGameChallengeContent(
@@ -117,7 +119,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(miniGame.nameRes),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(4.dp))
@@ -125,7 +127,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(R.string.mini_game_everyone_plays),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent),
                 textAlign = TextAlign.Center
             )
         }
@@ -135,7 +137,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(miniGame.nameRes),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onBackground,
                 textAlign = TextAlign.Center
             )
         }
@@ -145,7 +147,7 @@ private fun MiniGameHeader(miniGame: MiniGame, isPrePlay: Boolean) {
                 text = stringResource(miniGame.nameRes),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f),
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard),
                 textAlign = TextAlign.Center
             )
         }
@@ -160,7 +162,7 @@ private fun GlobalMiniGameContent(miniGame: MiniGame) {
     Text(
         text = stringResource(miniGame.descriptionRes),
         style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.80f),
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Strong),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(80.dp))
@@ -177,7 +179,7 @@ private fun OpponentSelectionContent(
     Text(
         text = stringResource(miniGame.descriptionRes),
         style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.75f),
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(16.dp))
@@ -185,14 +187,14 @@ private fun OpponentSelectionContent(
         text = uiState.selectedPlayer?.nickName.orEmpty(),
         style = MaterialTheme.typography.headlineMedium,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(16.dp))
     Text(
         text = stringResource(R.string.choose_opponent),
         style = MaterialTheme.typography.labelMedium,
-        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(8.dp))
@@ -232,7 +234,7 @@ private fun ScoredResultContent(
             stringResource(R.string.mini_game_tie),
         style = MaterialTheme.typography.displaySmall,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         textAlign = TextAlign.Center
     )
     if (result.showScoreDetails) {
@@ -240,13 +242,13 @@ private fun ScoredResultContent(
         Text(
             text = "${result.player1Name}:  ${result.player1Score}",
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Strong),
             textAlign = TextAlign.Center
         )
         Text(
             text = "${result.player2Name}:  ${result.player2Score}",
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Strong),
             textAlign = TextAlign.Center
         )
     }
@@ -265,7 +267,7 @@ private fun LoserResultContent(
         text = stringResource(R.string.mini_game_loser, result.loserName),
         style = MaterialTheme.typography.displaySmall,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(16.dp))
@@ -284,7 +286,7 @@ private fun ResultDismissAction(isModeActive: Boolean, onFinished: () -> Unit) {
         Text(
             text = stringResource(R.string.tap_to_dismiss),
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
             textAlign = TextAlign.Center
         )
     }

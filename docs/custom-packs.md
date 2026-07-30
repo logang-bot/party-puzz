@@ -105,7 +105,7 @@ Shown on the pack card in the manager and as a line under the header in the edit
 
 Creating a pack navigates straight into its empty editor, popping the create screen, so the next thing the author sees is "add your first entry". Editing an existing pack just pops back.
 
-Colour and icon mappings live in `ui/views/customPacks/model/CustomPackLook.kt` as extension properties, keeping Compose types out of the data layer — the same split `QuestionPackDefinition` uses for built-in packs.
+Colour and icon mappings live in `ui/views/customPacks/model/CustomPackLook.kt` as extension properties, keeping Compose types out of the data layer — the same split `QuestionPackDefinition` uses for built-in packs. `SpiceLevel.accent` resolves through the shared `PackAccent` enum (`SpiceLevel.packAccent` in `data/models`, then `PackAccent.color` in `ui/theme`), so a custom pack and a built-in one name their colour the same way.
 
 ---
 

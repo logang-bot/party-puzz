@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.customPacks.create.CreateCustomPackViewModel
 import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.NumberedStep
@@ -100,7 +102,7 @@ fun CreateCustomPackScreen(
                 Text(
                     text = stringResource(R.string.custom_pack_create_footnote),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f)
+                    color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary)
                 )
             }
         }

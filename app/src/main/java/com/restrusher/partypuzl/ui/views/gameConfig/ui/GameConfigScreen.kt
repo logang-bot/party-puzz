@@ -62,14 +62,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
+import com.restrusher.partypuzl.ui.common.gameModeTheme
 import com.restrusher.partypuzl.ui.common.rememberRewardedAd
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.ReportPageTint
 import com.restrusher.partypuzl.ui.views.gameConfig.GameConfigViewModel
 import com.restrusher.partypuzl.ui.views.gameConfig.text
 import kotlinx.coroutines.delay
@@ -101,6 +103,10 @@ fun SharedTransitionScope.GameConfigScreen(
     LaunchedEffect(gameModeName) {
         GameOptionsSource.currentGameModeNameRes = gameModeName
     }
+    // Reported rather than read back off GameOptionsSource: that is a plain var, so the
+    // scaffold would not recompose when the line above lands and the page would keep the
+    // previous session's tint.
+    ReportPageTint(gameModeTheme(gameModeName).gradientColors.first())
 
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }

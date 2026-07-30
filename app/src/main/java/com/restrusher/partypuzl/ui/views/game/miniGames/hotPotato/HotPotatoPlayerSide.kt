@@ -34,11 +34,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
 @Composable
@@ -104,7 +106,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         text = stringResource(R.string.hot_potato_tap_to_pass),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.85f),
+        color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Strong),
         textAlign = TextAlign.Center
     )
     if (nextHolder != null) {
@@ -112,7 +114,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         Text(
             text = stringResource(R.string.hot_potato_next),
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.50f),
+            color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Secondary),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
@@ -124,7 +126,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
             Text(
                 text = nextHolder.nickName,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.appColors.onAccentSurface.copy(alpha = 0.65f)
+                color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Standard)
             )
         }
     }
@@ -146,7 +148,7 @@ private fun LoserContent() {
     Text(
         text = stringResource(R.string.tap_to_dismiss),
         style = MaterialTheme.typography.bodySmall,
-        color = onError.copy(alpha = 0.55f),
+        color = onError.ink(Ink.Secondary),
         textAlign = TextAlign.Center
     )
 }

@@ -7,54 +7,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-
-/**
- * Radius of the dark background's glow, as a multiple of the screen width.
- * Mirrors the design's `radial-gradient(120% 60% at 50% 0%, …)`.
- */
-private const val DARK_GLOW_RADIUS_RATIO = 1.2f
-
-/**
- * The app-wide page background, applied once on the root scaffold so every route
- * inherits it. Light is a straight cream→peach ramp; dark is a teal glow anchored
- * at the top center, which is what gives the dark theme its depth.
- */
-@Composable
-fun Modifier.appBackground(): Modifier {
-    val isDark = LocalDarkTheme.current
-    return if (isDark) {
-        drawBehind {
-            drawRect(
-                brush = Brush.radialGradient(
-                    colorStops = arrayOf(
-                        0f to backgroundGradientDarkTop,
-                        0.45f to backgroundGradientDarkMid,
-                        1f to backgroundGradientDarkEnd,
-                    ),
-                    center = Offset(size.width / 2f, 0f),
-                    radius = size.width * DARK_GLOW_RADIUS_RATIO,
-                )
-            )
-        }
-    } else {
-        background(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    backgroundGradientLightStart,
-                    backgroundGradientLightMid,
-                    backgroundGradientLightEnd
-                )
-            )
-        )
-    }
-}
 
 /**
  * A raised card surface.

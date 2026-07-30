@@ -3,8 +3,8 @@ package com.restrusher.partypuzl.ui.theme
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
@@ -112,8 +112,23 @@ data class AppColors(
     val brandAccent: Color,
     /** Ink on top of a mode/deal/outcome gradient. White in both themes. */
     val onAccentSurface: Color,
-    /** Full-screen dim behind a dialog, bottom sheet or blocking spinner. */
-    val scrim: Color,
+    /**
+     * Full-screen dim behind a dialog, bottom sheet or blocking spinner.
+     *
+     * Named `pageScrim` rather than `scrim` so it cannot be mistaken for
+     * `colorScheme.scrim`, which is plain opaque black in both schemes.
+     */
+    val pageScrim: Color,
+    /**
+     * A panel sitting a step above the page — an input row, an option chip, a stat
+     * tile. Translucent on purpose: these sit on the gradients `appBackground`
+     * paints, and an opaque `surfaceContainer*` would read as a flat patch that
+     * ignores the gradient. [panelFillRaised] is the resting state of a control,
+     * [panelFillSelected] its chosen state.
+     */
+    val panelFill: Color,
+    val panelFillRaised: Color,
+    val panelFillSelected: Color,
     /** Translucent chip sitting on a photo or a colored card. */
     val chipScrim: Color,
     /** Card fill: an alpha wash in dark, opaque white in light. */
@@ -121,6 +136,13 @@ data class AppColors(
     val cardBorder: Color,
     /** Drop-shadow color used to lift cards off the cream background in light. */
     val cardShadow: Color,
+    /**
+     * The brighter end a couple of screens fade their background down to instead of
+     * the page base — party detail and settings. Light goes to white; dark has no
+     * lighter place to go, so it stays on the base (`surfaceContainerLowest` is
+     * *darker* than the base in dark and cannot stand in).
+     */
+    val pageBaseBright: Color,
     /** Frosted panel behind the mini-game countdown. */
     val glassTint: Color,
     val glassEdge: Color,
@@ -133,11 +155,15 @@ data class AppColors(
 val LightAppColors = AppColors(
     brandAccent = BrandTealLight,
     onAccentSurface = Color.White,
-    scrim = Color(0xFF14140A).copy(alpha = 0.28f),
+    pageScrim = Color(0xFF14140A).copy(alpha = 0.28f),
+    panelFill = onBackgroundLight.wash(Wash.Faint),
+    panelFillRaised = onBackgroundLight.wash(Wash.Fill),
+    panelFillSelected = onBackgroundLight.copy(alpha = 0.24f),
     chipScrim = Color(0xFF0E2630).copy(alpha = 0.72f),
     cardSurface = Color.White,
     cardBorder = Color(0xFF0B1F24).copy(alpha = 0.10f),
     cardShadow = Color(0xFF0B1F24),
+    pageBaseBright = Color.White,
     glassTint = Color.White.copy(alpha = 0.62f),
     glassEdge = Color.White.copy(alpha = 0.85f),
     onGlass = Color(0xFF0E2630),
@@ -149,11 +175,15 @@ val LightAppColors = AppColors(
 val DarkAppColors = AppColors(
     brandAccent = BrandTealSoft,
     onAccentSurface = Color.White,
-    scrim = Color(0xFF050F12).copy(alpha = 0.55f),
+    pageScrim = Color(0xFF050F12).copy(alpha = 0.55f),
+    panelFill = onBackgroundDark.wash(Wash.Faint),
+    panelFillRaised = onBackgroundDark.wash(Wash.Fill),
+    panelFillSelected = onBackgroundDark.copy(alpha = 0.24f),
     chipScrim = Color.Black.copy(alpha = 0.72f),
     cardSurface = Color.White.copy(alpha = 0.04f),
     cardBorder = Color.White.copy(alpha = 0.08f),
     cardShadow = Color.Transparent,
+    pageBaseBright = backgroundGradientDarkEnd,
     glassTint = Color.White.copy(alpha = 0.22f),
     glassEdge = Color.White.copy(alpha = 0.30f),
     onGlass = Color.White,

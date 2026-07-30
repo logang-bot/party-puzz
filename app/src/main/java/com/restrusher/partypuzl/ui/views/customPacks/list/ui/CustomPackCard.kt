@@ -28,9 +28,13 @@ import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.SpiceLevel
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appCard
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.PackWarning
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
@@ -69,7 +73,7 @@ internal fun CustomPackCard(
                     text = pack.name,
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -78,7 +82,7 @@ internal fun CustomPackCard(
                     Text(
                         text = pack.description,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurface.ink(Ink.Standard),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -93,7 +97,7 @@ internal fun CustomPackCard(
                     Text(
                         text = stringResource(R.string.custom_pack_entries_count, pack.entryCount),
                         style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                        color = MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary)
                     )
                 }
             }
@@ -102,7 +106,7 @@ internal fun CustomPackCard(
                 onCheckedChange = { onToggle() },
                 colors = SwitchDefaults.colors(
                     checkedTrackColor = accent,
-                    checkedThumbColor = MaterialTheme.colorScheme.background
+                    checkedThumbColor = MaterialTheme.appColors.onAccentSurface
                 )
             )
         }
@@ -138,11 +142,11 @@ private fun PackWarningRow(warning: PackWarning, modifier: Modifier = Modifier) 
     Text(
         text = stringResource(message),
         style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f),
+        color = MaterialTheme.colorScheme.onSurface.ink(Ink.Standard),
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f))
+            .background(MaterialTheme.appColors.panelFill)
             .padding(horizontal = 10.dp, vertical = 6.dp)
     )
 }

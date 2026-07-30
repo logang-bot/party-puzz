@@ -39,6 +39,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 
 /**
  * One pack row, shared by the Official / Premium / Custom groups.
@@ -64,7 +69,7 @@ internal fun PackRow(
     cornerColor: Color = accent
 ) {
     val rowBackground by animateColorAsState(
-        targetValue = if (isEnabled) accent.copy(alpha = 0.08f) else Color.Transparent,
+        targetValue = if (isEnabled) accent.wash(Wash.Soft) else Color.Transparent,
         animationSpec = tween(durationMillis = 150),
         label = "pack row background"
     )
@@ -86,7 +91,7 @@ internal fun PackRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(1.dp)
-                    .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f))
+                    .background(MaterialTheme.appColors.panelFillRaised)
             )
         }
         Row(
@@ -115,7 +120,7 @@ internal fun PackRow(
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = if (isEnabled) MaterialTheme.colorScheme.onBackground
-                        else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.75f),
+                        else MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f, fill = false)
@@ -127,7 +132,7 @@ internal fun PackRow(
                 Text(
                     text = meta,
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f),
+                    color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

@@ -29,8 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.CustomEntryType
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.hintRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
@@ -78,13 +83,13 @@ private fun EntryTypeCard(
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
             .background(
-                if (isSelected) accent.copy(alpha = 0.10f)
-                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f)
+                if (isSelected) accent.wash(Wash.Fill)
+                else MaterialTheme.colorScheme.onBackground.wash(Wash.Faint)
             )
             .border(
                 width = 1.5.dp,
-                color = if (isSelected) accent.copy(alpha = 0.5f)
-                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12f),
+                color = if (isSelected) accent.ink(Ink.Secondary)
+                else MaterialTheme.colorScheme.onBackground.wash(Wash.Fill),
                 shape = RoundedCornerShape(14.dp)
             )
             .clickable(onClick = onClick)
@@ -107,7 +112,7 @@ private fun EntryTypeCard(
             Text(
                 text = stringResource(type.hintRes),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
             )
         }
         Spacer(modifier = Modifier.size(10.dp))
@@ -126,7 +131,7 @@ private fun SelectionDot(isSelected: Boolean, accent: Color) {
             .border(
                 width = 1.5.dp,
                 color = if (isSelected) Color.Transparent
-                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.25f),
+                else MaterialTheme.colorScheme.onBackground.ink(Ink.Faint),
                 shape = CircleShape
             )
     ) {
@@ -134,7 +139,7 @@ private fun SelectionDot(isSelected: Boolean, accent: Color) {
             Icon(
                 painter = painterResource(R.drawable.ic_check),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.background,
+                tint = MaterialTheme.appColors.onAccentSurface,
                 modifier = Modifier.size(13.dp)
             )
         }

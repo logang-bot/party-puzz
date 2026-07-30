@@ -33,6 +33,11 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.PACK_DESCRIPTION_MAX
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.SpiceLevel
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.model.AuthorableCategories
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
@@ -63,7 +68,7 @@ internal fun PackTextField(
                 if (bordered) {
                     Modifier.border(
                         width = 1.dp,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f),
+                        color = MaterialTheme.colorScheme.onBackground.wash(Wash.Hairline),
                         shape = RoundedCornerShape(14.dp)
                     )
                 } else {
@@ -78,7 +83,7 @@ internal fun PackTextField(
                 Text(
                     text = placeholder,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f)
+                    color = MaterialTheme.colorScheme.onBackground.ink(Ink.Muted)
                 )
             },
             singleLine = singleLine,
@@ -116,13 +121,13 @@ internal fun CategoryPills(
                     .weight(1f)
                     .clip(CircleShape)
                     .background(
-                        if (isOn) accent.copy(alpha = 0.16f)
-                        else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f)
+                        if (isOn) accent.wash(Wash.Hairline)
+                        else MaterialTheme.colorScheme.onBackground.wash(Wash.Faint)
                     )
                     .border(
                         width = 1.5.dp,
                         color = if (isOn) accent
-                        else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.12f),
+                        else MaterialTheme.colorScheme.onBackground.wash(Wash.Fill),
                         shape = CircleShape
                     )
                     .clickable { onSelect(category) }
@@ -141,7 +146,7 @@ internal fun CategoryPills(
                     style = MaterialTheme.typography.labelMedium,
                     textAlign = TextAlign.Center,
                     color = if (isOn) MaterialTheme.colorScheme.onBackground
-                    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    else MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
                 )
             }
         }
@@ -160,7 +165,7 @@ internal fun SpiceSelector(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f))
+            .background(MaterialTheme.appColors.panelFill)
             .padding(4.dp)
     ) {
         SpiceLevel.entries.forEach { level ->
@@ -178,8 +183,8 @@ internal fun SpiceSelector(
                 Icon(
                     painter = painterResource(level.iconRes),
                     contentDescription = null,
-                    tint = if (isOn) MaterialTheme.colorScheme.background
-                    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.45f),
+                    tint = if (isOn) MaterialTheme.appColors.onAccentSurface
+                    else MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
                     modifier = Modifier.size(15.dp)
                 )
                 Spacer(modifier = Modifier.width(6.dp))
@@ -187,8 +192,8 @@ internal fun SpiceSelector(
                     text = stringResource(level.labelRes).uppercase(),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = if (isOn) MaterialTheme.colorScheme.background
-                    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    color = if (isOn) MaterialTheme.appColors.onAccentSurface
+                    else MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
                 )
             }
         }
@@ -206,7 +211,7 @@ internal fun CharacterCounter(
         text = stringResource(R.string.custom_pack_counter, length, max),
         style = MaterialTheme.typography.labelSmall,
         textAlign = TextAlign.End,
-        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f),
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
         modifier = modifier.fillMaxWidth().padding(top = 6.dp)
     )
 }

@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,8 +41,9 @@ import androidx.navigation.NavBackStackEntry
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
-import kotlinx.coroutines.flow.filterNotNull
+import com.restrusher.partypuzl.ui.theme.appBackground
 import java.io.File
+import kotlinx.coroutines.flow.filterNotNull
 
 private const val KEY_MINI_GAME_P1_SCORE = "mini_game_p1_score"
 private const val KEY_MINI_GAME_P2_SCORE = "mini_game_p2_score"
@@ -111,7 +111,7 @@ fun GameScreen(
     }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val backgroundGradient = rememberBackgroundGradient()
+    val gameBackground = rememberGameBackground(uiState)
 
     val cameraUri = remember {
         val tempFile = File.createTempFile("party_photo_${System.currentTimeMillis()}", ".jpg", context.cacheDir)
@@ -163,7 +163,7 @@ fun GameScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(backgroundGradient)
+            .appBackground(gameBackground)
     ) {
         Column(
             modifier = Modifier
@@ -183,7 +183,7 @@ fun GameScreen(
                     Icon(
                         painter = painterResource(id = R.drawable.ic_door_back),
                         contentDescription = stringResource(id = R.string.exit_game_title),
-                        tint = MaterialTheme.colorScheme.onSurface
+                        tint = MaterialTheme.colorScheme.onBackground
                     )
                 }
                 StickyDarePill(

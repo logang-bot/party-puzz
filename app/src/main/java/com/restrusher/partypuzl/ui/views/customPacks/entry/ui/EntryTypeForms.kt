@@ -32,6 +32,11 @@ import com.restrusher.partypuzl.data.models.ENTRY_TEXT_MAX
 import com.restrusher.partypuzl.data.models.StickyDurationPresets
 import com.restrusher.partypuzl.data.models.TRIVIA_TEXT_MAX
 import com.restrusher.partypuzl.ui.theme.AccentLime
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.create.ui.CharacterCounter
 import com.restrusher.partypuzl.ui.views.customPacks.create.ui.PackTextField
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryState
@@ -114,7 +119,7 @@ private fun DurationSelector(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05f))
+            .background(MaterialTheme.appColors.panelFill)
             .padding(4.dp)
     ) {
         StickyDurationPresets.forEach { seconds ->
@@ -133,8 +138,8 @@ private fun DurationSelector(
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 1,
-                    color = if (isOn) MaterialTheme.colorScheme.background
-                    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    color = if (isOn) MaterialTheme.appColors.onAccentSurface
+                    else MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
                 )
             }
         }
@@ -201,11 +206,11 @@ private fun TriviaOptionField(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(14.dp))
-            .background(if (isCorrect) AccentLime.copy(alpha = 0.10f) else Color.Transparent)
+            .background(if (isCorrect) AccentLime.wash(Wash.Fill) else Color.Transparent)
             .border(
                 width = 1.5.dp,
-                color = if (isCorrect) AccentLime.copy(alpha = 0.5f)
-                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f),
+                color = if (isCorrect) AccentLime.ink(Ink.Secondary)
+                else MaterialTheme.colorScheme.onBackground.wash(Wash.Hairline),
                 shape = RoundedCornerShape(14.dp)
             )
             .padding(start = 10.dp)
@@ -219,7 +224,7 @@ private fun TriviaOptionField(
                 .border(
                     width = 1.5.dp,
                     color = if (isCorrect) Color.Transparent
-                    else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.25f),
+                    else MaterialTheme.colorScheme.onBackground.ink(Ink.Faint),
                     shape = CircleShape
                 )
                 .clickable(onClick = onMarkCorrect)
@@ -228,7 +233,7 @@ private fun TriviaOptionField(
                 Icon(
                     painter = painterResource(R.drawable.ic_check),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.background,
+                    tint = MaterialTheme.appColors.onAccentSurface,
                     modifier = Modifier.size(13.dp)
                 )
             }

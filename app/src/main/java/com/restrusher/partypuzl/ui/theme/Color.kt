@@ -64,8 +64,12 @@ val AnswerWrongRed = Color(0xFFC62828)
 // ─────────────────────────────────────────────────────────────
 // App background gradients
 //
-// Light is a straight top-to-bottom cream→peach ramp. Dark is a radial glow
-// anchored at the top center, matching the design's
+// These are the stops the page background is built from — not the page *base*,
+// which is `colorScheme.background` (the design's `--bg-0`). The distinction
+// matters: only Home, the parties list and create-player fade through this warm
+// cream→peach ramp. Every other screen washes a tint over the base instead.
+//
+// Dark is a radial glow anchored at the top center, matching the design's
 // `radial-gradient(120% 60% at 50% 0%, …)`.
 // ─────────────────────────────────────────────────────────────
 
@@ -76,6 +80,12 @@ val backgroundGradientDarkEnd = Color(0xFF0B1F24)
 val backgroundGradientLightStart = Color(0xFFFFF5E6)
 val backgroundGradientLightMid = Color(0xFFFFE6D6)
 val backgroundGradientLightEnd = Color(0xFFFFD9C2)
+
+/** Navigation drawer sheet, which the design gives its own ramp rather than a flat fill. */
+val drawerGradientLightTop = Color(0xFFFFF9EF)
+val drawerGradientLightBottom = Color(0xFFFFFFFF)
+val drawerGradientDarkTop = Color(0xFF0A1A1F)
+val drawerGradientDarkBottom = Color(0xFF0D2530)
 
 // ─────────────────────────────────────────────────────────────
 // Light scheme — warm cream surfaces, cool teal-black ink.
@@ -101,9 +111,9 @@ val errorLight = Color(0xFFC22B2B)
 val onErrorLight = Color(0xFFFFFFFF)
 val errorContainerLight = Color(0xFFFFDAD6)
 val onErrorContainerLight = Color(0xFF410002)
-val backgroundLight = Color(0xFFFFF5E6)
+val backgroundLight = Color(0xFFFBF6EE)            // --bg-0, the page base
 val onBackgroundLight = Color(0xFF0E2630)          // --ink
-val surfaceLight = Color(0xFFFFF5E6)
+val surfaceLight = Color(0xFFFBF6EE)
 val onSurfaceLight = Color(0xFF0E2630)
 val surfaceVariantLight = Color(0xFFEDE3D6)
 val onSurfaceVariantLight = Color(0xFF324851)      // --ink-2

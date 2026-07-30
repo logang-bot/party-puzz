@@ -39,10 +39,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
-import com.restrusher.partypuzl.data.preferences.ThemeMode
-import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.gameScreen.BarEvent
 import com.restrusher.partypuzl.ui.views.game.gameScreen.BarModeState
 import com.restrusher.partypuzl.ui.views.game.gameScreen.CouplesEvent
@@ -125,7 +127,7 @@ internal fun OutcomeRevealContent(
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             fontStyle = FontStyle.Italic,
-            color = MaterialTheme.colorScheme.onSurface,
+            color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(24.dp))
@@ -143,7 +145,7 @@ internal fun OutcomeRevealContent(
             Text(
                 text = stringResource(R.string.tap_to_dismiss),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.45f),
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary),
                 textAlign = TextAlign.Center
             )
         }

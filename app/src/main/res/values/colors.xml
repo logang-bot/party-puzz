@@ -2,9 +2,9 @@
 <resources>
     <!--
       Only the splash window needs a colour resource — everything else is themed
-      in Compose from ui/theme/Color.kt. Keep this in sync with
-      backgroundGradientLightStart, and the values-night copy with
-      backgroundGradientDarkEnd, so the splash hands over without a flash.
+      in Compose from ui/theme/Color.kt. Keep this in sync with backgroundLight,
+      and the values-night copy with backgroundDark, so the splash hands over to
+      the page base without a flash.
     -->
-    <color name="splash_background">#FFF5E6</color>
+    <color name="splash_background">#FBF6EE</color>
 </resources>

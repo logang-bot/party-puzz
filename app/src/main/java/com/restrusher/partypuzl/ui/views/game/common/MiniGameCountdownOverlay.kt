@@ -30,8 +30,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 
 @Composable
 fun MiniGameCountdownOverlay(
@@ -104,7 +106,7 @@ fun MiniGameCountdownOverlay(
                     text = if (value > 0) stringResource(R.string.ready) else stringResource(R.string.go),
                     style = MaterialTheme.typography.displayLarge.copy(
                         shadow = Shadow(
-                            color = onGlass.copy(alpha = 0.6f),
+                            color = onGlass.ink(Ink.Standard),
                             offset = Offset.Zero,
                             blurRadius = 24f
                         )
@@ -118,7 +120,7 @@ fun MiniGameCountdownOverlay(
                         text = value.toString(),
                         style = MaterialTheme.typography.displayMedium.copy(
                             shadow = Shadow(
-                                color = onGlass.copy(alpha = 0.4f),
+                                color = onGlass.ink(Ink.Tertiary),
                                 offset = Offset.Zero,
                                 blurRadius = 16f
                             )

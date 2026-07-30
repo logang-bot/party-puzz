@@ -29,9 +29,13 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.entities.CustomEntryEntity
 import com.restrusher.partypuzl.data.models.CustomEntryType
 import com.restrusher.partypuzl.ui.theme.AccentLime
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appCard
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
@@ -68,14 +72,14 @@ internal fun CustomEntryRow(
                 Text(
                     text = " · $durationLabel",
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary)
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
                 text = position.toString().padStart(2, '0'),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f)
+                color = MaterialTheme.colorScheme.onSurface.ink(Ink.Muted)
             )
         }
 
@@ -83,7 +87,7 @@ internal fun CustomEntryRow(
         Text(
             text = entry.text,
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         if (entry.type == CustomEntryType.TRIVIA) {
@@ -113,16 +117,16 @@ internal fun CustomEntryRow(
 @Composable
 private fun TriviaOption(label: String?, isCorrect: Boolean, modifier: Modifier = Modifier) {
     if (label == null) return
-    val tone = if (isCorrect) AccentLime else MaterialTheme.colorScheme.onBackground
+    val tone = if (isCorrect) AccentLime else MaterialTheme.colorScheme.onSurface
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
             .clip(CircleShape)
-            .background(tone.copy(alpha = if (isCorrect) 0.16f else 0.05f))
+            .background(tone.wash(if (isCorrect) Wash.Hairline else Wash.Faint))
             .border(
                 width = 1.dp,
-                color = tone.copy(alpha = if (isCorrect) 0.45f else 0.12f),
+                color = if (isCorrect) tone.ink(Ink.Tertiary) else tone.wash(Wash.Fill),
                 shape = CircleShape
             )
             .padding(horizontal = 9.dp, vertical = 3.dp)
@@ -139,7 +143,7 @@ private fun TriviaOption(label: String?, isCorrect: Boolean, modifier: Modifier 
             text = label,
             style = MaterialTheme.typography.labelSmall,
             color = if (isCorrect) AccentLime
-            else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.55f)
+            else MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary)
         )
     }
 }

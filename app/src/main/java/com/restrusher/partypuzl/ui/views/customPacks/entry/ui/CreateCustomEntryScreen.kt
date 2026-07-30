@@ -31,8 +31,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.CustomEntryType
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.ReportPageTint
+import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryState
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryViewModel
+import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.NumberedStep
 
@@ -56,6 +63,9 @@ fun CreateCustomEntryScreen(
     LaunchedEffect(packId, entryId) { viewModel.load(packId, entryId) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // The page follows the entry type picked in step 01, so switching type re-tints the screen.
+    ReportPageTint(uiState.type.accent)
 
     Box(modifier = modifier.fillMaxSize()) {
         Column(
@@ -129,10 +139,10 @@ private fun AddingToCard(packName: String, modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.04f))
+            .background(MaterialTheme.appColors.panelFill)
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.10f),
+                color = MaterialTheme.colorScheme.onBackground.wash(Wash.Fill),
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 12.dp, vertical = 10.dp)
@@ -141,7 +151,7 @@ private fun AddingToCard(packName: String, modifier: Modifier = Modifier) {
             Text(
                 text = stringResource(R.string.custom_entry_adding_to).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Tertiary)
             )
             Spacer(modifier = Modifier.size(2.dp))
             Text(

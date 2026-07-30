@@ -31,9 +31,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.common.ClockHandAnimation
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +81,7 @@ internal fun StickyDaresBottomSheet(
                         else R.string.no_active_dares
                     ),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                    color = MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary)
                 )
             } else {
                 displayedDares.forEach { dare ->
@@ -111,7 +113,7 @@ internal fun StickyDaresBottomSheet(
                                     Text(
                                         text = dare.playerName,
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+                                        color = MaterialTheme.colorScheme.onSurface.ink(Ink.Standard)
                                     )
                                 }
                             }
@@ -127,7 +129,7 @@ internal fun StickyDaresBottomSheet(
                                 Icon(
                                     painter = painterResource(R.drawable.ic_close),
                                     contentDescription = stringResource(R.string.cancel_dare),
-                                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f),
+                                    tint = MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary),
                                     modifier = Modifier.size(18.dp)
                                 )
                             }

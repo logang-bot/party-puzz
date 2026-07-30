@@ -4,7 +4,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +14,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -27,6 +27,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
+import com.restrusher.partypuzl.ui.theme.wash
 import kotlin.math.roundToInt
 
 private const val FULL_SPINS = 4
@@ -68,8 +72,8 @@ internal fun SlotReel(
             .fillMaxWidth()
             .height(windowHeight)
             .clip(reelShape)
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
-            .border(1.dp, tone.copy(alpha = 0.4f), reelShape)
+            .background(MaterialTheme.appColors.panelFill)
+            .border(1.dp, tone.ink(Ink.Tertiary), reelShape)
     ) {
         // requiredHeight, not height: the parent Box is only `windowHeight` tall, and a plain
         // Column would hand every row past the first `visibleItems` a maxHeight of 0 — they would

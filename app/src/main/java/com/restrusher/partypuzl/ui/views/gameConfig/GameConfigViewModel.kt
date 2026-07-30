@@ -25,7 +25,6 @@ import com.restrusher.partypuzl.data.packs.QuestionPackSeeder
 import com.restrusher.partypuzl.data.repositories.interfaces.QuestionPackRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.QuestionRepository
 import com.restrusher.partypuzl.navigation.GameConfigScreen
-import com.restrusher.partypuzl.ui.views.customPacks.model.accent
 import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.game.gameScreen.MiniGame
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -38,6 +37,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import com.restrusher.partypuzl.data.models.packAccent
 
 @HiltViewModel
 class GameConfigViewModel @Inject constructor(
@@ -184,7 +184,7 @@ class GameConfigViewModel @Inject constructor(
         tier = PackTier.CUSTOM,
         name = PackLabel.Literal(name),
         iconRes = spice.iconRes,
-        accent = spice.accent,
+        accent = spice.packAccent,
         promptCount = entryCount,
         isEnabled = isEnabled,
         isUnlocked = true

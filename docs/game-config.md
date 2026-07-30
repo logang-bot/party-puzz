@@ -43,7 +43,7 @@ Three groups — **Official** (11 packs), **Premium** (3) and **Custom** — sha
 
 | Group | Trailing control | Corner badge | Row when enabled |
 |---|---|---|---|
-| Official | Check circle (accent fill) | Check | Tinted with the pack's accent at 8 % |
+| Official | Check circle (accent fill) | Check | Tinted with the pack's accent at `Wash.Soft` |
 | Premium, unlocked | Check circle | — | Tinted |
 | Premium, locked | **Unlock** pill | Padlock | Untinted, whole row at 70 % opacity |
 | Custom | Check circle (spice accent) | Check | Tinted |

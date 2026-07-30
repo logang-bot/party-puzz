@@ -30,12 +30,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
 /**
@@ -111,14 +113,14 @@ private fun CurrentPlayerHeader(player: Player?, modifier: Modifier = Modifier) 
                 text = stringResource(R.string.its_your_turn).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 letterSpacing = 2.sp,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.55f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
             )
             Text(
                 text = player.nickName,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }
@@ -126,7 +128,7 @@ private fun CurrentPlayerHeader(player: Player?, modifier: Modifier = Modifier) 
 
 @Composable
 private fun SurpriseMeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val outline = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.28f)
+    val outline = MaterialTheme.colorScheme.onBackground.ink(Ink.Faint)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -141,14 +143,14 @@ private fun SurpriseMeButton(onClick: () -> Unit, modifier: Modifier = Modifier)
         Icon(
             painter = painterResource(R.drawable.ic_random),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            tint = MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent),
             modifier = Modifier.size(16.dp)
         )
         Spacer(Modifier.size(8.dp))
         Text(
             text = stringResource(R.string.surprise_me),
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent)
         )
     }
 }

@@ -35,9 +35,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.ink
 
 private const val REEL_HOLD_MS = 200
 
@@ -83,7 +85,7 @@ internal fun SurpriseShuffleContent(
             text = stringResource(R.string.shuffling_the_deal).uppercase(),
             style = MaterialTheme.typography.labelMedium,
             letterSpacing = 3.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Prominent),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(20.dp))
@@ -120,7 +122,7 @@ private fun DealReelRow(dealType: GameDealType, modifier: Modifier = Modifier) {
             text = stringResource(accent.labelRes),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }

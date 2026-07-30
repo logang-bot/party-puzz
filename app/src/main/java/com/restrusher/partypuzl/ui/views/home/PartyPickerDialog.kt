@@ -42,7 +42,7 @@ fun PartyPickerDialog(
         Card(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
             modifier = Modifier
                 .fillMaxWidth()

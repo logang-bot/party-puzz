@@ -31,7 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.CustomEntryType
+import com.restrusher.partypuzl.ui.theme.Ink
+import com.restrusher.partypuzl.ui.theme.ReportPageTint
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.customPacks.editor.CustomPackEditorViewModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.PackWarning
@@ -59,6 +62,9 @@ fun CustomPackEditorScreen(
     LaunchedEffect(packId) { viewModel.load(packId) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    // The page washes in the pack's own spice accent, the same colour its icon tile uses.
+    ReportPageTint(uiState.pack?.spice?.accent)
 
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -159,7 +165,7 @@ private fun PackHeader(pack: CustomPackUiModel, modifier: Modifier = Modifier) {
             Text(
                 text = pack.description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
             )
         }
         pack.warning?.let { warning ->
@@ -167,7 +173,7 @@ private fun PackHeader(pack: CustomPackUiModel, modifier: Modifier = Modifier) {
             Text(
                 text = stringResource(warning.messageRes),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.65f)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
             )
         }
     }
@@ -182,7 +188,7 @@ private fun EntriesLabel(count: Int, onAdd: () -> Unit, modifier: Modifier = Mod
         Text(
             text = stringResource(R.string.custom_pack_entries_count, count).uppercase(),
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
             modifier = Modifier.weight(1f)
         )
         TextButton(onClick = onAdd) {
