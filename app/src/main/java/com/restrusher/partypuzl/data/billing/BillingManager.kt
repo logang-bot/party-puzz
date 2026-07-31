@@ -37,6 +37,7 @@ class BillingManager @Inject constructor(
 
     private val billingClient = BillingClient.newBuilder(context)
         .setListener(this)
+        .enableAutoServiceReconnection()
         .enablePendingPurchases(
             PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
         )
@@ -94,8 +95,8 @@ class BillingManager @Inject constructor(
                 )
             )
             .build()
-        billingClient.queryProductDetailsAsync(params) { _, details ->
-            productDetails = details.firstOrNull()
+        billingClient.queryProductDetailsAsync(params) { _, result ->
+            productDetails = result.productDetailsList.firstOrNull()
         }
     }
 

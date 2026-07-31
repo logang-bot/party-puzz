@@ -229,7 +229,7 @@ Because both passes feed one set of pools, the game screen never learns that cus
 | `data/local/appData/appDataSource/QuestionCatalog.kt` | **The categorisation** — index lists per pack, `MAPPING_VERSION` |
 | `app/src/androidTest/.../QuestionPackIntegrityTest.kt` | The only automated guard on the index seam |
 | `data/local/appData/appDataSource/QuestionPackCatalog.kt` | The 14 pack definitions, and `CATALOG_VERSION` |
-| `ui/common/SpiceLook.kt` | Spice → icon and accent, for built-in and authored packs alike |
+| `ui/common/SpiceLook.kt` | Spice → icon and accent, for built-in and authored packs alike. The `ic_spice_*` drawables are spice-only and untinted — see [custom-packs.md](custom-packs.md#the-spice-icons) |
 | `data/local/entities/QuestionEntity.kt` | Question → pack row |
 | `data/local/entities/QuestionPackEntity.kt` | Pack enabled / unlocked row |
 | `data/local/dao/QuestionDao.kt` | Playable-question JOIN, counts, `replaceAll` |

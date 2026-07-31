@@ -1,7 +1,7 @@
 [versions]
-agp = "8.5.0"
+agp = "8.13.2"
 playServicesAds = "23.6.0"
-billingKtx = "7.1.1"
+billing = "9.1.0"
 appcompat = "1.7.0"
 coilCompose = "3.0.4"
 coreSplashscreen = "1.0.0"
@@ -51,7 +51,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
-billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billingKtx" }
+billing = { group = "com.android.billingclient", name = "billing", version.ref = "billing" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
