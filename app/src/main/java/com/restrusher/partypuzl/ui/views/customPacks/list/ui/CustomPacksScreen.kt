@@ -34,6 +34,7 @@ import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ctaScrim
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPacksState
@@ -121,8 +122,9 @@ private fun CustomPacksContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .ctaScrim()
                 .navigationBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
         )
     }
 

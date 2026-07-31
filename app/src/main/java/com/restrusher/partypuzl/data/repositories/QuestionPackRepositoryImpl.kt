@@ -20,6 +20,10 @@ class QuestionPackRepositoryImpl(
         questionPackLocalProxy.seedMissing(QuestionPackCatalog.defaultEntities())
     }
 
+    override suspend fun resyncCatalog() {
+        questionPackLocalProxy.resyncCatalog(QuestionPackCatalog.defaultEntities())
+    }
+
     override suspend fun setEnabled(id: String, enabled: Boolean) =
         questionPackLocalProxy.setEnabled(id, enabled)
 

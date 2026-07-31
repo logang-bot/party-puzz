@@ -5,20 +5,33 @@ import com.restrusher.partypuzl.data.local.appData.appModels.QuestionPackDefinit
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.PackTier
-import com.restrusher.partypuzl.data.models.PackAccent
+import com.restrusher.partypuzl.data.models.SpiceLevel
 
 /**
  * The built-in question packs.
  *
- * A pack declares only its identity and looks. Its questions are listed in [QuestionCatalog] and
- * stored as rows in the `questions` table; the prompt text itself stays in `strings.xml` so it
- * remains translatable. Room stores nothing but the user's on/off and unlock state.
+ * A pack declares only its identity and how spicy it reads. Its questions are listed in
+ * [QuestionCatalog] and stored as rows in the `questions` table; the prompt text itself stays in
+ * `strings.xml` so it remains translatable. Room stores nothing but the user's on/off and unlock
+ * state.
  *
  * Packs are thematic rather than one-per-deal: the original flat decks were split so a group can
  * pick the *kind* of night they want. Because a pack still feeds exactly one deal, switching off
  * every pack of a category is what removes that deal from the game.
+ *
+ * The icon and accent are *not* declared — they come from [QuestionPackDefinition.spice], which
+ * is the same three-level vocabulary the create-pack screen offers. That is deliberate: a curated
+ * pack should not be able to wear a look a user could never give one of their own.
  */
 object QuestionPackCatalog {
+
+    /**
+     * Bumped whenever a definition below changes something that is *stored* — its tier or its
+     * category. `QuestionPackSeeder` only inserts rows it has never seen, so without this an
+     * edit here would never reach a device that has already launched the app. Names, spice and
+     * question membership are read from code and need no bump.
+     */
+    const val CATALOG_VERSION = 1
 
     // ── Official · Truth or Dare ─────────────────────────────────────────────
 
@@ -27,8 +40,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_icebreakers,
-        iconRes = R.drawable.ic_outline_mood,
-        accent = PackAccent.TEAL
+        spice = SpiceLevel.MILD
     )
 
     val OFFICIAL_CONFESSIONS = QuestionPackDefinition(
@@ -36,8 +48,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_confessions,
-        iconRes = R.drawable.ic_chat_bubble,
-        accent = PackAccent.PINK
+        spice = SpiceLevel.MEDIUM
     )
 
     val OFFICIAL_PARTY_ANIMALS = QuestionPackDefinition(
@@ -45,8 +56,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_party_animals,
-        iconRes = R.drawable.ic_whatshot,
-        accent = PackAccent.CORAL
+        spice = SpiceLevel.SPICY
     )
 
     val OFFICIAL_THIS_ROOM = QuestionPackDefinition(
@@ -54,8 +64,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_this_room,
-        iconRes = R.drawable.ic_couples,
-        accent = PackAccent.VIOLET
+        spice = SpiceLevel.MEDIUM
     )
 
     // ── Official · Sticky dares ──────────────────────────────────────────────
@@ -65,8 +74,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_voices_accents,
-        iconRes = R.drawable.ic_hourglass,
-        accent = PackAccent.VIOLET
+        spice = SpiceLevel.MILD
     )
 
     val OFFICIAL_VERBAL_TICS = QuestionPackDefinition(
@@ -74,8 +82,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_verbal_tics,
-        iconRes = R.drawable.ic_hourglass,
-        accent = PackAccent.SKY
+        spice = SpiceLevel.MILD
     )
 
     val OFFICIAL_BODY_PERSONA = QuestionPackDefinition(
@@ -83,8 +90,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_body_persona,
-        iconRes = R.drawable.ic_hourglass,
-        accent = PackAccent.ROSE
+        spice = SpiceLevel.MEDIUM
     )
 
     // ── Official · Trivia ────────────────────────────────────────────────────
@@ -94,8 +100,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_world_geography,
-        iconRes = R.drawable.ic_lightbulb,
-        accent = PackAccent.LIME
+        spice = SpiceLevel.MILD
     )
 
     val OFFICIAL_SPACE_SCIENCE = QuestionPackDefinition(
@@ -103,8 +108,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_space_science,
-        iconRes = R.drawable.ic_lightbulb,
-        accent = PackAccent.TEAL
+        spice = SpiceLevel.MILD
     )
 
     val OFFICIAL_MIXED_BAG = QuestionPackDefinition(
@@ -112,8 +116,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_mixed_bag,
-        iconRes = R.drawable.ic_lightbulb,
-        accent = PackAccent.YELLOW
+        spice = SpiceLevel.MEDIUM
     )
 
     // ── Official · Mini-games ────────────────────────────────────────────────
@@ -124,8 +127,7 @@ object QuestionPackCatalog {
         tier = PackTier.OFFICIAL,
         category = PackCategory.MINI_GAME,
         nameRes = R.string.pack_mini_games,
-        iconRes = R.drawable.ic_random,
-        accent = PackAccent.YELLOW
+        spice = SpiceLevel.MEDIUM
     )
 
     // ── Premium ──────────────────────────────────────────────────────────────
@@ -135,8 +137,7 @@ object QuestionPackCatalog {
         tier = PackTier.PREMIUM,
         category = PackCategory.GENERAL_KNOWLEDGE,
         nameRes = R.string.pack_movie_night,
-        iconRes = R.drawable.ic_lightbulb,
-        accent = PackAccent.SKY
+        spice = SpiceLevel.MEDIUM
     )
 
     val PREMIUM_SPICY = QuestionPackDefinition(
@@ -144,8 +145,7 @@ object QuestionPackCatalog {
         tier = PackTier.PREMIUM,
         category = PackCategory.STICKY_DARE,
         nameRes = R.string.pack_spicy,
-        iconRes = R.drawable.ic_hourglass,
-        accent = PackAccent.CORAL
+        spice = SpiceLevel.SPICY
     )
 
     val PREMIUM_NSFW = QuestionPackDefinition(
@@ -153,8 +153,7 @@ object QuestionPackCatalog {
         tier = PackTier.PREMIUM,
         category = PackCategory.TRUTH_OR_DARE,
         nameRes = R.string.pack_nsfw_confessions,
-        iconRes = R.drawable.ic_whatshot,
-        accent = PackAccent.ROSE
+        spice = SpiceLevel.SPICY
     )
 
     /** Display order on the setup screen: official grouped by deal, then premium. */
@@ -182,8 +181,9 @@ object QuestionPackCatalog {
     fun tier(tier: PackTier): List<QuestionPackDefinition> = all.filter { it.tier == tier }
 
     /**
-     * Rows for a fresh install: official packs on, premium packs off and locked. Only used with
-     * `INSERT OR IGNORE`, so a user's existing choices survive catalog additions.
+     * Rows for a fresh install: official packs on, premium packs off and locked. Used with
+     * `INSERT OR IGNORE` so a user's existing choices survive catalog additions, and as the
+     * source of the catalog-owned columns when [CATALOG_VERSION] moves.
      */
     fun defaultEntities(): List<QuestionPackEntity> = all.map { definition ->
         QuestionPackEntity(

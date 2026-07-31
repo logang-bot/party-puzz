@@ -5,55 +5,33 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.CustomEntryType
-import com.restrusher.partypuzl.data.models.PackCategory
-import com.restrusher.partypuzl.data.models.SpiceLevel
-import com.restrusher.partypuzl.data.models.packAccent
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.ui.theme.AccentLime
 import com.restrusher.partypuzl.ui.theme.AccentPink
 import com.restrusher.partypuzl.ui.theme.AccentViolet
-import com.restrusher.partypuzl.ui.theme.color
 
 /**
- * How a custom pack and its entries look.
+ * How a custom pack's topic and its entries look.
  *
  * Everything colour-related lives here rather than in the data layer, which must not depend on
- * Compose — `SpiceLevel` and `CustomEntryType` stay plain enums and get their looks attached at
- * the UI boundary, the same way `QuestionPackDefinition` carries the built-in packs' accents.
+ * Compose — `CustomEntryType` stays a plain enum and gets its looks attached at the UI boundary,
+ * the same way `QuestionPackDefinition` carries the built-in packs' spice.
+ *
+ * The pack's own icon and accent are *not* here: they come from its spice level, which built-in
+ * packs share, so they live in `ui/common/SpiceLook.kt`.
  */
 
-/** Categories a user can actually author for. Mini-games are code, not prompts. */
-val AuthorableCategories = listOf(
-    PackCategory.TRUTH_OR_DARE,
-    PackCategory.STICKY_DARE,
-    PackCategory.GENERAL_KNOWLEDGE
-)
-
-@get:DrawableRes
-val SpiceLevel.iconRes: Int
-    get() = when (this) {
-        SpiceLevel.MILD -> R.drawable.ic_outline_mood
-        SpiceLevel.MEDIUM -> R.drawable.ic_lightbulb
-        SpiceLevel.SPICY -> R.drawable.ic_whatshot
-    }
-
-val SpiceLevel.accent: Color
-    get() = packAccent.color
-
 @get:StringRes
-val SpiceLevel.labelRes: Int
+val PackTopic.labelRes: Int
     get() = when (this) {
-        SpiceLevel.MILD -> R.string.spice_mild
-        SpiceLevel.MEDIUM -> R.string.spice_medium
-        SpiceLevel.SPICY -> R.string.spice_spicy
-    }
-
-@get:StringRes
-val PackCategory.labelRes: Int
-    get() = when (this) {
-        PackCategory.TRUTH_OR_DARE -> R.string.truth_or_dare
-        PackCategory.STICKY_DARE -> R.string.sticky_dares
-        PackCategory.GENERAL_KNOWLEDGE -> R.string.general_culture
-        PackCategory.MINI_GAME -> R.string.mini_games
+        PackTopic.FRIENDS_INSIDE_JOKES -> R.string.pack_topic_friends_inside_jokes
+        PackTopic.BIG_NIGHT_OUT -> R.string.pack_topic_big_night_out
+        PackTopic.FOOD_AND_DRINK -> R.string.pack_topic_food_and_drink
+        PackTopic.COUPLES -> R.string.pack_topic_couples
+        PackTopic.FAMILY -> R.string.pack_topic_family
+        PackTopic.WORK_CROWD -> R.string.pack_topic_work_crowd
+        PackTopic.POP_CULTURE -> R.string.pack_topic_pop_culture
+        PackTopic.TRAVEL -> R.string.pack_topic_travel
     }
 
 @get:DrawableRes

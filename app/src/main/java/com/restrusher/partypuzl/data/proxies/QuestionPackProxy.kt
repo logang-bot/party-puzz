@@ -7,6 +7,7 @@ interface QuestionPackProxy {
     fun getPacks(): Flow<List<QuestionPackEntity>>
     suspend fun getPacksOnce(): List<QuestionPackEntity>
     suspend fun seedMissing(packs: List<QuestionPackEntity>)
+    suspend fun resyncCatalog(packs: List<QuestionPackEntity>)
     suspend fun setEnabled(id: String, enabled: Boolean)
     suspend fun setUnlocked(id: String, unlocked: Boolean)
     suspend fun unlockAllPremium()

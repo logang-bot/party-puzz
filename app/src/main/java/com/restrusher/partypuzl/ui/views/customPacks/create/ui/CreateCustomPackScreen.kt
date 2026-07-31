@@ -23,12 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.ctaScrim
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.customPacks.create.CreateCustomPackState
 import com.restrusher.partypuzl.ui.views.customPacks.create.CreateCustomPackViewModel
@@ -37,7 +38,7 @@ import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPackCta
 import com.restrusher.partypuzl.ui.views.customPacks.ui.NumberedStep
 
 /**
- * The pack shell — name, category, spice, description. Entries come afterwards, one at a time, so
+ * The pack shell — name, topic, spice, description. Entries come afterwards, one at a time, so
  * each kind can ask only for what it actually needs.
  *
  * [onSaved] receives the pack id: creating a pack drops the user straight into its (empty) editor.
@@ -62,7 +63,7 @@ fun CreateCustomPackScreen(
     CreateCustomPackContent(
         state = uiState,
         onNameChange = viewModel::onNameChange,
-        onCategoryChange = viewModel::onCategoryChange,
+        onTopicChange = viewModel::onTopicChange,
         onSpiceChange = viewModel::onSpiceChange,
         onDescriptionChange = viewModel::onDescriptionChange,
         onSave = { viewModel.onSave(onSaved) },
@@ -74,7 +75,7 @@ fun CreateCustomPackScreen(
 private fun CreateCustomPackContent(
     state: CreateCustomPackState,
     onNameChange: (String) -> Unit,
-    onCategoryChange: (PackCategory) -> Unit,
+    onTopicChange: (PackTopic) -> Unit,
     onSpiceChange: (SpiceLevel) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onSave: () -> Unit,
@@ -97,11 +98,11 @@ private fun CreateCustomPackContent(
 
             NumberedStep(
                 number = "02",
-                label = stringResource(R.string.custom_pack_step_category),
-                subtitle = stringResource(R.string.custom_pack_step_category_sub)
+                label = stringResource(R.string.custom_pack_step_topic),
+                subtitle = stringResource(R.string.custom_pack_step_topic_sub)
             )
             Spacer(modifier = Modifier.height(10.dp))
-            CategoryPills(selected = state.category, onSelect = onCategoryChange)
+            TopicPills(selected = state.topic, onSelect = onTopicChange)
 
             NumberedStep(
                 number = "03",
@@ -147,8 +148,9 @@ private fun CreateCustomPackContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .ctaScrim()
                 .navigationBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
         )
     }
 }
@@ -159,7 +161,7 @@ private fun CreateCustomPackSample(state: CreateCustomPackState) {
         CreateCustomPackContent(
             state = state,
             onNameChange = {},
-            onCategoryChange = {},
+            onTopicChange = {},
             onSpiceChange = {},
             onDescriptionChange = {},
             onSave = {}

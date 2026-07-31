@@ -20,7 +20,7 @@
     android:viewportHeight="256">
   <path
       android:pathData="M128,36L144,110L218,128L144,146L128,220L112,146L38,128L112,110Z"
-      android:fillColor="#fff5e6"/>
+      android:fillColor="@color/splash_icon_star"/>
   <path
       android:pathData="M128,128m-14,0a14,14 0,1 1,28 0a14,14 0,1 1,-28 0"
       android:fillColor="#ffd25a"/>

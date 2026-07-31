@@ -17,6 +17,9 @@ class QuestionPackLocalProxy @Inject constructor(
     override suspend fun seedMissing(packs: List<QuestionPackEntity>) =
         questionPackDao.insertMissing(packs)
 
+    override suspend fun resyncCatalog(packs: List<QuestionPackEntity>) =
+        questionPackDao.resyncCatalog(packs)
+
     override suspend fun setEnabled(id: String, enabled: Boolean) =
         questionPackDao.setEnabled(id, enabled)
 

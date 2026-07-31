@@ -4,7 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 
 /**
@@ -35,10 +35,11 @@ data class CustomPackEntity(
     val name: String,
     val description: String,
     /**
-     * The category the author declared. A label only: the loader pools by each *entry's* type, so
-     * a pack may hold entries of any type regardless of what this says.
+     * What the author says the pack is about. A shelf label, never a filter: the loader pools by
+     * each *entry's* type, so a pack may hold truths, dares, sticky dares and trivia at once
+     * whatever its topic says.
      */
-    val category: PackCategory,
+    val topic: PackTopic,
     val spice: SpiceLevel,
     val createdAt: Long,
     /**

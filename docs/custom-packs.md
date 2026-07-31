@@ -14,7 +14,7 @@ A built-in prompt is split across three places so it stays translatable — the 
 
 | Table | Holds |
 |---|---|
-| `custom_packs` | Name, description, declared category, spice, `createdAt`, `isAvailable`. The things `QuestionPackCatalog` supplies for a built-in pack. |
+| `custom_packs` | Name, description, topic, spice, `createdAt`, `isAvailable`. The things `QuestionPackCatalog` supplies for a built-in pack. |
 | `custom_entries` | The prompt text itself, plus whatever the entry's type needs. |
 
 Both hang off `question_packs.id` with `ON DELETE CASCADE`, so a custom pack still gets an ordinary `question_packs` row. That row is what carries the tier and the session flag, and what the seeder and the content loader join against — a custom pack is a normal pack that happens to keep its content elsewhere.
@@ -70,11 +70,11 @@ enum class CustomEntryType(val category: PackCategory) {
 
 **The authoring screen does not show them as two, though.** Truth and dare are one game deal at the table, so step 01 offers three cards, not four, and which half it is is asked in step 02. That grouping is `EntryDeal` — a UI enum in `ui/views/customPacks/model/EntryDeal.kt` — with `CustomEntryType.deal` and `EntryDeal.defaultType` bridging the two. Nothing below the UI changed: the enum, the rows, the pooling and the counts are untouched, so merging the picker did **not** merge the pools.
 
-There is deliberately **no mini-game type** — mini-games are code, not prompts — so `MINI_GAME` is absent from the category picker (`AuthorableCategories`).
+There is deliberately **no mini-game type** — mini-games are code, not prompts — so an author can write truths, dares, sticky dares and trivia, and nothing else.
 
-**Spice is cosmetic.** It picks the pack's icon and accent and shows as a chip. Nothing filters on it; built-in packs express intensity by membership instead (`premium_spicy`, `NSFW_*`).
+**A pack's topic is a shelf label, not a filter.** `PackTopic` (`data/models/PackTopic.kt`) holds eight generic topics — *Friends & inside jokes*, *Big night out*, *Food & drink*, *Couples*, *Family*, *Work crowd*, *Pop culture*, *Travel*. It is deliberately **not** a `PackCategory`: the content loader pools by each *entry's* type, never by the pack's, so a pack may hold any mix at once, and labelling one "Truth or Dare" would promise a filter that does not exist. The topic is only ever read to draw a chip.
 
-**A pack's declared category is a label.** The content loader pools by each *entry's* type, never by the pack's, so a pack may hold any mix of entry types. The declared category drives the row chip and the default type when authoring a new entry.
+**Spice decides how a pack looks — every pack.** It picks the icon and accent and shows as a chip; nothing filters on it. Built-in packs carry one too (`QuestionPackDefinition.spice`), so the three levels are the entire look vocabulary and a curated pack cannot wear something the create screen has no way to produce. See [question-packs.md](question-packs.md).
 
 ---
 
@@ -118,9 +118,14 @@ Shown on the pack card in the manager and as a line under the header in the edit
 | Screen | Package | Does |
 |---|---|---|
 | `CustomPacksScreen` | `ui/views/customPacks/list/ui` | The manager: every pack, its availability switch, edit/delete, the playability warning, sticky "Create new pack" CTA |
-| `CreateCustomPackScreen` | `.../create/ui` | The pack shell in four numbered steps — name, category, spice, description (140 chars) |
+| `CreateCustomPackScreen` | `.../create/ui` | The pack shell in four numbered steps — name, topic, spice, description (140 chars) |
 | `CustomPackEditorScreen` | `.../editor/ui` | A pack's contents; entries added one at a time |
 | `CreateCustomEntryScreen` | `.../entry/ui` | One entry: step 01 picks the deal, steps 02–03 change to match, step 04 is the live "How it will play" preview |
+
+All four end in the same sticky `CustomPackCta`, overlaid on the scrolling content behind a
+`Modifier.ctaScrim()` so the list dissolves into the page base under the button rather than being
+clipped by it. Their content reserves `bottom = 96.dp` to stay reachable. See
+[theming.md](theming.md#sticky-bottom-ctas).
 
 Every path through the entry screen is four steps, so the preview is always `04`:
 
@@ -134,7 +139,7 @@ Colour follows the *deal*, not the half: `CustomEntryType.accent` gives truths a
 
 Creating a pack navigates straight into its empty editor, popping the create screen, so the next thing the author sees is "add your first entry". Editing an existing pack just pops back.
 
-Colour and icon mappings live in `ui/views/customPacks/model/CustomPackLook.kt` as extension properties, keeping Compose types out of the data layer — the same split `QuestionPackDefinition` uses for built-in packs. `SpiceLevel.accent` resolves through the shared `PackAccent` enum (`SpiceLevel.packAccent` in `data/models`, then `PackAccent.color` in `ui/theme`), so a custom pack and a built-in one name their colour the same way.
+Colour and icon mappings are extension properties, keeping Compose types out of the data layer. They live in two files: `ui/common/SpiceLook.kt` for the pack's own look, which built-in packs read too, and `ui/views/customPacks/model/CustomPackLook.kt` for the topic label and the entry-type looks, which only this feature uses. `SpiceLevel.accent` resolves through the shared `PackAccent` enum (`SpiceLevel.packAccent` in `data/models`, then `PackAccent.color` in `ui/theme`), so a custom pack and a built-in one name their colour the same way.
 
 ---
 
@@ -171,7 +176,8 @@ That check earned its keep on v11: Room compares **default values** during valid
 | `navigation/CustomPacksGraph.kt` | The four destinations |
 | `ui/views/gameConfig/PackLabel.kt` | Resource-or-literal pack name, so one row serves built-in and custom |
 | `ui/views/gameConfig/ui/CustomPackGroup.kt` | The Custom group on the setup screen |
-| `ui/views/customPacks/model/CustomPackLook.kt` | Spice/type → icon, accent, labels |
+| `ui/common/SpiceLook.kt` | Spice → icon, accent, label. Shared with the built-in packs |
+| `ui/views/customPacks/model/CustomPackLook.kt` | Topic label, and entry type → icon, accent, label |
 
 ---
 

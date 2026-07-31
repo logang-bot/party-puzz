@@ -2,7 +2,7 @@ package com.restrusher.partypuzl.ui.views.customPacks.list
 
 import androidx.annotation.StringRes
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 
 /**
@@ -24,7 +24,7 @@ data class CustomPackUiModel(
     val id: String,
     val name: String,
     val description: String,
-    val category: PackCategory,
+    val topic: PackTopic,
     val spice: SpiceLevel,
     val entryCount: Int,
     /**

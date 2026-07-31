@@ -1,9 +1,12 @@
 package com.restrusher.partypuzl.data.models
 
 /**
- * How bold a custom pack reads. Purely cosmetic: it picks the pack's icon and accent colour and
- * shows as a chip, nothing more. The built-in packs express intensity by membership instead
- * (`premium_spicy`, `NSFW_*`), so nothing filters on this.
+ * How bold a pack reads — and, through that, how it looks.
+ *
+ * Purely cosmetic: it picks the pack's icon and accent colour and shows as a chip, and nothing
+ * filters on it. Every pack carries one, built-in packs included (`QuestionPackDefinition.spice`),
+ * so the three levels are the entire look vocabulary — an official pack can only wear a look the
+ * create-pack screen also offers.
  */
 enum class SpiceLevel { MILD, MEDIUM, SPICY }
 
@@ -40,7 +43,7 @@ data class CustomPackDraft(
     val id: String? = null,
     val name: String,
     val description: String,
-    val category: PackCategory,
+    val topic: PackTopic,
     val spice: SpiceLevel
 )
 

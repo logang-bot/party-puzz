@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzl.data.models.CustomPackDraft
 import com.restrusher.partypuzl.data.models.PACK_DESCRIPTION_MAX
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,7 +35,7 @@ class CreateCustomPackViewModel @Inject constructor(
                 it.copy(
                     packId = summary.packId,
                     name = summary.name,
-                    category = summary.category,
+                    topic = summary.topic,
                     spice = summary.spice,
                     description = summary.description
                 )
@@ -45,7 +45,7 @@ class CreateCustomPackViewModel @Inject constructor(
 
     fun onNameChange(value: String) = _uiState.update { it.copy(name = value) }
 
-    fun onCategoryChange(value: PackCategory) = _uiState.update { it.copy(category = value) }
+    fun onTopicChange(value: PackTopic) = _uiState.update { it.copy(topic = value) }
 
     fun onSpiceChange(value: SpiceLevel) = _uiState.update { it.copy(spice = value) }
 
@@ -63,7 +63,7 @@ class CreateCustomPackViewModel @Inject constructor(
                     id = state.packId,
                     name = state.name.trim(),
                     description = state.description.trim(),
-                    category = state.category,
+                    topic = state.topic,
                     spice = state.spice
                 )
             )

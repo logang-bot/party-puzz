@@ -74,6 +74,7 @@ import com.restrusher.partypuzl.ui.common.gameModeTheme
 import com.restrusher.partypuzl.ui.common.rememberRewardedAd
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.ReportPageTint
+import com.restrusher.partypuzl.ui.theme.ctaScrim
 import com.restrusher.partypuzl.ui.views.gameConfig.GameConfigViewModel
 import com.restrusher.partypuzl.ui.views.gameConfig.text
 import kotlinx.coroutines.delay
@@ -131,58 +132,58 @@ fun SharedTransitionScope.GameConfigScreen(
     }
 
     Box(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .weight(1f)
-                    .verticalScroll(rememberScrollState())
-            ) {
-                GameModeHeader(
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    gameModeName = gameModeName,
-                    gameModeImage = gameModeImage,
-                    gameModeDescription = gameModeDescription
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-                AdBannerView(adUnitId = AdUnitIds.GAME_CONFIG_BANNER)
-
-                Spacer(modifier = Modifier.height(12.dp))
-                PlayersContainer(
-                    animatedVisibilityScope = animatedVisibilityScope,
-                    onAddPlayerClick = onCreatePlayerClick,
-                    onDeletePlayer = viewModel::deletePlayer,
-                    onEditPlayer = { player -> onEditPlayerClick(player.id) },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-                QuestionPacksSection(
-                    officialPacks = uiState.officialPacks,
-                    premiumPacks = uiState.premiumPacks,
-                    customPacks = uiState.customPacks,
-                    onTogglePack = viewModel::onTogglePack,
-                    onUnlockPack = viewModel::onUnlockRequested,
-                    onManagePacks = onManagePacksClick
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-                MiniGamesHintBox()
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            StartGameButton(
-                onClick = { viewModel.onStartGame(onStartGameClick) },
-                enabled = GamePlayersList.PlayersList.size >= MIN_PLAYERS_TO_START &&
-                        uiState.hasEnabledPack,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
+        // The page scrolls under the CTA rather than stopping above it, so the bottom inset
+        // goes on the scrolling content — after verticalScroll, so it travels with it.
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp)
+        ) {
+            GameModeHeader(
+                animatedVisibilityScope = animatedVisibilityScope,
+                gameModeName = gameModeName,
+                gameModeImage = gameModeImage,
+                gameModeDescription = gameModeDescription
             )
+
+            Spacer(modifier = Modifier.height(20.dp))
+            AdBannerView(adUnitId = AdUnitIds.GAME_CONFIG_BANNER)
+
+            Spacer(modifier = Modifier.height(12.dp))
+            PlayersContainer(
+                animatedVisibilityScope = animatedVisibilityScope,
+                onAddPlayerClick = onCreatePlayerClick,
+                onDeletePlayer = viewModel::deletePlayer,
+                onEditPlayer = { player -> onEditPlayerClick(player.id) },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+            QuestionPacksSection(
+                officialPacks = uiState.officialPacks,
+                premiumPacks = uiState.premiumPacks,
+                customPacks = uiState.customPacks,
+                onTogglePack = viewModel::onTogglePack,
+                onUnlockPack = viewModel::onUnlockRequested,
+                onManagePacks = onManagePacksClick
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            MiniGamesHintBox()
         }
+
+        StartGameButton(
+            onClick = { viewModel.onStartGame(onStartGameClick) },
+            enabled = GamePlayersList.PlayersList.size >= MIN_PLAYERS_TO_START &&
+                    uiState.hasEnabledPack,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .ctaScrim()
+                .navigationBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
+        )
 
         SnackbarHost(
             hostState = snackbarHostState,

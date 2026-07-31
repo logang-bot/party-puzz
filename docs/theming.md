@@ -20,7 +20,7 @@ cream background separates only by lightness, never by hue.
 | `ui/theme/Color.kt` | Raw brand/accent tokens, plus both Material 3 schemes |
 | `ui/theme/Theme.kt` | The two `ColorScheme`s, `AppColors`, and `PartyPuzlTheme` |
 | `ui/theme/Emphasis.kt` | The `Ink` / `Wash` alpha scale — the only alphas allowed outside this package |
-| `ui/theme/AppModifiers.kt` | `Modifier.appCard()` |
+| `ui/theme/AppModifiers.kt` | `Modifier.appCard()`, `Modifier.ctaScrim()` |
 | `ui/theme/PageBackground.kt` | The `PageBackground` variants and `TintStrength` |
 | `ui/theme/AppBackgrounds.kt` | `Modifier.appBackground()` — how each variant is drawn |
 | `ui/theme/PageTintState.kt` | `ReportPageTint`, how a screen colours its own background |
@@ -72,6 +72,7 @@ Material 3 has no slot for several roles the design needs, so `Theme.kt` adds an
 | `chipScrim` | Translucent chip over a photo or a coloured card |
 | `panelFill`, `panelFillRaised`, `panelFillSelected` | A panel a step above the page — input rows, option chips, stat tiles |
 | `cardSurface`, `cardBorder`, `cardShadow` | Consumed by `Modifier.appCard()` |
+| `pageBaseBright`, `pageBaseWarm` | The colour a non-default page ramp settles on at the bottom — what a `Modifier.ctaScrim()` on those screens has to fade into |
 | `glassTint`, `glassEdge`, `onGlass` | The mini-game countdown's frosted panel |
 | `badgeOfficial`, `badgePremium`, `badgeCustom` | Question-pack tier chips |
 
@@ -156,6 +157,52 @@ one:
 `appCard` is deliberately not applied to surfaces that animate their own border
 for selection or focus (`LastPartyCard`, `NameOptionsContainer`) — it would fight
 the animation.
+
+---
+
+## Sticky bottom CTAs
+
+Every screen with a pinned primary action pins it **over** the scrolling content,
+not in a reserved strip below it. The design writes that strip as
+
+```css
+background: linear-gradient(180deg, transparent, var(--bg-0) 50%);
+```
+
+so the page keeps going behind the button and dissolves into the page base
+halfway down. `Modifier.ctaScrim(baseColor)` is that gradient. The recipe at every
+call site is the same:
+
+```kotlin
+StartGameButton(
+    …,
+    modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .fillMaxWidth()
+        .ctaScrim()
+        .navigationBarsPadding()
+        .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
+)
+```
+
+with the scrolling content carrying `bottom = 96.dp` so its last row can still be
+reached. Two ordering rules are load-bearing:
+
+- `ctaScrim()` goes **before** `navigationBarsPadding()`, so the fade paints behind
+  the system bar instead of stopping short of the screen edge.
+- It goes on the **caller's** modifier, outside the `alpha` the button applies to
+  itself when disabled — otherwise the fade dims along with the button.
+
+`baseColor` must be whatever the screen's own background settles on at the bottom.
+It defaults to `colorScheme.background`, which is right for every
+`PageBackground.Tinted` screen; create-player rides the warm ramp and passes
+`appColors.pageBaseWarm` instead.
+
+> The fade is to `baseColor.copy(alpha = 0f)`, never `Color.Transparent` —
+> the latter is transparent *black*, and dragging it through the ramp puts a grey
+> cast on the cream light theme.
+
+**Screens using it:** game config, the four custom-pack screens, create-player.
 
 ---
 

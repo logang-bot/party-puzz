@@ -18,10 +18,13 @@ enum class PackAccent {
     YELLOW,
 }
 
-/** The accent a user-written pack inherits from how spicy they marked it. */
+/**
+ * The accent a pack inherits from how spicy it is — the only way any pack, built-in or authored,
+ * gets a colour. See `SpiceLook.kt` in `ui/common` for the matching icons.
+ */
 val SpiceLevel.packAccent: PackAccent
     get() = when (this) {
         SpiceLevel.MILD -> PackAccent.TEAL
         SpiceLevel.MEDIUM -> PackAccent.VIOLET
-        SpiceLevel.SPICY -> PackAccent.CORAL
+        SpiceLevel.SPICY -> PackAccent.PINK
     }

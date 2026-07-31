@@ -6,7 +6,7 @@ import androidx.room.Transaction
 import androidx.room.Upsert
 import com.restrusher.partypuzl.data.local.entities.CustomPackEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 import kotlinx.coroutines.flow.Flow
 
@@ -26,7 +26,7 @@ data class CustomPackSummary(
     val packId: String,
     val name: String,
     val description: String,
-    val category: PackCategory,
+    val topic: PackTopic,
     val spice: SpiceLevel,
     val createdAt: Long,
     val isAvailable: Boolean,
@@ -41,7 +41,7 @@ private const val SUMMARY_QUERY = """
         c.packId AS packId,
         c.name AS name,
         c.description AS description,
-        c.category AS category,
+        c.topic AS topic,
         c.spice AS spice,
         c.createdAt AS createdAt,
         c.isAvailable AS isAvailable,

@@ -155,16 +155,26 @@ The other three categories need only their own list to be non-empty.
 
 1. Add prompts to the end of an existing source array, or add a new array to `values/strings.xml` **and** `values-es/strings.xml` (parallel arrays must stay the same length). Put it in the right banner section, next to the rest of its deck — see [Where the prompts live](#where-the-prompts-live).
 2. If you added a new array, add a `QuestionSource` constant and wire it up in `QuestionPromptResolver`.
-3. Add a `QuestionPackDefinition` to `QuestionPackCatalog` and list it in `all`. Its `accent` is
-   a `PackAccent` **name**, not a colour — `PackAccent.ROSE`, never `AccentRose`. Nothing under
-   `data/` imports a Compose `Color`; `PackAccent.color` in `ui/theme` resolves the name at the
-   render site. Add a new enum entry only if the design really introduces a new accent.
+3. Add a `QuestionPackDefinition` to `QuestionPackCatalog` and list it in `all`. It declares a
+   `SpiceLevel`, **not** an icon and an accent — those are derived from it by
+   `SpiceLevel.iconRes` and `SpiceLevel.packAccent`, the same two an authored pack goes through.
+   That is deliberate and there is no override: a curated pack must not be able to wear a look
+   the create-pack screen has no way to produce. If a pack needs a look that does not exist yet,
+   the fix is a change to the three levels, not an exception for one pack.
 4. Add the index list to `QuestionCatalog.byPack`. For a premium pack this must cover the whole array — see [Premium](#premium).
-5. **Bump `QuestionCatalog.MAPPING_VERSION`.**
+5. **Bump `QuestionCatalog.MAPPING_VERSION`.** And bump `QuestionPackCatalog.CATALOG_VERSION` too if you changed an existing definition's `tier` or `category` — see below.
 6. Add the pack's name string (`pack_*`) in both languages.
 7. Run `./gradlew connectedDebugAndroidTest`. `QuestionPackIntegrityTest` is what catches a range that does not match its array, a short parallel array, or a Truth-or-Dare pack missing a half.
 
 No database migration is needed. Packs are seeded with `INSERT OR IGNORE` so existing toggles survive, and `deleteRetiredCatalogPacks` retires packs the catalog no longer defines — their questions cascade away. That query skips `PackTier.CUSTOM`, which is never in the catalog; see [custom-packs.md](custom-packs.md).
+
+### `CATALOG_VERSION`, and what needs it
+
+`INSERT OR IGNORE` has a blind spot: it never *updates*. A row that already exists keeps the tier and category it was seeded with, so on any device that has already launched the app, editing an existing definition would change nothing.
+
+`QuestionPackCatalog.CATALOG_VERSION` closes it, the same way `MAPPING_VERSION` does for questions. When it differs from the value in DataStore, `QuestionPackSeeder` runs `resyncCatalog`, which rewrites `tier` and `category` on every catalog row and inserts any that are missing. `isEnabled` and `isUnlocked` are left alone — they are the user's: resetting them would switch a pack back on after they turned it off, or take back a premium unlock they paid for.
+
+Bump it when you change a stored column — a definition's **tier** or **category**. Names, spice and question membership are read from code on every launch and need no bump.
 
 ---
 
@@ -218,7 +228,8 @@ Because both passes feed one set of pools, the game screen never learns that cus
 | `data/models/QuestionSource.kt` | Stable source enum + `QuestionRef` |
 | `data/local/appData/appDataSource/QuestionCatalog.kt` | **The categorisation** — index lists per pack, `MAPPING_VERSION` |
 | `app/src/androidTest/.../QuestionPackIntegrityTest.kt` | The only automated guard on the index seam |
-| `data/local/appData/appDataSource/QuestionPackCatalog.kt` | The 14 pack definitions |
+| `data/local/appData/appDataSource/QuestionPackCatalog.kt` | The 14 pack definitions, and `CATALOG_VERSION` |
+| `ui/common/SpiceLook.kt` | Spice → icon and accent, for built-in and authored packs alike |
 | `data/local/entities/QuestionEntity.kt` | Question → pack row |
 | `data/local/entities/QuestionPackEntity.kt` | Pack enabled / unlocked row |
 | `data/local/dao/QuestionDao.kt` | Playable-question JOIN, counts, `replaceAll` |

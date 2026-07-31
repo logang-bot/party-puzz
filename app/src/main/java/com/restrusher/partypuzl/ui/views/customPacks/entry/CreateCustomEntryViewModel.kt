@@ -6,7 +6,6 @@ import com.restrusher.partypuzl.data.models.CustomEntryDraft
 import com.restrusher.partypuzl.data.models.CustomEntryType
 import com.restrusher.partypuzl.data.models.DEFAULT_STICKY_DURATION_SECONDS
 import com.restrusher.partypuzl.data.models.ENTRY_TEXT_MAX
-import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.TRIVIA_TEXT_MAX
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
 import com.restrusher.partypuzl.ui.views.customPacks.model.EntryDeal
@@ -31,8 +30,8 @@ class CreateCustomEntryViewModel @Inject constructor(
 
     /**
      * Reads the pack for the "Adding to …" card, and the entry itself when editing. A new entry
-     * starts on the type that matches the pack's declared category — the likeliest pick, though
-     * the author is free to change it.
+     * starts on Truth: a pack's topic says nothing about what it holds, and step 01 asks for the
+     * deal outright, so there is nothing better to guess from.
      */
     fun load(packId: String, entryId: String?) {
         if (loaded) return
@@ -45,7 +44,7 @@ class CreateCustomEntryViewModel @Inject constructor(
                     packId = packId,
                     packName = summary?.name.orEmpty(),
                     entryId = entry?.id,
-                    type = entry?.type ?: defaultTypeFor(summary?.category),
+                    type = entry?.type ?: CustomEntryType.TRUTH,
                     text = entry?.text.orEmpty(),
                     durationSeconds = entry?.durationSeconds ?: DEFAULT_STICKY_DURATION_SECONDS,
                     optionA = entry?.optionA.orEmpty(),
@@ -101,9 +100,3 @@ private fun CreateCustomEntryState.toDraft() = CustomEntryDraft(
     optionB = optionB.trim().takeIf { type == CustomEntryType.TRIVIA },
     correctOption = correctOption.takeIf { type == CustomEntryType.TRIVIA }
 )
-
-private fun defaultTypeFor(category: PackCategory?): CustomEntryType = when (category) {
-    PackCategory.STICKY_DARE -> CustomEntryType.STICKY_DARE
-    PackCategory.GENERAL_KNOWLEDGE -> CustomEntryType.TRIVIA
-    else -> CustomEntryType.TRUTH
-}

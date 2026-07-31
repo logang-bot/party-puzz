@@ -6,6 +6,7 @@ import com.restrusher.partypuzl.data.local.entities.CustomPackEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import com.restrusher.partypuzl.data.models.CustomEntryDraft
 import com.restrusher.partypuzl.data.models.CustomPackDraft
+import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.PackTier
 import com.restrusher.partypuzl.data.proxies.CustomPackProxy
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
@@ -42,7 +43,10 @@ class CustomPackRepositoryImpl(
             packRow = QuestionPackEntity(
                 id = id,
                 tier = PackTier.CUSTOM,
-                category = draft.category,
+                // Catalog metadata, and there is no catalog behind an authored pack. Nothing reads
+                // this column for a CUSTOM row — the loader pools by each entry's own type — so it
+                // is filled with the deal a pack most often holds rather than left meaningful.
+                category = PackCategory.TRUTH_OR_DARE,
                 isEnabled = true,
                 isUnlocked = true
             ),
@@ -91,7 +95,7 @@ class CustomPackRepositoryImpl(
         packId = id,
         name = name,
         description = description,
-        category = category,
+        topic = topic,
         spice = spice,
         createdAt = createdAt
             ?: customPackLocalProxy.getSummaryOnce(id)?.createdAt

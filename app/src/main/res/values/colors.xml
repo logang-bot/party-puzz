@@ -7,4 +7,12 @@
       the page base without a flash.
     -->
     <color name="splash_background">#FBF6EE</color>
+
+    <!--
+      The star in ic_splash_icon.xml. It has to sit legibly on splash_background,
+      so it flips per mode exactly like AppColors.brandAccent does: BrandTealLight
+      here, cream in the values-night copy. The yellow centre dot stays AccentYellow
+      in both modes — it is a fill, not ink.
+    -->
+    <color name="splash_icon_star">#0F5B66</color>
 </resources>

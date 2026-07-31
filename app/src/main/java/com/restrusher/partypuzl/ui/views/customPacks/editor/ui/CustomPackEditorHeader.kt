@@ -28,8 +28,9 @@ import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.messageRes
-import com.restrusher.partypuzl.ui.views.customPacks.model.accent
-import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
+import com.restrusher.partypuzl.ui.common.accent
+import com.restrusher.partypuzl.ui.common.iconRes
+import com.restrusher.partypuzl.ui.common.labelRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
 import com.restrusher.partypuzl.ui.views.customPacks.previewPack
 import com.restrusher.partypuzl.ui.views.customPacks.ui.AccentIconTile
@@ -53,7 +54,7 @@ internal fun PackHeader(pack: CustomPackUiModel, modifier: Modifier = Modifier) 
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     MetaChip(
-                        label = stringResource(pack.category.labelRes),
+                        label = stringResource(pack.topic.labelRes),
                         tone = pack.spice.accent
                     )
                     MetaChip(label = stringResource(pack.spice.labelRes))

@@ -25,7 +25,7 @@ import com.restrusher.partypuzl.data.packs.QuestionPackSeeder
 import com.restrusher.partypuzl.data.repositories.interfaces.QuestionPackRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.QuestionRepository
 import com.restrusher.partypuzl.navigation.GameConfigScreen
-import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
+import com.restrusher.partypuzl.ui.common.iconRes
 import com.restrusher.partypuzl.ui.views.game.gameScreen.MiniGame
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -157,8 +157,10 @@ class GameConfigViewModel @Inject constructor(
                 id = definition.id,
                 tier = definition.tier,
                 name = PackLabel.Resource(definition.nameRes),
-                iconRes = definition.iconRes,
-                accent = definition.accent,
+                // Built-in and authored packs resolve their look the same way — see
+                // `SpiceLook.kt`. Nothing here may pick an icon or accent of its own.
+                iconRes = definition.spice.iconRes,
+                accent = definition.spice.packAccent,
                 promptCount = definition.promptCount(),
                 // A locked pack can never read as enabled, whatever the stored flag says.
                 isEnabled = entity.isEnabled && unlocked,

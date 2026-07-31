@@ -10,6 +10,12 @@ interface QuestionPackRepository {
     /** Inserts any catalog pack the DB doesn't have yet, leaving existing rows untouched. */
     suspend fun seedFromCatalog()
 
+    /**
+     * Rewrites the catalog-owned columns of every catalog pack, so an edit to a definition reaches
+     * devices that already have the row. The user's on/off and unlock state is left alone.
+     */
+    suspend fun resyncCatalog()
+
     suspend fun setEnabled(id: String, enabled: Boolean)
     suspend fun setUnlocked(id: String, unlocked: Boolean)
     suspend fun unlockAllPremium()

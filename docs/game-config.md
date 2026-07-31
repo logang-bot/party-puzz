@@ -91,7 +91,9 @@ A small informational row below the packs section. An icon (`ic_lightbulb`) sits
 
 ## Start the Party Button
 
-Pinned at the bottom of the screen, above the navigation bar (`navigationBarsPadding`). Enabled when **both**:
+Pinned at the bottom of the screen, above the navigation bar (`navigationBarsPadding`), **overlaying** the scrolling content rather than sitting in a reserved strip below it. The strip behind it is a `Modifier.ctaScrim()` — the design's `linear-gradient(180deg, transparent, var(--bg-0) 50%)` — so the packs list keeps going behind the button and dissolves into the page base. The scroll column carries `bottom = 96.dp` so its last row is still reachable. See [theming.md](theming.md#sticky-bottom-ctas).
+
+Enabled when **both**:
 
 - at least 2 players are registered (`GamePlayersList.PlayersList.size >= 2`), and
 - at least one pack is enabled (`GameConfigState.hasEnabledPack`) — official, premium **or** custom.

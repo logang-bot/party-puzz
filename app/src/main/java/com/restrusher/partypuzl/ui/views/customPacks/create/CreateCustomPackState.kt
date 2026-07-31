@@ -1,12 +1,12 @@
 package com.restrusher.partypuzl.ui.views.customPacks.create
 
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 
 data class CreateCustomPackState(
     val packId: String? = null,
     val name: String = "",
-    val category: PackCategory = PackCategory.TRUTH_OR_DARE,
+    val topic: PackTopic = PackTopic.FRIENDS_INSIDE_JOKES,
     val spice: SpiceLevel = SpiceLevel.MEDIUM,
     val description: String = ""
 ) {

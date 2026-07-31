@@ -20,6 +20,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         private val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
         private val IS_AD_FREE_KEY = booleanPreferencesKey("is_ad_free")
         private val QUESTION_MAPPING_VERSION_KEY = intPreferencesKey("question_mapping_version")
+        private val PACK_CATALOG_VERSION_KEY = intPreferencesKey("pack_catalog_version")
     }
 
     override val themeMode: Flow<ThemeMode> = dataStore.data.map { prefs ->
@@ -53,5 +54,12 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun setQuestionMappingVersion(version: Int) {
         dataStore.edit { prefs -> prefs[QUESTION_MAPPING_VERSION_KEY] = version }
+    }
+
+    override suspend fun getPackCatalogVersion(): Int =
+        dataStore.data.first()[PACK_CATALOG_VERSION_KEY] ?: 0
+
+    override suspend fun setPackCatalogVersion(version: Int) {
+        dataStore.edit { prefs -> prefs[PACK_CATALOG_VERSION_KEY] = version }
     }
 }

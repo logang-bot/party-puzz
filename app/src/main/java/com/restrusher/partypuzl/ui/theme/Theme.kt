@@ -143,6 +143,13 @@ data class AppColors(
      * *darker* than the base in dark and cannot stand in).
      */
     val pageBaseBright: Color,
+    /**
+     * The colour the warm cream ramp settles on at the bottom of the page — what a
+     * [ctaScrim] has to fade into on the screens that ride that ramp rather than the
+     * page base. Dark has no warm ramp and falls back to the teal glow, which reaches
+     * the same end stop.
+     */
+    val pageBaseWarm: Color,
     /** Frosted panel behind the mini-game countdown. */
     val glassTint: Color,
     val glassEdge: Color,
@@ -164,6 +171,7 @@ val LightAppColors = AppColors(
     cardBorder = Color(0xFF0B1F24).copy(alpha = 0.10f),
     cardShadow = Color(0xFF0B1F24),
     pageBaseBright = Color.White,
+    pageBaseWarm = backgroundGradientLightEnd,
     glassTint = Color.White.copy(alpha = 0.62f),
     glassEdge = Color.White.copy(alpha = 0.85f),
     onGlass = Color(0xFF0E2630),
@@ -184,6 +192,7 @@ val DarkAppColors = AppColors(
     cardBorder = Color.White.copy(alpha = 0.08f),
     cardShadow = Color.Transparent,
     pageBaseBright = backgroundGradientDarkEnd,
+    pageBaseWarm = backgroundGradientDarkEnd,
     glassTint = Color.White.copy(alpha = 0.22f),
     glassEdge = Color.White.copy(alpha = 0.30f),
     onGlass = Color.White,

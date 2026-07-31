@@ -47,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -72,9 +73,9 @@ import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.PermissionDialog
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
-import com.restrusher.partypuzl.ui.theme.Wash
+import com.restrusher.partypuzl.ui.theme.appColors
+import com.restrusher.partypuzl.ui.theme.ctaScrim
 import com.restrusher.partypuzl.ui.theme.ink
-import com.restrusher.partypuzl.ui.theme.wash
 import com.restrusher.partypuzl.utils.getActivity
 import com.restrusher.partypuzl.utils.openAppSettings
 import java.io.File
@@ -82,6 +83,9 @@ import java.io.File
 var permissionsToRequest = arrayOf(
     Manifest.permission.CAMERA
 )
+
+/** Matches the design's `.pp-btn:disabled { opacity: 0.45 }`. */
+private const val DISABLED_ALPHA = 0.45f
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -193,19 +197,23 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 onGenerateRandomName = { viewModel.onPlayerNameChanged(viewModel.generateRandomName()) },
                 onGenderSelected = viewModel::onGenderSelected,
                 onInterestedInSelected = viewModel::onInterestedInSelected,
-                modifier = Modifier.weight(1f)
-            )
-
-            ConfirmButton(
-                onClick = { viewModel.confirmPlayer() },
-                enabled = uiState.playerName.isNotBlank() && uiState.interestedIn != null,
-                isEditMode = uiState.isEditMode,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 10.dp)
+                modifier = Modifier.fillMaxSize()
             )
         }
+
+        // Create-player rides the warm cream ramp rather than the page base, so the fade under
+        // the CTA has to end on that ramp's own bottom colour.
+        ConfirmButton(
+            onClick = { viewModel.confirmPlayer() },
+            enabled = uiState.playerName.isNotBlank() && uiState.interestedIn != null,
+            isEditMode = uiState.isEditMode,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .ctaScrim(MaterialTheme.appColors.pageBaseWarm)
+                .navigationBarsPadding()
+                .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
+        )
 
         if (uiState.isLoading) {
             LoadingScrim()
@@ -258,7 +266,9 @@ fun PlayerFormContent(
         modifier = modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
+            // Bottom inset after verticalScroll, so it scrolls with the form and clears the
+            // CTA the screen overlays on top.
+            .padding(start = 16.dp, end = 16.dp, bottom = 96.dp)
     ) {
         StepLabel(stringResource(R.string.step_pick_face))
         ImageOptionsContainer(
@@ -309,7 +319,6 @@ fun PlayerFormContent(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
@@ -336,8 +345,6 @@ private fun ConfirmButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val primary = MaterialTheme.colorScheme.primary
     val onPrimary = MaterialTheme.colorScheme.onPrimary
-    val disabledBg = MaterialTheme.colorScheme.onBackground.wash(Wash.Fill)
-    val disabledText = MaterialTheme.colorScheme.onBackground.ink(Ink.Muted)
     val animatedBgColor by animateColorAsState(
         targetValue = if (isPressed) onPrimary else primary,
         animationSpec = tween(300), label = "bg"
@@ -346,13 +353,18 @@ private fun ConfirmButton(
         targetValue = if (isPressed) primary else onPrimary,
         animationSpec = tween(300), label = "text"
     )
-    val bgColor = if (enabled) animatedBgColor else disabledBg
-    val textColor = if (enabled) animatedTextColor else disabledText
+
+    // Disabled keeps the solid brand fill and dims the whole button, per the design's
+    // `.pp-btn:disabled { opacity: 0.45 }`. A translucent fill instead would read as a
+    // see-through bar over the scrim behind it.
+    val bgColor = if (enabled) animatedBgColor else primary
+    val textColor = if (enabled) animatedTextColor else onPrimary
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .defaultMinSize(minHeight = 52.dp)
+            .alpha(if (enabled) 1f else DISABLED_ALPHA)
             .background(color = bgColor, shape = RoundedCornerShape(50))
             .clickable(
                 interactionSource = interactionSource,

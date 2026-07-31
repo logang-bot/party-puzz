@@ -5,6 +5,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,9 +31,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.common.accent
+import com.restrusher.partypuzl.ui.common.iconRes
+import com.restrusher.partypuzl.ui.common.labelRes
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.Wash
@@ -39,32 +44,35 @@ import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.theme.wash
-import com.restrusher.partypuzl.ui.views.customPacks.model.AuthorableCategories
-import com.restrusher.partypuzl.ui.views.customPacks.model.accent
-import com.restrusher.partypuzl.ui.views.customPacks.model.iconRes
 import com.restrusher.partypuzl.ui.views.customPacks.model.labelRes
 
-/** The two pickers the create-pack form uses for a pack's category and its spice. */
+/** The two pickers the create-pack form uses for a pack's topic and its spice. */
 
-/** Selectable pills for the pack's category. Mini-games are absent — they are code, not prompts. */
+/**
+ * Selectable pills for what the pack is about.
+ *
+ * A flow rather than a row: there are eight topics and they are words of very different lengths,
+ * so they wrap onto as many lines as they need instead of being squeezed into equal columns.
+ */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun CategoryPills(
-    selected: PackCategory,
-    onSelect: (PackCategory) -> Unit,
+internal fun TopicPills(
+    selected: PackTopic,
+    onSelect: (PackTopic) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.fillMaxWidth()
     ) {
-        AuthorableCategories.forEach { category ->
-            val isOn = category == selected
+        PackTopic.entries.forEach { topic ->
+            val isOn = topic == selected
             val accent = MaterialTheme.colorScheme.primary
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier
-                    .weight(1f)
                     .clip(CircleShape)
                     .background(
                         if (isOn) accent.wash(Wash.Hairline)
@@ -76,8 +84,8 @@ internal fun CategoryPills(
                         else MaterialTheme.colorScheme.onBackground.wash(Wash.Fill),
                         shape = CircleShape
                     )
-                    .clickable { onSelect(category) }
-                    .padding(horizontal = 10.dp, vertical = 10.dp)
+                    .clickable { onSelect(topic) }
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
             ) {
                 if (isOn) {
                     Icon(
@@ -88,7 +96,7 @@ internal fun CategoryPills(
                     )
                 }
                 Text(
-                    text = stringResource(category.labelRes),
+                    text = stringResource(topic.labelRes),
                     style = MaterialTheme.typography.labelMedium,
                     textAlign = TextAlign.Center,
                     color = if (isOn) MaterialTheme.colorScheme.onBackground
@@ -149,7 +157,7 @@ internal fun SpiceSelector(
 @Composable
 private fun PackSelectorSamples() {
     Column(modifier = Modifier.appBackground().padding(16.dp)) {
-        CategoryPills(selected = PackCategory.TRUTH_OR_DARE, onSelect = {})
+        TopicPills(selected = PackTopic.FRIENDS_INSIDE_JOKES, onSelect = {})
         Spacer(modifier = Modifier.height(16.dp))
         SpiceSelector(selected = SpiceLevel.MEDIUM, onSelect = {})
         Spacer(modifier = Modifier.height(12.dp))

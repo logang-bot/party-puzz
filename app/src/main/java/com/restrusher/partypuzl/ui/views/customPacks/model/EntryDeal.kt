@@ -16,7 +16,7 @@ import com.restrusher.partypuzl.data.models.CustomEntryType
  * the reveal screen offers a Truth card and a Dare card with no way to hide one, and a pack
  * holding only one half is worth warning about. Merging the picker does not merge the pools.
  *
- * Declared in the order the cards are drawn, matching [AuthorableCategories].
+ * Declared in the order the cards are drawn.
  */
 enum class EntryDeal { TRUTH_OR_DARE, STICKY_DARE, TRIVIA }
 

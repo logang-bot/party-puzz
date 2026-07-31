@@ -810,8 +810,8 @@
     <string name="custom_pack_step">Step %1$s · %2$s</string>
     <string name="custom_pack_step_name">Name your pack</string>
     <string name="custom_pack_name_hint">e.g. Bachelorette dares</string>
-    <string name="custom_pack_step_category">Which category does it feed?</string>
-    <string name="custom_pack_step_category_sub">Entries you write play during that part of the game. You can still mix in other kinds later.</string>
+    <string name="custom_pack_step_topic">Give it a topic</string>
+    <string name="custom_pack_step_topic_sub">Just for finding it later — a pack can hold truths, dares and questions all at once.</string>
     <string name="custom_pack_step_spice">Spice level</string>
     <string name="custom_pack_step_spice_sub">Sets the pack\'s colour and icon. It doesn\'t change what gets drawn.</string>
     <string name="custom_pack_step_description">Describe it</string>
@@ -824,6 +824,16 @@
     <string name="spice_mild">Mild</string>
     <string name="spice_medium">Medium</string>
     <string name="spice_spicy">Spicy</string>
+
+    <!-- Custom packs · what a pack is about. A shelf label, not a game deal. -->
+    <string name="pack_topic_friends_inside_jokes">Friends &amp; inside jokes</string>
+    <string name="pack_topic_big_night_out">Big night out</string>
+    <string name="pack_topic_food_and_drink">Food &amp; drink</string>
+    <string name="pack_topic_couples">Couples</string>
+    <string name="pack_topic_family">Family</string>
+    <string name="pack_topic_work_crowd">Work crowd</string>
+    <string name="pack_topic_pop_culture">Pop culture</string>
+    <string name="pack_topic_travel">Travel</string>
 
     <!-- Custom packs · a pack's contents -->
     <string name="custom_pack_editor_title">Pack</string>

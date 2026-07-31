@@ -167,7 +167,16 @@ Runs on `Dispatchers.IO` inside `viewModelScope`:
 - Confirm button `onClick` calls `viewModel.confirmPlayer()`.
 - Screen wrapped in a `Box`; when `uiState.isLoading` is `true`, a semi-transparent black overlay
   with a `CircularProgressIndicator` is shown on top.
-- `PlayerFormContent`'s inner `Column` uses `verticalScroll` to handle overflow on small screens.
+- `PlayerFormContent`'s inner `Column` uses `verticalScroll` to handle overflow on small screens,
+  with `bottom = 96.dp` of content padding to clear the Confirm button.
+- Confirm is a sticky CTA overlaid on the form, not a reserved strip below it: it sits in the outer
+  `Box` at `Alignment.BottomCenter` behind a `Modifier.ctaScrim(appColors.pageBaseWarm)`. The warm
+  base is required here — this screen rides the cream ramp (`PageBackground.Warm`), not the page
+  base every other CTA fades into. See [theming.md](theming.md#sticky-bottom-ctas).
+- Disabled Confirm keeps the solid `primary` fill and dims the whole button to 45 % alpha, matching
+  `StartGameButton` and `CustomPackCta` and the design's `.pp-btn:disabled { opacity: 0.45 }`. It
+  previously used a translucent `onBackground` wash, which read as a see-through bar over the page.
+- The CTA stays **outside** the form's `sharedBounds` transition.
 
 ### Selectors in `PlayerFormContent`
 
@@ -203,3 +212,4 @@ Both selectors accept a nullable selected value (`Gender?` and `InterestedIn?`) 
 | 9 | Added the `questions` table — one row per question, with a `packId` foreign key (`ON DELETE CASCADE`) and an index on it. `MIGRATION_8_9` creates the shape only; `QuestionPackSeeder` fills the rows from the catalog on next launch. |
 | 10 | Added `custom_packs` and `custom_entries` for user-authored packs (see [custom-packs.md](custom-packs.md)). Both cascade off `question_packs`. `custom_entries` is the only table in the schema that stores prompt *text* — built-in prompts stay in `strings.xml`. `MIGRATION_9_10`'s SQL was copied from Room's own generated `10.json` rather than hand-written, since a registered migration that doesn't match throws on open and `fallbackToDestructiveMigration()` does not cover it. |
 | 11 | Added `custom_packs.isAvailable` — whether an authored pack is offered on the setup screen at all, as distinct from `question_packs.isEnabled`, which is only the current session's pick. `MIGRATION_10_11` is a single `ALTER TABLE … ADD COLUMN … INTEGER NOT NULL DEFAULT 1`, so existing packs stay available. **The column needs `@ColumnInfo(defaultValue = "1")` on the entity**: Room compares default values when validating, so a bare Kotlin `= true` would make it expect a column with no SQL default and reject the migrated table on open. Verified against Room's generated `11.json`. |
+| 12 | Replaced `custom_packs.category` (a `PackCategory` — a game-deal name) with `topic` (a `PackTopic`). The old label promised a filter that never existed: the content loader pools by each *entry's* type, so a pack always could hold any mix. `MIGRATION_11_12` recreates the table rather than renaming the column — `ALTER TABLE … RENAME COLUMN` needs SQLite 3.25, above this app's `minSdk` — copying every row across and defaulting each to `FRIENDS_INSIDE_JOKES`, the topic a new pack starts on. Authored entries are untouched: `custom_entries` cascades off `question_packs`, not `custom_packs`. See [custom-packs.md](custom-packs.md). |

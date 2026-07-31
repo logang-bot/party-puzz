@@ -35,7 +35,7 @@ import kotlinx.coroutines.internal.synchronized
         CustomPackEntity::class,
         CustomEntryEntity::class
     ],
-    version = 11,
+    version = 12,
     exportSchema = false
 )
 abstract class PartyPuzlDatabase : RoomDatabase() {
@@ -162,6 +162,47 @@ abstract class PartyPuzlDatabase : RoomDatabase() {
             }
         }
 
+        /**
+         * Replaces `custom_packs.category` with `topic`.
+         *
+         * A pack's label used to be a game deal — "Truth or Dare", "Sticky Dares" — which promised
+         * a filter that never existed: the content loader pools by each *entry's* type, so a pack
+         * always could hold any mix. It is now a `PackTopic`, which claims only what it delivers.
+         *
+         * The table is recreated rather than the column renamed: `ALTER TABLE … RENAME COLUMN`
+         * needs SQLite 3.25, which is not there on this app's `minSdk`. The old values have no
+         * topic equivalent, so every existing pack lands on the same topic a new one starts on.
+         * Authored entries are untouched — `custom_entries` keys off `question_packs`, not this
+         * table — and the statements are copied verbatim from Room's expected schema for v12,
+         * `DEFAULT 1` included, since Room compares declared defaults when it validates on open.
+         */
+        private val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `custom_packs_new` (" +
+                            "`packId` TEXT NOT NULL, " +
+                            "`name` TEXT NOT NULL, " +
+                            "`description` TEXT NOT NULL, " +
+                            "`topic` TEXT NOT NULL, " +
+                            "`spice` TEXT NOT NULL, " +
+                            "`createdAt` INTEGER NOT NULL, " +
+                            "`isAvailable` INTEGER NOT NULL DEFAULT 1, " +
+                            "PRIMARY KEY(`packId`), " +
+                            "FOREIGN KEY(`packId`) REFERENCES `question_packs`(`id`) " +
+                            "ON UPDATE NO ACTION ON DELETE CASCADE )"
+                )
+                db.execSQL(
+                    "INSERT INTO `custom_packs_new` " +
+                            "(`packId`, `name`, `description`, `topic`, `spice`, " +
+                            "`createdAt`, `isAvailable`) " +
+                            "SELECT `packId`, `name`, `description`, 'FRIENDS_INSIDE_JOKES', " +
+                            "`spice`, `createdAt`, `isAvailable` FROM `custom_packs`"
+                )
+                db.execSQL("DROP TABLE `custom_packs`")
+                db.execSQL("ALTER TABLE `custom_packs_new` RENAME TO `custom_packs`")
+            }
+        }
+
         @OptIn(InternalCoroutinesApi::class)
         fun getDatabase(context: Context): PartyPuzlDatabase {
             return Instance ?: synchronized(this) {
@@ -170,7 +211,8 @@ abstract class PartyPuzlDatabase : RoomDatabase() {
                         MIGRATION_7_8,
                         MIGRATION_8_9,
                         MIGRATION_9_10,
-                        MIGRATION_10_11
+                        MIGRATION_10_11,
+                        MIGRATION_11_12
                     )
                     .fallbackToDestructiveMigration()
                     .build()

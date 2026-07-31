@@ -26,6 +26,7 @@ import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.ReportPageTint
 import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.theme.ctaScrim
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryState
 import com.restrusher.partypuzl.ui.views.customPacks.entry.CreateCustomEntryViewModel
 import com.restrusher.partypuzl.ui.views.customPacks.model.accent
@@ -130,8 +131,9 @@ private fun CreateCustomEntryContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
+                .ctaScrim()
                 .navigationBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
         )
     }
 }

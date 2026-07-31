@@ -2,7 +2,7 @@ package com.restrusher.partypuzl.ui.views.customPacks
 
 import com.restrusher.partypuzl.data.local.entities.CustomEntryEntity
 import com.restrusher.partypuzl.data.models.CustomEntryType
-import com.restrusher.partypuzl.data.models.PackCategory
+import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 import com.restrusher.partypuzl.ui.views.customPacks.create.CreateCustomPackState
 import com.restrusher.partypuzl.ui.views.customPacks.editor.CustomPackEditorState
@@ -23,7 +23,7 @@ internal val previewPack = CustomPackUiModel(
     id = "custom_preview",
     name = "House Rules",
     description = "Inside jokes from the trip — nobody outside the group will get these.",
-    category = PackCategory.TRUTH_OR_DARE,
+    topic = PackTopic.FRIENDS_INSIDE_JOKES,
     spice = SpiceLevel.MEDIUM,
     entryCount = 12,
     isAvailable = true,
@@ -36,7 +36,7 @@ internal val previewPacks = listOf(
         id = "custom_preview_2",
         name = "Kitchen Floor Confessions",
         description = "For the part of the night that happens after the music stops.",
-        category = PackCategory.STICKY_DARE,
+        topic = PackTopic.BIG_NIGHT_OUT,
         spice = SpiceLevel.SPICY,
         entryCount = 7,
         isAvailable = false,
@@ -46,7 +46,7 @@ internal val previewPacks = listOf(
         id = "custom_preview_3",
         name = "Pub Quiz Leftovers",
         description = "",
-        category = PackCategory.GENERAL_KNOWLEDGE,
+        topic = PackTopic.FOOD_AND_DRINK,
         spice = SpiceLevel.MILD,
         entryCount = 0,
         isAvailable = true,
@@ -120,7 +120,7 @@ internal val previewTriviaEntryState = CreateCustomEntryState(
 
 internal val previewPackFormState = CreateCustomPackState(
     name = "House Rules",
-    category = PackCategory.TRUTH_OR_DARE,
+    topic = PackTopic.FRIENDS_INSIDE_JOKES,
     spice = SpiceLevel.MEDIUM,
     description = "Inside jokes from the trip — nobody outside the group will get these."
 )

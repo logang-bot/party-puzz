@@ -806,8 +806,8 @@
     <string name="custom_pack_step">Paso %1$s · %2$s</string>
     <string name="custom_pack_step_name">Ponle nombre</string>
     <string name="custom_pack_name_hint">p. ej. Retos de despedida</string>
-    <string name="custom_pack_step_category">¿A qué categoría alimenta?</string>
-    <string name="custom_pack_step_category_sub">Las entradas que escribas salen en esa parte del juego. Aun así puedes mezclar otros tipos después.</string>
+    <string name="custom_pack_step_topic">Dale un tema</string>
+    <string name="custom_pack_step_topic_sub">Solo para encontrarlo después — un paquete puede tener verdades, retos y preguntas a la vez.</string>
     <string name="custom_pack_step_spice">Nivel de picante</string>
     <string name="custom_pack_step_spice_sub">Define el color y el icono del paquete. No cambia lo que sale en el juego.</string>
     <string name="custom_pack_step_description">Descríbelo</string>
@@ -820,6 +820,16 @@
     <string name="spice_mild">Suave</string>
     <string name="spice_medium">Medio</string>
     <string name="spice_spicy">Picante</string>
+
+    <!-- Paquetes personalizados · de qué va un paquete. Una etiqueta, no un tipo de jugada. -->
+    <string name="pack_topic_friends_inside_jokes">Amigos y bromas privadas</string>
+    <string name="pack_topic_big_night_out">Noche loca</string>
+    <string name="pack_topic_food_and_drink">Comida y bebida</string>
+    <string name="pack_topic_couples">Parejas</string>
+    <string name="pack_topic_family">Familia</string>
+    <string name="pack_topic_work_crowd">Gente del trabajo</string>
+    <string name="pack_topic_pop_culture">Cultura pop</string>
+    <string name="pack_topic_travel">Viajes</string>
 
     <!-- Paquetes personalizados · contenido de un paquete -->
     <string name="custom_pack_editor_title">Paquete</string>

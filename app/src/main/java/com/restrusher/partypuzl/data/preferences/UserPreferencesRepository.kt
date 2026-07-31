@@ -13,6 +13,13 @@ interface UserPreferencesRepository {
      */
     suspend fun getQuestionMappingVersion(): Int
     suspend fun setQuestionMappingVersion(version: Int)
+
+    /**
+     * Version of `QuestionPackCatalog` the `question_packs` rows were last brought in line with.
+     * Compared with `QuestionPackCatalog.CATALOG_VERSION` to decide whether they need a re-sync.
+     */
+    suspend fun getPackCatalogVersion(): Int
+    suspend fun setPackCatalogVersion(version: Int)
     suspend fun setThemeMode(themeMode: ThemeMode)
     suspend fun setAppLanguage(language: AppLanguage)
     suspend fun setAdFree(adFree: Boolean)

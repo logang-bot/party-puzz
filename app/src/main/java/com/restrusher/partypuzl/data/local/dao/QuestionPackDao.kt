@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Upsert
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import kotlinx.coroutines.flow.Flow
@@ -23,6 +24,24 @@ interface QuestionPackDao {
      */
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertMissing(packs: List<QuestionPackEntity>)
+
+    /**
+     * Brings every catalog row back in line with the catalog after a `CATALOG_VERSION` bump.
+     *
+     * Only the columns the catalog owns are rewritten. `isEnabled` and `isUnlocked` belong to the
+     * user — resetting them would switch a curated pack back on after they turned it off, and
+     * would take back a premium unlock they paid for — so [insertMissing] supplies them once, for
+     * rows that did not exist, and nothing touches them again.
+     */
+    @Transaction
+    suspend fun resyncCatalog(defaults: List<QuestionPackEntity>) {
+        insertMissing(defaults)
+        defaults.forEach { updateCatalogFields(it.id, it.tier.name, it.category.name) }
+    }
+
+    /** Enum names rather than the enums themselves, matching how the raw queries above read them. */
+    @Query("UPDATE question_packs SET tier = :tier, category = :category WHERE id = :id")
+    suspend fun updateCatalogFields(id: String, tier: String, category: String)
 
     @Upsert
     suspend fun upsert(pack: QuestionPackEntity)
