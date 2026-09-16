@@ -64,6 +64,8 @@ data class GameScreenState(
     val challengeText: String? = null,
     // Deal picker — the last category played party-wide is promoted to the hero card
     val heroDealType: GameDealType = GameDealType.TRUTH_OR_DARE,
+    // The category this player moved into the hero slot, for this turn only
+    val promotedDealType: GameDealType? = null,
     val surpriseDealType: GameDealType? = null,
     // Truth or dare
     val truthOrDareChoice: TruthOrDareChoice? = null,
@@ -110,8 +112,11 @@ data class GameScreenState(
             ?: availableDealTypes.firstOrNull()
             ?: GameDealType.TRUTH_OR_DARE
 
+    val pickerHeroDealType: GameDealType
+        get() = promotedDealType?.takeIf { it in availableDealTypes } ?: resolvedHeroDealType
+
     val compactDealTypes: List<GameDealType>
-        get() = availableDealTypes - resolvedHeroDealType
+        get() = availableDealTypes - pickerHeroDealType
 
     val isChallengeDismissible: Boolean
         get() = when (dealType) {

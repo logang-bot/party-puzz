@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
@@ -46,7 +47,8 @@ import com.restrusher.partypuzl.ui.theme.wash
 internal fun DealHeroCard(
     accent: DealAccent,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    showRevealHint: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -86,6 +88,40 @@ internal fun DealHeroCard(
                 text = stringResource(accent.blurbRes),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Strong)
+            )
+            if (showRevealHint) {
+                Spacer(Modifier.height(14.dp))
+                RevealHint()
+            }
+        }
+    }
+}
+
+/** Tells the player the promoted card is waiting on one more tap. */
+@Composable
+private fun RevealHint(modifier: Modifier = Modifier) {
+    val hintInk = MaterialTheme.appColors.onAccentSurface.ink(Ink.Strong)
+
+    Column(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(1.dp)
+                .background(MaterialTheme.appColors.onAccentSurface.ink(Ink.Faint))
+        )
+        Spacer(Modifier.height(10.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = stringResource(R.string.tap_to_reveal).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                letterSpacing = 2.sp,
+                color = hintInk
+            )
+            Icon(
+                painter = painterResource(R.drawable.ic_keyboard_arrow_right),
+                contentDescription = null,
+                tint = hintInk,
+                modifier = Modifier.size(14.dp)
             )
         }
     }
@@ -136,7 +172,7 @@ private fun DealCardsLightPreview() {
                 .appBackground()
                 .padding(16.dp)
         ) {
-            DealHeroCard(accent = truthAccent, onClick = {})
+            DealHeroCard(accent = truthAccent, onClick = {}, showRevealHint = true)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 DealCompactCard(
                     accent = GameDealType.GENERAL_KNOWLEDGE.accent,

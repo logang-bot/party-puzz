@@ -41,13 +41,14 @@ import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
 /**
- * The turn's deal picker. Whichever category was played last — by anyone — is promoted to a hero
- * card; the rest collapse into compact tiles. Truth or Dare promotes as two separate cards so the
- * player commits to a side up front.
+ * The turn's deal picker. Whichever category was played last — by anyone — opens in the hero slot;
+ * the rest sit in compact tiles until one is tapped into the hero slot itself. Truth or Dare holds
+ * that slot as two cards, so the player commits to a side up front.
  */
 @Composable
 internal fun DealChoiceContent(
     uiState: GameScreenState,
+    onDealPromoted: (GameDealType) -> Unit,
     onDealChosen: (GameDealType, TruthOrDareChoice?) -> Unit,
     onSurpriseRequested: () -> Unit,
     modifier: Modifier = Modifier
@@ -61,31 +62,11 @@ internal fun DealChoiceContent(
         CurrentPlayerHeader(player = uiState.selectedPlayer)
         Spacer(Modifier.height(20.dp))
 
-        val hero = uiState.resolvedHeroDealType
-        if (hero == GameDealType.TRUTH_OR_DARE) {
-            DealHeroCard(
-                accent = truthAccent,
-                onClick = { onDealChosen(GameDealType.TRUTH_OR_DARE, TruthOrDareChoice.TRUTH) }
-            )
-            Spacer(Modifier.height(12.dp))
-            DealHeroCard(
-                accent = dareAccent,
-                onClick = { onDealChosen(GameDealType.TRUTH_OR_DARE, TruthOrDareChoice.DARE) }
-            )
-        } else {
-            DealHeroCard(accent = hero.accent, onClick = { onDealChosen(hero, null) })
-        }
-
-        Spacer(Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            uiState.compactDealTypes.forEach { dealType ->
-                DealCompactCard(
-                    accent = dealType.accent,
-                    onClick = { onDealChosen(dealType, null) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-        }
+        DealPicker(
+            uiState = uiState,
+            onDealPromoted = onDealPromoted,
+            onDealChosen = onDealChosen
+        )
 
         Spacer(Modifier.height(12.dp))
         SurpriseMeButton(onClick = onSurpriseRequested)
@@ -172,6 +153,7 @@ private fun DealChoiceTruthOrDareLightPreview() {
                     selectedPlayer = previewPlayers.first(),
                     heroDealType = GameDealType.TRUTH_OR_DARE
                 ),
+                onDealPromoted = {},
                 onDealChosen = { _, _ -> },
                 onSurpriseRequested = {}
             )
@@ -190,6 +172,7 @@ private fun DealChoiceMiniGameDarkPreview() {
                     selectedPlayer = previewPlayers[1],
                     heroDealType = GameDealType.MINI_GAME
                 ),
+                onDealPromoted = {},
                 onDealChosen = { _, _ -> },
                 onSurpriseRequested = {}
             )

@@ -32,6 +32,7 @@ import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.reelIndex
 @Composable
 internal fun GameDealSection(
     uiState: GameScreenState,
+    onDealPromoted: (GameDealType) -> Unit,
     onDealChosen: (GameDealType, TruthOrDareChoice?) -> Unit,
     onSurpriseRequested: () -> Unit,
     onChallengeDismissed: () -> Unit,
@@ -60,6 +61,7 @@ internal fun GameDealSection(
             when (phase) {
                 GameDealPhase.DEAL_CHOICE -> DealChoiceContent(
                     uiState = uiState,
+                    onDealPromoted = onDealPromoted,
                     onDealChosen = onDealChosen,
                     onSurpriseRequested = onSurpriseRequested
                 )

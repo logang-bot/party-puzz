@@ -147,9 +147,9 @@ private fun AccentIconTileSamples() {
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.appBackground().padding(16.dp)
     ) {
-        AccentIconTile(accent = BrandTeal, iconRes = R.drawable.ic_lightbulb)
-        AccentIconTile(accent = AccentViolet, iconRes = R.drawable.ic_hourglass, filled = true)
-        AccentIconTile(accent = AccentViolet, iconRes = R.drawable.ic_whatshot, size = 56)
+        AccentIconTile(accent = BrandTeal, iconRes = R.drawable.ic_deal_truth_brain)
+        AccentIconTile(accent = AccentViolet, iconRes = R.drawable.ic_deal_sticky_sparkle, filled = true)
+        AccentIconTile(accent = AccentViolet, iconRes = R.drawable.ic_deal_dare_flame, size = 56)
     }
 }
 

@@ -47,9 +47,10 @@ import com.restrusher.partypuzl.ui.theme.ink
 /**
  * The `ic_spice_*` set is **dedicated to spice** and referenced from nowhere else in the app, which
  * is the point of it. The levels used to borrow `ic_lightbulb`, `ic_random` and `ic_whatshot` —
- * glyphs that also mean Truth, "randomise this player" and Bar punishment — so retuning the spice
- * look was impossible without dragging four unrelated screens along with it. These three can be
- * redrawn freely.
+ * glyphs that also mean the setup screen's hint, "randomise this player" and Bar punishment — so
+ * retuning the spice look was impossible without dragging four unrelated screens along with it.
+ * These three can be redrawn freely. The deal categories keep their own `ic_deal_*` set for the
+ * same reason.
  *
  * They carry **no colour of their own**: the drawables are white strokes on nothing, and the
  * `Icon(tint = …)` at the call site is the single colour authority. Baking the accent into the

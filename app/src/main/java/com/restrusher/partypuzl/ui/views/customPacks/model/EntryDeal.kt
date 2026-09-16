@@ -37,8 +37,8 @@ val EntryDeal.defaultType: CustomEntryType
     }
 
 /**
- * The truth-or-dare card wears the flame, as in the design. The lightbulb is not lost — it marks
- * the Truth half of the step-02 toggle.
+ * The truth-or-dare card wears the dare's flame, as in the design. The truth brain is not lost —
+ * it marks the Truth half of the step-02 toggle.
  */
 @get:DrawableRes
 val EntryDeal.iconRes: Int

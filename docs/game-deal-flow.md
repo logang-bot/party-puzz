@@ -30,7 +30,7 @@ Round 2: [Player C, Player B, Player A]   ← reshuffled once queue is empty
        ┌─────────────────────────────────────────────┐
        │                                             │
        ▼                                             │
-  DEAL_CHOICE ──picks a deal──▶ CHALLENGE_SHOWN      │
+  DEAL_CHOICE ─promote, confirm─▶ CHALLENGE_SHOWN    │
        │                              │              │
   "Surprise me"                  user dismisses      │
        │                              │              │
@@ -54,7 +54,7 @@ SURPRISE_SHUFFLE      mode produced          nothing │
 
 | Phase | What the screen shows | Duration |
 |---|---|---|
-| `DEAL_CHOICE` | Current player, hero card(s), compact tiles, "Surprise me" | Until a deal is picked |
+| `DEAL_CHOICE` | Current player, hero card(s), compact tiles, "Surprise me" | Until a deal is confirmed |
 | `SURPRISE_SHUFFLE` | Slot reel cycling the four deals | 1.6 s |
 | `CHALLENGE_SHOWN` | The chosen challenge, full-bleed | Until dismissed |
 
@@ -74,7 +74,9 @@ The picker announces the player itself: avatar, "IT'S YOUR TURN", and their nick
 
 ## Deal Choice
 
-The player picks their own deal. Whichever category was played **last — by anyone, not just this player** — is promoted to a large hero card; the rest collapse into compact tiles.
+The player picks their own deal in **two taps**. Whichever category was played **last — by anyone, not just this player** — opens in the hero slot; the rest sit in compact tiles. Tapping a compact tile only *promotes* it into the hero slot — the outgoing hero drops into the row in its place — and the prompt comes on the tap after that, on the hero card itself. So the player always sees the category they picked before committing to it, and Truth or Dare always gets its two sides shown rather than rolling one for them.
+
+The promoted category lives in `promotedDealType`, which only covers the current turn; `pickerHeroDealType` is what the picker actually draws (`promotedDealType`, else `resolvedHeroDealType`), and a promoted card carries a "tap to reveal" hint.
 
 | Hero category | Rendered as |
 |---|---|
@@ -87,7 +89,7 @@ The player picks their own deal. Whichever category was played **last — by any
 |---|---|
 | Hero **Truth** card | `TRUTH` |
 | Hero **Dare** card | `DARE` |
-| Compact **Truth or Dare** tile | Random |
+| Compact **Truth or Dare** tile | None — promotes to the two hero cards |
 | Surprise reel lands on Truth or Dare | Random |
 
 **Availability:** a deal is offered only when both hold (`availableDealTypes`):
@@ -218,6 +220,8 @@ See [minigames.md](minigames.md).
 The glass card that used to hold every prompt is gone. Challenge content renders full-bleed on the screen background, which is tinted by the deal or mode in play — `rememberGameBackground(uiState)` in `GameScreenTheme.kt` picks a `PageBackground` per deal phase, reusing the `gameModeTheme()` palette. Because that content sits on the page rather than on a card, its ink is `colorScheme.onBackground`. See [game-mode-visual-identity.md](game-mode-visual-identity.md) and [theming.md](theming.md).
 
 - **Phase transitions:** `AnimatedContent`, fade + scale from 94 % (320 ms in / 220 ms out)
+- **Promotion:** the picker is a `SharedTransitionLayout` over an `AnimatedContent` keyed on `pickerHeroDealType`; hero and compact cards share `deal_<type>` bounds keys, so the tapped tile rises into the hero slot while the old hero drops into the row (320 ms, `FastOutSlowInEasing`). The Dare card of the Truth/Dare pair has no key of its own — one key can only be claimed once per layout — so it fades and scales in
+- **Deal identity:** each deal's tone, gradient, strings and glyph live in one `DealAccent` in `GameScreenTheme.kt`, read by the picker cards and the surprise reel alike. The glyphs are the `ic_deal_*` set — brain (Truth), flame (Dare and the combined tile), trophy (General Knowledge), sparkle (Sticky Dares), dice (Mini-games) — shared with the custom-pack entry types so a category looks the same wherever it is drawn. "Surprise me" keeps `ic_random`, which means shuffle rather than mini-game
 - **Dismissal guard:** `isChallengeDismissible` prevents taps from going through before the deal type allows it
 - **Player rail:** 46 dp avatars in a 72 dp row, the active player ringed in the primary colour
 
@@ -231,7 +235,9 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `roundNumber` | `Int` | 1-based; incremented when the round queue refills. Tracked but not currently surfaced in the UI |
 | `selectedPlayer` | `Player?` | Player whose turn it is |
 | `dealType` | `GameDealType?` | Which deal the player chose |
-| `heroDealType` | `GameDealType` | Last category played, promoted next turn |
+| `heroDealType` | `GameDealType` | Last category played, opens the next turn's hero slot |
+| `promotedDealType` | `GameDealType?` | Category this player tapped into the hero slot; cleared when the turn advances |
+| `pickerHeroDealType` | `GameDealType` (computed) | `promotedDealType`, else `resolvedHeroDealType` — what the picker draws |
 | `surpriseDealType` | `GameDealType?` | Reel landing target during `SURPRISE_SHUFFLE` |
 | `challengeText` | `String?` | Question / dare text (Truth or Dare + Sticky Dare) |
 | `truthOrDareChoice` | `TruthOrDareChoice?` | `TRUTH` / `DARE`; set at pick time, never null once the challenge shows |
@@ -245,7 +251,7 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `enabledCategories` | `Set<PackCategory>` | Categories the enabled packs can supply; defaults to all four until loaded |
 | `availableDealTypes` | `List<GameDealType>` (computed) | Deals in `enabledCategories`, minus `MINI_GAME` under 2 players |
 | `resolvedHeroDealType` | `GameDealType` (computed) | `heroDealType`, or the first available deal if unavailable |
-| `compactDealTypes` | `List<GameDealType>` (computed) | `availableDealTypes` minus the hero |
+| `compactDealTypes` | `List<GameDealType>` (computed) | `availableDealTypes` minus `pickerHeroDealType` |
 | `activeEventCategory` | `EventCategory?` (computed) | Reward vs punishment of the active event |
 | `isChallengeDismissible` | `Boolean` (computed) | `true` when tapping should end the challenge |
 | `pendingCameraRequest` | `Boolean` | Rolled at `CHALLENGE_SHOWN`; signals that a camera card should follow this turn's final dismissal |
@@ -274,7 +280,8 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `GameDealSection.kt` | Phase router; challenge, outcome overlay and camera card layering |
 | `GameScreen.kt` | Root screen composable; background, top bar, bottom sheet visibility |
 | `PassThePhoneContent.kt` | Split-screen hand-off — **not in the flow**; parked for the Follow The Spot redesign |
-| `DealChoiceContent.kt` | The picker: hero card(s), compact tiles, "Surprise me" |
+| `DealChoiceContent.kt` | The picker's frame: player header, `DealPicker`, "Surprise me" |
+| `DealPicker.kt` | Hero slot and compact row, and the shared-bounds promotion between them |
 | `DealCategoryCards.kt` | `DealHeroCard` and `DealCompactCard` |
 | `SurpriseShuffleContent.kt` | "Surprise me" reel |
 | `SlotReel.kt` | Shared slot-machine reel, used by the surprise shuffle and the outcome roll |

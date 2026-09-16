@@ -164,6 +164,7 @@
     <string name="sticky_dare_title">¡Reto pegajoso!</string>
     <string name="general_knowledge_title">Cultura general</string>
     <string name="tap_to_dismiss">Toca para cerrar</string>
+    <string name="tap_to_reveal">Toca para revelar</string>
     <string name="pass_the_phone_to">Pásale el teléfono a</string>
     <string name="tap_when_ready">Toca cuando estés listo</string>
     <string name="round_number">Ronda %1$d</string>

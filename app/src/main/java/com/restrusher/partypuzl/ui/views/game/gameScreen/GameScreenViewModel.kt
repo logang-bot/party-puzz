@@ -81,6 +81,12 @@ class GameScreenViewModel @Inject constructor(
         advanceToNextTurn()
     }
 
+    /** Moves a category into the hero slot. The prompt only comes on the tap after this one. */
+    fun onDealPromoted(dealType: GameDealType) {
+        if (_uiState.value.dealPhase != GameDealPhase.DEAL_CHOICE) return
+        _uiState.update { it.copy(promotedDealType = dealType) }
+    }
+
     /**
      * Resolves the enabled packs into a playable deck, then narrows the deal picker to the
      * categories that actually have content. A deal whose packs are all switched off never
@@ -375,6 +381,7 @@ class GameScreenViewModel @Inject constructor(
 
     private fun clearedTurn(state: GameScreenState) = state.copy(
         dealType = null,
+        promotedDealType = null,
         surpriseDealType = null,
         challengeText = null,
         truthOrDareChoice = null,

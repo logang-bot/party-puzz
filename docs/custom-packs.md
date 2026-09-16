@@ -143,7 +143,9 @@ Colour and icon mappings are extension properties, keeping Compose types out of 
 
 ### The spice icons
 
-`ic_spice_mild_brain`, `ic_spice_medium_sparkle`, `ic_spice_spicy_flame` — a **dedicated** set, referenced from `SpiceLook.kt` and nowhere else. That is the point of them. The levels used to borrow `ic_lightbulb`, `ic_random` and `ic_whatshot`, which also mean Truth, "randomise this player" and Bar punishment, so retuning the spice look meant dragging four unrelated screens with it. Those three drawables still exist and are still used by *those* screens; they are simply no longer spice.
+`ic_spice_mild_brain`, `ic_spice_medium_sparkle`, `ic_spice_spicy_flame` — a **dedicated** set, referenced from `SpiceLook.kt` and nowhere else. That is the point of them. The levels used to borrow `ic_lightbulb`, `ic_random` and `ic_whatshot`, which also mean the setup screen's hint, "randomise this player" and Bar punishment, so retuning the spice look meant dragging four unrelated screens with it. Those three drawables still exist and are still used by *those* screens; they are simply no longer spice.
+
+The entry types draw from a second dedicated set, `ic_deal_*`, shared with the game screen's deal picker so a truth, a dare, a sticky dare and a trivia question wear the same glyph wherever they are drawn — `CustomEntryType.iconRes` and `DealAccent.iconRes` both point at it. Brain, sparkle and flame appear in both sets on purpose: spice and category are separate vocabularies that happen to have borrowed the same shapes, and either can be redrawn without the other following.
 
 They carry **no colour of their own** — white strokes on a transparent fill, no `android:tint` — because every render site wraps them in `Icon(tint = …)`, and a `SrcIn` tint discards whatever the file said. Baking the accent in would look right only for as long as that stayed true. All three are stroked at 1.8 on the same 24×24 canvas, centred on (12,12), so they read as one set at the 15 dp the spice selector draws them at. `SpiceLook.kt` carries a preview of all three at their three real sizes.
 

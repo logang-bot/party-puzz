@@ -145,7 +145,7 @@ Written by the user, so they have no catalog entry, no fixed count and no string
 
 ## The empty-pool rule
 
-`EnabledPackContent.availableCategories` requires **both** truths and dares before offering `TRUTH_OR_DARE`. The reveal screen shows a Truth card and a Dare card with no way to hide one, so a deck with truths but no dares would hand back an empty prompt when someone picked Dare.
+`EnabledPackContent.availableCategories` requires **both** truths and dares before offering `TRUTH_OR_DARE`. The picker holds the hero slot with a Truth card and a Dare card and has no way to hide one, so a deck with truths but no dares would hand back an empty prompt when someone picked Dare.
 
 The other three categories need only their own list to be non-empty.
 

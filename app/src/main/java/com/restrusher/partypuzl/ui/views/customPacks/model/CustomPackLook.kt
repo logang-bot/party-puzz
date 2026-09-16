@@ -37,10 +37,10 @@ val PackTopic.labelRes: Int
 @get:DrawableRes
 val CustomEntryType.iconRes: Int
     get() = when (this) {
-        CustomEntryType.TRUTH -> R.drawable.ic_lightbulb
-        CustomEntryType.DARE -> R.drawable.ic_whatshot
-        CustomEntryType.STICKY_DARE -> R.drawable.ic_hourglass
-        CustomEntryType.TRIVIA -> R.drawable.ic_chat_bubble
+        CustomEntryType.TRUTH -> R.drawable.ic_deal_truth_brain
+        CustomEntryType.DARE -> R.drawable.ic_deal_dare_flame
+        CustomEntryType.STICKY_DARE -> R.drawable.ic_deal_sticky_sparkle
+        CustomEntryType.TRIVIA -> R.drawable.ic_deal_trivia_trophy
     }
 
 /**

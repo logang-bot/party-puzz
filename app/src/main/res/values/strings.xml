@@ -163,6 +163,7 @@
     <string name="sticky_dare_title">Sticky Dare!</string>
     <string name="general_knowledge_title">General Knowledge</string>
     <string name="tap_to_dismiss">Tap to dismiss</string>
+    <string name="tap_to_reveal">Tap to reveal</string>
     <string name="pass_the_phone_to">Pass the phone to</string>
     <string name="tap_when_ready">Tap when ready</string>
     <string name="round_number">Round %1$d</string>

@@ -201,6 +201,7 @@ fun GameScreen(
 
             GameDealSection(
                 uiState = uiState,
+                onDealPromoted = viewModel::onDealPromoted,
                 onDealChosen = viewModel::onDealChosen,
                 onSurpriseRequested = viewModel::onSurpriseRequested,
                 onChallengeDismissed = viewModel::onChallengeDismissed,
