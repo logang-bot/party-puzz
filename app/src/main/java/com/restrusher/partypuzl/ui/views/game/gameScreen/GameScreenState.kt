@@ -5,7 +5,7 @@ import com.restrusher.partypuzl.data.models.Player
 
 internal const val OUTCOME_SPIN_DURATION_MS = 2200L
 
-enum class GameDealPhase { DEAL_CHOICE, SURPRISE_SPOTLIGHT, CHALLENGE_SHOWN }
+enum class GameDealPhase { PLAYER_PICK, DEAL_CHOICE, SURPRISE_SPOTLIGHT, CHALLENGE_SHOWN }
 
 enum class GameDealType { TRUTH_OR_DARE, STICKY_DARE, GENERAL_KNOWLEDGE, MINI_GAME }
 
@@ -94,6 +94,10 @@ data class GameScreenState(
     val pendingCameraRequest: Boolean = false,
     val showCameraRequest: Boolean = false
 ) {
+    /** The selected player, from the moment the turn intro has revealed who they are. */
+    val revealedPlayer: Player?
+        get() = selectedPlayer.takeIf { dealPhase != GameDealPhase.PLAYER_PICK }
+
     val isModeActive: Boolean
         get() = barMode.isActive || couplesMode.isActive
 

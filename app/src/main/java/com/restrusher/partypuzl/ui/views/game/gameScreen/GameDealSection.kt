@@ -10,30 +10,29 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import com.restrusher.partypuzl.data.models.Player
-import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.OutcomeSpinContent
-import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.activeOutcomeMode
-import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.OUTCOME_STAGE_MS
-import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.OutcomeRevealContent
 
+private const val PHASE_ENTER_MS = 320
+private const val PHASE_EXIT_MS = 220
+
+/**
+ * The turn, phase by phase. Every phase is a child of one [AnimatedContent], so each one enters
+ * and leaves on the same cross-fade whichever direction the turn moves in; the surrounding
+ * [SharedTransitionLayout] is what lets the picked player's photo and name travel out of the turn
+ * intro and into the picker's header rather than cross-fading in place.
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun GameDealSection(
     uiState: GameScreenState,
+    onPlayerPickFinished: () -> Unit,
     onDealPromoted: (GameDealType) -> Unit,
     onDealChosen: (GameDealType, TruthOrDareChoice?) -> Unit,
     onSurpriseRequested: () -> Unit,
@@ -52,38 +51,52 @@ internal fun GameDealSection(
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
-        AnimatedContent(
-            targetState = uiState.dealPhase,
-            transitionSpec = {
-                (fadeIn(tween(320)) + scaleIn(tween(320), initialScale = 0.94f))
-                    .togetherWith(fadeOut(tween(220)))
-            },
-            label = "deal phase",
-            modifier = Modifier.fillMaxSize()
-        ) { phase ->
-            when (phase) {
-                GameDealPhase.DEAL_CHOICE -> DealChoiceContent(
-                    uiState = uiState,
-                    onDealPromoted = onDealPromoted,
-                    onDealChosen = onDealChosen,
-                    onSurpriseRequested = onSurpriseRequested
+        SharedTransitionLayout(modifier = Modifier.fillMaxSize()) {
+            AnimatedContent(
+                targetState = uiState.dealPhase,
+                transitionSpec = {
+                    (fadeIn(tween(PHASE_ENTER_MS)) +
+                            scaleIn(tween(PHASE_ENTER_MS), initialScale = 0.94f))
+                        .togetherWith(fadeOut(tween(PHASE_EXIT_MS)))
+                },
+                label = "deal phase",
+                modifier = Modifier.fillMaxSize()
+            ) { phase ->
+                val revealScopes = PlayerRevealScopes(
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    animatedVisibilityScope = this@AnimatedContent
                 )
+                when (phase) {
+                    GameDealPhase.PLAYER_PICK -> PlayerPickContent(
+                        uiState = uiState,
+                        scopes = revealScopes,
+                        onFinished = onPlayerPickFinished
+                    )
 
-                GameDealPhase.SURPRISE_SPOTLIGHT -> SurpriseSpotlightContent(
-                    uiState = uiState,
-                    onSurpriseSettled = onSurpriseSettled
-                )
+                    GameDealPhase.DEAL_CHOICE -> DealChoiceContent(
+                        uiState = uiState,
+                        revealScopes = revealScopes,
+                        onDealPromoted = onDealPromoted,
+                        onDealChosen = onDealChosen,
+                        onSurpriseRequested = onSurpriseRequested
+                    )
 
-                GameDealPhase.CHALLENGE_SHOWN -> ChallengeContent(
-                    uiState = uiState,
-                    onChallengeDismissed = onChallengeDismissed,
-                    onTruthOrDareSkipped = onTruthOrDareSkipped,
-                    onStickyDareSkipped = onStickyDareSkipped,
-                    onMiniGameDealFinished = onMiniGameDealFinished,
-                    onGeneralKnowledgeAnswered = onGeneralKnowledgeAnswered,
-                    onMiniGameOpponentSelected = onMiniGameOpponentSelected,
-                    onGlobalMiniGameStarted = onGlobalMiniGameStarted
-                )
+                    GameDealPhase.SURPRISE_SPOTLIGHT -> SurpriseSpotlightContent(
+                        uiState = uiState,
+                        onSurpriseSettled = onSurpriseSettled
+                    )
+
+                    GameDealPhase.CHALLENGE_SHOWN -> ChallengeContent(
+                        uiState = uiState,
+                        onChallengeDismissed = onChallengeDismissed,
+                        onTruthOrDareSkipped = onTruthOrDareSkipped,
+                        onStickyDareSkipped = onStickyDareSkipped,
+                        onMiniGameDealFinished = onMiniGameDealFinished,
+                        onGeneralKnowledgeAnswered = onGeneralKnowledgeAnswered,
+                        onMiniGameOpponentSelected = onMiniGameOpponentSelected,
+                        onGlobalMiniGameStarted = onGlobalMiniGameStarted
+                    )
+                }
             }
         }
 
@@ -170,88 +183,5 @@ private fun ChallengeContent(
 
             null -> Unit
         }
-    }
-}
-
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private fun OutcomeOverlay(
-    uiState: GameScreenState,
-    onModeEventDismissed: () -> Unit,
-    onGiveDrinksTargetSelected: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    if (uiState.activeOutcomeMode == null || uiState.activeEventCategory == null) return
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPickingTarget = uiState.barMode.activeEvent is BarEvent.GiveDrinksPickTarget
-    val isRevealed = uiState.outcomeStage == OutcomeStage.REVEALED
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                enabled = isRevealed && !isPickingTarget
-            ) { onModeEventDismissed() }
-    ) {
-        SharedTransitionLayout {
-            AnimatedContent(
-                targetState = isRevealed,
-                transitionSpec = {
-                    fadeIn(tween(OUTCOME_STAGE_MS)) togetherWith fadeOut(tween(OUTCOME_STAGE_MS))
-                },
-                label = "outcome stage"
-            ) { revealed ->
-                if (revealed) {
-                    OutcomeRevealContent(
-                        uiState = uiState,
-                        onGiveDrinksTargetSelected = onGiveDrinksTargetSelected,
-                        animatedVisibilityScope = this@AnimatedContent,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else {
-                    OutcomeSpinContent(
-                        uiState = uiState,
-                        animatedVisibilityScope = this@AnimatedContent,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun CameraRequestCard(
-    onCameraRequested: () -> Unit,
-    onCameraRequestDismissed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    var isFlipped by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { isFlipped = true }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .clip(dealCardShape)
-            .background(MaterialTheme.colorScheme.surface)
-            .clickable(interactionSource = interactionSource, indication = null) {
-                onCameraRequestDismissed()
-            }
-    ) {
-        FlipCard(
-            isFlipped = isFlipped,
-            modifier = Modifier.fillMaxSize(),
-            front = { Box(Modifier.fillMaxSize().background(Color.Transparent)) },
-            back = {
-                CameraRequestContent(
-                    onCameraRequested = onCameraRequested,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-        )
     }
 }

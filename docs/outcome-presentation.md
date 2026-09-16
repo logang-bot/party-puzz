@@ -152,7 +152,7 @@ Dismissal is phase-aware:
 
 | Dismissed during | Behaviour |
 |---|---|
-| `CHALLENGE_SHOWN` | Ends the turn — advances to the next player's `DEAL_CHOICE` (or the camera card first) |
+| `CHALLENGE_SHOWN` | Ends the turn — advances to the next player's `PLAYER_PICK` (or the camera card first) |
 | Any other phase | Clears the event only; the current player keeps their turn |
 
 ---
@@ -179,7 +179,8 @@ Other strings: `outcome_reward`, `outcome_punishment`, `outcome_rolling_reward`,
 | `outcome/OutcomeSpinContent.kt` | The roll |
 | `outcome/OutcomeRevealContent.kt` | The landed outcome and its message |
 | `outcome/SlotReel.kt` | Reel motion and its sliding window. Outcome-only — not shared |
-| `GameDealSection.kt` | `OutcomeOverlay` — layering and dismissal gating |
+| `GameDealOverlays.kt` | `OutcomeOverlay` — the overlay itself and its dismissal gating |
+| `GameDealSection.kt` | The `AnimatedVisibility` that mounts it above the phase |
 | `GameModeHandler.kt` | Builds a deck per roll and picks the outcome from it |
 | `GameScreenViewModel.kt` | `applyOutcome()` / `startOutcomeSpin()` staging |
 | `OutcomeDeckTest.kt` (`src/test`) | Holds the "fired outcome is in its own deck" invariant |

@@ -17,6 +17,7 @@ import com.restrusher.partypuzl.data.packs.QuestionPackContentLoader
 import com.restrusher.partypuzl.data.repositories.interfaces.PartyPhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -68,6 +69,9 @@ class GameScreenViewModel @Inject constructor(
      */
     private var packContent: EnabledPackContent = EnabledPackContent()
 
+    /** Completes once [packContent] has narrowed the picker, gating the first turn's picker. */
+    private val packContentResolved = CompletableDeferred<Unit>()
+
     private var outcomeJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
 
@@ -78,6 +82,19 @@ class GameScreenViewModel @Inject constructor(
     init {
         loadPackContent()
         advanceToNextTurn()
+    }
+
+    /**
+     * The turn-intro animation has landed on its player. The picker only opens once the enabled
+     * packs have resolved, so its hero card is right on its first frame rather than swapping to
+     * the real one a beat later.
+     */
+    fun onPlayerPickFinished() {
+        if (_uiState.value.dealPhase != GameDealPhase.PLAYER_PICK) return
+        viewModelScope.launch {
+            packContentResolved.await()
+            _uiState.update { it.copy(dealPhase = GameDealPhase.DEAL_CHOICE) }
+        }
     }
 
     /** Moves a category into the hero slot. The prompt only comes on the tap after this one. */
@@ -94,19 +111,26 @@ class GameScreenViewModel @Inject constructor(
     private fun loadPackContent() {
         viewModelScope.launch {
             val content = withContext(Dispatchers.IO) {
-                questionPackContentLoader.loadEnabledContent()
+                runCatching { questionPackContentLoader.loadEnabledContent() }
+                    .getOrDefault(EnabledPackContent())
             }
-            packContent = content
-            _uiState.update { state ->
-                val narrowed = state.copy(enabledCategories = content.availableCategories)
-                // No deal has been played yet, so the first hero card is drawn at random rather
-                // than always opening on Truth or Dare.
-                narrowed.copy(
-                    heroDealType = narrowed.availableDealTypes.randomOrNull()
-                        ?: narrowed.heroDealType
-                )
-            }
+            resolvePacks(content)
         }
+    }
+
+    /**
+     * Narrows the picker to the categories the loaded packs can supply. No deal has been played
+     * yet, so the first hero card is drawn at random rather than always opening on Truth or Dare.
+     */
+    private fun resolvePacks(content: EnabledPackContent) {
+        packContent = content
+        _uiState.update { state ->
+            val narrowed = state.copy(enabledCategories = content.availableCategories)
+            narrowed.copy(
+                heroDealType = narrowed.availableDealTypes.randomOrNull() ?: narrowed.heroDealType
+            )
+        }
+        packContentResolved.complete(Unit)
     }
 
     private fun nextPlayerInRound(players: List<Player>): Player? {
@@ -388,7 +412,7 @@ class GameScreenViewModel @Inject constructor(
         val round = roundNumber
         _uiState.update {
             clearedTurn(modeHandler.clearEvent(it)).copy(
-                dealPhase = GameDealPhase.DEAL_CHOICE,
+                dealPhase = GameDealPhase.PLAYER_PICK,
                 selectedPlayer = nextPlayer,
                 roundNumber = round
             )

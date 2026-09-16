@@ -1,5 +1,8 @@
 package com.restrusher.partypuzl.ui.views.game.gameScreen
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,9 +34,18 @@ import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
-/** Whose turn it is. Shared by the deal picker and the surprise spotlight, which share a frame. */
+/**
+ * Whose turn it is. Shared by the deal picker and the surprise spotlight, which share a frame.
+ *
+ * Given [scopes], the photo and name are the landing point of the turn intro's reveal: they arrive
+ * by travelling up from the centre of the screen rather than fading in where they sit.
+ */
 @Composable
-internal fun CurrentPlayerHeader(player: Player?, modifier: Modifier = Modifier) {
+internal fun CurrentPlayerHeader(
+    player: Player?,
+    modifier: Modifier = Modifier,
+    scopes: PlayerRevealScopes? = null
+) {
     if (player == null) return
 
     Row(
@@ -45,25 +57,43 @@ internal fun CurrentPlayerHeader(player: Player?, modifier: Modifier = Modifier)
             player = player,
             modifier = Modifier
                 .size(48.dp)
+                .playerPhotoReveal(scopes)
                 .clip(RoundedCornerShape(14.dp))
         )
         Spacer(Modifier.size(12.dp))
         Column {
-            Text(
-                text = stringResource(R.string.its_your_turn).uppercase(),
-                style = MaterialTheme.typography.labelSmall,
-                letterSpacing = 2.sp,
-                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
-            )
+            TurnLabel(scopes = scopes)
             Text(
                 text = player.nickName,
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.playerNameReveal(scopes)
             )
         }
     }
+}
+
+/** The kicker has no counterpart in the reveal, so it fades in once the name has arrived. */
+@Composable
+private fun TurnLabel(scopes: PlayerRevealScopes?, modifier: Modifier = Modifier) {
+    val entry = scopes?.animatedVisibilityScope?.let { scope ->
+        with(scope) {
+            Modifier.animateEnterExit(
+                enter = fadeIn(tween(durationMillis = PLAYER_REVEAL_MS, delayMillis = PLAYER_REVEAL_MS / 2)),
+                exit = fadeOut(tween(PLAYER_REVEAL_MS / 2))
+            )
+        }
+    } ?: Modifier
+
+    Text(
+        text = stringResource(R.string.its_your_turn).uppercase(),
+        style = MaterialTheme.typography.labelSmall,
+        letterSpacing = 2.sp,
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
+        modifier = modifier.then(entry)
+    )
 }
 
 private val headerPreviewPlayer = Player(1, "Alice", Gender.Female, InterestedIn.Man)

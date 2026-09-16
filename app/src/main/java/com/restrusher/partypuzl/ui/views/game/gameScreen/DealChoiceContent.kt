@@ -51,7 +51,8 @@ internal fun DealChoiceContent(
     onDealPromoted: (GameDealType) -> Unit,
     onDealChosen: (GameDealType, TruthOrDareChoice?) -> Unit,
     onSurpriseRequested: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    revealScopes: PlayerRevealScopes? = null
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -59,7 +60,7 @@ internal fun DealChoiceContent(
             .fillMaxSize()
             .padding(horizontal = 24.dp, vertical = 16.dp)
     ) {
-        CurrentPlayerHeader(player = uiState.selectedPlayer)
+        CurrentPlayerHeader(player = uiState.selectedPlayer, scopes = revealScopes)
         Spacer(Modifier.height(20.dp))
 
         DealPicker(

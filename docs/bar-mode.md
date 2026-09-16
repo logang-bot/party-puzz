@@ -182,7 +182,7 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 | `GameScreenState.kt` | Holds `val barMode: BarModeState` |
 | `GameScreenViewModel.kt` | Delegates event logic to `BarModeHandler` via `GameModeHandler` |
 | `GameDealSection.kt` | Skip / Finish buttons; GK tap hint; challenge card enabled guard |
-| `GameDealSection.kt` | `OutcomeOverlay` — layers the roll and reveal above the turn |
+| `GameDealOverlays.kt` | `OutcomeOverlay` — layers the roll and reveal above the turn |
 | `GameOptionsSource.kt` | `currentGameModeNameRes: Int?` — bridge between `GameConfigScreen` and the ViewModel |
 | `GameConfigScreen.kt` | Sets `GameOptionsSource.currentGameModeNameRes` on composition |
 

@@ -328,7 +328,9 @@ When the user confirms party deletion in `PartyDetailViewModel.confirmDelete()`:
 | `PartyPhotoRepository.kt` / `PartyPhotoRepositoryImpl.kt` | Repository interface and implementation |
 | `GameScreenState.kt` | `pendingCameraRequest` and `showCameraRequest` fields |
 | `GameScreenViewModel.kt` | Roll logic, trigger points, photo file copy + DB insert |
-| `GameDealSection.kt` | `CameraRequestContent` composable; camera request `AnimatedVisibility` layer |
+| `CameraRequestContent.kt` | The prompt itself |
+| `GameDealOverlays.kt` | `CameraRequestCard` — the flip wrapper the prompt arrives on |
+| `GameDealSection.kt` | The camera request `AnimatedVisibility` layer |
 | `GameScreen.kt` | `FileProvider` URI setup, `TakePicture` launcher, permission check on button tap |
 | `PartyDetailState.kt` | `photos`, `viewerPhotoIndex`, `downloadResult` fields; `DownloadResult` enum |
 | `PartyDetailViewModel.kt` | Photo Flow observation; viewer state; download logic; file + record cleanup on delete |

@@ -25,13 +25,11 @@ import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
 import kotlinx.coroutines.delay
 import kotlin.math.ceil
-import kotlin.math.pow
 
 private const val GATHER_MS = 350
 private const val TRAVEL_FAST_STEP_MS = 45
 private const val TRAVEL_SLOW_STEP_MS = 260
 private const val TRAVEL_STEPS_MIN = 12
-private const val TRAVEL_RAMP_EXPONENT = 3f
 private const val FLICKER_STEPS = 4
 private const val LANDED_HOLD_MS = 200
 
@@ -115,22 +113,11 @@ private suspend fun travelHighlight(
     path: SpotlightTravelPath,
     onStep: (GameDealType) -> Unit
 ) {
+    val run = DeceleratingRun(path.stepCount, TRAVEL_FAST_STEP_MS, TRAVEL_SLOW_STEP_MS)
     repeat(path.stepCount) { step ->
         onStep(path.dealTypeAt(step))
-        delay(travelStepMillis(step, path.stepCount).toLong())
+        delay(run.stepMillis(step))
     }
-}
-
-/**
- * How long the ring rests on the card reached at [step] of [stepCount].
- *
- * The cube of the progress fraction keeps nearly every step close to [TRAVEL_FAST_STEP_MS] and
- * stretches only the last two or three towards [TRAVEL_SLOW_STEP_MS], so the ring reads as slowing
- * *onto* a card rather than easing uniformly across all of them.
- */
-private fun travelStepMillis(step: Int, stepCount: Int): Int {
-    val progress = (step / (stepCount - 1).coerceAtLeast(1).toFloat()).pow(TRAVEL_RAMP_EXPONENT)
-    return (TRAVEL_FAST_STEP_MS + (TRAVEL_SLOW_STEP_MS - TRAVEL_FAST_STEP_MS) * progress).toInt()
 }
 
 private val spotlightPreviewPlayers = listOf(

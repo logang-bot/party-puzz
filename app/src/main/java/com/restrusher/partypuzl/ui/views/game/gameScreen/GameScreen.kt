@@ -201,6 +201,7 @@ fun GameScreen(
 
             GameDealSection(
                 uiState = uiState,
+                onPlayerPickFinished = viewModel::onPlayerPickFinished,
                 onDealPromoted = viewModel::onDealPromoted,
                 onDealChosen = viewModel::onDealChosen,
                 onSurpriseRequested = viewModel::onSurpriseRequested,
@@ -238,7 +239,7 @@ fun GameScreen(
 
             PlayersListRow(
                 players = uiState.players,
-                selectedPlayer = uiState.selectedPlayer,
+                selectedPlayer = uiState.revealedPlayer,
                 activeStickyDares = uiState.activeStickyDares,
                 onPlayerTapped = { player ->
                     daresSheetPlayer = player

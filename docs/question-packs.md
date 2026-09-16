@@ -216,7 +216,7 @@ Because both passes feed one set of pools, the game screen never learns that cus
 - **Trivia options are swapped at deal time.** `TriviaPrompt.toQuestion()` flips the pair on a coin toss, so the stored `correctOption` never decides which button the answer sits under. Without it the key is learnable: Movie Night shipped `A` correct 67% of the time, and always tapping the left button won two thirds of the paid pack. The swap covers official, premium and custom trivia alike, so **an authored key no longer has to be balanced to be fair** — though `movie_gk_correct_options` is still kept near 12/12 with no run past three, because a lopsided stored key is a smell. It has to happen when the deal is built, not while rendering; the result is held in state, and re-rolling on recomposition would move the buttons under the player's thumb.
 - **Deal availability** — `availableCategories` is written into `GameScreenState.enabledCategories` and `availableDealTypes` filters on it. See [game-deal-flow.md](game-deal-flow.md).
 
-`enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns.
+`enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns. The picker is never drawn against that default: the turn intro awaits the load before opening it, so its hero card is right on its first frame. See [game-deal-flow.md](game-deal-flow.md#the-turn-intro).
 
 ---
 

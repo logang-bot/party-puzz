@@ -30,6 +30,11 @@ Round 2: [Player C, Player B, Player A]   ← reshuffled once queue is empty
        ┌─────────────────────────────────────────────┐
        │                                             │
        ▼                                             │
+  PLAYER_PICK                                        │
+       │                                             │
+  ~2.4 s turn intro                                  │
+       │                                             │
+       ▼                                             │
   DEAL_CHOICE ─promote, confirm─▶ CHALLENGE_SHOWN    │
        │                              │              │
   "Surprise me"                  user dismisses      │
@@ -54,11 +59,12 @@ SURPRISE_SPOTLIGHT    mode produced          nothing │
 
 | Phase | What the screen shows | Duration |
 |---|---|---|
+| `PLAYER_PICK` | A blank deal area, player names flicking through its centre, then the picked player's photo | ~2.4 s, or a tap |
 | `DEAL_CHOICE` | Current player, hero card(s), compact tiles, "Surprise me" | Until a deal is confirmed |
 | `SURPRISE_SPOTLIGHT` | Deals gathered into a grid, a highlight ring travelling across them | ~2.0 s, then back to `DEAL_CHOICE` promoted |
 | `CHALLENGE_SHOWN` | The chosen challenge, full-bleed | Until dismissed |
 
-There is no idle or hand-off phase. The game opens directly on `DEAL_CHOICE` — `GameScreenViewModel.init` calls `advanceToNextTurn()`, so round 1's player is selected before the first frame, and a finished turn returns straight to the picker for the next player.
+There is no idle or hand-off phase. Every turn — including the first, since `GameScreenViewModel.init` calls `advanceToNextTurn()` too — opens on `PLAYER_PICK`, which announces whose turn it is and then hands over to the picker. See [The turn intro](#the-turn-intro).
 
 > When `pendingCameraRequest` is true, `dealPhase` stays at `CHALLENGE_SHOWN` after the challenge or event is dismissed, and the camera request card slides in on top. The turn only advances once the camera interaction resolves. See [photo-album.md](photo-album.md).
 
@@ -66,7 +72,31 @@ There is no idle or hand-off phase. The game opens directly on `DEAL_CHOICE` —
 
 ## Whose turn it is
 
-The picker announces the player itself: avatar, "IT'S YOUR TURN", and their nickname sit above the cards. The active player is also ringed in the player rail along the bottom.
+The picker announces the player itself: avatar, "IT'S YOUR TURN", and their nickname sit above the cards. The active player is also ringed in the player rail along the bottom — but it rings `revealedPlayer`, not `selectedPlayer`: the latter is already the next player throughout `PLAYER_PICK`, and ringing them there would give the intro's answer away.
+
+### The turn intro
+
+`PLAYER_PICK` is the same beat for every turn: the deal area is blank, and `PickedNameCycle` flicks player names through its centre — each rising into place as the last rises out — decelerating onto the player whose turn it is. The landed name springs into focus, the photo drops in on the same spring, the pair holds long enough to be read, and then `onPlayerPickFinished()` moves the turn to `DEAL_CHOICE`. A tap anywhere skips to the landing: the sequence is keyed on the skip flag, so it cancels the cycle in flight and re-enters it landed. `onPlayerPickFinished()` is idempotent either way — the ViewModel ignores it outside `PLAYER_PICK`.
+
+| Beat | Duration |
+|---|---|
+| 11 name swaps, decelerating from 90 ms apart to 420 ms | 1733 ms |
+| Landed name and photo hold | 650 ms |
+| Phase change: cards enter, photo and name travel into the header | 420 ms |
+
+That is ~2.4 s in `PLAYER_PICK` and ~2.8 s until the picker has settled, **the same on every turn** — `NameCyclePath` is a fixed 12 steps however many players there are and wherever the pick falls among them. An earlier version derived the length from the party, and the intro ran anywhere from 3.0 s to 3.8 s depending on the shuffle.
+
+The deceleration is `DeceleratingRun`, the same cube-of-progress ramp the "Surprise me" ring travels on: early swaps stay near the fast bound and only the last two or three stretch towards the slow one, so the run reads as slowing *onto* the name.
+
+> **Why this is not a letter scramble.** It was, and the scramble felt broken for two structural reasons. It re-randomised the name's letters every frame, and since the font is proportional an `M` and an `I` are different widths — so the text reflowed on every frame and jittered. And it was driven by a `delay()` loop, which is not frame-aligned, so an 80 ms step landed at 83 ms or 100 ms depending on where the frame boundary fell. Swapping whole names on a tween has neither problem: the motion is interpolated rather than sampled, so a step arriving a frame late changes nothing, and nothing re-lays-out mid-animation.
+
+The name holds the exact centre of the screen for the whole intro, including before the photo exists. `NameCentringSpacer` is what buys that: it mirrors the photo and its gap on the far side of the name, so the photo's slot is reserved symmetrically and its arrival shifts nothing.
+
+The photo and name are **shared elements**, not two copies that cross-fade. `GameDealSection` wraps the phase `AnimatedContent` in a `SharedTransitionLayout`, and `PlayerRevealTransition.kt` holds the two keys plus the `PlayerRevealScopes` that carry them; `CurrentPlayerHeader` claims the same keys, so the pair travels from the centre of the screen into the header while the deal cards fade and scale in beneath. The header takes those scopes as **nullable** — `SurpriseSpotlightContent` draws the same header outside any phase transition, and passes nothing.
+
+> The name is only keyed once it has landed, and the landing is the run's **final step** rather than a composable that replaces the cycle — otherwise the name it lands over would vanish instead of sliding out like every other swap. Cycling names span the full width; only the landed one hugs its text, which is what the shared bounds need.
+
+Because the intro holds the screen for well over two seconds, it also covers the pack load with room to spare. `onPlayerPickFinished()` awaits `packContentResolved` before opening the picker, so the picker's first frame already has the right hero card — previously it composed against the default and the real hero cross-faded in a frame later, which read as an unexplained flick of the hero card on entering the screen.
 
 > An earlier iteration opened each turn on a split-screen "pass the phone" hand-off. That design was pulled — it is reserved for the Follow The Spot mini-game redesign. `PassThePhoneContent.kt` is kept in the package, unused, as the starting point for that work.
 
@@ -97,7 +127,7 @@ The promoted category lives in `promotedDealType`, which only covers the current
 1. At least one **enabled question pack** feeds its category. Packs are chosen on the setup screen and pooled by `QuestionPackContentLoader` into `GameScreenState.enabledCategories`; a deal whose packs are all switched off never appears on the choice screen or in the spotlight grid. See [question-packs.md](question-packs.md).
 2. For `MINI_GAME` only, there are at least 2 players.
 
-The compact row therefore renders between 0 and 3 tiles. `enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns — a few milliseconds, and the player cannot reach a challenge before then.
+The compact row therefore renders between 0 and 3 tiles. `enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns. The picker never sees that intermediate state anyway: the turn intro waits on the same load before opening.
 
 The setup screen refuses to start a game with no packs enabled, so `availableDealTypes` is never empty in practice.
 
@@ -114,7 +144,7 @@ The phase runs four stages, all driven from a single `LaunchedEffect` inside `Su
 | `FLICKER` | The landed ring cycles through `dealTones` — every deal's own colour — four times | 400 ms |
 | `LANDED` | The flicker resolves and the ring holds steady on the target | 200 ms |
 
-The ring's step duration is `travelStepMillis()`: the **cube** of the progress fraction, so nearly every step stays near 45 ms and only the last two or three stretch out. That is what makes the ring read as slowing *onto* a card rather than easing uniformly across all of them.
+The ring's step duration comes from `DeceleratingRun`: the **cube** of the progress fraction, so nearly every step stays near 45 ms and only the last two or three stretch out. That is what makes the ring read as slowing *onto* a card rather than easing uniformly across all of them. The turn intro's name cycle rides the same ramp.
 
 The grid is adaptive. `spotlightRows()` puts two per row once there are three or more deals, so four make a 2x2, three put two on top and one spanning the width below, two share a row, and one sits alone.
 
@@ -310,7 +340,12 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 |---|---|
 | `GameScreenState.kt` | State, enums (`GameDealPhase`, `GameDealType`, `TruthOrDareChoice`, `OutcomeStage`), `GeneralKnowledgeQuestion`, `OUTCOME_SPIN_DURATION_MS` |
 | `GameScreenViewModel.kt` | Turn machine, challenge content loading, sticky dare countdown jobs, outcome staging |
-| `GameDealSection.kt` | Phase router; challenge, outcome overlay and camera card layering |
+| `GameDealSection.kt` | Phase router; `SharedTransitionLayout` for the reveal; challenge, outcome and camera layering |
+| `GameDealOverlays.kt` | `OutcomeOverlay` and `CameraRequestCard` — the two things layered above the phase |
+| `PlayerPickContent.kt` | The turn intro: the blank state, the sequence, the photo reveal, the skip |
+| `PickedNameCycle.kt` | `NameCyclePath` and the cycling name — the swaps and the landing spring |
+| `DeceleratingRun.kt` | The cube-of-progress step ramp, shared with the "Surprise me" ring |
+| `PlayerRevealTransition.kt` | `PlayerRevealScopes` and the two shared keys that carry the photo and name |
 | `GameScreen.kt` | Root screen composable; background, top bar, bottom sheet visibility |
 | `PassThePhoneContent.kt` | Split-screen hand-off — **not in the flow**; parked for the Follow The Spot redesign |
 | `DealChoiceContent.kt` | The picker's frame: `CurrentPlayerHeader`, `DealPicker`, "Surprise me" |
@@ -319,7 +354,7 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `SurpriseSpotlightContent.kt` | "Surprise me": the four-stage timeline, and the ring's travel order and step ramp |
 | `SpotlightGrid.kt` | The adaptive grid of compact cards the ring travels across |
 | `SpotlightBorder.kt` | `Modifier.spotlightBorder` — the ring itself, and its flicker through `dealTones` |
-| `CurrentPlayerHeader.kt` | Whose turn it is — shared by the picker and the spotlight, which share a frame |
+| `CurrentPlayerHeader.kt` | Whose turn it is — shared by the picker and the spotlight, and the reveal's landing point |
 | `GameScreenTheme.kt` | Mode-tinted background gradient, per-deal accents, shared shapes |
 | `ActiveStickyDare.kt` | `ActiveStickyDare` data class and `Int.toRemainingTimeLabel()` extension |
 | `StickyDarePill.kt` | Animated pill shown in the top bar while at least one sticky dare is active |
