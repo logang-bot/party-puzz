@@ -154,11 +154,9 @@ private fun SharedTransitionScope.OutcomeReelRow(
     Box(
         contentAlignment = Alignment.Center,
         modifier = if (isLanded) {
-            Modifier
-                .fillMaxSize()
-                .outcomeTextBounds(this@OutcomeReelRow, animatedVisibilityScope)
+            Modifier.outcomeTextBounds(this@OutcomeReelRow, animatedVisibilityScope)
         } else {
-            Modifier.fillMaxSize()
+            Modifier
         }
     ) {
         Text(

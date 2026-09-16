@@ -133,7 +133,6 @@ internal fun SharedTransitionScope.OutcomeRevealContent(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .fillMaxWidth()
                 .outcomeTextBounds(this@OutcomeRevealContent, animatedVisibilityScope)
         ) {
             Text(
