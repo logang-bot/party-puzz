@@ -124,22 +124,31 @@ The challenge card re-enables tapping when a couples event is active (same patte
 
 ---
 
-## Couples event dialog
+## Couples event presentation
 
-The dialog is an overlay composable (`CouplesEventDialog`) shown inside `GameScreen`'s root `Box` via `AnimatedVisibility` (`fadeIn` / `fadeOut`). It is not a system dialog.
+Couples events are rendered by the **shared outcome overlay**, not by a bespoke dialog — the same `OutcomeSpinContent` → `OutcomeRevealContent` pair Bar mode uses. The full contract lives in [outcome-presentation.md](outcome-presentation.md); what follows is couples-specific.
 
-**Layout (top to bottom inside the card):**
+**Theme:**
+
+| Category | Gradient | Tone | Icon |
+|---|---|---|---|
+| Reward (`GiveAKiss`, `ChooseKissers`, `ChooseLovers`, `FlavourReward`) | `AccentPink` → `AccentViolet` | `AccentPink` | `ic_couples` |
+| Punishment (`MakeALoveDeclaration`, `ActOfLove`, `FlavourPunishment`) | `OutcomePunishRoseDeep` → `OutcomePunishPlum` | `AccentRose` | `ic_couples` |
+
+**Reel:** the roll's own deck — `couplesPunishmentFlavours` plus `MakeALoveDeclaration(target)` and `ActOfLove(target)` for a punishment, `couplesRewardFlavours` plus the three mechanical rewards for a reward — stopping on the entry that actually fired. The old `outcome_reel_couples` label array is gone.
+
+**Flavour outcomes** (`FlavourReward` / `FlavourPunishment`) are the design's flat lines, 6 rewards and 7 punishments, carrying a `@StringRes` and no mechanics. They have no artwork, so `CouplesEvent.imageRes` is **nullable** and the reveal falls back to the gradient medallion Bar mode uses. See [outcome-presentation.md](outcome-presentation.md).
+
+**Layout after landing.** Couples is the one mode that keeps per-event artwork: where Bar always pops a gradient medallion, `OutcomeRevealContent` renders a mechanical event's `imageRes` at 160 dp, `ContentScale.Fit`, on the same bouncy spring. A flavour outcome has no image and gets the medallion instead.
 
 ```
-"Couples Event!"  ← headlineMedium, bold
-[event-specific image]  ← 160 dp, ContentScale.Fit (see imageRes table above)
-[event message]  ← headlineMedium, bold
-"Tap to dismiss"  ← bodySmall, 45 % white
+[event-specific image]    ← 160 dp, pops in with a bouncy spring
+REWARD / PUNISHMENT       ← kicker, tone-coloured
+"Make a love declaration to PlayerName!"
+"Tap to dismiss"
 ```
 
-**Card entry animation:** the card spins from 720° to 0° (`tween` 800 ms, `FastOutSlowInEasing`) driven by `animateFloatAsState` with a `LaunchedEffect(Unit)` trigger.
-
-All five event types show a single informational message — there are no interactive pickers. The user taps anywhere on the card to dismiss. The active player and the rest of the party act on the message themselves.
+All five event types show a single informational message — there are no interactive pickers, unlike Bar's `GiveDrinksPickTarget`. The player taps anywhere to dismiss. The active player and the rest of the party act on the message themselves.
 
 ### Content per event type
 
@@ -231,12 +240,11 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 |---|---|
 | `CouplesEvent.kt` | Sealed class + `imageRes` / `category` extension properties |
 | `CouplesModeState.kt` | State data class + `punishmentEvent()` / `rewardEvent()` factory methods |
-| `CouplesEventDialog.kt` | Dialog composable: scrim, rotating card entry animation, per-event message |
 | `GameModeHandler.kt` | `CouplesModeHandler` implementation — all event construction logic |
 | `GameScreenState.kt` | Holds `val couplesMode: CouplesModeState` |
 | `GameScreenViewModel.kt` | Delegates all mode logic to `CouplesModeHandler` via `GameModeHandler` interface |
 | `GameDealSection.kt` | Skip / Finish buttons; GK tap hint; challenge card enabled guard |
-| `GameScreen.kt` | Shows `CouplesEventDialog` overlay; passes callbacks to `GameDealSection` |
+| `GameScreen.kt` | Passes the mode callbacks to `GameDealSection`, which mounts the shared outcome overlay |
 
 ---
 

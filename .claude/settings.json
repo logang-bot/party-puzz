@@ -1,6 +1,7 @@
 {
   "enabledPlugins": {
     "android-compose@logang-bot": true,
-    "general-code-style@logang-bot": true
+    "general-code-style@logang-bot": true,
+    "superpowers@claude-plugins-official": true
   }
 }

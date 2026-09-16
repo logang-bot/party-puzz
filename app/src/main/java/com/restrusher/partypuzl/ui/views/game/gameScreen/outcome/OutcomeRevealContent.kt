@@ -1,5 +1,10 @@
 package com.restrusher.partypuzl.ui.views.game.gameScreen.outcome
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -54,10 +59,12 @@ import com.restrusher.partypuzl.ui.views.game.gameScreen.GameScreenState
 import com.restrusher.partypuzl.ui.views.game.gameScreen.imageRes
 
 /** The landed reward or punishment, popped in after [OutcomeSpinContent] finishes rolling. */
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun OutcomeRevealContent(
+internal fun SharedTransitionScope.OutcomeRevealContent(
     uiState: GameScreenState,
     onGiveDrinksTargetSelected: (String) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier
 ) {
     val mode = uiState.activeOutcomeMode ?: return
@@ -85,10 +92,11 @@ internal fun OutcomeRevealContent(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 28.dp, vertical = 24.dp)
     ) {
+        val artwork = couplesEvent?.imageRes.takeIf { mode == OutcomeMode.COUPLES }
         Box(modifier = Modifier.scale(pop.value)) {
-            if (mode == OutcomeMode.COUPLES && couplesEvent != null) {
+            if (artwork != null) {
                 Image(
-                    painter = painterResource(couplesEvent.imageRes),
+                    painter = painterResource(artwork),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
                     modifier = Modifier
@@ -122,14 +130,21 @@ internal fun OutcomeRevealContent(
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(10.dp))
-        Text(
-            text = outcomeMessage(barEvent, couplesEvent),
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            fontStyle = FontStyle.Italic,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center
-        )
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .outcomeTextBounds(this@OutcomeRevealContent, animatedVisibilityScope)
+        ) {
+            Text(
+                text = outcomeMessage(barEvent, couplesEvent),
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                fontStyle = FontStyle.Italic,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+        }
         Spacer(Modifier.height(24.dp))
 
         if (barEvent is BarEvent.GiveDrinksPickTarget) {
@@ -152,60 +167,50 @@ internal fun OutcomeRevealContent(
     }
 }
 
-@Composable
-private fun outcomeMessage(barEvent: BarEvent?, couplesEvent: CouplesEvent?): String = when {
-    couplesEvent != null -> couplesMessage(couplesEvent)
-    barEvent != null -> barMessage(barEvent)
-    else -> ""
-}
+private val previewBarState = GameScreenState(
+    barMode = BarModeState(isActive = true, activeEvent = BarEvent.TakeDrinks(amount = 3))
+)
 
-@Composable
-private fun barMessage(event: BarEvent): String = when (event) {
-    is BarEvent.NoAction -> stringResource(R.string.bar_event_no_action)
-    is BarEvent.GiveDrinks ->
-        stringResource(R.string.bar_event_give_drinks, event.amount, event.targetPlayerName)
-    is BarEvent.GiveDrinksPickTarget ->
-        stringResource(R.string.bar_event_give_drinks_choose, event.amount)
-    is BarEvent.TakeDrinks -> stringResource(R.string.bar_event_take_drinks, event.amount)
-}
+private val previewCouplesState = GameScreenState(
+    couplesMode = CouplesModeState(isActive = true, activeEvent = CouplesEvent.GiveAKiss)
+)
 
+@Preview(name = "OutcomeReveal – bar punishment – Light", showBackground = true, widthDp = 360, heightDp = 560)
 @Composable
-private fun couplesMessage(event: CouplesEvent): String = when (event) {
-    is CouplesEvent.GiveAKiss -> stringResource(R.string.couples_event_give_a_kiss)
-    is CouplesEvent.ChooseKissers -> stringResource(R.string.couples_event_chose_kissers)
-    is CouplesEvent.MakeALoveDeclaration ->
-        stringResource(R.string.couples_event_make_love_declaration, event.targetPlayerName)
-    is CouplesEvent.ActOfLove ->
-        stringResource(R.string.couples_event_act_of_love, event.requesterPlayerName)
-    is CouplesEvent.ChooseLovers -> stringResource(R.string.couples_event_chose_lovers)
+private fun OutcomeRevealContentPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { OutcomeRevealPreviewBody(previewBarState) }
 }
 
 @Preview(name = "OutcomeReveal – bar punishment – Dark", showBackground = true, widthDp = 360, heightDp = 560)
 @Composable
-private fun OutcomeRevealBarPunishmentDarkPreview() {
-    PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.appBackground().fillMaxSize()) {
-            OutcomeRevealContent(
-                uiState = GameScreenState(
-                    barMode = BarModeState(isActive = true, activeEvent = BarEvent.TakeDrinks(amount = 3))
-                ),
-                onGiveDrinksTargetSelected = {}
-            )
-        }
-    }
+private fun OutcomeRevealContentDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { OutcomeRevealPreviewBody(previewBarState) }
 }
 
 @Preview(name = "OutcomeReveal – couples reward – Light", showBackground = true, widthDp = 360, heightDp = 560)
 @Composable
-private fun OutcomeRevealCouplesRewardLightPreview() {
-    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.appBackground().fillMaxSize()) {
-            OutcomeRevealContent(
-                uiState = GameScreenState(
-                    couplesMode = CouplesModeState(isActive = true, activeEvent = CouplesEvent.GiveAKiss)
-                ),
-                onGiveDrinksTargetSelected = {}
-            )
+private fun OutcomeRevealCouplesRewardPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { OutcomeRevealPreviewBody(previewCouplesState) }
+}
+
+@Preview(name = "OutcomeReveal – couples reward – Dark", showBackground = true, widthDp = 360, heightDp = 560)
+@Composable
+private fun OutcomeRevealCouplesRewardDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { OutcomeRevealPreviewBody(previewCouplesState) }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun OutcomeRevealPreviewBody(uiState: GameScreenState) {
+    Box(Modifier.appBackground().fillMaxSize()) {
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                OutcomeRevealContent(
+                    uiState = uiState,
+                    onGiveDrinksTargetSelected = {},
+                    animatedVisibilityScope = this@AnimatedVisibility
+                )
+            }
         }
     }
 }

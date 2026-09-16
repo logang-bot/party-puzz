@@ -4,7 +4,8 @@ import com.restrusher.partypuzl.data.models.Player
 
 data class BarModeState(
     val isActive: Boolean = false,
-    val activeEvent: BarEvent? = null
+    val activeEvent: BarEvent? = null,
+    val deck: List<BarEvent> = emptyList()
 ) {
     companion object {
         fun takeDrinksEvent(): BarEvent.TakeDrinks =

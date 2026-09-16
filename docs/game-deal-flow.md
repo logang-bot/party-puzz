@@ -35,13 +35,13 @@ Round 2: [Player C, Player B, Player A]   ← reshuffled once queue is empty
   "Surprise me"                  user dismisses      │
        │                              │              │
        ▼                  ┌───────────┴───────────┐  │
-SURPRISE_SHUFFLE      mode produced          nothing │
+SURPRISE_SPOTLIGHT    mode produced          nothing │
        │              an event               happened│
-  1.6 s reel               │                     │   │
+ ~2.0 s spotlight          │                     │   │
        │             outcome overlay             │   │
-       └──────▶            │                     │   │
-                     spin ──▶ reveal             │   │
-                           │                     │   │
+       ▼                   │                     │   │
+  DEAL_CHOICE        spin ──▶ reveal             │   │
+   (promoted)              │                     │   │
                            └─────────┬───────────┘   │
                                      │               │
                          pendingCameraRequest?        │
@@ -55,7 +55,7 @@ SURPRISE_SHUFFLE      mode produced          nothing │
 | Phase | What the screen shows | Duration |
 |---|---|---|
 | `DEAL_CHOICE` | Current player, hero card(s), compact tiles, "Surprise me" | Until a deal is confirmed |
-| `SURPRISE_SHUFFLE` | Slot reel cycling the four deals | 1.6 s |
+| `SURPRISE_SPOTLIGHT` | Deals gathered into a grid, a highlight ring travelling across them | ~2.0 s, then back to `DEAL_CHOICE` promoted |
 | `CHALLENGE_SHOWN` | The chosen challenge, full-bleed | Until dismissed |
 
 There is no idle or hand-off phase. The game opens directly on `DEAL_CHOICE` — `GameScreenViewModel.init` calls `advanceToNextTurn()`, so round 1's player is selected before the first frame, and a finished turn returns straight to the picker for the next player.
@@ -90,18 +90,49 @@ The promoted category lives in `promotedDealType`, which only covers the current
 | Hero **Truth** card | `TRUTH` |
 | Hero **Dare** card | `DARE` |
 | Compact **Truth or Dare** tile | None — promotes to the two hero cards |
-| Surprise reel lands on Truth or Dare | Random |
+| Spotlight lands on Truth or Dare | None — the hero shows both sides, the player picks one |
 
 **Availability:** a deal is offered only when both hold (`availableDealTypes`):
 
-1. At least one **enabled question pack** feeds its category. Packs are chosen on the setup screen and pooled by `QuestionPackContentLoader` into `GameScreenState.enabledCategories`; a deal whose packs are all switched off never appears on the choice screen or in the surprise reel. See [question-packs.md](question-packs.md).
+1. At least one **enabled question pack** feeds its category. Packs are chosen on the setup screen and pooled by `QuestionPackContentLoader` into `GameScreenState.enabledCategories`; a deal whose packs are all switched off never appears on the choice screen or in the spotlight grid. See [question-packs.md](question-packs.md).
 2. For `MINI_GAME` only, there are at least 2 players.
 
 The compact row therefore renders between 0 and 3 tiles. `enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns — a few milliseconds, and the player cannot reach a challenge before then.
 
 The setup screen refuses to start a game with no packs enabled, so `availableDealTypes` is never empty in practice.
 
-**Surprise me** picks the target first, moves to `SURPRISE_SHUFFLE`, spins a `SlotReel` onto that target, and then starts the challenge. A surprise result counts as a pick, so it becomes the next turn's hero.
+### Surprise me
+
+**Surprise me** picks the target first, in `onSurpriseRequested()`, and then animates. Everything on screen after that tap is cosmetic — the deal is already decided.
+
+The phase runs four stages, all driven from a single `LaunchedEffect` inside `SurpriseSpotlightContent`:
+
+| Stage | What happens | Duration |
+|---|---|---|
+| `GATHER` | The compact cards of every available deal fade and scale into a centred grid, staggered | 350 ms |
+| `TRAVEL` | A highlight ring hops card to card, ramping from 45 ms to 260 ms a step, and stops on the target | ~1.2 s |
+| `FLICKER` | The landed ring cycles through `dealTones` — every deal's own colour — four times | 400 ms |
+| `LANDED` | The flicker resolves and the ring holds steady on the target | 200 ms |
+
+The ring's step duration is `travelStepMillis()`: the **cube** of the progress fraction, so nearly every step stays near 45 ms and only the last two or three stretch out. That is what makes the ring read as slowing *onto* a card rather than easing uniformly across all of them.
+
+The grid is adaptive. `spotlightRows()` puts two per row once there are three or more deals, so four make a 2x2, three put two on top and one spanning the width below, two share a row, and one sits alone.
+
+**The hand-off.** `LANDED` ends by calling `onSurpriseSettled()`, which returns to `DEAL_CHOICE` with `promotedDealType` set to the target. The **picker** then draws the hero card, so the growth into the hero state is the phase `AnimatedContent`'s own `fadeIn + scaleIn(0.94f)` rather than a second hero rendering inside the spotlight. The player confirms with the same tap a hand-picked category needs, and Truth or Dare still gets both its sides rather than having one rolled for it.
+
+The spotlight reuses `DealChoiceContent`'s frame — same padding, same `CurrentPlayerHeader`, same 20 dp spacer — so the header barely shifts across the cross-fade and the grid sits where the hero and compact row will be.
+
+> A shared-element transition would carry the landed card continuously into the hero slot, but it is not available here: the phase change and the picker's own promotion are two nested `AnimatedContent`s, and a `deal_<type>` bounds key can only be claimed once per layout. The cross-fade plus scale is the honest substitute.
+>
+> `onSurpriseSettled()` deliberately leaves `surpriseDealType` set. The outgoing spotlight is still composed for the duration of the cross-fade, and clearing the field there would blank that frame mid-transition. `startChallenge()` clears it on the confirming tap.
+>
+> Because the turn returns to an ordinary `DEAL_CHOICE`, the player **can** decline the surprise and tap a different compact tile instead. That follows from landing on a promotion rather than a committed challenge — "Surprise me" suggests, it does not bind.
+
+A surprise result counts as a pick, so it becomes the next turn's hero.
+
+> The phase was called `SURPRISE_SHUFFLE` while it drove a slot reel. Nothing shuffles now, so it is `SURPRISE_SPOTLIGHT`.
+>
+> The hand-off used to be a ViewModel timer: `delay(SURPRISE_SHUFFLE_DURATION_MS)` in a `dealJob`, with the reel separately subtracting its own hold constant from the same number. The animation now reports back when it is finished, so there is one source of truth for the timing, and `dealJob` is gone — a `LaunchedEffect` is torn down by the phase `AnimatedContent` if the turn advances or the screen is left, which is what the job's three cancel sites were for.
 
 ---
 
@@ -220,8 +251,9 @@ See [minigames.md](minigames.md).
 The glass card that used to hold every prompt is gone. Challenge content renders full-bleed on the screen background, which is tinted by the deal or mode in play — `rememberGameBackground(uiState)` in `GameScreenTheme.kt` picks a `PageBackground` per deal phase, reusing the `gameModeTheme()` palette. Because that content sits on the page rather than on a card, its ink is `colorScheme.onBackground`. See [game-mode-visual-identity.md](game-mode-visual-identity.md) and [theming.md](theming.md).
 
 - **Phase transitions:** `AnimatedContent`, fade + scale from 94 % (320 ms in / 220 ms out)
+- **Surprise spotlight:** the grid, the travelling ring and the hero landing, described under [Surprise me](#surprise-me). The ring is an outer border on a `Box` wrapping each compact card, inset by `spotlightRingInset`, so it never collides with the card's own hairline
 - **Promotion:** the picker is a `SharedTransitionLayout` over an `AnimatedContent` keyed on `pickerHeroDealType`; hero and compact cards share `deal_<type>` bounds keys, so the tapped tile rises into the hero slot while the old hero drops into the row (320 ms, `FastOutSlowInEasing`). The Dare card of the Truth/Dare pair has no key of its own — one key can only be claimed once per layout — so it fades and scales in
-- **Deal identity:** each deal's tone, gradient, strings and glyph live in one `DealAccent` in `GameScreenTheme.kt`, read by the picker cards and the surprise reel alike. The glyphs are the `ic_deal_*` set — brain (Truth), flame (Dare and the combined tile), trophy (General Knowledge), sparkle (Sticky Dares), dice (Mini-games) — shared with the custom-pack entry types so a category looks the same wherever it is drawn. "Surprise me" keeps `ic_random`, which means shuffle rather than mini-game
+- **Deal identity:** each deal's tone, gradient, strings and glyph live in one `DealAccent` in `GameScreenTheme.kt`, read by the picker cards and the spotlight grid alike. The glyphs are the `ic_deal_*` set — brain (Truth), flame (Dare and the combined tile), trophy (General Knowledge), sparkle (Sticky Dares), dice (Mini-games) — shared with the custom-pack entry types so a category looks the same wherever it is drawn. "Surprise me" keeps `ic_random`, which means shuffle rather than mini-game
 - **Dismissal guard:** `isChallengeDismissible` prevents taps from going through before the deal type allows it
 - **Player rail:** 46 dp avatars in a 72 dp row, the active player ringed in the primary colour
 
@@ -238,7 +270,8 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `heroDealType` | `GameDealType` | Last category played, opens the next turn's hero slot |
 | `promotedDealType` | `GameDealType?` | Category this player tapped into the hero slot; cleared when the turn advances |
 | `pickerHeroDealType` | `GameDealType` (computed) | `promotedDealType`, else `resolvedHeroDealType` — what the picker draws |
-| `surpriseDealType` | `GameDealType?` | Reel landing target during `SURPRISE_SHUFFLE` |
+| `surpriseDealType` | `GameDealType?` | The deal the spotlight ring has to stop on. `onSurpriseSettled()` copies it to `promotedDealType` but deliberately leaves it set |
+| `surpriseRequestId` | `Int` | Bumped on every "Surprise me" tap. The spotlight is `key()`-ed on it, so a re-tap restarts the timeline instead of reusing a composition the phase transition is still animating out |
 | `challengeText` | `String?` | Question / dare text (Truth or Dare + Sticky Dare) |
 | `truthOrDareChoice` | `TruthOrDareChoice?` | `TRUTH` / `DARE`; set at pick time, never null once the challenge shows |
 | `generalKnowledgeQuestion` | `GeneralKnowledgeQuestion?` | Full GK question object |
@@ -275,16 +308,18 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 
 | File | Role |
 |---|---|
-| `GameScreenState.kt` | State, enums (`GameDealPhase`, `GameDealType`, `TruthOrDareChoice`, `OutcomeStage`), `GeneralKnowledgeQuestion`, spin duration constants |
+| `GameScreenState.kt` | State, enums (`GameDealPhase`, `GameDealType`, `TruthOrDareChoice`, `OutcomeStage`), `GeneralKnowledgeQuestion`, `OUTCOME_SPIN_DURATION_MS` |
 | `GameScreenViewModel.kt` | Turn machine, challenge content loading, sticky dare countdown jobs, outcome staging |
 | `GameDealSection.kt` | Phase router; challenge, outcome overlay and camera card layering |
 | `GameScreen.kt` | Root screen composable; background, top bar, bottom sheet visibility |
 | `PassThePhoneContent.kt` | Split-screen hand-off — **not in the flow**; parked for the Follow The Spot redesign |
-| `DealChoiceContent.kt` | The picker's frame: player header, `DealPicker`, "Surprise me" |
+| `DealChoiceContent.kt` | The picker's frame: `CurrentPlayerHeader`, `DealPicker`, "Surprise me" |
 | `DealPicker.kt` | Hero slot and compact row, and the shared-bounds promotion between them |
 | `DealCategoryCards.kt` | `DealHeroCard` and `DealCompactCard` |
-| `SurpriseShuffleContent.kt` | "Surprise me" reel |
-| `SlotReel.kt` | Shared slot-machine reel, used by the surprise shuffle and the outcome roll |
+| `SurpriseSpotlightContent.kt` | "Surprise me": the four-stage timeline, and the ring's travel order and step ramp |
+| `SpotlightGrid.kt` | The adaptive grid of compact cards the ring travels across |
+| `SpotlightBorder.kt` | `Modifier.spotlightBorder` — the ring itself, and its flicker through `dealTones` |
+| `CurrentPlayerHeader.kt` | Whose turn it is — shared by the picker and the spotlight, which share a frame |
 | `GameScreenTheme.kt` | Mode-tinted background gradient, per-deal accents, shared shapes |
 | `ActiveStickyDare.kt` | `ActiveStickyDare` data class and `Int.toRemainingTimeLabel()` extension |
 | `StickyDarePill.kt` | Animated pill shown in the top bar while at least one sticky dare is active |

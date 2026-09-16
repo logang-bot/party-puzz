@@ -24,10 +24,12 @@ barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.
 | `GiveDrinks(amount, targetPlayerName)` | Reward | The active player must give the displayed number of drinks to the named player |
 | `GiveDrinksPickTarget(amount, candidates)` | Reward | Like `GiveDrinks` but the target has not been decided yet — the dialog shows a list of players to pick from. Tapping a name resolves to a `GiveDrinks` event. |
 | `TakeDrinks(amount)` | Punishment | The active player must drink the displayed amount |
+| `FlavourReward(textRes)` | Reward | One of `barRewardFlavours` (6 lines) — the text is the whole outcome, no mechanics |
+| `FlavourPunishment(textRes)` | Punishment | One of `barPunishmentFlavours` (7 lines) |
 
 Each event carries its category as an extension property (`val BarEvent.category: EventCategory`) — see [game-mode-handler.md](game-mode-handler.md).
 
-Events are **not randomly drawn** — each deal type produces a deterministic event based on how the player did:
+Which **category** fires is deterministic — each deal type rewards or punishes based on how the player did. *Which outcome within that category* is drawn from the roll's deck, so the reel has real alternatives to cycle before it lands. See [outcome-presentation.md](outcome-presentation.md).
 
 | Deal type | Outcome | Event |
 |---|---|---|
@@ -93,10 +95,10 @@ Bar events are rendered by the shared outcome overlay, not by a bespoke dialog. 
 
 | Category | Gradient | Tone | Icon |
 |---|---|---|---|
-| Reward (`NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`) | `AccentYellow` → `AccentPink` | `AccentYellow` | `ic_sports_bar` |
-| Punishment (`TakeDrinks`) | `OutcomePunishCrimson` → `OutcomePunishMidnight` | `OutcomePunishCrimson` | `ic_whatshot` |
+| Reward (`NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`, `FlavourReward`) | `AccentYellow` → `AccentPink` | `AccentYellow` | `ic_sports_bar` |
+| Punishment (`TakeDrinks`, `FlavourPunishment`) | `OutcomePunishCrimson` → `OutcomePunishMidnight` | `OutcomePunishCrimson` | `ic_whatshot` |
 
-**Reel:** `R.array.outcome_reel_bar`, ordered `NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`, `TakeDrinks` — matching `BarEvent.reelIndex`, so the reel stops on the event that actually fired.
+**Reel:** the roll's own deck — `barPunishmentFlavours` plus `takeDrinksEvent()` for a punishment, `barRewardFlavours` plus `giveDrinksPickTargetEvent(...)` for a reward — stopping on the entry that actually fired. The old `outcome_reel_bar` label array is gone.
 
 **Layout after landing:**
 
@@ -111,6 +113,7 @@ REWARD / PUNISHMENT       ← kicker, tone-coloured
 
 | Event | Message | Interaction |
 |---|---|---|
+| `FlavourReward` / `FlavourPunishment` | The line itself | Tap to dismiss |
 | `NoAction` | "Nothing happens — carry on!" | Tap to dismiss |
 | `TakeDrinks` | "Take X drink(s)!" | Tap to dismiss |
 | `GiveDrinks` | "Give X drink(s) to PlayerName!" | Tap to dismiss |
@@ -173,7 +176,9 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 | `BarEvent.kt` | Sealed class: `NoAction`, `GiveDrinks`, `TakeDrinks(amount)` |
 | `BarModeState.kt` | State data class + `triggerRandomEvent()` logic |
 | `outcome/OutcomeSpinContent.kt`, `outcome/OutcomeRevealContent.kt` | Shared roll and reveal used by every bar event |
-| `outcome/OutcomeTheme.kt` | Bar reward / punishment theming and `BarEvent.reelIndex` |
+| `outcome/OutcomeTheme.kt` | Bar reward / punishment theming |
+| `outcome/OutcomeDecks.kt` | `barRewardDeck` / `barPunishmentDeck`, and `deckLandingOn` |
+| `outcome/OutcomeFlavours.kt` | `barRewardFlavours` / `barPunishmentFlavours` |
 | `GameScreenState.kt` | Holds `val barMode: BarModeState` |
 | `GameScreenViewModel.kt` | Delegates event logic to `BarModeHandler` via `GameModeHandler` |
 | `GameDealSection.kt` | Skip / Finish buttons; GK tap hint; challenge card enabled guard |

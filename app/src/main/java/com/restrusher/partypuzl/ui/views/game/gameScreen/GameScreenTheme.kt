@@ -141,6 +141,8 @@ internal val TruthOrDareChoice.accent: DealAccent
         TruthOrDareChoice.DARE -> dareAccent
     }
 
+internal val dealTones: List<Color> = GameDealType.entries.map { it.accent.tone }
+
 internal val dealCardShape = RoundedCornerShape(22.dp)
 internal val dealCompactShape = RoundedCornerShape(16.dp)
 internal val playerCardShape = RoundedCornerShape(11.dp)

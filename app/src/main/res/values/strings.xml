@@ -55,6 +55,38 @@
     <string name="couples_event_act_of_love">Do whatever %1$s tells you to do!</string>
     <string name="couples_event_chose_lovers">You choose who will make a love declaration!</string>
 
+    <!-- Reward / punishment flavour decks — Bar and Couples. The reel cycles these alongside
+         the mechanical events, and lands on whichever one actually fired. -->
+    <string name="bar_reward_skip_next_drink">Skip your next drink</string>
+    <string name="bar_reward_steal_a_sip">Steal a sip from anyone\'s cup</string>
+    <string name="bar_reward_new_house_rule">Make a new house rule for the rest of the night</string>
+    <string name="bar_reward_crown_yourself">Crown yourself MVP — everyone toasts you</string>
+    <string name="bar_reward_send_for_a_round">Send someone else to the bar for a round</string>
+    <string name="bar_reward_swap_drinks">Swap drinks with whoever you want</string>
+
+    <string name="bar_punishment_tequila_shot">Take a shot of tequila</string>
+    <string name="bar_punishment_finish_your_drink">Finish your drink, right now</string>
+    <string name="bar_punishment_group_picks_shot">Down a shot the group picks for you</string>
+    <string name="bar_punishment_table_mixed_shot">Drink a shot mixed by the whole table</string>
+    <string name="bar_punishment_shame_sash">Wear the “walk of shame” sash for 3 rounds</string>
+    <string name="bar_punishment_five_second_chug">Chug for 5 seconds, group\'s count</string>
+    <string name="bar_punishment_wrong_hand_shot">Take a shot with your non-dominant hand</string>
+
+    <string name="couples_reward_whisper_something_sweet">Whisper something sweet in their ear</string>
+    <string name="couples_reward_cuddle_break">Claim a 60-second cuddle break</string>
+    <string name="couples_reward_feed_each_other">Feed each other a bite of something sweet</string>
+    <string name="couples_reward_slow_dance">Slow dance together for 30 seconds</string>
+    <string name="couples_reward_pick_the_song">Pick the next song — everyone dances</string>
+    <string name="couples_reward_shoulder_massage">Get a shoulder massage from your partner</string>
+
+    <string name="couples_punishment_kiss_from_the_left">Receive a kiss from the player to your left</string>
+    <string name="couples_punishment_worst_pickup_line">Try your worst pickup line on your partner</string>
+    <string name="couples_punishment_last_person_texted">Reveal the last person you texted</string>
+    <string name="couples_punishment_partner_posts_status">Let your partner post a status update for you</string>
+    <string name="couples_punishment_last_selfie">Show the room your camera roll\'s last selfie</string>
+    <string name="couples_punishment_most_used_emoji">Confess your most-used emoji, out loud, dramatically</string>
+    <string name="couples_punishment_partner_impression">Do your best impression of your partner</string>
+
     <!-- Game Modes Descriptions -->
     <string name="standard_description">The classic mode where every player competes on their own — may the best one win!</string>
     <string name="bar_description">A mode made for bar nights — grab your crew and compete in rounds of wild challenges!</string>
@@ -168,8 +200,7 @@
     <string name="tap_when_ready">Tap when ready</string>
     <string name="round_number">Round %1$d</string>
     <string name="its_your_turn">It\'s your turn</string>
-    <string name="surprise_me">Surprise me · spin the wheel</string>
-    <string name="shuffling_the_deal">Shuffling the deal…</string>
+    <string name="surprise_me">Surprise me · deal me in</string>
     <string name="deal_kicker_truth">Spill it</string>
     <string name="deal_kicker_dare">Show us</string>
     <string name="deal_kicker_general_knowledge">Think fast</string>
@@ -751,20 +782,6 @@
     <string name="rewarded_ad_subtitle">Watch a short clip · 120 extra prompts + 18+ dares</string>
     <string name="watch">Watch</string>
 
-    <!-- Reward / punishment roll. Order must match BarEvent.reelIndex and CouplesEvent.reelIndex. -->
-    <string-array name="outcome_reel_bar">
-        <item>Nothing happens</item>
-        <item>Give drinks away</item>
-        <item>Choose who drinks</item>
-        <item>Take drinks</item>
-    </string-array>
-    <string-array name="outcome_reel_couples">
-        <item>Give a kiss</item>
-        <item>Choose the kissers</item>
-        <item>Make a love declaration</item>
-        <item>Do an act of love</item>
-        <item>Choose the lovers</item>
-    </string-array>
 
     <!-- ============================================================
          Question packs — setup screen

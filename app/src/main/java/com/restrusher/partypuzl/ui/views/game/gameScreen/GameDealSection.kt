@@ -2,6 +2,8 @@ package com.restrusher.partypuzl.ui.views.game.gameScreen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,10 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import com.restrusher.partypuzl.data.models.Player
-import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.OutcomeRevealContent
 import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.OutcomeSpinContent
 import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.activeOutcomeMode
-import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.reelIndex
+import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.OUTCOME_STAGE_MS
+import com.restrusher.partypuzl.ui.views.game.gameScreen.outcome.OutcomeRevealContent
 
 @Composable
 internal fun GameDealSection(
@@ -35,6 +37,7 @@ internal fun GameDealSection(
     onDealPromoted: (GameDealType) -> Unit,
     onDealChosen: (GameDealType, TruthOrDareChoice?) -> Unit,
     onSurpriseRequested: () -> Unit,
+    onSurpriseSettled: () -> Unit,
     onChallengeDismissed: () -> Unit,
     onTruthOrDareSkipped: () -> Unit,
     onStickyDareSkipped: () -> Unit,
@@ -66,9 +69,9 @@ internal fun GameDealSection(
                     onSurpriseRequested = onSurpriseRequested
                 )
 
-                GameDealPhase.SURPRISE_SHUFFLE -> SurpriseShuffleContent(
-                    dealTypes = uiState.availableDealTypes,
-                    targetDealType = uiState.surpriseDealType
+                GameDealPhase.SURPRISE_SPOTLIGHT -> SurpriseSpotlightContent(
+                    uiState = uiState,
+                    onSurpriseSettled = onSurpriseSettled
                 )
 
                 GameDealPhase.CHALLENGE_SHOWN -> ChallengeContent(
@@ -170,6 +173,7 @@ private fun ChallengeContent(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun OutcomeOverlay(
     uiState: GameScreenState,
@@ -177,8 +181,7 @@ private fun OutcomeOverlay(
     onGiveDrinksTargetSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val mode = uiState.activeOutcomeMode ?: return
-    val category = uiState.activeEventCategory ?: return
+    if (uiState.activeOutcomeMode == null || uiState.activeEventCategory == null) return
     val interactionSource = remember { MutableInteractionSource() }
     val isPickingTarget = uiState.barMode.activeEvent is BarEvent.GiveDrinksPickTarget
     val isRevealed = uiState.outcomeStage == OutcomeStage.REVEALED
@@ -193,21 +196,29 @@ private fun OutcomeOverlay(
                 enabled = isRevealed && !isPickingTarget
             ) { onModeEventDismissed() }
     ) {
-        if (isRevealed) {
-            OutcomeRevealContent(
-                uiState = uiState,
-                onGiveDrinksTargetSelected = onGiveDrinksTargetSelected,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            OutcomeSpinContent(
-                mode = mode,
-                category = category,
-                targetIndex = uiState.couplesMode.activeEvent?.reelIndex
-                    ?: uiState.barMode.activeEvent?.reelIndex
-                    ?: 0,
-                modifier = Modifier.fillMaxSize()
-            )
+        SharedTransitionLayout {
+            AnimatedContent(
+                targetState = isRevealed,
+                transitionSpec = {
+                    fadeIn(tween(OUTCOME_STAGE_MS)) togetherWith fadeOut(tween(OUTCOME_STAGE_MS))
+                },
+                label = "outcome stage"
+            ) { revealed ->
+                if (revealed) {
+                    OutcomeRevealContent(
+                        uiState = uiState,
+                        onGiveDrinksTargetSelected = onGiveDrinksTargetSelected,
+                        animatedVisibilityScope = this@AnimatedContent,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    OutcomeSpinContent(
+                        uiState = uiState,
+                        animatedVisibilityScope = this@AnimatedContent,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
         }
     }
 }

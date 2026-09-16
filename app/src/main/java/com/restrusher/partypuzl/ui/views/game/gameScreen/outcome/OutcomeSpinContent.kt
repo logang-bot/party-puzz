@@ -1,5 +1,16 @@
 package com.restrusher.partypuzl.ui.views.game.gameScreen.outcome
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.ui.tooling.preview.Preview
+import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
+import com.restrusher.partypuzl.ui.theme.appBackground
+import com.restrusher.partypuzl.ui.views.game.gameScreen.BarModeState
+import com.restrusher.partypuzl.ui.views.game.gameScreen.CouplesModeState
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,35 +30,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.restrusher.partypuzl.data.preferences.ThemeMode
-import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
-import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.appColors
-import com.restrusher.partypuzl.ui.views.game.gameScreen.EventCategory
+import com.restrusher.partypuzl.ui.views.game.gameScreen.GameScreenState
 import com.restrusher.partypuzl.ui.views.game.gameScreen.OUTCOME_SPIN_DURATION_MS
-import com.restrusher.partypuzl.ui.views.game.gameScreen.SlotReel
 
 private const val REEL_HOLD_MS = 250
 
-/** The roll that precedes a reward or punishment landing. */
+/** Three wrapped lines of [MaterialTheme.typography] titleMedium, plus room inside the border. */
+private val outcomeRowHeight = 88.dp
+
+private val previewBarDeck = barPunishmentDeck()
+private val previewCouplesDeck = couplesRewardDeck()
+
+private val previewBarState = GameScreenState(
+    barMode = BarModeState(isActive = true, activeEvent = previewBarDeck[2], deck = previewBarDeck)
+)
+
+private val previewCouplesState = GameScreenState(
+    couplesMode = CouplesModeState(
+        isActive = true,
+        activeEvent = previewCouplesDeck[1],
+        deck = previewCouplesDeck
+    )
+)
+
+/**
+ * The roll that precedes a reward or punishment landing.
+ *
+ * The reel cycles this game's actual deck and stops on the outcome that really fired, so the row
+ * it settles on is the line the reveal goes on to show.
+ */
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-internal fun OutcomeSpinContent(
-    mode: OutcomeMode,
-    category: EventCategory,
-    targetIndex: Int,
+internal fun SharedTransitionScope.OutcomeSpinContent(
+    uiState: GameScreenState,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     modifier: Modifier = Modifier
 ) {
+    val mode = uiState.activeOutcomeMode ?: return
+    val category = uiState.activeEventCategory ?: return
     val theme = outcomeTheme(mode, category)
-    val labels = stringArrayResource(outcomeReelLabelsRes(mode))
+    val texts = outcomeDeckTexts(uiState, mode)
+    if (texts.isEmpty()) return
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,49 +110,102 @@ internal fun OutcomeSpinContent(
         )
         Spacer(Modifier.height(20.dp))
         SlotReel(
-            itemCount = labels.size,
-            targetIndex = targetIndex.coerceIn(0, (labels.size - 1).coerceAtLeast(0)),
-            durationMillis = (OUTCOME_SPIN_DURATION_MS - REEL_HOLD_MS).toInt(),
+            reel = SlotReelSpec(
+                itemCount = texts.size,
+                targetIndex = outcomeTargetIndex(uiState, mode).coerceIn(0, texts.size - 1),
+                durationMillis = (OUTCOME_SPIN_DURATION_MS - REEL_HOLD_MS).toInt()
+            ),
             tone = theme.tone,
             maskColor = MaterialTheme.colorScheme.surface,
-            itemHeight = 70.dp,
+            itemHeight = outcomeRowHeight,
             modifier = Modifier.widthIn(max = 320.dp)
-        ) { index ->
-            Text(
-                text = labels[index],
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center
+        ) { index, isLanded ->
+            OutcomeReelRow(
+                text = texts[index],
+                isLanded = isLanded,
+                animatedVisibilityScope = animatedVisibilityScope
             )
         }
     }
+}
+
+@Composable
+private fun outcomeDeckTexts(uiState: GameScreenState, mode: OutcomeMode): List<String> =
+    if (mode == OutcomeMode.COUPLES) {
+        uiState.couplesMode.deck.map { couplesMessage(it) }
+    } else {
+        uiState.barMode.deck.map { barMessage(it) }
+    }
+
+private fun outcomeTargetIndex(uiState: GameScreenState, mode: OutcomeMode): Int =
+    if (mode == OutcomeMode.COUPLES) {
+        uiState.couplesMode.deck.indexOf(uiState.couplesMode.activeEvent)
+    } else {
+        uiState.barMode.deck.indexOf(uiState.barMode.activeEvent)
+    }
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.OutcomeReelRow(
+    text: String,
+    isLanded: Boolean,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = if (isLanded) {
+            Modifier
+                .fillMaxSize()
+                .outcomeTextBounds(this@OutcomeReelRow, animatedVisibilityScope)
+        } else {
+            Modifier.fillMaxSize()
+        }
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
+@Preview(name = "OutcomeSpin – bar punishment – Light", showBackground = true, widthDp = 360, heightDp = 560)
+@Composable
+private fun OutcomeSpinContentPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { OutcomeSpinPreviewBody(previewBarState) }
 }
 
 @Preview(name = "OutcomeSpin – bar punishment – Dark", showBackground = true, widthDp = 360, heightDp = 560)
 @Composable
-private fun OutcomeSpinBarPunishmentDarkPreview() {
-    PartyPuzlTheme(themeMode = ThemeMode.DARK) {
-        Box(Modifier.appBackground().fillMaxSize()) {
-            OutcomeSpinContent(
-                mode = OutcomeMode.BAR,
-                category = EventCategory.PUNISHMENT,
-                targetIndex = 3
-            )
-        }
-    }
+private fun OutcomeSpinContentDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { OutcomeSpinPreviewBody(previewBarState) }
 }
 
 @Preview(name = "OutcomeSpin – couples reward – Light", showBackground = true, widthDp = 360, heightDp = 560)
 @Composable
-private fun OutcomeSpinCouplesRewardLightPreview() {
-    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
-        Box(Modifier.appBackground().fillMaxSize()) {
-            OutcomeSpinContent(
-                mode = OutcomeMode.COUPLES,
-                category = EventCategory.REWARD,
-                targetIndex = 0
-            )
+private fun OutcomeSpinCouplesRewardPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) { OutcomeSpinPreviewBody(previewCouplesState) }
+}
+
+@Preview(name = "OutcomeSpin – couples reward – Dark", showBackground = true, widthDp = 360, heightDp = 560)
+@Composable
+private fun OutcomeSpinCouplesRewardDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) { OutcomeSpinPreviewBody(previewCouplesState) }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun OutcomeSpinPreviewBody(uiState: GameScreenState) {
+    Box(Modifier.appBackground().fillMaxSize()) {
+        SharedTransitionLayout {
+            AnimatedVisibility(visible = true) {
+                OutcomeSpinContent(
+                    uiState = uiState,
+                    animatedVisibilityScope = this@AnimatedVisibility
+                )
+            }
         }
     }
 }

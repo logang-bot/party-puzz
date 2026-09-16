@@ -1,6 +1,5 @@
 package com.restrusher.partypuzl.ui.views.game.gameScreen.outcome
 
-import androidx.annotation.ArrayRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
@@ -13,8 +12,6 @@ import com.restrusher.partypuzl.ui.theme.OutcomePunishCrimson
 import com.restrusher.partypuzl.ui.theme.OutcomePunishMidnight
 import com.restrusher.partypuzl.ui.theme.OutcomePunishPlum
 import com.restrusher.partypuzl.ui.theme.OutcomePunishRoseDeep
-import com.restrusher.partypuzl.ui.views.game.gameScreen.BarEvent
-import com.restrusher.partypuzl.ui.views.game.gameScreen.CouplesEvent
 import com.restrusher.partypuzl.ui.views.game.gameScreen.EventCategory
 import com.restrusher.partypuzl.ui.views.game.gameScreen.GameScreenState
 
@@ -81,29 +78,3 @@ internal fun outcomeTheme(mode: OutcomeMode, category: EventCategory): OutcomeTh
     category == EventCategory.REWARD -> barReward
     else -> barPunishment
 }
-
-/** Labels the roll cycles through — every outcome the mode can produce, in a fixed order. */
-@ArrayRes
-internal fun outcomeReelLabelsRes(mode: OutcomeMode): Int = when (mode) {
-    OutcomeMode.BAR -> R.array.outcome_reel_bar
-    OutcomeMode.COUPLES -> R.array.outcome_reel_couples
-}
-
-/** Position of [event] inside `R.array.outcome_reel_bar`, so the reel lands on what really happened. */
-internal val BarEvent.reelIndex: Int
-    get() = when (this) {
-        is BarEvent.NoAction -> 0
-        is BarEvent.GiveDrinks -> 1
-        is BarEvent.GiveDrinksPickTarget -> 2
-        is BarEvent.TakeDrinks -> 3
-    }
-
-/** Position of [event] inside `R.array.outcome_reel_couples`. */
-internal val CouplesEvent.reelIndex: Int
-    get() = when (this) {
-        is CouplesEvent.GiveAKiss -> 0
-        is CouplesEvent.ChooseKissers -> 1
-        is CouplesEvent.MakeALoveDeclaration -> 2
-        is CouplesEvent.ActOfLove -> 3
-        is CouplesEvent.ChooseLovers -> 4
-    }

@@ -56,6 +56,37 @@
     <string name="couples_event_act_of_love">¡Haz lo que %1$s te diga!</string>
     <string name="couples_event_chose_lovers">¡Tú decides quién hace la declaración de amor!</string>
 
+    <!-- Mazos de recompensa / castigo — Bar y Parejas -->
+    <string name="bar_reward_skip_next_drink">Sáltate tu próximo trago</string>
+    <string name="bar_reward_steal_a_sip">Róbale un sorbo al vaso de quien quieras</string>
+    <string name="bar_reward_new_house_rule">Inventa una regla nueva para el resto de la noche</string>
+    <string name="bar_reward_crown_yourself">Corónate MVP — todos brindan por ti</string>
+    <string name="bar_reward_send_for_a_round">Manda a alguien más a la barra por una ronda</string>
+    <string name="bar_reward_swap_drinks">Intercambia tu trago con quien quieras</string>
+
+    <string name="bar_punishment_tequila_shot">Tómate un shot de tequila</string>
+    <string name="bar_punishment_finish_your_drink">Termina tu trago, ahora mismo</string>
+    <string name="bar_punishment_group_picks_shot">Tómate el shot que el grupo elija para ti</string>
+    <string name="bar_punishment_table_mixed_shot">Bébete un shot mezclado por toda la mesa</string>
+    <string name="bar_punishment_shame_sash">Lleva la banda del “paseo de la vergüenza” por 3 rondas</string>
+    <string name="bar_punishment_five_second_chug">Bebe sin parar 5 segundos, cuenta el grupo</string>
+    <string name="bar_punishment_wrong_hand_shot">Tómate un shot con la mano que no usas</string>
+
+    <string name="couples_reward_whisper_something_sweet">Susúrrale algo dulce al oído</string>
+    <string name="couples_reward_cuddle_break">Pide una pausa de mimos de 60 segundos</string>
+    <string name="couples_reward_feed_each_other">Dense de comer un bocado de algo dulce</string>
+    <string name="couples_reward_slow_dance">Bailen juntos y lento por 30 segundos</string>
+    <string name="couples_reward_pick_the_song">Elige la próxima canción — todos bailan</string>
+    <string name="couples_reward_shoulder_massage">Recibe un masaje de hombros de tu pareja</string>
+
+    <string name="couples_punishment_kiss_from_the_left">Recibe un beso del jugador a tu izquierda</string>
+    <string name="couples_punishment_worst_pickup_line">Úsale tu peor piropo a tu pareja</string>
+    <string name="couples_punishment_last_person_texted">Revela a la última persona a la que escribiste</string>
+    <string name="couples_punishment_partner_posts_status">Deja que tu pareja publique un estado por ti</string>
+    <string name="couples_punishment_last_selfie">Muestra a todos la última selfie de tu galería</string>
+    <string name="couples_punishment_most_used_emoji">Confiesa tu emoji más usado, en voz alta y con drama</string>
+    <string name="couples_punishment_partner_impression">Haz tu mejor imitación de tu pareja</string>
+
     <!-- Game Modes Descriptions -->
     <string name="standard_description">El modo clásico donde cada jugador compite por su cuenta — ¡que gane el mejor!</string>
     <string name="bar_description">Un modo hecho para noches de bar — ¡reúne a tu equipo y compite en rondas de locos desafíos!</string>
@@ -169,8 +200,7 @@
     <string name="tap_when_ready">Toca cuando estés listo</string>
     <string name="round_number">Ronda %1$d</string>
     <string name="its_your_turn">Es tu turno</string>
-    <string name="surprise_me">Sorpréndeme · gira la ruleta</string>
-    <string name="shuffling_the_deal">Barajando la jugada…</string>
+    <string name="surprise_me">Sorpréndeme · reparte por mí</string>
     <string name="deal_kicker_truth">Suéltalo</string>
     <string name="deal_kicker_dare">Demuéstralo</string>
     <string name="deal_kicker_general_knowledge">Piensa rápido</string>
@@ -747,20 +777,6 @@
     <string name="rewarded_ad_subtitle">Mira un clip corto · 120 prompts adicionales + retos +18</string>
     <string name="watch">Ver</string>
 
-    <!-- Ruleta de recompensas y castigos. El orden debe coincidir con BarEvent.reelIndex y CouplesEvent.reelIndex. -->
-    <string-array name="outcome_reel_bar">
-        <item>No pasa nada</item>
-        <item>Regala tragos</item>
-        <item>Elige quién bebe</item>
-        <item>Bébete unos tragos</item>
-    </string-array>
-    <string-array name="outcome_reel_couples">
-        <item>Da un beso</item>
-        <item>Elige quiénes se besan</item>
-        <item>Haz una declaración de amor</item>
-        <item>Haz un acto de amor</item>
-        <item>Elige a los enamorados</item>
-    </string-array>
 
     <!-- ============================================================
          Paquetes de preguntas — pantalla de configuración

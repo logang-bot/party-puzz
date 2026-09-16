@@ -74,40 +74,6 @@ internal fun DealChoiceContent(
 }
 
 @Composable
-private fun CurrentPlayerHeader(player: Player?, modifier: Modifier = Modifier) {
-    if (player == null) return
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        PlayerPhoto(
-            player = player,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(14.dp))
-        )
-        Spacer(Modifier.size(12.dp))
-        Column {
-            Text(
-                text = stringResource(R.string.its_your_turn).uppercase(),
-                style = MaterialTheme.typography.labelSmall,
-                letterSpacing = 2.sp,
-                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
-            )
-            Text(
-                text = player.nickName,
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
-    }
-}
-
-@Composable
 private fun SurpriseMeButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val outline = MaterialTheme.colorScheme.onBackground.ink(Ink.Faint)
 

@@ -68,7 +68,6 @@ class GameScreenViewModel @Inject constructor(
      */
     private var packContent: EnabledPackContent = EnabledPackContent()
 
-    private var dealJob: Job? = null
     private var outcomeJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
 
@@ -129,12 +128,30 @@ class GameScreenViewModel @Inject constructor(
         if (state.dealPhase != GameDealPhase.DEAL_CHOICE) return
         val target = state.availableDealTypes.randomOrNull() ?: return
         _uiState.update {
-            it.copy(dealPhase = GameDealPhase.SURPRISE_SHUFFLE, surpriseDealType = target)
+            it.copy(
+                dealPhase = GameDealPhase.SURPRISE_SPOTLIGHT,
+                surpriseDealType = target,
+                surpriseRequestId = it.surpriseRequestId + 1
+            )
         }
-        dealJob?.cancel()
-        dealJob = viewModelScope.launch {
-            delay(SURPRISE_SHUFFLE_DURATION_MS)
-            startChallenge(target, null)
+    }
+
+    /**
+     * The spotlight has landed. The deal returns to the picker already promoted, so the player
+     * confirms it with the same tap a hand-picked category needs.
+     *
+     * `surpriseDealType` deliberately survives this: the outgoing spotlight is still on screen for
+     * the phase cross-fade, and clearing it here would blank that frame mid-transition.
+     * `startChallenge` clears it on the confirming tap.
+     */
+    fun onSurpriseSettled() {
+        val state = _uiState.value
+        if (state.dealPhase != GameDealPhase.SURPRISE_SPOTLIGHT) return
+        _uiState.update {
+            it.copy(
+                dealPhase = GameDealPhase.DEAL_CHOICE,
+                promotedDealType = state.surpriseDealType
+            )
         }
     }
 
@@ -366,7 +383,6 @@ class GameScreenViewModel @Inject constructor(
     // compare-and-set retry loop whose lambda can run more than once, so the queue is
     // stepped here, outside of it, and only the resulting values are folded into the state.
     private fun advanceToNextTurn() {
-        dealJob?.cancel()
         outcomeJob?.cancel()
         val nextPlayer = nextPlayerInRound(_uiState.value.players)
         val round = roundNumber
@@ -497,7 +513,6 @@ class GameScreenViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        dealJob?.cancel()
         outcomeJob?.cancel()
         stickyDareJobs.values.forEach { it.cancel() }
         super.onCleared()

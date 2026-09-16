@@ -3,10 +3,9 @@ package com.restrusher.partypuzl.ui.views.game.gameScreen
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.Player
 
-internal const val SURPRISE_SHUFFLE_DURATION_MS = 1600L
-internal const val OUTCOME_SPIN_DURATION_MS = 1800L
+internal const val OUTCOME_SPIN_DURATION_MS = 2200L
 
-enum class GameDealPhase { DEAL_CHOICE, SURPRISE_SHUFFLE, CHALLENGE_SHOWN }
+enum class GameDealPhase { DEAL_CHOICE, SURPRISE_SPOTLIGHT, CHALLENGE_SHOWN }
 
 enum class GameDealType { TRUTH_OR_DARE, STICKY_DARE, GENERAL_KNOWLEDGE, MINI_GAME }
 
@@ -67,6 +66,9 @@ data class GameScreenState(
     // The category this player moved into the hero slot, for this turn only
     val promotedDealType: GameDealType? = null,
     val surpriseDealType: GameDealType? = null,
+    // Bumped per "Surprise me" tap, so a re-tap restarts the spotlight rather than reusing
+    // the composition the phase transition is still animating out
+    val surpriseRequestId: Int = 0,
     // Truth or dare
     val truthOrDareChoice: TruthOrDareChoice? = null,
     // General knowledge

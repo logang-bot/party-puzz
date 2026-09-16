@@ -204,6 +204,7 @@ fun GameScreen(
                 onDealPromoted = viewModel::onDealPromoted,
                 onDealChosen = viewModel::onDealChosen,
                 onSurpriseRequested = viewModel::onSurpriseRequested,
+                onSurpriseSettled = viewModel::onSurpriseSettled,
                 onChallengeDismissed = viewModel::onChallengeDismissed,
                 onTruthOrDareSkipped = viewModel::onTruthOrDareSkipped,
                 onStickyDareSkipped = viewModel::onStickyDareSkipped,

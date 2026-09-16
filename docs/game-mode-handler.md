@@ -38,8 +38,10 @@ This keeps the data class definitions clean (no extra constructor params) while 
 
 | Mode | Reward events | Punishment events |
 |---|---|---|
-| Bar Time | `NoAction`, `GiveDrinks`, `GiveDrinksPickTarget` | `TakeDrinks` |
-| Couples | `GiveAKiss`, `ChoseKissers`, `ChoseLovers` | `MakeALoveDeclaration`, `ActOfLove` |
+| Bar Time | `NoAction`, `GiveDrinks`, `GiveDrinksPickTarget`, `FlavourReward` | `TakeDrinks`, `FlavourPunishment` |
+| Couples | `GiveAKiss`, `ChooseKissers`, `ChooseLovers`, `FlavourReward` | `MakeALoveDeclaration`, `ActOfLove`, `FlavourPunishment` |
+
+`FlavourReward` / `FlavourPunishment` carry a `@StringRes` and no mechanics — they are the design's flat lines, and they exist so the reel has real, varied outcomes to cycle. See [outcome-presentation.md](outcome-presentation.md).
 
 ---
 
@@ -58,10 +60,23 @@ All methods are pure state transformers — they receive the current `GameScreen
 
 | Method | When the ViewModel calls it | What it does |
 |---|---|---|
-| `applyPunishment(state, currentPlayer)` | Player skips or fails a challenge | Sets the active mode event to a punishment; `currentPlayer` identifies who to exclude from target selection |
-| `applyReward(state)` | Player succeeds at a challenge | Sets the active mode event to a reward |
+| `applyPunishment(state, currentPlayer)` | Player skips or fails a challenge | Builds the punishment deck and picks from it; `currentPlayer` identifies who to exclude from target selection |
+| `applyReward(state)` | Player succeeds at a challenge | Builds the reward deck and picks from it |
 | `applyMiniGameResult(state)` | Finish button tapped on mini-game results | Branches on `state.miniGameResult` (see below). Tie / no result → state unchanged, ViewModel then calls `resetDeal()` |
-| `clearEvent(state)` | User taps the landed outcome | Clears the active mode event field; the ViewModel then returns the turn to the deal picker |
+| `clearEvent(state)` | User taps the landed outcome | Clears the active mode event **and its deck**; the ViewModel then returns the turn to the deal picker |
+
+### Decks
+
+A handler never sets `activeEvent` alone. Every roll builds the deck of outcomes it could have produced and sets both fields in one `copy`, so the reel — which renders `deck` and stops at `deck.indexOf(activeEvent)` — can always land on what actually fired:
+
+```kotlin
+private fun GameScreenState.rollBarOutcome(deck: List<BarEvent>): GameScreenState =
+    withBarOutcome(deck, deck.random())
+```
+
+The mini-game paths are the exception: they construct a specific outcome rather than drawing one, so they pass it through `deckLandingOn(deck, fired)`, which substitutes the generic entry of the same kind. `PartyPuzlModeHandler` needs no special handling — it delegates to a random sub-handler, which brings its own deck.
+
+`OutcomeDeckTest` asserts the invariant for every path here.
 
 ### `MiniGameResult` sealed interface
 
