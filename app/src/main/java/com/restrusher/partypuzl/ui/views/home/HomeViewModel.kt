@@ -46,6 +46,10 @@ class HomeViewModel @Inject constructor(
 
     fun confirmPartySelection() {
         val partyId = _uiState.value.dialogPendingPartyId ?: return
-        _uiState.update { it.copy(isDialogOpen = false, dialogPendingPartyId = null, isPartySelected = true, isPartyCustomSelected = true) }
+        _uiState.update { it.copy(
+            isDialogOpen = false,
+            dialogPendingPartyId = partyId,
+            isPartySelected = true,
+            isPartyCustomSelected = true) }
     }
 }

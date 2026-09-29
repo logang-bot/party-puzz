@@ -13,7 +13,7 @@ data class HomeState(
     val dialogPendingPartyId: Int? = null,
     val isPartyCustomSelected: Boolean = false
 ) {
-    val activeParty: PartyWithPlayers? get() = allParties.firstOrNull()
-    val hasParties: Boolean get() = !isLoading && activeParty != null
+    val activeParty: PartyWithPlayers? get() = allParties.firstOrNull { it.party.id == dialogPendingPartyId } ?: allParties.firstOrNull()
+    val hasParties: Boolean get() = !isLoading && allParties.isNotEmpty()
     val activePlayers: List<PlayerEntity> get() = if (isPartySelected) activeParty?.players ?: emptyList() else emptyList()
 }
