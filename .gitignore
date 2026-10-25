@@ -1,12 +1,11 @@
 *.iml
 .gradle
 /local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+# IDE state is per-machine; only shared code style and inspections are tracked
+/.idea/*
+!/.idea/codeStyles/
+!/.idea/inspectionProfiles/
+.kotlin/
 .DS_Store
 /build
 /captures
