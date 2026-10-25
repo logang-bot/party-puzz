@@ -22,8 +22,8 @@ android {
         applicationId = "com.restrusher.partypuzl"
         minSdk = 24
         targetSdk = 36
-        versionCode = 9
-        versionName = "2.0"
+        versionCode = 10
+        versionName = "2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -120,6 +120,8 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
