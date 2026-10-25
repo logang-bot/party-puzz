@@ -7,14 +7,14 @@ internal const val OUTCOME_SPIN_DURATION_MS = 2200L
 
 enum class GameDealPhase { PLAYER_PICK, DEAL_CHOICE, SURPRISE_SPOTLIGHT, CHALLENGE_SHOWN }
 
-enum class GameDealType { TRUTH_OR_DARE, STICKY_DARE, GENERAL_KNOWLEDGE, MINI_GAME }
+enum class GameDealType { TRUTH_OR_DARE, STICKY_DARE, QUIZ, MINI_GAME }
 
 /** Which pack category feeds this deal. */
 val GameDealType.packCategory: PackCategory
     get() = when (this) {
         GameDealType.TRUTH_OR_DARE -> PackCategory.TRUTH_OR_DARE
         GameDealType.STICKY_DARE -> PackCategory.STICKY_DARE
-        GameDealType.GENERAL_KNOWLEDGE -> PackCategory.GENERAL_KNOWLEDGE
+        GameDealType.QUIZ -> PackCategory.QUIZ
         GameDealType.MINI_GAME -> PackCategory.MINI_GAME
     }
 
@@ -22,7 +22,7 @@ enum class OutcomeStage { SPINNING, REVEALED }
 
 enum class TruthOrDareChoice { TRUTH, DARE }
 
-data class GeneralKnowledgeQuestion(
+data class QuizQuestion(
     val question: String,
     val optionA: String,
     val optionB: String,
@@ -73,8 +73,8 @@ data class GameScreenState(
     val isSurpriseDealLocked: Boolean = false,
     // Truth or dare
     val truthOrDareChoice: TruthOrDareChoice? = null,
-    // General knowledge
-    val generalKnowledgeQuestion: GeneralKnowledgeQuestion? = null,
+    // Quiz
+    val quizQuestion: QuizQuestion? = null,
     val selectedAnswerOption: Char? = null,
     // Sticky dare metadata (set alongside challengeText when dealType = STICKY_DARE)
     val stickyDarePresentContinuous: String? = null,
@@ -137,7 +137,7 @@ data class GameScreenState(
         get() = when (dealType) {
             GameDealType.TRUTH_OR_DARE -> truthOrDareChoice != null
             GameDealType.STICKY_DARE -> true
-            GameDealType.GENERAL_KNOWLEDGE -> selectedAnswerOption != null
+            GameDealType.QUIZ -> selectedAnswerOption != null
             GameDealType.MINI_GAME -> miniGameResult != null
             null -> false
         }

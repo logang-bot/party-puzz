@@ -128,7 +128,7 @@ private fun SpotlightGridDarkPreview() {
         Box(Modifier.appBackground().fillMaxSize().padding(24.dp)) {
             SpotlightGrid(
                 dealTypes = GameDealType.entries.take(3),
-                highlightedDealType = GameDealType.GENERAL_KNOWLEDGE,
+                highlightedDealType = GameDealType.QUIZ,
                 isFlickering = true,
                 gatherMillis = 0
             )

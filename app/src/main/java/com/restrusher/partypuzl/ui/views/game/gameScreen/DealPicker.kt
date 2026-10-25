@@ -187,7 +187,7 @@ private fun DealPickerPreview() {
                 uiState = GameScreenState(
                     players = pickerPreviewPlayers,
                     heroDealType = GameDealType.TRUTH_OR_DARE,
-                    promotedDealType = GameDealType.GENERAL_KNOWLEDGE
+                    promotedDealType = GameDealType.QUIZ
                 ),
                 onDealPromoted = {},
                 onDealChosen = { _, _ -> }

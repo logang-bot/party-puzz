@@ -100,13 +100,13 @@ private val truthOrDareAccent = DealAccent(
     blurbRes = R.string.deal_blurb_dare
 )
 
-private val generalKnowledgeAccent = DealAccent(
+private val quizAccent = DealAccent(
     tone = AccentLime,
     gradient = listOf(AccentLime, BrandTealDeep),
     iconRes = R.drawable.ic_deal_trivia_trophy,
-    labelRes = R.string.general_knowledge_title,
-    kickerRes = R.string.deal_kicker_general_knowledge,
-    blurbRes = R.string.deal_blurb_general_knowledge
+    labelRes = R.string.quiz_title,
+    kickerRes = R.string.deal_kicker_quiz,
+    blurbRes = R.string.deal_blurb_quiz
 )
 
 private val stickyDareAccent = DealAccent(
@@ -130,7 +130,7 @@ private val miniGameAccent = DealAccent(
 internal val GameDealType.accent: DealAccent
     get() = when (this) {
         GameDealType.TRUTH_OR_DARE -> truthOrDareAccent
-        GameDealType.GENERAL_KNOWLEDGE -> generalKnowledgeAccent
+        GameDealType.QUIZ -> quizAccent
         GameDealType.STICKY_DARE -> stickyDareAccent
         GameDealType.MINI_GAME -> miniGameAccent
     }

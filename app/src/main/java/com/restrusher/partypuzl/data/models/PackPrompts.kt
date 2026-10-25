@@ -8,7 +8,7 @@ data class StickyDarePrompt(
     val durationSeconds: Int
 )
 
-/** One general-knowledge question with its two options. */
+/** One quiz question with its two options. */
 data class TriviaPrompt(
     val question: String,
     val optionA: String,
@@ -39,7 +39,7 @@ data class EnabledPackContent(
     val availableCategories: Set<PackCategory>
         get() = buildSet {
             if (truths.isNotEmpty() && dares.isNotEmpty()) add(PackCategory.TRUTH_OR_DARE)
-            if (trivia.isNotEmpty()) add(PackCategory.GENERAL_KNOWLEDGE)
+            if (trivia.isNotEmpty()) add(PackCategory.QUIZ)
             if (stickyDares.isNotEmpty()) add(PackCategory.STICKY_DARE)
             if (hasMiniGames) add(PackCategory.MINI_GAME)
         }

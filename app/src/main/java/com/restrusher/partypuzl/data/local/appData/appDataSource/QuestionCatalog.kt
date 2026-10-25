@@ -50,7 +50,7 @@ object QuestionCatalog {
     private val BODY_PERSONA = listOf(2, 10, 11, 13, 15, 16, 19, 21)
 
     // ── Trivia ───────────────────────────────────────────────────────────────
-    // gk_questions (30) split by subject.
+    // quiz_questions (30) split by subject.
 
     private val GEOGRAPHY = listOf(1, 2, 8, 10, 15, 18, 21, 24, 28)
     private val SPACE_SCIENCE = listOf(0, 4, 5, 6, 7, 12, 13, 16, 17, 19, 22, 29)

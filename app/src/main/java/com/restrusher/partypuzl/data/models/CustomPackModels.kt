@@ -24,7 +24,7 @@ enum class CustomEntryType(val category: PackCategory) {
     TRUTH(PackCategory.TRUTH_OR_DARE),
     DARE(PackCategory.TRUTH_OR_DARE),
     STICKY_DARE(PackCategory.STICKY_DARE),
-    TRIVIA(PackCategory.GENERAL_KNOWLEDGE)
+    TRIVIA(PackCategory.QUIZ)
 }
 
 /** Durations a sticky dare can be given, in seconds: 1, 5, 10 and 30 minutes. */

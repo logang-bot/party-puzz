@@ -175,7 +175,7 @@ private fun DealCardsLightPreview() {
             DealHeroCard(accent = truthAccent, onClick = {}, showRevealHint = true)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 DealCompactCard(
-                    accent = GameDealType.GENERAL_KNOWLEDGE.accent,
+                    accent = GameDealType.QUIZ.accent,
                     onClick = {},
                     modifier = Modifier.weight(1f)
                 )

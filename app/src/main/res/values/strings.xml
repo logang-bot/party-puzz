@@ -119,7 +119,6 @@
     <string name="unlimited_mode">No-end mode</string>
     <string name="mini_games">Mini-games</string>
     <string name="truth_or_dare">Truth or Dare</string>
-    <string name="general_culture">General culture</string>
     <string name="sticky_dares">Sticky Dares</string>
     <string name="save_stats">Save stats</string>
     <string name="start_game">Start Game</string>
@@ -194,7 +193,7 @@
     <string name="truth">Truth</string>
     <string name="dare">Dare</string>
     <string name="sticky_dare_title">Sticky Dare!</string>
-    <string name="general_knowledge_title">General Knowledge</string>
+    <string name="quiz_title">Quiz</string>
     <string name="tap_to_dismiss">Tap to dismiss</string>
     <string name="tap_to_reveal">Tap to reveal</string>
     <string name="pass_the_phone_to">Pass the phone to</string>
@@ -204,12 +203,12 @@
     <string name="surprise_me">Surprise me · deal me in</string>
     <string name="deal_kicker_truth">Spill it</string>
     <string name="deal_kicker_dare">Show us</string>
-    <string name="deal_kicker_general_knowledge">Think fast</string>
+    <string name="deal_kicker_quiz">Think fast</string>
     <string name="deal_kicker_sticky_dare">Sticks around</string>
     <string name="deal_kicker_mini_game">All together</string>
     <string name="deal_blurb_truth">Answer honestly, or the room decides your fate.</string>
     <string name="deal_blurb_dare">Do it. The room votes on whether you really tried.</string>
-    <string name="deal_blurb_general_knowledge">Answer before the room beats you to it.</string>
+    <string name="deal_blurb_quiz">Answer before the room beats you to it.</string>
     <string name="deal_blurb_sticky_dare">Carries over for a few rounds.</string>
     <string name="deal_blurb_mini_game">A quick challenge for everyone.</string>
     <string name="outcome_rolling_reward">Rolling a reward…</string>
@@ -449,8 +448,8 @@
         <item>120</item>
     </integer-array>
 
-    <!-- General knowledge — question, its two options, and the key -->
-    <string-array name="gk_questions">
+    <!-- Quiz — question, its two options, and the key -->
+    <string-array name="quiz_questions">
         <item>How many planets are in the solar system?</item>
         <item>What is the capital of France?</item>
         <item>What is the largest ocean on Earth?</item>
@@ -482,7 +481,7 @@
         <item>What is the longest river in the world?</item>
         <item>Which planet is known for its rings?</item>
     </string-array>
-    <string-array name="gk_options_a">
+    <string-array name="quiz_options_a">
         <item>8</item>
         <item>London</item>
         <item>Atlantic</item>
@@ -514,7 +513,7 @@
         <item>Amazon</item>
         <item>Saturn</item>
     </string-array>
-    <string-array name="gk_options_b">
+    <string-array name="quiz_options_b">
         <item>9</item>
         <item>Paris</item>
         <item>Pacific</item>
@@ -546,7 +545,7 @@
         <item>Nile</item>
         <item>Mars</item>
     </string-array>
-    <string-array name="gk_correct_options">
+    <string-array name="quiz_correct_options">
         <item>A</item>
         <item>B</item>
         <item>B</item>
@@ -857,7 +856,7 @@
     <string name="custom_pack_add">Add</string>
     <string name="custom_pack_add_entry">Add an entry</string>
     <string name="custom_pack_entries_empty_title">Nothing in here yet</string>
-    <string name="custom_pack_entries_empty_subtitle">Add a truth or dare, a sticky dare, or a general-knowledge question.</string>
+    <string name="custom_pack_entries_empty_subtitle">Add a truth or dare, a sticky dare, or a quiz question.</string>
     <string name="custom_entry_delete_title">Delete this entry?</string>
     <string name="custom_entry_delete_message">It will be removed from the pack for good.</string>
 
@@ -871,7 +870,7 @@
     <string name="custom_entry_type_truth_or_dare_hint">One prompt, answered on the spot.</string>
     <string name="custom_entry_type_sticky">Sticky dare</string>
     <string name="custom_entry_type_sticky_hint">Runs on a timer — stays on the player until it ends.</string>
-    <string name="custom_entry_type_trivia">GK question</string>
+    <string name="custom_entry_type_trivia">Quiz question</string>
     <string name="custom_entry_type_trivia_hint">Two options, one of them is correct.</string>
     <string name="custom_entry_step_kind">Truth or dare?</string>
     <string name="custom_entry_step_kind_sub">Players see this tag before they commit.</string>
@@ -939,8 +938,8 @@
          QuestionPackIntegrityTest fails on any mismatch.
          ============================================================ -->
 
-    <!-- Movie Night (premium · General Knowledge) -->
-    <string-array name="movie_gk_questions">
+    <!-- Movie Night (premium · Quiz) -->
+    <string-array name="movie_quiz_questions">
         <item>In Forrest Gump, what does Forrest say life is like?</item>
         <item>In The Lion King, who is Simba\'s father?</item>
         <item>Which film won the first ever Best Picture Oscar for a streaming service?</item>
@@ -966,7 +965,7 @@
         <item>In Inception, what object does Cobb use to test reality?</item>
         <item>Which film introduced the character Hannibal Lecter to audiences?</item>
     </string-array>
-    <string-array name="movie_gk_options_a">
+    <string-array name="movie_quiz_options_a">
         <item>A box of chocolates</item>
         <item>Scar</item>
         <item>CODA</item>
@@ -992,7 +991,7 @@
         <item>A pocket watch</item>
         <item>The Silence of the Lambs</item>
     </string-array>
-    <string-array name="movie_gk_options_b">
+    <string-array name="movie_quiz_options_b">
         <item>A long road</item>
         <item>Mufasa</item>
         <item>Roma</item>
@@ -1018,9 +1017,9 @@
         <item>A spinning top</item>
         <item>Se7en</item>
     </string-array>
-    <!-- "A" or "B" — must match movie_gk_questions order. Kept near 12/12 with no run past
+    <!-- "A" or "B" — must match movie_quiz_questions order. Kept near 12/12 with no run past
          three; the game also swaps the pair at deal time, so position never leaks the answer. -->
-    <string-array name="movie_gk_correct_options">
+    <string-array name="movie_quiz_correct_options">
         <item>A</item>
         <item>B</item>
         <item>A</item>

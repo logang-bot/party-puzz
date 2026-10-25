@@ -211,7 +211,7 @@ class GameScreenViewModel @Inject constructor(
                 surpriseDealType = null,
                 truthOrDareChoice = choice,
                 challengeText = content.challengeText,
-                generalKnowledgeQuestion = content.gkQuestion,
+                quizQuestion = content.quizQuestion,
                 stickyDarePresentContinuous = content.presentContinuous,
                 stickyDareDurationLabel = content.durationLabel,
                 stickyDareDurationSeconds = content.durationSeconds,
@@ -221,7 +221,7 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-    fun onGeneralKnowledgeAnswered(option: Char) {
+    fun onQuizAnswered(option: Char) {
         if (_uiState.value.selectedAnswerOption != null) return
         _uiState.update { it.copy(selectedAnswerOption = option) }
     }
@@ -288,15 +288,15 @@ class GameScreenViewModel @Inject constructor(
         if (!state.isChallengeDismissible) return
 
         when (state.dealType) {
-            GameDealType.GENERAL_KNOWLEDGE -> dismissGeneralKnowledge(state)
+            GameDealType.QUIZ -> dismissQuiz(state)
             GameDealType.STICKY_DARE -> dismissStickyDare(state)
             else -> dismissTruthOrDare(state)
         }
     }
 
-    private fun dismissGeneralKnowledge(state: GameScreenState) {
-        val isCorrect = state.generalKnowledgeQuestion != null &&
-                state.selectedAnswerOption == state.generalKnowledgeQuestion.correctOption
+    private fun dismissQuiz(state: GameScreenState) {
+        val isCorrect = state.quizQuestion != null &&
+                state.selectedAnswerOption == state.quizQuestion.correctOption
         applyOutcome {
             if (isCorrect) modeHandler.applyReward(it)
             else modeHandler.applyPunishment(it, it.selectedPlayer)
@@ -443,7 +443,7 @@ class GameScreenViewModel @Inject constructor(
         isSurpriseDealLocked = false,
         challengeText = null,
         truthOrDareChoice = null,
-        generalKnowledgeQuestion = null,
+        quizQuestion = null,
         selectedAnswerOption = null,
         stickyDarePresentContinuous = null,
         stickyDareDurationLabel = null,
@@ -511,7 +511,7 @@ class GameScreenViewModel @Inject constructor(
 
     private data class ChallengeContent(
         val challengeText: String? = null,
-        val gkQuestion: GeneralKnowledgeQuestion? = null,
+        val quizQuestion: QuizQuestion? = null,
         val presentContinuous: String? = null,
         val durationLabel: String? = null,
         val durationSeconds: Int? = null,
@@ -522,8 +522,8 @@ class GameScreenViewModel @Inject constructor(
         when (request.dealType) {
             GameDealType.TRUTH_OR_DARE -> buildTruthOrDareContent(request.truthOrDareChoice)
             GameDealType.STICKY_DARE -> buildStickyDareContent(request)
-            GameDealType.GENERAL_KNOWLEDGE -> ChallengeContent(
-                gkQuestion = packContent.trivia.randomOrNull()?.toQuestion()
+            GameDealType.QUIZ -> ChallengeContent(
+                quizQuestion = packContent.trivia.randomOrNull()?.toQuestion()
             )
             GameDealType.MINI_GAME -> ChallengeContent(
                 miniGame = MiniGame.entries
@@ -579,9 +579,9 @@ class GameScreenViewModel @Inject constructor(
  * read back, so a swap at render time would re-roll on every recomposition and move the buttons
  * under the player's thumb.
  */
-private fun TriviaPrompt.toQuestion(): GeneralKnowledgeQuestion {
+private fun TriviaPrompt.toQuestion(): QuizQuestion {
     val swap = Random.nextBoolean()
-    return GeneralKnowledgeQuestion(
+    return QuizQuestion(
         question = question,
         optionA = if (swap) optionB else optionA,
         optionB = if (swap) optionA else optionB,

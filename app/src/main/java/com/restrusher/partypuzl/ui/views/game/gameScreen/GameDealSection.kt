@@ -41,7 +41,7 @@ internal fun GameDealSection(
     onTruthOrDareSkipped: () -> Unit,
     onStickyDareSkipped: () -> Unit,
     onMiniGameDealFinished: () -> Unit,
-    onGeneralKnowledgeAnswered: (Char) -> Unit,
+    onQuizAnswered: (Char) -> Unit,
     onMiniGameOpponentSelected: (Player) -> Unit,
     onGlobalMiniGameStarted: () -> Unit,
     onModeEventDismissed: () -> Unit,
@@ -92,7 +92,7 @@ internal fun GameDealSection(
                         onTruthOrDareSkipped = onTruthOrDareSkipped,
                         onStickyDareSkipped = onStickyDareSkipped,
                         onMiniGameDealFinished = onMiniGameDealFinished,
-                        onGeneralKnowledgeAnswered = onGeneralKnowledgeAnswered,
+                        onQuizAnswered = onQuizAnswered,
                         onMiniGameOpponentSelected = onMiniGameOpponentSelected,
                         onGlobalMiniGameStarted = onGlobalMiniGameStarted
                     )
@@ -134,7 +134,7 @@ private fun ChallengeContent(
     onTruthOrDareSkipped: () -> Unit,
     onStickyDareSkipped: () -> Unit,
     onMiniGameDealFinished: () -> Unit,
-    onGeneralKnowledgeAnswered: (Char) -> Unit,
+    onQuizAnswered: (Char) -> Unit,
     onMiniGameOpponentSelected: (Player) -> Unit,
     onGlobalMiniGameStarted: () -> Unit,
     modifier: Modifier = Modifier
@@ -167,9 +167,9 @@ private fun ChallengeContent(
                 modifier = Modifier.fillMaxSize()
             )
 
-            GameDealType.GENERAL_KNOWLEDGE -> GeneralKnowledgeChallengeContent(
+            GameDealType.QUIZ -> QuizChallengeContent(
                 uiState = uiState,
-                onAnswerSelected = onGeneralKnowledgeAnswered,
+                onAnswerSelected = onQuizAnswered,
                 modifier = Modifier.fillMaxSize()
             )
 

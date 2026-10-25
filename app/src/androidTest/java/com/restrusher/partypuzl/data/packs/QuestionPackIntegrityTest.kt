@@ -43,7 +43,7 @@ class QuestionPackIntegrityTest {
             val prompt: Any? = when (ref.source.category) {
                 PackCategory.TRUTH_OR_DARE -> resolver.textAt(ref.source, ref.index)
                 PackCategory.STICKY_DARE -> resolver.stickyDareAt(ref.source, ref.index)
-                PackCategory.GENERAL_KNOWLEDGE -> resolver.triviaAt(ref.source, ref.index)
+                PackCategory.QUIZ -> resolver.triviaAt(ref.source, ref.index)
                 PackCategory.MINI_GAME -> Unit
             }
             assertNotNull(
@@ -77,7 +77,7 @@ class QuestionPackIntegrityTest {
     @Test
     fun everyTriviaKeyIsAOrB() {
         QuestionCatalog.allEntries()
-            .filter { (_, ref) -> ref.source.category == PackCategory.GENERAL_KNOWLEDGE }
+            .filter { (_, ref) -> ref.source.category == PackCategory.QUIZ }
             .forEach { (packId, ref) ->
                 val trivia = resolver.triviaAt(ref.source, ref.index)
                 assertNotNull("$packId: ${ref.source}[${ref.index}] did not resolve", trivia)

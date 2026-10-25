@@ -14,4 +14,4 @@ enum class PackTier { OFFICIAL, PREMIUM, CUSTOM }
  * Which deal a pack feeds. Mirrors `GameDealType` in the game screen, but lives in the data
  * layer so entities and the catalog don't have to reach up into the UI package.
  */
-enum class PackCategory { TRUTH_OR_DARE, GENERAL_KNOWLEDGE, STICKY_DARE, MINI_GAME }
+enum class PackCategory { TRUTH_OR_DARE, QUIZ, STICKY_DARE, MINI_GAME }

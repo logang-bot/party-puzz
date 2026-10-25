@@ -64,17 +64,17 @@ class QuestionPromptResolver @Inject constructor(
     fun triviaAt(source: QuestionSource, index: Int): TriviaPrompt? {
         val arrays = when (source) {
             QuestionSource.OFFICIAL_TRIVIA -> TriviaArrays(
-                R.array.gk_questions,
-                R.array.gk_options_a,
-                R.array.gk_options_b,
-                R.array.gk_correct_options
+                R.array.quiz_questions,
+                R.array.quiz_options_a,
+                R.array.quiz_options_b,
+                R.array.quiz_correct_options
             )
 
             QuestionSource.MOVIE_TRIVIA -> TriviaArrays(
-                R.array.movie_gk_questions,
-                R.array.movie_gk_options_a,
-                R.array.movie_gk_options_b,
-                R.array.movie_gk_correct_options
+                R.array.movie_quiz_questions,
+                R.array.movie_quiz_options_a,
+                R.array.movie_quiz_options_b,
+                R.array.movie_quiz_correct_options
             )
 
             else -> return null
@@ -107,8 +107,8 @@ class QuestionPromptResolver @Inject constructor(
         QuestionSource.OFFICIAL_TRUTHS -> R.array.truth_texts
         QuestionSource.OFFICIAL_DARES -> R.array.dare_texts
         QuestionSource.OFFICIAL_STICKY_DARES -> R.array.sticky_dares
-        QuestionSource.OFFICIAL_TRIVIA -> R.array.gk_questions
-        QuestionSource.MOVIE_TRIVIA -> R.array.movie_gk_questions
+        QuestionSource.OFFICIAL_TRIVIA -> R.array.quiz_questions
+        QuestionSource.MOVIE_TRIVIA -> R.array.movie_quiz_questions
         QuestionSource.SPICY_STICKY_DARES -> R.array.spicy_sticky_dares
         QuestionSource.NSFW_TRUTHS -> R.array.nsfw_truth_texts
         QuestionSource.NSFW_DARES -> R.array.nsfw_dare_texts

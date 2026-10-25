@@ -88,8 +88,8 @@ Install from the internal testing track on a real device and verify:
 - [ ] Banners do not show after purchasing Remove Ads
 - [ ] Premium packs appear locked on the setup screen; tapping one opens the unlock sheet
 - [ ] **Both unlock options raise a "Coming soon!" toast and nothing else** — that is `FeatureFlags.PACK_UNLOCK_COMING_SOON` doing its job. If either one actually unlocks a pack, the flag has been turned off before its two prerequisites landed; see [ads.md](ads.md)
-- [ ] Deal several general-knowledge questions: the correct answer lands on the left and right roughly evenly, including on a repeat of a question already seen (the deal-time option swap)
-- [ ] Each premium pack plays enabled on its own — Movie Night offers GK only, Spicy offers sticky dares only, NSFW deals both Truth and Dare and neither card comes back empty
+- [ ] Deal several quiz questions: the correct answer lands on the left and right roughly evenly, including on a repeat of a question already seen (the deal-time option swap)
+- [ ] Each premium pack plays enabled on its own — Movie Night offers quiz only, Spicy offers sticky dares only, NSFW deals both Truth and Dare and neither card comes back empty
 - [ ] `./gradlew connectedDebugAndroidTest` passes — `QuestionPackIntegrityTest` is the only guard on the catalog-to-array indices
 
 *Once `PACK_UNLOCK_COMING_SOON` is removed, these two become live again and must be checked:*
@@ -98,6 +98,7 @@ Install from the internal testing track on a real device and verify:
 - [ ] Purchasing Remove Ads unlocks all three premium packs permanently
 - [ ] **Upgrading over an existing install keeps saved parties and photos** — the v10 migration adds the custom-pack tables, the v11 one adds `custom_packs.isAvailable`; a wrong statement throws on open. See [custom-packs.md](custom-packs.md)
 - [ ] **Upgrading keeps the game mode on played parties** — play a party on the previous release, then upgrade. Its card on Parties still shows the mode; `MIGRATION_12_13` only clears a mode whose stored resource id no longer matches this build. A crash on opening Parties means a stale `R.string` id reached `stringResource()` again
+- [ ] **Upgrading keeps the quiz packs** — upgrade over a v13 install. The app opens, and the quiz packs (World Geography, Space & Science, Mixed Bag, Movie Night) still show on the setup screen. A crash on launch means `MIGRATION_13_14` did not rewrite `GENERAL_KNOWLEDGE` to `QUIZ`
 - [ ] **Uninstall then reinstall starts empty** — no parties, no photos. Anything coming back means a backup rule was re-enabled; see [builds.md](builds.md#no-backup-by-design)
 - [ ] **Upgrading keeps authored packs** — install the previous release, write a pack, then upgrade. The pack is still there and still available. Losing it means `MIGRATION_10_11` failed validation and the destructive fallback ran
 - [ ] Settings → Your packs: write a pack, add one entry of each type, confirm it plays in-game

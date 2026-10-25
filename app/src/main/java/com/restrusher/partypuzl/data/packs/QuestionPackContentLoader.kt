@@ -50,7 +50,7 @@ class QuestionPackContentLoader @Inject constructor(
                     promptResolver.stickyDareAt(question.source, question.sourceIndex)
                         ?.let { stickyDares += it }
 
-                PackCategory.GENERAL_KNOWLEDGE ->
+                PackCategory.QUIZ ->
                     promptResolver.triviaAt(question.source, question.sourceIndex)
                         ?.let { trivia += it }
 

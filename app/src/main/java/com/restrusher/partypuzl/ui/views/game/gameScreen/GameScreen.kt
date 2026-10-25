@@ -208,7 +208,7 @@ fun GameScreen(
                 onTruthOrDareSkipped = viewModel::onTruthOrDareSkipped,
                 onStickyDareSkipped = viewModel::onStickyDareSkipped,
                 onMiniGameDealFinished = viewModel::onMiniGameDealFinished,
-                onGeneralKnowledgeAnswered = viewModel::onGeneralKnowledgeAnswered,
+                onQuizAnswered = viewModel::onQuizAnswered,
                 onMiniGameOpponentSelected = { opponent ->
                     viewModel.onMiniGameOpponentSelected(opponent)
                     val miniGame = uiState.miniGame

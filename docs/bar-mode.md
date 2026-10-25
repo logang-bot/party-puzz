@@ -36,8 +36,8 @@ Which **category** fires is deterministic — each deal type rewards or punishes
 | Truth or Dare | Skip tapped | `TakeDrinks(1–5)` |
 | Sticky Dare | Skip tapped | `TakeDrinks(1–5)` |
 | Sticky Dare | Running dare cancelled | `TakeDrinks(1–5)` |
-| General Knowledge | Wrong answer | `TakeDrinks(1–5)` |
-| General Knowledge | Correct answer | `GiveDrinksPickTarget(1–5, otherPlayers)` |
+| Quiz | Wrong answer | `TakeDrinks(1–5)` |
+| Quiz | Correct answer | `GiveDrinksPickTarget(1–5, otherPlayers)` |
 | Mini-game (two-player) | Current player wins | `GiveDrinks(1–5, opponentName)` |
 | Mini-game (two-player) | Tie | `NoAction` |
 | Mini-game (two-player) | Current player loses | `TakeDrinks(1–5)` |
@@ -54,7 +54,7 @@ Bar mode modifies how each deal type ends. The table below shows what changes co
 | Deal type | Standard dismissal | Bar mode change |
 |---|---|---|
 | **Truth or Dare** | Tap card after choice → deal resets | A **Skip** button appears on the back face of the flip card. Tapping it fires `TakeDrinks`. The normal card tap still resets without an event (challenge completed). |
-| **General Knowledge** | Tap card after answering → deal resets | The card tap fires a bar event: `TakeDrinks` for a wrong answer, `GiveDrinksPickTarget` for a correct answer. The tap hint changes to "Tap to continue". |
+| **Quiz** | Tap card after answering → deal resets | The card tap fires a bar event: `TakeDrinks` for a wrong answer, `GiveDrinksPickTarget` for a correct answer. The tap hint changes to "Tap to continue". |
 | **Sticky Dare** | Tap card → creates sticky dare + deal resets | A **Skip** button appears alongside the "Tap to dismiss" hint. Tapping Skip fires `TakeDrinks` and skips the dare (timer **not** started). Cancelling an already-running sticky dare also fires `TakeDrinks`. The normal card tap creates the dare as usual. |
 | **Mini-game** | Tap card after results → deal resets | The "Tap to dismiss" hint is replaced by a **Finish** button. Tapping it fires `GiveDrinks(opponent)` if the current player won, `TakeDrinks` if they lost, or `NoAction` on a tie. The card tap is disabled in bar mode once results are shown. |
 
@@ -71,7 +71,7 @@ Bar mode modifies how each deal type ends. The table below shows what changes co
 ```
 challenge shown
       │
-user taps Skip / Finish / card (GK only)
+user taps Skip / Finish / card (quiz only)
       │
 BarModeState.activeEvent set  ──▶  bar event dialog appears on top
       │                             challenge card remains visible behind
@@ -161,7 +161,7 @@ The ViewModel delegates event construction to `BarModeState` factory methods. It
 | `onStickyDareSkipped()` | Skip button on Sticky Dare card | `TakeDrinks` |
 | `cancelStickyDare(id)` (modified) | Cancel button in dares sheet | `TakeDrinks` (bar mode only, after dare removed) |
 | `onMiniGameDealFinished()` | Finish button on mini-game results | `GiveDrinks` / `TakeDrinks` / `NoAction` based on winner |
-| `onChallengeDismissed()` (modified) | GK card tap after answer | `GiveDrinksPickTarget` (correct) / `TakeDrinks` (wrong) |
+| `onChallengeDismissed()` (modified) | Quiz card tap after answer | `GiveDrinksPickTarget` (correct) / `TakeDrinks` (wrong) |
 | `onGiveDrinksTargetSelected(name)` | Player button in pick-target dialog | transitions `GiveDrinksPickTarget` → `GiveDrinks` |
 | `onModeEventDismissed()` | Tap on the landed outcome | clears event via handler, returns the turn to the deal picker |
 
@@ -181,7 +181,7 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 | `outcome/OutcomeFlavours.kt` | `barRewardFlavours` / `barPunishmentFlavours` |
 | `GameScreenState.kt` | Holds `val barMode: BarModeState` |
 | `GameScreenViewModel.kt` | Delegates event logic to `BarModeHandler` via `GameModeHandler` |
-| `GameDealSection.kt` | Skip / Finish buttons; GK tap hint; challenge card enabled guard |
+| `GameDealSection.kt` | Skip / Finish buttons; quiz tap hint; challenge card enabled guard |
 | `GameDealOverlays.kt` | `OutcomeOverlay` — layers the roll and reveal above the turn |
 | `GameOptionsSource.kt` | `currentGameModeNameRes: Int?` — bridge between `GameConfigScreen` and the ViewModel |
 | `GameConfigScreen.kt` | Sets `GameOptionsSource.currentGameModeNameRes` on composition |
@@ -200,7 +200,7 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 | `skip` | `"Skip"` |
 | `finish` | `"Finish"` |
 | `give` | `"Give"` |
-| `tap_to_continue` | `"Tap to continue"` ← replaces `tap_to_dismiss` in GK when bar mode is active |
+| `tap_to_continue` | `"Tap to continue"` ← replaces `tap_to_dismiss` in the quiz when bar mode is active |
 
 
 ---

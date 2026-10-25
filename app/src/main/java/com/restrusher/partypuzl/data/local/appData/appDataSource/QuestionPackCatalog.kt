@@ -98,7 +98,7 @@ object QuestionPackCatalog {
     val OFFICIAL_GEOGRAPHY = QuestionPackDefinition(
         id = "official_geography",
         tier = PackTier.OFFICIAL,
-        category = PackCategory.GENERAL_KNOWLEDGE,
+        category = PackCategory.QUIZ,
         nameRes = R.string.pack_world_geography,
         spice = SpiceLevel.MILD
     )
@@ -106,7 +106,7 @@ object QuestionPackCatalog {
     val OFFICIAL_SPACE_SCIENCE = QuestionPackDefinition(
         id = "official_space_science",
         tier = PackTier.OFFICIAL,
-        category = PackCategory.GENERAL_KNOWLEDGE,
+        category = PackCategory.QUIZ,
         nameRes = R.string.pack_space_science,
         spice = SpiceLevel.MILD
     )
@@ -114,7 +114,7 @@ object QuestionPackCatalog {
     val OFFICIAL_MIXED_BAG = QuestionPackDefinition(
         id = "official_mixed_bag",
         tier = PackTier.OFFICIAL,
-        category = PackCategory.GENERAL_KNOWLEDGE,
+        category = PackCategory.QUIZ,
         nameRes = R.string.pack_mixed_bag,
         spice = SpiceLevel.MEDIUM
     )
@@ -135,7 +135,7 @@ object QuestionPackCatalog {
     val PREMIUM_MOVIE_NIGHT = QuestionPackDefinition(
         id = "premium_movie_night",
         tier = PackTier.PREMIUM,
-        category = PackCategory.GENERAL_KNOWLEDGE,
+        category = PackCategory.QUIZ,
         nameRes = R.string.pack_movie_night,
         spice = SpiceLevel.MEDIUM
     )

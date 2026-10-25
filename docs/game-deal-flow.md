@@ -111,7 +111,7 @@ The promoted category lives in `promotedDealType`, which only covers the current
 | Hero category | Rendered as |
 |---|---|
 | Truth or Dare | **Two** hero cards, Truth and Dare, so the player commits to a side up front |
-| General Knowledge / Sticky Dares / Mini-games | One hero card |
+| Quiz / Sticky Dares / Mini-games | One hero card |
 
 `heroDealType` is stored in `GameScreenState` and updated in `startChallenge()`, so it survives across turns. On the very first turn there is no previous pick, so `GameScreenViewModel` seeds it at **random** from `availableDealTypes` — done once the pack content has loaded, since that is what decides which deals exist. `resolvedHeroDealType` falls back to the first available deal if the stored hero later becomes unavailable.
 
@@ -248,12 +248,12 @@ Each row shows:
 
 ---
 
-### 3. General Knowledge (`GENERAL_KNOWLEDGE`)
+### 3. Quiz (`QUIZ`)
 
 A trivia question with exactly two answer options.
 
 **Initial state:**
-- Title: "General Knowledge"
+- Title: "Quiz" (Spanish: "Trivia") — `R.string.quiz_title`
 - Question text
 - Two option buttons: **A** and **B**
 - Player name anchored to the bottom
@@ -267,10 +267,10 @@ A trivia question with exactly two answer options.
 **Dismissal:** Only available after an answer is selected. A correct answer rewards, a wrong one punishes — see [outcome-presentation.md](outcome-presentation.md).
 
 **String resources used (4 parallel arrays — indices must stay in sync):**
-- `R.array.gk_questions` — question text
-- `R.array.gk_options_a` — option A label
-- `R.array.gk_options_b` — option B label
-- `R.array.gk_correct_options` — `"A"` or `"B"` for each question
+- `R.array.quiz_questions` — question text
+- `R.array.quiz_options_a` — option A label
+- `R.array.quiz_options_b` — option B label
+- `R.array.quiz_correct_options` — `"A"` or `"B"` for each question
 
 ---
 
@@ -287,7 +287,7 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 - **Phase transitions:** `AnimatedContent`, fade + scale from 94 % (320 ms in / 220 ms out)
 - **Surprise spotlight:** the grid, the travelling ring and the hero landing, described under [Surprise me](#surprise-me). The ring is an outer border on a `Box` wrapping each compact card, inset by `spotlightRingInset`, so it never collides with the card's own hairline
 - **Promotion:** the picker is a `SharedTransitionLayout` over an `AnimatedContent` keyed on `pickerHeroDealType`; hero and compact cards share `deal_<type>` bounds keys, so the tapped tile rises into the hero slot while the old hero drops into the row (320 ms, `FastOutSlowInEasing`). The Dare card of the Truth/Dare pair has no key of its own — one key can only be claimed once per layout — so it fades and scales in
-- **Deal identity:** each deal's tone, gradient, strings and glyph live in one `DealAccent` in `GameScreenTheme.kt`, read by the picker cards and the spotlight grid alike. The glyphs are the `ic_deal_*` set — brain (Truth), flame (Dare and the combined tile), trophy (General Knowledge), sparkle (Sticky Dares), dice (Mini-games) — shared with the custom-pack entry types so a category looks the same wherever it is drawn. "Surprise me" keeps `ic_random`, which means shuffle rather than mini-game
+- **Deal identity:** each deal's tone, gradient, strings and glyph live in one `DealAccent` in `GameScreenTheme.kt`, read by the picker cards and the spotlight grid alike. The glyphs are the `ic_deal_*` set — brain (Truth), flame (Dare and the combined tile), trophy (Quiz), sparkle (Sticky Dares), dice (Mini-games) — shared with the custom-pack entry types so a category looks the same wherever it is drawn. "Surprise me" keeps `ic_random`, which means shuffle rather than mini-game
 - **Dismissal guard:** `isChallengeDismissible` prevents taps from going through before the deal type allows it
 - **Player rail:** 46 dp avatars in a 72 dp row, the active player ringed in the primary colour
 
@@ -309,7 +309,7 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `isSurpriseDealLocked` | `Boolean` | Set by `onSurpriseSettled()`: the picker shows only the landed deal and refuses promotions, re-rolls and other deals. Cleared only by `clearedTurn()` |
 | `challengeText` | `String?` | Question / dare text (Truth or Dare + Sticky Dare) |
 | `truthOrDareChoice` | `TruthOrDareChoice?` | `TRUTH` / `DARE`; set at pick time, never null once the challenge shows |
-| `generalKnowledgeQuestion` | `GeneralKnowledgeQuestion?` | Full GK question object |
+| `quizQuestion` | `QuizQuestion?` | Full quiz question object |
 | `selectedAnswerOption` | `Char?` | `'A'` or `'B'` once the player has answered |
 | `stickyDarePresentContinuous` | `String?` | Present-continuous form of the active sticky dare |
 | `stickyDareDurationLabel` | `String?` | Human-readable duration (e.g. `"2 minutes"`) |
@@ -343,7 +343,7 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 
 | File | Role |
 |---|---|
-| `GameScreenState.kt` | State, enums (`GameDealPhase`, `GameDealType`, `TruthOrDareChoice`, `OutcomeStage`), `GeneralKnowledgeQuestion`, `OUTCOME_SPIN_DURATION_MS` |
+| `GameScreenState.kt` | State, enums (`GameDealPhase`, `GameDealType`, `TruthOrDareChoice`, `OutcomeStage`), `QuizQuestion`, `OUTCOME_SPIN_DURATION_MS` |
 | `GameScreenViewModel.kt` | Turn machine, challenge content loading, sticky dare countdown jobs, outcome staging |
 | `GameDealSection.kt` | Phase router; `SharedTransitionLayout` for the reveal; challenge, outcome and camera layering |
 | `GameDealOverlays.kt` | `OutcomeOverlay` and `CameraRequestCard` — the two things layered above the phase |
@@ -367,7 +367,7 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `PlayersListRow.kt` | Player rail; tapping an avatar opens the bottom sheet filtered to that player's dares |
 | `BouncingDotsAnimation.kt` (`ui/common`) | Reusable 3-dot bouncing animation composable |
 | `GameOptionsSource.kt` (`data/local/…`) | In-memory singleton holding `currentGameModeNameRes`, written by `GameConfigScreen`, read by `GameScreenViewModel` |
-| `res/values/strings.xml` | All localizable challenge strings (truth, dare, sticky dares + parallel arrays, GK questions) |
+| `res/values/strings.xml` | All localizable challenge strings (truth, dare, sticky dares + parallel arrays, quiz questions) |
 
 ---
 

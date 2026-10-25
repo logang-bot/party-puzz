@@ -15,8 +15,8 @@ enum class QuestionSource(val category: PackCategory) {
     OFFICIAL_TRUTHS(PackCategory.TRUTH_OR_DARE),
     OFFICIAL_DARES(PackCategory.TRUTH_OR_DARE),
     OFFICIAL_STICKY_DARES(PackCategory.STICKY_DARE),
-    OFFICIAL_TRIVIA(PackCategory.GENERAL_KNOWLEDGE),
-    MOVIE_TRIVIA(PackCategory.GENERAL_KNOWLEDGE),
+    OFFICIAL_TRIVIA(PackCategory.QUIZ),
+    MOVIE_TRIVIA(PackCategory.QUIZ),
     SPICY_STICKY_DARES(PackCategory.STICKY_DARE),
     NSFW_TRUTHS(PackCategory.TRUTH_OR_DARE),
     NSFW_DARES(PackCategory.TRUTH_OR_DARE);

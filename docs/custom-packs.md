@@ -62,7 +62,7 @@ enum class CustomEntryType(val category: PackCategory) {
     TRUTH(PackCategory.TRUTH_OR_DARE),
     DARE(PackCategory.TRUTH_OR_DARE),
     STICKY_DARE(PackCategory.STICKY_DARE),
-    TRIVIA(PackCategory.GENERAL_KNOWLEDGE)
+    TRIVIA(PackCategory.QUIZ)
 }
 ```
 
@@ -133,7 +133,7 @@ Every path through the entry screen is four steps, so the preview is always `04`
 |---|---|---|
 | Truth or Dare | Which half | The prompt |
 | Sticky dare | The dare | How long it sticks |
-| GK question | The question | The two options |
+| Quiz question | The question | The two options |
 
 Colour follows the *deal*, not the half: `CustomEntryType.accent` gives truths and dares the same pink, so the page tint no longer flips as the author swaps sides, and the editor list tells them apart by label. The one place the two are contrasted rather than grouped — the step-02 toggle — is the one place they keep separate colours.
 

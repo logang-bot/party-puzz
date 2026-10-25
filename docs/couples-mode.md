@@ -46,8 +46,8 @@ The outcome → event mapping:
 | Truth or Dare | Skip tapped (after choosing) | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
 | Sticky Dare | Skip tapped | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
 | Sticky Dare | Running dare cancelled | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random, target = dare's player) |
-| General Knowledge | Wrong answer | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
-| General Knowledge | Correct answer | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
+| Quiz | Wrong answer | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
+| Quiz | Correct answer | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
 | Mini-game (two-player) | Current player wins | Reward | `GiveAKiss`, `ChoseKissers`, or `ChoseLovers` (random) |
 | Mini-game (two-player) | Current player loses | Punishment | `MakeALoveDeclaration` or `ActOfLove` (random) |
 | Mini-game (two-player) | Tie | — | No event |
@@ -91,7 +91,7 @@ Couples mode modifies how each deal type ends. The table below shows what change
 | Deal type | Standard dismissal | Couples mode change |
 |---|---|---|
 | **Truth or Dare** | Tap card after choice → deal resets | A **Skip** button appears on the back face of the flip card. Tapping it fires a punishment event. The normal card tap still resets without an event (challenge completed). |
-| **General Knowledge** | Tap card after answering → deal resets | The card tap fires a couples event: punishment for a wrong answer, reward for a correct answer. The tap hint changes to "Tap to continue". |
+| **Quiz** | Tap card after answering → deal resets | The card tap fires a couples event: punishment for a wrong answer, reward for a correct answer. The tap hint changes to "Tap to continue". |
 | **Sticky Dare** | Tap card → creates sticky dare + deal resets | A **Skip** button appears alongside the "Tap to dismiss" hint. Tapping Skip fires a punishment event and skips the dare (timer **not** started). Cancelling an already-running sticky dare also fires a punishment event targeted at the dare's original player. The normal card tap creates the dare as usual. |
 | **Mini-game** | Tap card after results → deal resets | The "Tap to dismiss" hint is replaced by a **Finish** button. Tapping it fires a reward event if the current player won, a punishment event if they lost, or resets the deal silently on a tie. |
 
@@ -108,7 +108,7 @@ Couples mode modifies how each deal type ends. The table below shows what change
 ```
 challenge shown
       │
-user taps Skip / Finish / card (GK only)
+user taps Skip / Finish / card (quiz only)
       │
 CouplesModeState.activeEvent set  ──▶  couples event shown on top (card flips)
       │                                 challenge card remains visible behind
@@ -229,7 +229,7 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 | `onStickyDareSkipped()` | Skip button on Sticky Dare card | punishment event |
 | `cancelStickyDare(id)` (modified) | Cancel button in dares sheet | punishment event (dare's player as target) |
 | `onMiniGameDealFinished()` | Finish button on mini-game results | reward (win) / punishment (loss) / silent reset (tie) |
-| `onChallengeDismissed()` (modified) | GK card tap after answer | reward (correct) or punishment (wrong) |
+| `onChallengeDismissed()` (modified) | Quiz card tap after answer | reward (correct) or punishment (wrong) |
 | `onModeEventDismissed()` | Tap on the landed outcome | clears event, returns the turn to the deal picker |
 
 ---
@@ -243,7 +243,7 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 | `GameModeHandler.kt` | `CouplesModeHandler` implementation — all event construction logic |
 | `GameScreenState.kt` | Holds `val couplesMode: CouplesModeState` |
 | `GameScreenViewModel.kt` | Delegates all mode logic to `CouplesModeHandler` via `GameModeHandler` interface |
-| `GameDealSection.kt` | Skip / Finish buttons; GK tap hint; challenge card enabled guard |
+| `GameDealSection.kt` | Skip / Finish buttons; quiz tap hint; challenge card enabled guard |
 | `GameScreen.kt` | Passes the mode callbacks to `GameDealSection`, which mounts the shared outcome overlay |
 
 ---

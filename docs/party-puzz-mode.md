@@ -69,8 +69,8 @@ The triggers are identical to those of Bar Time and Couples mode — because Par
 | Truth or Dare | Skip tapped (after choosing) | Bar punishment / Couples punishment / nothing |
 | Sticky Dare | Skip tapped | Bar punishment / Couples punishment / nothing |
 | Sticky Dare | Running dare cancelled | Bar punishment / Couples punishment / nothing |
-| General Knowledge | Wrong answer | Bar punishment / Couples punishment / nothing |
-| General Knowledge | Correct answer | Bar reward / Couples reward / nothing |
+| Quiz | Wrong answer | Bar punishment / Couples punishment / nothing |
+| Quiz | Correct answer | Bar reward / Couples reward / nothing |
 | Mini-game (two-player) | Win | Bar reward / Couples reward / nothing |
 | Mini-game (two-player) | Loss | Bar punishment / Couples punishment / nothing |
 | Mini-game (two-player) | Tie | nothing (all handlers return state unchanged on tie) |
@@ -87,7 +87,7 @@ The lifecycle is the same as Bar Time and Couples mode — whichever event fires
 ```
 challenge shown
       │
-user taps Skip / Finish / card (GK only)
+user taps Skip / Finish / card (quiz only)
       │
 random handler chosen
       │

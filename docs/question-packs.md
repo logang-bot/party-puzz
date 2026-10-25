@@ -62,15 +62,15 @@ of a deck kept adjacent**:
 Official pack content
   Truth or Dare        truth_texts, dare_texts
   Sticky dares         sticky_dares, _present_continuous, _duration_labels, _duration_seconds
-  General knowledge    gk_questions, gk_options_a, gk_options_b, gk_correct_options
+  Quiz    quiz_questions, quiz_options_a, quiz_options_b, quiz_correct_options
 Premium pack content
-  Movie Night          movie_gk_questions, _options_a, _options_b, _correct_options
+  Movie Night          movie_quiz_questions, _options_a, _options_b, _correct_options
   Spicy                spicy_sticky_dares, _present_continuous, _duration_labels, _duration_seconds
   NSFW Confessions     nsfw_truth_texts, nsfw_dare_texts
 ```
 
 Adjacency is the point, not tidiness. The sticky-dare text used to sit 136 lines from the three
-arrays it is index-aligned with, separated by the whole general-knowledge deck — append an item to
+arrays it is index-aligned with, separated by the whole quiz deck — append an item to
 one and it is genuinely easy to miss the other three, which is the drift this section is about.
 Keep a deck's arrays together when adding one.
 
@@ -104,7 +104,7 @@ Every Truth-or-Dare pack deliberately holds **both** halves — see the empty-po
 | **Verbal Tics** | 7 | speech patterns and word rules |
 | **Body & Persona** | 8 | gestures, posture, character |
 
-### General Knowledge — `gk_questions` (30)
+### Quiz — `quiz_questions` (30)
 
 | Pack | Count |
 |---|---|
@@ -120,7 +120,7 @@ Every Truth-or-Dare pack deliberately holds **both** halves — see the empty-po
 
 | Pack | Category | Content |
 |---|---|---|
-| **Movie Night** | General Knowledge | `movie_gk_*` (24) |
+| **Movie Night** | Quiz | `movie_quiz_*` (24) |
 | **Spicy** | Sticky Dare | `spicy_sticky_dares_*` (20) |
 | **NSFW Confessions** | Truth or Dare | `nsfw_truth_texts` + `nsfw_dare_texts` (20 + 20) |
 
@@ -213,7 +213,7 @@ Because both passes feed one set of pools, the game screen never learns that cus
 `GameScreenViewModel` calls it once in `init` — packs cannot be toggled mid-game — and stores the result in `packContent`. Two things follow:
 
 - **Prompt draws** — `buildChallengeContent()` reads from `packContent`. Two enabled Icebreakers-and-Confessions packs become one pooled truth list; the game doesn't know which pack a prompt came from.
-- **Trivia options are swapped at deal time.** `TriviaPrompt.toQuestion()` flips the pair on a coin toss, so the stored `correctOption` never decides which button the answer sits under. Without it the key is learnable: Movie Night shipped `A` correct 67% of the time, and always tapping the left button won two thirds of the paid pack. The swap covers official, premium and custom trivia alike, so **an authored key no longer has to be balanced to be fair** — though `movie_gk_correct_options` is still kept near 12/12 with no run past three, because a lopsided stored key is a smell. It has to happen when the deal is built, not while rendering; the result is held in state, and re-rolling on recomposition would move the buttons under the player's thumb.
+- **Trivia options are swapped at deal time.** `TriviaPrompt.toQuestion()` flips the pair on a coin toss, so the stored `correctOption` never decides which button the answer sits under. Without it the key is learnable: Movie Night shipped `A` correct 67% of the time, and always tapping the left button won two thirds of the paid pack. The swap covers official, premium and custom trivia alike, so **an authored key no longer has to be balanced to be fair** — though `movie_quiz_correct_options` is still kept near 12/12 with no run past three, because a lopsided stored key is a smell. It has to happen when the deal is built, not while rendering; the result is held in state, and re-rolling on recomposition would move the buttons under the player's thumb.
 - **Deal availability** — `availableCategories` is written into `GameScreenState.enabledCategories` and `availableDealTypes` filters on it. See [game-deal-flow.md](game-deal-flow.md).
 
 `enabledCategories` defaults to all four so the first frame renders normally, then narrows when the load returns. The picker is never drawn against that default: the turn intro awaits the load before opening it, so its hero card is right on its first frame. See [game-deal-flow.md](game-deal-flow.md#the-turn-intro).

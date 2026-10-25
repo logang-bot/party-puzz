@@ -32,12 +32,12 @@ import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.theme.ink
 
 @Composable
-internal fun GeneralKnowledgeChallengeContent(
+internal fun QuizChallengeContent(
     uiState: GameScreenState,
     onAnswerSelected: (Char) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val question = uiState.generalKnowledgeQuestion ?: return
+    val question = uiState.quizQuestion ?: return
     val answered = uiState.selectedAnswerOption != null
 
     Box(modifier = modifier) {
@@ -49,7 +49,7 @@ internal fun GeneralKnowledgeChallengeContent(
                 .padding(horizontal = 24.dp)
         ) {
             Text(
-                text = stringResource(R.string.general_knowledge_title),
+                text = stringResource(R.string.quiz_title),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard),
@@ -112,22 +112,22 @@ internal fun GeneralKnowledgeChallengeContent(
 }
 
 private val previewPlayer = Player(1, "Carlos", Gender.Male, InterestedIn.Both)
-private val previewQuestion = GeneralKnowledgeQuestion(
+private val previewQuestion = QuizQuestion(
     question = "What is the capital of France?",
     optionA = "Berlin",
     optionB = "Paris",
     correctOption = 'B'
 )
 
-@Preview(name = "GeneralKnowledge – unanswered – Light", showBackground = true, widthDp = 360, heightDp = 500)
+@Preview(name = "Quiz – unanswered – Light", showBackground = true, widthDp = 360, heightDp = 500)
 @Composable
-private fun GeneralKnowledgeUnansweredLightPreview() {
+private fun QuizUnansweredLightPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
         Box(Modifier.appBackground().fillMaxSize()) {
-            GeneralKnowledgeChallengeContent(
+            QuizChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer,
-                    generalKnowledgeQuestion = previewQuestion
+                    quizQuestion = previewQuestion
                 ),
                 onAnswerSelected = {},
                 modifier = Modifier.fillMaxSize()
@@ -136,15 +136,15 @@ private fun GeneralKnowledgeUnansweredLightPreview() {
     }
 }
 
-@Preview(name = "GeneralKnowledge – answered – Dark", showBackground = true, widthDp = 360, heightDp = 500)
+@Preview(name = "Quiz – answered – Dark", showBackground = true, widthDp = 360, heightDp = 500)
 @Composable
-private fun GeneralKnowledgeAnsweredDarkPreview() {
+private fun QuizAnsweredDarkPreview() {
     PartyPuzlTheme(themeMode = ThemeMode.DARK) {
         Box(Modifier.appBackground().fillMaxSize()) {
-            GeneralKnowledgeChallengeContent(
+            QuizChallengeContent(
                 uiState = GameScreenState(
                     selectedPlayer = previewPlayer,
-                    generalKnowledgeQuestion = previewQuestion,
+                    quizQuestion = previewQuestion,
                     selectedAnswerOption = 'A'
                 ),
                 onAnswerSelected = {},
