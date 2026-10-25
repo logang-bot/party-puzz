@@ -38,16 +38,7 @@ class SettingsViewModel @Inject constructor(
                 }
         }
         observeCustomPacks()
-    }
-
-    /** Collected separately so the row's count refreshes when the user comes back from managing. */
-    private fun observeCustomPacks() {
-        viewModelScope.launch {
-            customPackRepository.getSummaries().collect { summaries ->
-                val active = summaries.count { it.isEnabled }
-                _uiState.update { it.copy(activeCustomPacks = active) }
-            }
-        }
+        observePartyPhotosEnabled()
     }
 
     fun openThemeSheet() = _uiState.update { it.copy(isThemeSheetOpen = true) }
@@ -69,7 +60,29 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun setPartyPhotosEnabled(enabled: Boolean) {
+        viewModelScope.launch { userPreferencesRepository.setPartyPhotosEnabled(enabled) }
+    }
+
     fun purchaseRemoveAds(activity: Activity) {
         billingManager.launchPurchaseFlow(activity)
+    }
+
+    /** Collected separately so the row's count refreshes when the user comes back from managing. */
+    private fun observeCustomPacks() {
+        viewModelScope.launch {
+            customPackRepository.getSummaries().collect { summaries ->
+                val active = summaries.count { it.isEnabled }
+                _uiState.update { it.copy(activeCustomPacks = active) }
+            }
+        }
+    }
+
+    private fun observePartyPhotosEnabled() {
+        viewModelScope.launch {
+            userPreferencesRepository.partyPhotosEnabled.collect { enabled ->
+                _uiState.update { it.copy(partyPhotosEnabled = enabled) }
+            }
+        }
     }
 }

@@ -760,12 +760,10 @@
         <item>Mongoose</item>
     </string-array>
 
-    <!-- Support -->
-    <string name="support">Support</string>
-    <string name="support_dev">Support the Dev</string>
-    <string name="support_dev_subtitle">Buy me a coffee on Ko-fi</string>
-    <string name="support_dev_airtm">Donate via AirTM</string>
-    <string name="support_dev_airtm_subtitle">Alternative for Latin America</string>
+    <!-- Gameplay -->
+    <string name="gameplay">Gameplay</string>
+    <string name="party_photos">Party photos</string>
+    <string name="party_photos_subtitle">Ask for a group photo during the game</string>
 
     <!-- Legal -->
     <string name="legal">Legal</string>

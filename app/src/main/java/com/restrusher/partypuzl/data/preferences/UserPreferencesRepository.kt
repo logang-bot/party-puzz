@@ -7,6 +7,9 @@ interface UserPreferencesRepository {
     val appLanguage: Flow<AppLanguage>
     val isAdFree: Flow<Boolean>
 
+    /** Whether a game may stop for the party-photo prompt; camera permission is still required on top. */
+    val partyPhotosEnabled: Flow<Boolean>
+
     /**
      * Version of the question→pack mapping the `questions` table was built from. Compared with
      * `QuestionCatalog.MAPPING_VERSION` to decide whether the rows need rebuilding.
@@ -23,4 +26,5 @@ interface UserPreferencesRepository {
     suspend fun setThemeMode(themeMode: ThemeMode)
     suspend fun setAppLanguage(language: AppLanguage)
     suspend fun setAdFree(adFree: Boolean)
+    suspend fun setPartyPhotosEnabled(enabled: Boolean)
 }

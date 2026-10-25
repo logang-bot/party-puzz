@@ -23,6 +23,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,12 +39,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.hasCameraPermission
+import com.restrusher.partypuzl.ui.common.rememberCameraPermissionRequester
 import com.restrusher.partypuzl.ui.theme.appColors
 
 @Composable
@@ -94,28 +100,19 @@ fun SettingsScreen(
             )
 
             Spacer(modifier = Modifier.height(8.dp))
+            SettingsSectionHeader(title = stringResource(id = R.string.gameplay))
+
+            PartyPhotosRow(
+                isEnabled = uiState.partyPhotosEnabled,
+                onEnabledChange = viewModel::setPartyPhotosEnabled
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
             SettingsSectionHeader(title = stringResource(id = R.string.purchases))
 
             RemoveAdsRow(
                 isAdFree = uiState.isAdFree,
                 onClick = { viewModel.purchaseRemoveAds(context as Activity) }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-            SettingsSectionHeader(title = stringResource(id = R.string.support))
-
-            SettingsRow(
-                title = stringResource(id = R.string.support_dev),
-                subtitle = stringResource(id = R.string.support_dev_subtitle),
-                iconRes = R.drawable.ic_sports_bar,
-                onClick = { uriHandler.openUri("https://ko-fi.com/restrusher") }
-            )
-
-            SettingsRow(
-                title = stringResource(id = R.string.support_dev_airtm),
-                subtitle = stringResource(id = R.string.support_dev_airtm_subtitle),
-                iconRes = R.drawable.ic_whatshot,
-                onClick = { uriHandler.openUri("https://airtm.me/lordgatsu") }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -171,6 +168,38 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+/**
+ * Only reads as on when the stored choice and the camera permission agree. Switching it on stores
+ * the choice first, then asks for the permission — so granting it later, even from the system
+ * settings, turns the photos on without a second tap.
+ */
+@Composable
+private fun PartyPhotosRow(
+    isEnabled: Boolean,
+    onEnabledChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    var hasPermission by remember { mutableStateOf(hasCameraPermission(context)) }
+    LifecycleResumeEffect(Unit) {
+        hasPermission = hasCameraPermission(context)
+        onPauseOrDispose { }
+    }
+    val cameraPermission = rememberCameraPermissionRequester(onGranted = { hasPermission = true })
+
+    SettingsToggleRow(
+        title = stringResource(id = R.string.party_photos),
+        subtitle = stringResource(id = R.string.party_photos_subtitle),
+        iconRes = R.drawable.ic_camera,
+        checked = isEnabled && hasPermission,
+        onCheckedChange = { checked ->
+            onEnabledChange(checked)
+            if (checked) cameraPermission.request()
+        },
+        modifier = modifier
+    )
 }
 
 @Composable

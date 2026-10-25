@@ -10,5 +10,7 @@ data class SettingsState(
     val isLanguageSheetOpen: Boolean = false,
     val isAdFree: Boolean = false,
     /** How many of the user's own packs are switched on — the "Custom packs" row's subtitle. */
-    val activeCustomPacks: Int = 0
+    val activeCustomPacks: Int = 0,
+    /** The stored choice only — the switch also needs camera permission to show as on. */
+    val partyPhotosEnabled: Boolean = true
 )

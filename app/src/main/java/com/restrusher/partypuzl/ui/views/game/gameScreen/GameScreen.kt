@@ -1,8 +1,6 @@
 package com.restrusher.partypuzl.ui.views.game.gameScreen
 
-import android.Manifest
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,7 +30,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +38,7 @@ import androidx.navigation.NavBackStackEntry
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
+import com.restrusher.partypuzl.ui.common.hasCameraPermission
 import com.restrusher.partypuzl.ui.theme.appBackground
 import java.io.File
 import kotlinx.coroutines.flow.filterNotNull
@@ -226,9 +224,7 @@ fun GameScreen(
                 onModeEventDismissed = viewModel::onModeEventDismissed,
                 onGiveDrinksTargetSelected = viewModel::onGiveDrinksTargetSelected,
                 onCameraRequested = {
-                    val granted = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-                            PackageManager.PERMISSION_GRANTED
-                    if (granted) cameraLauncher.launch(cameraUri)
+                    if (hasCameraPermission(context)) cameraLauncher.launch(cameraUri)
                     else viewModel.onCameraRequestDismissed()
                 },
                 onCameraRequestDismissed = viewModel::onCameraRequestDismissed,

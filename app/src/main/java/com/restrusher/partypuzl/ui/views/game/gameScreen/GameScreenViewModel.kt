@@ -1,10 +1,7 @@
 package com.restrusher.partypuzl.ui.views.game.gameScreen
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzl.R
@@ -14,7 +11,9 @@ import com.restrusher.partypuzl.data.models.EnabledPackContent
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.models.TriviaPrompt
 import com.restrusher.partypuzl.data.packs.QuestionPackContentLoader
+import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.PartyPhotoRepository
+import com.restrusher.partypuzl.ui.common.hasCameraPermission
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CompletableDeferred
@@ -36,7 +35,8 @@ import kotlin.random.Random
 class GameScreenViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val partyPhotoRepository: PartyPhotoRepository,
-    private val questionPackContentLoader: QuestionPackContentLoader
+    private val questionPackContentLoader: QuestionPackContentLoader,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     companion object {
@@ -79,7 +79,11 @@ class GameScreenViewModel @Inject constructor(
     private val roundQueue = mutableListOf<Player>()
     private var roundNumber = 0
 
+    /** Mirrors the Settings toggle so the per-turn camera decision can stay synchronous. */
+    private var partyPhotosEnabled = true
+
     init {
+        observePartyPhotosEnabled()
         loadPackContent()
         advanceToNextTurn()
     }
@@ -260,11 +264,13 @@ class GameScreenViewModel @Inject constructor(
         val state = _uiState.value
         // A dare cancelled from the sticky-dares sheet punishes mid-turn — clear it and stay put,
         // otherwise the current player would silently lose their turn.
-        if (state.dealPhase != GameDealPhase.CHALLENGE_SHOWN) {
-            _uiState.update { modeHandler.clearEvent(it).copy(outcomeStage = null) }
+        if (state.isCancelledDareOutcome || state.dealPhase != GameDealPhase.CHALLENGE_SHOWN) {
+            _uiState.update {
+                modeHandler.clearEvent(it).copy(outcomeStage = null, isCancelledDareOutcome = false)
+            }
             return
         }
-        if (state.pendingCameraRequest) {
+        if (state.pendingCameraRequest && state.hasRewardOrPunishment) {
             _uiState.update {
                 modeHandler.clearEvent(it).copy(
                     outcomeStage = null,
@@ -387,9 +393,15 @@ class GameScreenViewModel @Inject constructor(
         viewModelScope.launch {
             completeAndRemoveStickyDare(dareId)
             val darePlayer = _uiState.value.players.find { it.nickName == dare?.playerName }
-            _uiState.update { modeHandler.applyPunishment(it, darePlayer) }
-            if (_uiState.value.hasActiveModeEvent) startOutcomeSpin()
+            punishCancelledDare(darePlayer)
         }
+    }
+
+    private fun punishCancelledDare(darePlayer: Player?) {
+        _uiState.update { modeHandler.applyPunishment(it, darePlayer) }
+        if (!_uiState.value.hasActiveModeEvent) return
+        _uiState.update { it.copy(isCancelledDareOutcome = true) }
+        startOutcomeSpin()
     }
 
     // Reward / punishment lands after a short slot-reel spin. When the mode produced no event
@@ -441,12 +453,18 @@ class GameScreenViewModel @Inject constructor(
         miniGameResult = null,
         outcomeStage = null,
         pendingCameraRequest = false,
-        showCameraRequest = false
+        showCameraRequest = false,
+        isCancelledDareOutcome = false
     )
 
-    private fun isCameraAvailable(): Boolean = currentPartyId != null &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) ==
-            PackageManager.PERMISSION_GRANTED
+    private fun observePartyPhotosEnabled() {
+        viewModelScope.launch {
+            userPreferencesRepository.partyPhotosEnabled.collect { partyPhotosEnabled = it }
+        }
+    }
+
+    private fun isCameraAvailable(): Boolean =
+        partyPhotosEnabled && currentPartyId != null && hasCameraPermission(context)
 
     private suspend fun completeAndRemoveStickyDare(dareId: String) {
         _uiState.update { state ->

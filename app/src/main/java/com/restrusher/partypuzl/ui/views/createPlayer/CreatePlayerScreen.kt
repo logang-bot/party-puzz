@@ -1,8 +1,6 @@
 package com.restrusher.partypuzl.ui.views.createPlayer
 
-import android.Manifest
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -60,29 +58,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
-import com.restrusher.partypuzl.ui.common.CameraPermissionTextProvider
 import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
-import com.restrusher.partypuzl.ui.common.PermissionDialog
+import com.restrusher.partypuzl.ui.common.rememberCameraPermissionRequester
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ctaScrim
 import com.restrusher.partypuzl.ui.theme.ink
-import com.restrusher.partypuzl.utils.getActivity
-import com.restrusher.partypuzl.utils.openAppSettings
 import java.io.File
-
-var permissionsToRequest = arrayOf(
-    Manifest.permission.CAMERA
-)
 
 /** Matches the design's `.pp-btn:disabled { opacity: 0.45 }`. */
 private const val DISABLED_ALPHA = 0.45f
@@ -99,24 +89,11 @@ fun SharedTransitionScope.CreatePlayerScreen(
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val dialogQueue = viewModel.visiblePermissionDialogQueue
     val context = LocalContext.current
     val focusManager = LocalFocusManager.current
-    val mainActivity = context.getActivity()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvents.collect { navigateBack() }
-    }
-
-    val multiplePermissionResultLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestMultiplePermissions()
-    ) { perms ->
-        permissionsToRequest.forEach { permission ->
-            viewModel.onPermissionResult(
-                permission = permission,
-                isGranted = perms[permission] == true
-            )
-        }
     }
 
     val uri = remember {
@@ -139,6 +116,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
     ) { success ->
         if (success) viewModel.onCapturedImage(uri)
     }
+    val cameraPermission = rememberCameraPermissionRequester(onGranted = { cameraLauncher.launch(uri) })
 
     setAppBarTitle(
         stringResource(if (uiState.isEditMode) R.string.edit_player else R.string.new_player)
@@ -176,16 +154,7 @@ fun SharedTransitionScope.CreatePlayerScreen(
                 gender = uiState.gender,
                 interestedIn = uiState.interestedIn,
                 isCouplesMode = uiState.isCouplesMode,
-                onTakePicture = {
-                    val isCameraPermissionGranted = ContextCompat.checkSelfPermission(
-                        context, Manifest.permission.CAMERA
-                    ) == PackageManager.PERMISSION_GRANTED
-
-                    if (isCameraPermissionGranted)
-                        cameraLauncher.launch(uri)
-                    else
-                        multiplePermissionResultLauncher.launch(permissionsToRequest)
-                },
+                onTakePicture = cameraPermission::request,
                 onGenerateRandomImage = {
                     val index = viewModel.randomAvatarIndex()
                     val resId = context.resources.getIdentifier(
@@ -219,30 +188,6 @@ fun SharedTransitionScope.CreatePlayerScreen(
             LoadingScrim()
         }
     }
-
-    dialogQueue
-        .reversed()
-        .forEach { permission ->
-            PermissionDialog(
-                permissionTextProvider = when (permission) {
-                    Manifest.permission.CAMERA -> CameraPermissionTextProvider()
-                    else -> return@forEach
-                },
-                isPermanentlyDeclined = !mainActivity!!.shouldShowRequestPermissionRationale(
-                    permission
-                ),
-                onDismiss = viewModel::dismissDialog,
-                onOkClick = {
-                    viewModel.dismissDialog()
-                    multiplePermissionResultLauncher.launch(
-                        arrayOf(permission)
-                    )
-                },
-                onGoToAppSettingsClick = {
-                    mainActivity.openAppSettings()
-                }
-            )
-        }
 }
 
 @Composable

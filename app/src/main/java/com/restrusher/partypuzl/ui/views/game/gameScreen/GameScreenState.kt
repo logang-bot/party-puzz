@@ -92,9 +92,11 @@ data class GameScreenState(
     val couplesMode: CouplesModeState = CouplesModeState(),
     // Reward / punishment reveal — spins before it lands
     val outcomeStage: OutcomeStage? = null,
-    // Camera request — decided at CHALLENGE_SHOWN, consumed after dare or mode event dismissal
+    // Camera request — decided at CHALLENGE_SHOWN, consumed after an accepted dare or a reward / punishment
     val pendingCameraRequest: Boolean = false,
-    val showCameraRequest: Boolean = false
+    val showCameraRequest: Boolean = false,
+    /** The outcome on screen punishes a sticky dare cancelled from the sheet, not this turn's deal. */
+    val isCancelledDareOutcome: Boolean = false
 ) {
     /** The selected player, from the moment the turn intro has revealed who they are. */
     val revealedPlayer: Player?
@@ -105,6 +107,11 @@ data class GameScreenState(
 
     val hasActiveModeEvent: Boolean
         get() = barMode.activeEvent != null || couplesMode.activeEvent != null
+
+    /** A real reward or punishment — the bar deck's "no action" tie isn't one. */
+    val hasRewardOrPunishment: Boolean
+        get() = couplesMode.activeEvent != null ||
+                (barMode.activeEvent != null && barMode.activeEvent != BarEvent.NoAction)
 
     val activeEventCategory: EventCategory?
         get() = couplesMode.activeEvent?.category ?: barMode.activeEvent?.category

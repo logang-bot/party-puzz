@@ -2,7 +2,6 @@ package com.restrusher.partypuzl.ui.views.createPlayer
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -39,8 +38,6 @@ class CreatePlayerViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-
-    val visiblePermissionDialogQueue = mutableStateListOf<String>()
 
     private val _uiState = MutableStateFlow(CreatePlayerState())
     val uiState: StateFlow<CreatePlayerState> = _uiState.asStateFlow()
@@ -221,15 +218,5 @@ class CreatePlayerViewModel @Inject constructor(
         val dest = File(dir, "player_${System.currentTimeMillis()}.png")
         context.contentResolver.openInputStream(sourceUri)?.use { it.copyTo(dest.outputStream()) }
         return dest.absolutePath
-    }
-
-    fun dismissDialog() {
-        visiblePermissionDialogQueue.removeAt(0)
-    }
-
-    fun onPermissionResult(permission: String, isGranted: Boolean) {
-        if (!isGranted && !visiblePermissionDialogQueue.contains(permission)) {
-            visiblePermissionDialogQueue.add(permission)
-        }
     }
 }

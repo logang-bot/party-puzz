@@ -19,6 +19,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         private val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
         private val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
         private val IS_AD_FREE_KEY = booleanPreferencesKey("is_ad_free")
+        private val PARTY_PHOTOS_ENABLED_KEY = booleanPreferencesKey("party_photos_enabled")
         private val QUESTION_MAPPING_VERSION_KEY = intPreferencesKey("question_mapping_version")
         private val PACK_CATALOG_VERSION_KEY = intPreferencesKey("pack_catalog_version")
     }
@@ -31,6 +32,10 @@ class UserPreferencesRepositoryImpl @Inject constructor(
     override val appLanguage: Flow<AppLanguage> = dataStore.data.map { prefs ->
         prefs[APP_LANGUAGE_KEY]?.let { runCatching { AppLanguage.valueOf(it) }.getOrNull() }
             ?: AppLanguage.SYSTEM
+    }
+
+    override val partyPhotosEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
+        prefs[PARTY_PHOTOS_ENABLED_KEY] ?: true
     }
 
     override suspend fun setThemeMode(themeMode: ThemeMode) {
@@ -47,6 +52,10 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun setAdFree(adFree: Boolean) {
         dataStore.edit { prefs -> prefs[IS_AD_FREE_KEY] = adFree }
+    }
+
+    override suspend fun setPartyPhotosEnabled(enabled: Boolean) {
+        dataStore.edit { prefs -> prefs[PARTY_PHOTOS_ENABLED_KEY] = enabled }
     }
 
     override suspend fun getQuestionMappingVersion(): Int =
