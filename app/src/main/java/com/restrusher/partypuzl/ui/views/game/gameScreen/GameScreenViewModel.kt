@@ -99,7 +99,8 @@ class GameScreenViewModel @Inject constructor(
 
     /** Moves a category into the hero slot. The prompt only comes on the tap after this one. */
     fun onDealPromoted(dealType: GameDealType) {
-        if (_uiState.value.dealPhase != GameDealPhase.DEAL_CHOICE) return
+        val state = _uiState.value
+        if (state.dealPhase != GameDealPhase.DEAL_CHOICE || state.isSurpriseDealLocked) return
         _uiState.update { it.copy(promotedDealType = dealType) }
     }
 
@@ -143,13 +144,15 @@ class GameScreenViewModel @Inject constructor(
     }
 
     fun onDealChosen(dealType: GameDealType, truthOrDareChoice: TruthOrDareChoice? = null) {
-        if (_uiState.value.dealPhase != GameDealPhase.DEAL_CHOICE) return
+        val state = _uiState.value
+        if (state.dealPhase != GameDealPhase.DEAL_CHOICE) return
+        if (state.isSurpriseDealLocked && dealType != state.surpriseDealType) return
         startChallenge(dealType, truthOrDareChoice)
     }
 
     fun onSurpriseRequested() {
         val state = _uiState.value
-        if (state.dealPhase != GameDealPhase.DEAL_CHOICE) return
+        if (state.dealPhase != GameDealPhase.DEAL_CHOICE || state.isSurpriseDealLocked) return
         val target = state.availableDealTypes.randomOrNull() ?: return
         _uiState.update {
             it.copy(
@@ -162,7 +165,8 @@ class GameScreenViewModel @Inject constructor(
 
     /**
      * The spotlight has landed. The deal returns to the picker already promoted, so the player
-     * confirms it with the same tap a hand-picked category needs.
+     * confirms it with the same tap a hand-picked category needs — and locked, so it can be
+     * neither swapped for another category nor re-rolled. `clearedTurn` lifts the lock.
      *
      * `surpriseDealType` deliberately survives this: the outgoing spotlight is still on screen for
      * the phase cross-fade, and clearing it here would blank that frame mid-transition.
@@ -174,7 +178,8 @@ class GameScreenViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 dealPhase = GameDealPhase.DEAL_CHOICE,
-                promotedDealType = state.surpriseDealType
+                promotedDealType = state.surpriseDealType,
+                isSurpriseDealLocked = true
             )
         }
     }
@@ -423,6 +428,7 @@ class GameScreenViewModel @Inject constructor(
         dealType = null,
         promotedDealType = null,
         surpriseDealType = null,
+        isSurpriseDealLocked = false,
         challengeText = null,
         truthOrDareChoice = null,
         generalKnowledgeQuestion = null,

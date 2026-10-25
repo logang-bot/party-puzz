@@ -1,6 +1,7 @@
 package com.restrusher.partypuzl.data.local.proxies
 
 import com.restrusher.partypuzl.data.local.dao.PartyDao
+import com.restrusher.partypuzl.data.local.entities.GameMode
 import com.restrusher.partypuzl.data.local.entities.PartyEntity
 import com.restrusher.partypuzl.data.local.entities.PartyPlayerCrossRef
 import com.restrusher.partypuzl.data.proxies.PartyProxy
@@ -11,8 +12,8 @@ class PartyLocalProxy @Inject constructor(private val partyDao: PartyDao) : Part
     override suspend fun linkPlayerToParty(crossRef: PartyPlayerCrossRef) = partyDao.insertCrossRef(crossRef)
     override fun getAllParties() = partyDao.getAllPartiesWithPlayers()
     override suspend fun getPartyById(partyId: Int) = partyDao.getPartyById(partyId)
-    override suspend fun updateLastUsed(partyId: Int, gameModeNameRes: Int) =
-        partyDao.updateLastUsed(partyId, System.currentTimeMillis(), gameModeNameRes)
+    override suspend fun updateLastUsed(partyId: Int, gameMode: GameMode) =
+        partyDao.updateLastUsed(partyId, System.currentTimeMillis(), gameMode.name)
     override suspend fun updatePartyName(partyId: Int, name: String) = partyDao.updatePartyName(partyId, name)
     override suspend fun deleteParty(partyId: Int) {
         partyDao.deletePartyPlayerCrossRefs(partyId)

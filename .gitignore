@@ -17,3 +17,6 @@ local.properties
 # Build outputs
 app/release/
 app/staging/
+
+# Signing key shared by every build type
+keystore.properties

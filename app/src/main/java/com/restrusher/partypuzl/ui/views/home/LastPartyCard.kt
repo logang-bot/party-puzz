@@ -34,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.entities.PartyEntity
+import com.restrusher.partypuzl.data.local.entities.GameMode
 import com.restrusher.partypuzl.data.local.entities.PartyWithPlayers
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import com.restrusher.partypuzl.data.models.Gender
@@ -58,7 +59,7 @@ fun LastPartyCard(
     modifier: Modifier = Modifier,
     showSeeButton: Boolean = true
 ) {
-    val gameModeNameRes = party.party.lastGameModeNameRes
+    val gameModeNameRes = GameMode.fromKey(party.party.lastGameMode)?.nameRes
     val theme = gameModeTheme(gameModeNameRes)
     val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.getDefault())
     val displayDate = party.party.lastUsedAt ?: party.party.dateCreation

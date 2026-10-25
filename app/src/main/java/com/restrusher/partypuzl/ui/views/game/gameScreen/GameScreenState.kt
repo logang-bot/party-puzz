@@ -69,6 +69,8 @@ data class GameScreenState(
     // Bumped per "Surprise me" tap, so a re-tap restarts the spotlight rather than reusing
     // the composition the phase transition is still animating out
     val surpriseRequestId: Int = 0,
+    // Set once the spotlight lands: the surprise deal is the only one left to play this turn
+    val isSurpriseDealLocked: Boolean = false,
     // Truth or dare
     val truthOrDareChoice: TruthOrDareChoice? = null,
     // General knowledge

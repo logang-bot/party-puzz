@@ -71,12 +71,14 @@ internal fun DealPicker(
                     showRevealHint = hero == uiState.promotedDealType,
                     onDealChosen = onDealChosen
                 )
-                Spacer(Modifier.height(12.dp))
-                DealCompactRow(
-                    animatedVisibilityScope = this@AnimatedContent,
-                    dealTypes = uiState.availableDealTypes - hero,
-                    onDealPromoted = onDealPromoted
-                )
+                if (!uiState.isSurpriseDealLocked) {
+                    Spacer(Modifier.height(12.dp))
+                    DealCompactRow(
+                        animatedVisibilityScope = this@AnimatedContent,
+                        dealTypes = uiState.availableDealTypes - hero,
+                        onDealPromoted = onDealPromoted
+                    )
+                }
             }
         }
     }

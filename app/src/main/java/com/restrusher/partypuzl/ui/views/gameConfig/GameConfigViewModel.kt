@@ -12,6 +12,7 @@ import com.restrusher.partypuzl.data.local.appData.appDataSource.QuestionPackCat
 import com.restrusher.partypuzl.data.local.appData.appDataSource.SessionUnlocksSource
 import com.restrusher.partypuzl.data.local.appData.appModels.QuestionPackDefinition
 import com.restrusher.partypuzl.data.local.dao.CustomPackSummary
+import com.restrusher.partypuzl.data.local.entities.GameMode
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import com.restrusher.partypuzl.data.models.PackCategory
@@ -251,7 +252,8 @@ class GameConfigViewModel @Inject constructor(
     fun onStartGame(onReady: () -> Unit) {
         viewModelScope.launch {
             val partyId = args.partyId ?: GamePlayersList.currentPartyId
-            if (partyId != null) partyRepository.updateLastUsed(partyId, args.gameModeName)
+            val gameMode = GameMode.fromNameRes(args.gameModeName)
+            if (partyId != null && gameMode != null) partyRepository.updateLastUsed(partyId, gameMode)
             onReady()
         }
     }

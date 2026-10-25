@@ -21,6 +21,7 @@ import com.restrusher.partypuzl.data.local.entities.PartyPlayerCrossRef
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
+import com.restrusher.partypuzl.data.local.migrations.MIGRATION_12_13
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.internal.synchronized
 
@@ -35,7 +36,7 @@ import kotlinx.coroutines.internal.synchronized
         CustomPackEntity::class,
         CustomEntryEntity::class
     ],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 abstract class PartyPuzlDatabase : RoomDatabase() {
@@ -212,7 +213,8 @@ abstract class PartyPuzlDatabase : RoomDatabase() {
                         MIGRATION_8_9,
                         MIGRATION_9_10,
                         MIGRATION_10_11,
-                        MIGRATION_11_12
+                        MIGRATION_11_12,
+                        MIGRATION_12_13
                     )
                     .fallbackToDestructiveMigration()
                     .build()

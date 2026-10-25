@@ -25,6 +25,13 @@ val theme = gameModeTheme(gameModeNameRes)
 // theme.iconId          → drawable resource
 ```
 
+A **saved** party never carries a resource ID — `parties.lastGameMode` stores a `GameMode` name, because resource IDs change between releases. Party cards turn it back into the current build's ID before looking anything up:
+
+```kotlin
+val gameModeNameRes = GameMode.fromKey(party.party.lastGameMode)?.nameRes
+val theme = gameModeTheme(gameModeNameRes)   // null → fallback theme, never a crash
+```
+
 ---
 
 ## Mode Definitions

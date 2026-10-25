@@ -66,7 +66,7 @@ versionName = "1.1"    // what users see in the store
 - Select the `release` build variant
 - The signed `.aab` lands in `app/release/`
 
-Or via command line (requires signing config in `build.gradle.kts`):
+Or via command line — `app/build.gradle.kts` signs with the keystore in `keystore.properties` (see [builds.md](builds.md#one-signing-key-for-every-build-type)); without that file the bundle comes out debug-signed and Play rejects it:
 ```bash
 ./gradlew bundleRelease
 ```
@@ -97,6 +97,8 @@ Install from the internal testing track on a real device and verify:
 - [ ] "Watch a short ad" grants the pack for the session
 - [ ] Purchasing Remove Ads unlocks all three premium packs permanently
 - [ ] **Upgrading over an existing install keeps saved parties and photos** — the v10 migration adds the custom-pack tables, the v11 one adds `custom_packs.isAvailable`; a wrong statement throws on open. See [custom-packs.md](custom-packs.md)
+- [ ] **Upgrading keeps the game mode on played parties** — play a party on the previous release, then upgrade. Its card on Parties still shows the mode; `MIGRATION_12_13` only clears a mode whose stored resource id no longer matches this build. A crash on opening Parties means a stale `R.string` id reached `stringResource()` again
+- [ ] **Uninstall then reinstall starts empty** — no parties, no photos. Anything coming back means a backup rule was re-enabled; see [builds.md](builds.md#no-backup-by-design)
 - [ ] **Upgrading keeps authored packs** — install the previous release, write a pack, then upgrade. The pack is still there and still available. Losing it means `MIGRATION_10_11` failed validation and the destructive fallback ran
 - [ ] Settings → Your packs: write a pack, add one entry of each type, confirm it plays in-game
 - [ ] New entry screen offers **three** deal cards; Truth or Dare asks which half in step 02, and every path runs 01–04

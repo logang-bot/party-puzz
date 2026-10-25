@@ -151,6 +151,7 @@
     <string name="name_auto_generated_hint">Names are auto-generated from a deck of mildly stupid adjectives. You can edit anything.</string>
     <string name="gather_your_friends_for_a_night_of_fun">Gather your friends for a night of fun and friendly competition in our new Bar Brawl game mode! This immersive experience will transport you to a virtual bar where you can challenge your friends to a variety of drinking games and challenges.</string>
     <string name="choose_a_different_party">Choose a different party</string>
+    <string name="parties_load_error">Something went wrong loading your parties</string>
     <string name="no_parties_yet">No parties created yet, start a game and enjoy</string>
     <string name="party_detail">Party Detail</string>
     <string name="last_used">Last used: %1$s</string>

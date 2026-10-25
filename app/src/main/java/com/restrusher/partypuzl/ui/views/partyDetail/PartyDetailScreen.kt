@@ -36,6 +36,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.data.local.entities.GameMode
 import com.restrusher.partypuzl.ui.common.AdBannerView
 import com.restrusher.partypuzl.ui.common.AdUnitIds
 import com.restrusher.partypuzl.ui.common.LoadingScrim
@@ -83,7 +84,7 @@ fun PartyDetailScreen(
 
     // The scrapbook takes its wash from the mode the party was last played in, so a
     // party's page keeps the colour of the night it came from.
-    val partyModeRes = uiState.party?.party?.lastGameModeNameRes
+    val partyModeRes = GameMode.fromKey(uiState.party?.party?.lastGameMode)?.nameRes
     ReportPageTint(partyModeRes?.let { gameModeTheme(it).gradientColors.first() })
 
     Box(
@@ -99,7 +100,7 @@ fun PartyDetailScreen(
                     .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 50.dp)
             ) {
                 val party = uiState.party!!
-                val lastModeRes = party.party.lastGameModeNameRes
+                val lastModeRes = GameMode.fromKey(party.party.lastGameMode)?.nameRes
                 val gameModeName = if (lastModeRes != null) stringResource(lastModeRes) else null
                 val displayDate = party.party.lastUsedAt ?: party.party.dateCreation
                 PartyNameSection(

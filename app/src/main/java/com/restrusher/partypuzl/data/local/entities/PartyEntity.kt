@@ -9,5 +9,5 @@ data class PartyEntity(
     val name: String,
     val dateCreation: Long = System.currentTimeMillis(),
     val lastUsedAt: Long? = null,
-    val lastGameModeNameRes: Int? = null
+    val lastGameMode: String? = null
 )

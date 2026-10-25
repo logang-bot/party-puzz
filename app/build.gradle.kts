@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -5,6 +7,11 @@ plugins {
     alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     id("dagger.hilt.android.plugin")
+}
+
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
 }
 
 android {
@@ -24,18 +31,36 @@ android {
         }
     }
 
+    signingConfigs {
+        create("shared") {
+            if (!keystoreProperties.isEmpty) {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
+    val envSigningConfig = signingConfigs.getByName(
+        if (keystoreProperties.isEmpty) "debug" else "shared"
+    )
+
     buildTypes {
         debug {
+            signingConfig = envSigningConfig
             manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
             buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         create("staging") {
             initWith(getByName("release"))
+            signingConfig = envSigningConfig
             manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
             buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         release {
             isMinifyEnabled = false
+            signingConfig = envSigningConfig
             manifestPlaceholders["admobAppId"] = "ca-app-pub-7803968519747509~8418313584"
             buildConfigField("boolean", "USE_TEST_ADS", "false")
             proguardFiles(

@@ -69,8 +69,10 @@ internal fun DealChoiceContent(
             onDealChosen = onDealChosen
         )
 
-        Spacer(Modifier.height(12.dp))
-        SurpriseMeButton(onClick = onSurpriseRequested)
+        if (!uiState.isSurpriseDealLocked) {
+            Spacer(Modifier.height(12.dp))
+            SurpriseMeButton(onClick = onSurpriseRequested)
+        }
     }
 }
 
@@ -139,6 +141,44 @@ private fun DealChoiceMiniGameDarkPreview() {
                     selectedPlayer = previewPlayers[1],
                     heroDealType = GameDealType.MINI_GAME
                 ),
+                onDealPromoted = {},
+                onDealChosen = { _, _ -> },
+                onSurpriseRequested = {}
+            )
+        }
+    }
+}
+
+private val lockedPreviewState = GameScreenState(
+    players = previewPlayers,
+    selectedPlayer = previewPlayers.first(),
+    promotedDealType = GameDealType.STICKY_DARE,
+    surpriseDealType = GameDealType.STICKY_DARE,
+    isSurpriseDealLocked = true
+)
+
+@Preview(name = "DealChoice – surprise locked – Light", showBackground = true, widthDp = 360, heightDp = 640)
+@Composable
+private fun DealChoiceLockedPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.LIGHT) {
+        Box(Modifier.appBackground().fillMaxSize()) {
+            DealChoiceContent(
+                uiState = lockedPreviewState,
+                onDealPromoted = {},
+                onDealChosen = { _, _ -> },
+                onSurpriseRequested = {}
+            )
+        }
+    }
+}
+
+@Preview(name = "DealChoice – surprise locked – Dark", showBackground = true, widthDp = 360, heightDp = 640)
+@Composable
+private fun DealChoiceLockedDarkPreview() {
+    PartyPuzlTheme(themeMode = ThemeMode.DARK) {
+        Box(Modifier.appBackground().fillMaxSize()) {
+            DealChoiceContent(
+                uiState = lockedPreviewState,
                 onDealPromoted = {},
                 onDealChosen = { _, _ -> },
                 onSurpriseRequested = {}

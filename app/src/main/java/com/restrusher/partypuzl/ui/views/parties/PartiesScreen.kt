@@ -1,5 +1,6 @@
 package com.restrusher.partypuzl.ui.views.parties
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,6 +16,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +42,12 @@ fun PartiesScreen(
     LaunchedEffect(Unit) { setAppBarTitle(title) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(uiState.loadFailed) {
+        if (!uiState.loadFailed) return@LaunchedEffect
+        Toast.makeText(context, R.string.parties_load_error, Toast.LENGTH_LONG).show()
+        viewModel.onLoadErrorShown()
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         when {

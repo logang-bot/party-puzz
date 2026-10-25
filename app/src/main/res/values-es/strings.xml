@@ -151,6 +151,7 @@
     <string name="name_auto_generated_hint">Los nombres se generan de un mazo de adjetivos ligeramente absurdos. Puedes editar lo que quieras.</string>
     <string name="gather_your_friends_for_a_night_of_fun">¡Reúne a tus amigos para una noche de diversión y competencia sana en nuestro nuevo modo Bar Brawl! Esta experiencia inmersiva te transportará a un bar virtual donde podrás retar a tus amigos a una variedad de juegos y desafíos.</string>
     <string name="choose_a_different_party">Elegir otra fiesta</string>
+    <string name="parties_load_error">Algo salió mal al cargar tus fiestas</string>
     <string name="no_parties_yet">Aún no has creado fiestas, inicia un juego y disfruta</string>
     <string name="party_detail">Detalle de fiesta</string>
     <string name="last_used">Último uso: %1$s</string>

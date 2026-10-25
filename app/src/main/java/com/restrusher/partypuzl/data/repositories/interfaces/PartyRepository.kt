@@ -1,5 +1,6 @@
 package com.restrusher.partypuzl.data.repositories.interfaces
 
+import com.restrusher.partypuzl.data.local.entities.GameMode
 import com.restrusher.partypuzl.data.local.entities.PartyWithPlayers
 import kotlinx.coroutines.flow.Flow
 
@@ -8,7 +9,7 @@ interface PartyRepository {
     suspend fun linkPlayerToParty(partyId: Int, playerId: Int)
     fun getAllParties(): Flow<List<PartyWithPlayers>>
     suspend fun getPartyById(partyId: Int): PartyWithPlayers?
-    suspend fun updateLastUsed(partyId: Int, gameModeNameRes: Int)
+    suspend fun updateLastUsed(partyId: Int, gameMode: GameMode)
     suspend fun updatePartyName(partyId: Int, name: String)
     suspend fun deleteParty(partyId: Int)
 }

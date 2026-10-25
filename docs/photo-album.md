@@ -197,9 +197,11 @@ PartyPhotoDao
 
 ### Database version
 
-Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list. The database is currently at **v9** (see `create-player-feature-spec.md` for the full version history).
+Bumped from **5 → 6** with `fallbackToDestructiveMigration` in place. `PartyPhotoEntity` added to the `@Database` entities list. The database is currently at **v13** (see `create-player-feature-spec.md` for the full version history).
 
-> From v8 onward the database ships real `Migration` objects (`MIGRATION_7_8`, `MIGRATION_8_9`) alongside the destructive fallback, so photos and parties now survive an upgrade instead of being wiped on every version bump.
+> From v8 onward every version bump ships a real `Migration` (`MIGRATION_7_8` … `MIGRATION_12_13`) alongside the destructive fallback, so photos and parties survive an upgrade instead of being wiped.
+
+> Photos live in `filesDir/party_photos/<partyId>/`, private to the app. Backup is off (see [builds.md](builds.md#no-backup-by-design)), so an uninstall deletes them for good; only copies the user saved to the gallery remain.
 
 ### `PartyWithPlayers` — eager photo loading
 
