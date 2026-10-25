@@ -34,3 +34,9 @@
     @androidx.room.* <methods>;
     @androidx.room.* <fields>;
 }
+
+# Meta Audience Network
+-keep class com.facebook.ads.** { *; }
+-dontwarn com.facebook.ads.**
+-keep class com.facebook.infer.annotation.** { *; }
+-dontwarn com.facebook.infer.annotation.**

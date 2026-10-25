@@ -17,6 +17,7 @@ testServices = "1.5.0"
 testOrchestrator = "1.5.1"
 uiautomator = "2.3.0"
 lifecycleRuntimeKtx = "2.8.4"
+audienceNetworkSdk = "6.22.0"
 activityCompose = "1.9.1"
 composeBom = "2024.04.01"
 navigationCompose = "2.8.1"
@@ -49,6 +50,7 @@ androidx-test-services = { group = "androidx.test.services", name = "test-servic
 androidx-test-orchestrator = { group = "androidx.test", name = "orchestrator", version.ref = "testOrchestrator" }
 androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+audience-network-sdk = { group = "com.facebook.android", name = "audience-network-sdk", version.ref = "audienceNetworkSdk" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
