@@ -22,8 +22,8 @@ android {
         applicationId = "com.restrusher.partypuzl"
         minSdk = 24
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.0"
+        versionCode = 9
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

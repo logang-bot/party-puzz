@@ -60,8 +60,8 @@ SURPRISE_SPOTLIGHT    mode produced          nothing │
 | Phase | What the screen shows | Duration |
 |---|---|---|
 | `PLAYER_PICK` | A blank deal area, player names flicking through its centre, then the picked player's photo | ~2.4 s, or a tap |
-| `DEAL_CHOICE` | Current player, hero card(s), compact tiles, "Surprise me" | Until a deal is confirmed |
-| `SURPRISE_SPOTLIGHT` | Deals gathered into a grid, a highlight ring travelling across them | ~2.0 s, then back to `DEAL_CHOICE` promoted |
+| `DEAL_CHOICE` | Current player, hero card(s), compact tiles, "Surprise me" — or, after a surprise, the landed hero card(s) alone | Until a deal is confirmed |
+| `SURPRISE_SPOTLIGHT` | Deals gathered into a grid, a highlight ring travelling across them | ~2.0 s, then back to `DEAL_CHOICE` promoted and locked |
 | `CHALLENGE_SHOWN` | The chosen challenge, full-bleed | Until dismissed |
 
 There is no idle or hand-off phase. Every turn — including the first, since `GameScreenViewModel.init` calls `advanceToNextTurn()` too — opens on `PLAYER_PICK`, which announces whose turn it is and then hands over to the picker. See [The turn intro](#the-turn-intro).
@@ -148,7 +148,7 @@ The ring's step duration comes from `DeceleratingRun`: the **cube** of the progr
 
 The grid is adaptive. `spotlightRows()` puts two per row once there are three or more deals, so four make a 2x2, three put two on top and one spanning the width below, two share a row, and one sits alone.
 
-**The hand-off.** `LANDED` ends by calling `onSurpriseSettled()`, which returns to `DEAL_CHOICE` with `promotedDealType` set to the target. The **picker** then draws the hero card, so the growth into the hero state is the phase `AnimatedContent`'s own `fadeIn + scaleIn(0.94f)` rather than a second hero rendering inside the spotlight. The player confirms with the same tap a hand-picked category needs, and Truth or Dare still gets both its sides rather than having one rolled for it.
+**The hand-off.** `LANDED` ends by calling `onSurpriseSettled()`, which returns to `DEAL_CHOICE` with `promotedDealType` set to the target and `isSurpriseDealLocked` set. The **picker** then draws the hero card, so the growth into the hero state is the phase `AnimatedContent`'s own `fadeIn + scaleIn(0.94f)` rather than a second hero rendering inside the spotlight. The player confirms with the same tap a hand-picked category needs, and Truth or Dare still gets both its sides rather than having one rolled for it.
 
 The spotlight reuses `DealChoiceContent`'s frame — same padding, same `CurrentPlayerHeader`, same 20 dp spacer — so the header barely shifts across the cross-fade and the grid sits where the hero and compact row will be.
 
@@ -156,7 +156,11 @@ The spotlight reuses `DealChoiceContent`'s frame — same padding, same `Current
 >
 > `onSurpriseSettled()` deliberately leaves `surpriseDealType` set. The outgoing spotlight is still composed for the duration of the cross-fade, and clearing the field there would blank that frame mid-transition. `startChallenge()` clears it on the confirming tap.
 >
-> Because the turn returns to an ordinary `DEAL_CHOICE`, the player **can** decline the surprise and tap a different compact tile instead. That follows from landing on a promotion rather than a committed challenge — "Surprise me" suggests, it does not bind.
+**The surprise binds.** While `isSurpriseDealLocked` is set, `DealPicker` drops the compact row and `DealChoiceContent` drops "Surprise me", so the landed hero card(s) are all that is left to tap. The ViewModel enforces the same rule: `onDealPromoted()` and `onSurpriseRequested()` ignore taps, and `onDealChosen()` refuses any deal other than `surpriseDealType`. Only `clearedTurn()` lifts the lock.
+
+> The lock is a stored flag rather than something worked out from `surpriseDealType`, because that field's lifetime does not match the picker's. It is already set while the outgoing picker fades into the spotlight, and `startChallenge()` clears it while the picker is fading out into the challenge, so a derived lock would make the tiles pop out or back in mid-transition.
+>
+> The turn used to return to an ordinary, unlocked `DEAL_CHOICE`, so the player could decline the surprise by tapping another compact tile or rolling again. "Surprise me" now commits the player to whatever it lands on.
 
 A surprise result counts as a pick, so it becomes the next turn's hero.
 
@@ -302,6 +306,7 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 | `pickerHeroDealType` | `GameDealType` (computed) | `promotedDealType`, else `resolvedHeroDealType` — what the picker draws |
 | `surpriseDealType` | `GameDealType?` | The deal the spotlight ring has to stop on. `onSurpriseSettled()` copies it to `promotedDealType` but deliberately leaves it set |
 | `surpriseRequestId` | `Int` | Bumped on every "Surprise me" tap. The spotlight is `key()`-ed on it, so a re-tap restarts the timeline instead of reusing a composition the phase transition is still animating out |
+| `isSurpriseDealLocked` | `Boolean` | Set by `onSurpriseSettled()`: the picker shows only the landed deal and refuses promotions, re-rolls and other deals. Cleared only by `clearedTurn()` |
 | `challengeText` | `String?` | Question / dare text (Truth or Dare + Sticky Dare) |
 | `truthOrDareChoice` | `TruthOrDareChoice?` | `TRUTH` / `DARE`; set at pick time, never null once the challenge shows |
 | `generalKnowledgeQuestion` | `GeneralKnowledgeQuestion?` | Full GK question object |
