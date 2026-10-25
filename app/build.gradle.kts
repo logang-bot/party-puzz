@@ -49,14 +49,17 @@ android {
     buildTypes {
         debug {
             signingConfig = envSigningConfig
+            buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         create("staging") {
             initWith(getByName("release"))
             signingConfig = envSigningConfig
+            buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         release {
             isMinifyEnabled = false
             signingConfig = envSigningConfig
+            buildConfigField("boolean", "USE_TEST_ADS", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -128,6 +131,9 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.androidx.core.splashscreen)
+
+    // Meta Audience Network
+    implementation(libs.audience.network.sdk)
 
 
     // Play Billing

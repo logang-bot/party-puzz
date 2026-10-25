@@ -12,6 +12,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.4"
+audienceNetworkSdk = "6.22.0"
 activityCompose = "1.9.1"
 composeBom = "2024.04.01"
 navigationCompose = "2.8.1"
@@ -39,6 +40,7 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+audience-network-sdk = { group = "com.facebook.android", name = "audience-network-sdk", version.ref = "audienceNetworkSdk" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "composeAnimation" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
