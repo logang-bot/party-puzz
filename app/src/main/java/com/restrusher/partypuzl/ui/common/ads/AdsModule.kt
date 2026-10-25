@@ -1,6 +1,6 @@
 package com.restrusher.partypuzl.ui.common.ads
 
-import com.restrusher.partypuzl.ui.common.ads.none.NoAdsProvider
+import com.restrusher.partypuzl.ui.common.ads.admob.AdMobProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,5 +12,5 @@ import dagger.hilt.components.SingletonComponent
 object AdsModule {
 
     @Provides
-    fun provideAdsProvider(provider: NoAdsProvider): AdsProvider = provider
+    fun provideAdsProvider(provider: AdMobProvider): AdsProvider = provider
 }

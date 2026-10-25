@@ -49,14 +49,20 @@ android {
     buildTypes {
         debug {
             signingConfig = envSigningConfig
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         create("staging") {
             initWith(getByName("release"))
             signingConfig = envSigningConfig
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+            buildConfigField("boolean", "USE_TEST_ADS", "true")
         }
         release {
             isMinifyEnabled = false
             signingConfig = envSigningConfig
+            manifestPlaceholders["admobAppId"] = "ca-app-pub-7803968519747509~8418313584"
+            buildConfigField("boolean", "USE_TEST_ADS", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -129,6 +135,8 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
+    // AdMob
+    implementation(libs.play.services.ads)
 
     // Play Billing
     implementation(libs.billing)
