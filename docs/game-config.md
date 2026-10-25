@@ -75,7 +75,7 @@ Full behaviour — tiers, unlocking, and how enabled packs reach the game — is
 
 **File:** `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt`
 
-A `ModalBottomSheet` offering two routes: watch a rewarded ad (unlocks that pack for the session) or buy the one-time upgrade (unlocks everything permanently and removes ads, via the existing `remove_ads` product).
+A `ModalBottomSheet` offering two routes: watch a rewarded ad (unlocks that pack for the session) or buy the app — the one-time "Purchase App" upgrade (unlocks everything permanently and removes ads on the ad branches, via the existing `remove_ads` product).
 
 The rewarded ad is loaded on first composition of the screen, not when the sheet opens, so the option is usually ready the moment the sheet appears. While it is still loading the option stays visible but disabled and its subtitle reads "Loading ad…". After a reward is granted the ad is reloaded so a second pack can be unlocked in the same session.
 

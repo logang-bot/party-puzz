@@ -21,8 +21,9 @@ import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
 import com.restrusher.partypuzl.navigation.HomeNavigation
-import com.restrusher.partypuzl.ui.common.AppOpenAdManager
-import com.restrusher.partypuzl.ui.common.LocalIsAdFree
+import com.restrusher.partypuzl.ui.common.ads.AdsProvider
+import com.restrusher.partypuzl.ui.common.ads.LocalAdsProvider
+import com.restrusher.partypuzl.ui.common.ads.LocalIsAdFree
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var userPreferencesRepository: UserPreferencesRepository
 
     @Inject
-    lateinit var appOpenAdManager: AppOpenAdManager
+    lateinit var adsProvider: AdsProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -58,10 +59,13 @@ class MainActivity : AppCompatActivity() {
                 .collectAsStateWithLifecycle(initialValue = false)
 
             PartyPuzlTheme(themeMode = themeMode) {
-                CompositionLocalProvider(LocalIsAdFree provides isAdFree) {
+                CompositionLocalProvider(
+                    LocalIsAdFree provides isAdFree,
+                    LocalAdsProvider provides adsProvider
+                ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         HomeNavigation()
-                        if (appOpenAdManager.isAdVisible) {
+                        if (adsProvider.isFullScreenAdVisible) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -76,12 +80,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        appOpenAdManager.showWhenReady(this)
+        adsProvider.onActivityStarted(this)
     }
 
     override fun onStop() {
         super.onStop()
-        appOpenAdManager.clearPendingActivity()
+        adsProvider.onActivityStopped()
     }
 
     private fun applyLanguage(language: AppLanguage) {

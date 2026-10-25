@@ -65,13 +65,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSource
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
-import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.ads.AdBanner
+import com.restrusher.partypuzl.ui.common.ads.AdPlacement
 import com.restrusher.partypuzl.ui.common.FeatureFlags
 import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.gameModeTheme
-import com.restrusher.partypuzl.ui.common.rememberRewardedAd
+import com.restrusher.partypuzl.ui.common.ads.rememberRewardedAd
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.ReportPageTint
 import com.restrusher.partypuzl.ui.theme.ctaScrim
@@ -119,9 +119,11 @@ fun SharedTransitionScope.GameConfigScreen(
     // While the unlock is stubbed out nothing will ever show it, so skip the request entirely
     // rather than fetch a rewarded ad on every visit to this screen. The flag is a compile-time
     // constant, so this branch is fixed for the process and never restructures the composition.
-    val rewardedAdUnitId = AdUnitIds.PACK_UNLOCK_REWARDED
-    val rewardedAd =
-        if (FeatureFlags.PACK_UNLOCK_COMING_SOON) null else rememberRewardedAd(rewardedAdUnitId)
+    val rewardedAd = if (FeatureFlags.PACK_UNLOCK_COMING_SOON) {
+        null
+    } else {
+        rememberRewardedAd(AdPlacement.PACK_UNLOCK_REWARDED)
+    }
 
     uiState.messageRes?.let { messageRes ->
         val message = stringResource(messageRes)
@@ -148,7 +150,7 @@ fun SharedTransitionScope.GameConfigScreen(
             )
 
             Spacer(modifier = Modifier.height(20.dp))
-            AdBannerView(adUnitId = AdUnitIds.GAME_CONFIG_BANNER)
+            AdBanner(placement = AdPlacement.GAME_CONFIG_BANNER)
 
             Spacer(modifier = Modifier.height(12.dp))
             PlayersContainer(
@@ -214,7 +216,7 @@ fun SharedTransitionScope.GameConfigScreen(
                         rewardedAd?.show(host) {
                             viewModel.onRewardEarned(target.id)
                             // show() consumes the ad; reload so another pack can be unlocked too.
-                            rewardedAd.load(rewardedAdUnitId)
+                            rewardedAd.reload()
                         }
                     }
                 }

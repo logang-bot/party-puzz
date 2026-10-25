@@ -38,6 +38,7 @@ import androidx.navigation.NavBackStackEntry
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
+import com.restrusher.partypuzl.ui.common.ads.rememberGameSessionExit
 import com.restrusher.partypuzl.ui.common.hasCameraPermission
 import com.restrusher.partypuzl.ui.theme.appBackground
 import java.io.File
@@ -125,6 +126,7 @@ fun GameScreen(
     var daresSheetPlayer: Player? by remember { mutableStateOf(null) }
     var showDaresSheet by remember { mutableStateOf(false) }
 
+    val exitGameSession = rememberGameSessionExit(onNavigateBack)
     BackHandler { showExitDialog = true }
 
     if (showExitDialog) {
@@ -135,7 +137,7 @@ fun GameScreen(
             confirmButton = {
                 TextButton(onClick = {
                     showExitDialog = false
-                    onNavigateBack()
+                    exitGameSession()
                 }) { Text(text = stringResource(id = R.string.yes)) }
             },
             dismissButton = {

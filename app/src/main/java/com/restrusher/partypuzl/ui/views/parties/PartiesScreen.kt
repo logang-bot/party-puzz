@@ -25,8 +25,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.ads.AdBanner
+import com.restrusher.partypuzl.ui.common.ads.AdPlacement
+import com.restrusher.partypuzl.ui.common.ads.adBannerReservedHeight
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
@@ -65,7 +66,7 @@ fun PartiesScreen(
             )
             else -> LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 50.dp),
+                contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = adBannerReservedHeight()),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -92,8 +93,8 @@ fun PartiesScreen(
             }
         }
 
-        AdBannerView(
-            adUnitId = AdUnitIds.PARTIES_BANNER,
+        AdBanner(
+            placement = AdPlacement.PARTIES_BANNER,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

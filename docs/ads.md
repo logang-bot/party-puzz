@@ -1,233 +1,163 @@
 # Ads
 
-The app monetises with Google AdMob. Three ad formats are integrated: banner ads on informational screens, an App Open Ad on every app launch / foreground return, and a rewarded ad that unlocks premium question packs.
+The app does not depend on any one ad network. Screens and lifecycle code talk to a provider-neutral
+interface, `AdsProvider`. Which network answers is decided by **one Hilt binding**, and each network
+lives on its own branch:
+
+| Branch | Provider bound in `AdsModule` | Ads | Provider doc |
+|---|---|---|---|
+| `main` | `NoAdsProvider` | **None.** No ad SDK is in the build | this file |
+| `ads/admob` | `AdMobProvider` | Banners, App Open, rewarded | `docs/ads-admob.md` (on that branch) |
+| `ads/meta` | `MetaProvider` | Banners, rewarded, interstitial after a game | `docs/ads-meta.md` (on that branch) |
+
+`main` ships without ads because the AdMob account is suspended. The billing purchase still works on
+every branch (see [Purchase app](#purchase-app--in-app-purchase)).
+
+---
+
+## Branch workflow
+
+All feature work happens on `main`. To bring it into an ad branch:
+
+```bash
+git checkout ads/admob && git merge main     # same for ads/meta
+```
+
+The merge stays clean as long as `main` leaves the files each branch owns alone:
+
+| Owned by the ad branch | Why it differs |
+|---|---|
+| `ui/common/ads/AdsModule.kt` | the one-line binding (`NoAdsProvider` becomes `AdMobProvider` / `MetaProvider`) |
+| `ui/common/ads/admob/` or `ui/common/ads/meta/` | the provider package. Only the branch has it |
+| `app/build.gradle.kts`, `gradle/libs.versions.toml` | the SDK dependency, `USE_TEST_ADS`, and the AdMob App ID placeholder |
+| `AndroidManifest.xml` (+ `res/xml/` on Meta) | the AdMob App ID meta-data / the Meta network security config |
+| `docs/ads-*.md`, ad lines in `docs/release.md` and `docs/builds.md` | provider-specific setup |
+
+If `main` has to change one of these files, expect a small conflict on the next merge, and keep the
+branch's version of the ad lines.
+
+**To ship with a provider**, release from that branch. Swapping providers means releasing from the
+other branch. No code moves.
+
+---
+
+## The seam (`ui/common/ads/`)
+
+These files are identical on every branch.
+
+| File | Role |
+|---|---|
+| `AdPlacement.kt` | Enum of every ad spot: five banners plus `PACK_UNLOCK_REWARDED`. Screens name a placement, never a unit id |
+| `AdsProvider.kt` | The interface a provider implements (below) |
+| `RewardedAdHandle.kt` | `isReady`, `show(activity, onRewarded)` and `reload()`. `show` consumes the ad |
+| `AdsLocals.kt` | `LocalIsAdFree`, `LocalAdsProvider`, and the call-site helpers `AdBanner`, `adBannerReservedHeight`, `rememberRewardedAd` and `rememberGameSessionExit` |
+| `RewardedAdCard.kt` | Styled standalone card for a `RewardedAdHandle`. Currently unused |
+| `none/NoAdsProvider.kt` | `main`'s provider. It renders nothing, is never ready, and does nothing on any lifecycle call |
+| `AdsModule.kt` | `@Provides AdsProvider` and binds the branch's provider |
+
+### `AdsProvider`
+
+| Member | Called from | Purpose |
+|---|---|---|
+| `initialize()` | `PartyPuzlApplication.onCreate()` | SDK init and the first preloads |
+| `onActivityStarted(activity)` / `onActivityStopped()` | `MainActivity.onStart` / `onStop` | Launch-time ads (AdMob App Open) |
+| `onGameSessionEnded(activity)` | `GameScreen`, when the player confirms leaving the game | Between-sessions slot (Meta interstitial) |
+| `isFullScreenAdVisible` | `MainActivity.setContent` | Compose state. While true, a background-coloured `Box` masks the app so nothing shifts behind the ad |
+| `bannerHeight` | `adBannerReservedHeight()` | Bottom padding screens reserve for the pinned banner. 0 dp on `main` |
+| `Banner(placement, modifier)` | `AdBanner(...)` | The banner view |
+| `rememberRewarded(placement)` | `rememberRewardedAd(...)` | A remembered `RewardedAdHandle` |
+
+`AdBanner` and `adBannerReservedHeight` return early or 0 dp when `LocalIsAdFree` is true, so no
+provider has to check that itself. Full-screen ads read `UserPreferencesRepository.isAdFree`
+inside the provider.
+
+### Where placements appear
+
+| Placement | Screen | Position |
+|---|---|---|
+| `HOME_BANNER` | `HomeScreen` | Pinned bottom. The scroll content pads by `adBannerReservedHeight()` |
+| `PARTIES_BANNER` | `PartiesScreen` | Pinned bottom. `LazyColumn` content padding |
+| `PARTY_DETAIL_BANNER` | `PartyDetailScreen` | Pinned bottom |
+| `SETTINGS_BANNER` | `SettingsScreen` | Pinned bottom |
+| `GAME_CONFIG_BANNER` | `GameConfigScreen` | Inline, between the mode header and the players |
+| `PACK_UNLOCK_REWARDED` | `GameConfigScreen` → `UnlockChoiceBottomSheet` | "Watch a short ad" unlocks a premium pack for the session |
+
+### Adding a new provider
+
+1. Branch from `main` as `ads/<name>`.
+2. Add `ui/common/ads/<name>/` with a `@Singleton class <Name>Provider @Inject constructor(...) : AdsProvider`.
+3. Point `AdsModule.provideAdsProvider` at it.
+4. Add the SDK, any manifest entries, and a `docs/ads-<name>.md` listing every key it needs.
 
 ---
 
 ## The pack unlock is switched off
 
-⚠️ **Both** routes into unlocking a premium pack — "watch a short ad" *and* the one-time purchase —
-currently do nothing but raise a **"Coming soon!"** toast, gated by
+⚠️ **Both** routes into unlocking a premium pack, "watch a short ad" *and* the one-time purchase,
+currently just raise a **"Coming soon!"** toast. They are gated by
 `FeatureFlags.PACK_UNLOCK_COMING_SOON`. This is deliberate and **temporary**.
 
-**Why.** Neither route can earn yet. `PACK_UNLOCK_REWARDED` still points at Google's *test*
-rewarded unit in both build types (TODO under [Rewarded Ad](#rewarded-ad)), and the `remove_ads`
-product is not set up in Play Console (TODO under [Remove Ads — In-App Purchase](#remove-ads--in-app-purchase)). A release build would have
-run the whole flow and made nothing, and a paid door that leads nowhere is worse than no door.
+**Why.** Neither route can earn yet:
+- `main` has no ad provider at all.
+- `ads/admob` still points the rewarded placement at Google's *test* unit.
+- `ads/meta` has placeholder placement ids.
+- The `remove_ads` product is not set up in Play Console.
 
-**What is stubbed.** Only the two click handlers, in `GameConfigScreen`. Everything underneath —
-`RewardedAdState`, `BillingManager`, `SessionUnlocksSource`, `onRewardEarned`, the sheet itself —
-is untouched and still wired. The sheet is deliberately left standing: it is the finished design,
-and seeing it lets the premium tier land before it can be bought. The screen also **skips
-preloading the rewarded ad** while the flag is on, so no ad requests are made for a flow nothing
-can reach.
+**What is stubbed.** Only the two click handlers in `GameConfigScreen`. Everything underneath is still
+wired: `RewardedAdHandle`, `BillingManager`, `SessionUnlocksSource`, `onRewardEarned` and the sheet.
+The screen also skips `rememberRewardedAd` while the flag is on, so no ad requests are made.
 
-**To undo:**
+**To undo** (on the branch you ship):
 
-1. Create the Rewarded ad unit in AdMob, paste its id into `AdUnitIds.Production`
-   (`ui/common/AdBannerView.kt`), replacing the TODO.
+1. Give `PACK_UNLOCK_REWARDED` a real unit / placement id (see that branch's ads doc).
 2. Create and activate `remove_ads` in Play Console (setup step 4 in [release.md](release.md)).
 3. Delete `PACK_UNLOCK_COMING_SOON` from `ui/common/FeatureFlags.kt` and the `comingSoon` branches
-   in `GameConfigScreen` that read it. The original wiring is still there underneath.
+   in `GameConfigScreen`.
 4. Delete the `coming_soon` string from both `strings.xml` files.
 5. Delete this section, and the note in [question-packs.md](question-packs.md).
 
-Verify with the release checklist items that reference the unlock sheet — they are written to fail
-while this flag stands.
+On `main` the "Watch a short ad" row can never become ready even with the flag off, because
+`NoAdsProvider` never loads anything.
 
 ---
 
-## Setup
+## Purchase app — In-App Purchase
 
-### Dependency
+A single one-time purchase. Settings shows it as **"Purchase App"** ("One-time purchase · All
+packs, no ads"). It used to be called "Remove Ads". It was renamed because it also unlocks every
+premium question pack, which matters on `main` where there are no ads to remove.
 
-```toml
-# gradle/libs.versions.toml
-playServicesAds = "23.6.0"
-play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
-```
+Only the user-facing text changed. The code names stay as they were:
 
-### Manifest
-
-The App ID is a manifest placeholder rather than a literal, so debug and staging get Google's sample
-app id and only `release` carries the real one (`app/build.gradle.kts`, per-build-type
-`manifestPlaceholders`):
-
-```xml
-<meta-data
-    android:name="com.google.android.gms.ads.APPLICATION_ID"
-    android:value="${admobAppId}" />
-```
-
-### Initialisation
-
-`MobileAds.initialize(this)` is called in `PartyPuzlApplication.onCreate()` — the earliest possible point in the app lifecycle, before any Activity exists.
-
----
-
-## Ad Unit IDs
-
-All IDs live in `AdUnitIds` inside `AdBannerView.kt`.
-
-| Constant | Format | Screen |
+| Thing | Name | Why it was not renamed |
 |---|---|---|
-| `HOME_BANNER` | Banner | `HomeScreen` |
-| `PARTIES_BANNER` | Banner | `PartiesScreen` |
-| `PARTY_DETAIL_BANNER` | Banner | `PartyDetailScreen` |
-| `SETTINGS_BANNER` | Banner | `SettingsScreen` |
-| `GAME_CONFIG_BANNER` | Banner | `GameConfigScreen` |
-| `APP_OPEN` | App Open | App launch / foreground |
-| `PACK_UNLOCK_REWARDED` | Rewarded | `GameConfigScreen` — premium pack unlock |
+| Play product id | `remove_ads` (`BillingManager.REMOVE_ADS_PRODUCT_ID`) | Must match Play Console exactly |
+| Owned flag | `UserPreferencesRepository.isAdFree` | Persisted in DataStore and mirrored onto `question_packs` rows |
+| Row / action | `PurchaseAppRow` / `SettingsViewModel.purchaseApp` | |
+| Strings | `purchase_app`, `purchase_app_subtitle`, `app_purchased`, `app_purchased_subtitle` | |
 
-Banner and App Open constants have real production IDs alongside Google's test IDs, selected by `BuildConfig.USE_TEST_ADS`. `PACK_UNLOCK_REWARDED` is still on the test ID in both build types — see the TODO under [Rewarded Ad](#rewarded-ad).
+Only `PackTier.PREMIUM` is gated. Official packs are free. Custom packs are always unlocked. See
+[question-packs.md](question-packs.md) and [custom-packs.md](custom-packs.md).
 
----
-
-## Banner Ads
-
-### Composable
-
-`AdBannerView(adUnitId, modifier)` in `ui/common/AdBannerView.kt` wraps an `AdView` via `AndroidView`. It calls `loadAd()` once on first composition.
-
-### Placement
-
-| Screen | Position | How |
-|---|---|---|
-| `HomeScreen` | Pinned at the bottom of the screen | `Alignment.BottomCenter` inside the root `Box`; scrollable `Column` gets `padding(bottom = 50.dp)` |
-| `PartiesScreen` | Pinned at the bottom | Same overlay pattern; `LazyColumn` uses `contentPadding = PaddingValues(bottom = 50.dp)` |
-| `PartyDetailScreen` | Pinned at the bottom | Same overlay pattern; scrollable `Column` padding adjusted to `bottom = 50.dp` |
-| `SettingsScreen` | Pinned at the bottom | Root `Column` wrapped in a `Box`; `padding(bottom = 50.dp)` on the inner `Column` |
-| `GameConfigScreen` | Inline, between the mode header and the players section | Placed directly inside the scrollable `Column`, not as an overlay |
-
-The standard banner height is 50 dp (`AdSize.BANNER`).
-
----
-
-## App Open Ad
-
-Shown every time the app is cold-started or brought back from the background.
-
-### Manager
-
-`AppOpenAdManager` (`ui/common/AppOpenAdManager.kt`) is a Hilt `@Singleton`.
-
-| Method | Purpose |
-|---|---|
-| `loadAd()` | Starts an async `AppOpenAd.load()`. No-ops if an ad is already available or a load is in progress. |
-| `showWhenReady(activity)` | Shows immediately if an ad is loaded and fresh (< 4 h old). Otherwise stores a `WeakReference<Activity>` and shows the instant `onAdLoaded` fires. |
-| `clearPendingActivity()` | Drops the stored reference. Called from `MainActivity.onStop()` to prevent a stale Activity from being shown an ad after the app backgrounds. |
-
-`isAdVisible` is a public `mutableStateOf(Boolean)` that Compose can observe.
-
-### Lifecycle wiring (`MainActivity`)
-
-```
-Application.onCreate()  →  MobileAds.initialize() + appOpenAdManager.loadAd()
-                            (ad starts loading before any Activity exists)
-
-MainActivity.onStart()  →  appOpenAdManager.showWhenReady(this)
-MainActivity.onStop()   →  appOpenAdManager.clearPendingActivity()
-```
-
-### Full-screen overlay
-
-When the App Open Ad shows, the SDK hides the status bar, which would cause the underlying app content to shift and become visible at the screen edges. To prevent this, `MainActivity.setContent` renders a `Box` that fills the entire screen (including system bar areas, thanks to `enableEdgeToEdge()`) using `MaterialTheme.colorScheme.background` whenever `isAdVisible` is `true`.
-
-```
-AdMob App Open Ad window          ← SDK overlay, full-screen
-────────────────────────────────────────────────────────────
-colorScheme.background Box        ← fillMaxSize, hides app content
-HomeNavigation                    ← invisible while ad is showing
-```
-
-After the ad is dismissed `isAdVisible` returns to `false` and the overlay is removed.
-
----
-
-## Rewarded Ad
-
-`RewardedAdCard.kt` (`ui/common/`) contains the rewarded ad system.
-
-| Class / function | Purpose |
-|---|---|
-| `RewardedAdState` | Holds the loaded `RewardedAd`; exposes `isReady` and `show(activity, onRewarded)` |
-| `rememberRewardedAd(adUnitId)` | Composable that creates and remembers a `RewardedAdState`, loading the ad on first composition |
-| `RewardedAdCard(rewardedAdState)` | Styled card composable matching the in-app native ad design |
-
-The card shows a fire icon, title (`rewarded_ad_title`), subtitle (`rewarded_ad_subtitle`), and a **WATCH** button that is enabled only once the ad has loaded. Tapping it shows the rewarded video; the `onRewarded` callback is the hook for granting the reward in-game.
-
-### Where it is used
-
-`GameConfigScreen` calls `rememberRewardedAd(AdUnitIds.PACK_UNLOCK_REWARDED)` on composition — up front, not when the sheet opens, so the option is usually ready by the time the user asks for it. `UnlockChoiceBottomSheet` offers it as "Watch a short ad"; granting the reward unlocks that premium question pack **for the session only** via `SessionUnlocksSource`. See [question-packs.md](question-packs.md).
-
-> This describes the wiring, which is intact — but none of it runs today: `PACK_UNLOCK_COMING_SOON` skips the preload and replaces the click with a toast. See [the section at the top](#the-pack-unlock-is-switched-off).
-
-`RewardedAdState.show()` consumes the ad, so the screen reloads it in the reward callback and a second pack can be unlocked in the same session. While a load is in flight the sheet keeps the option visible but disabled with a "Loading ad…" subtitle.
-
-`RewardedAdCard` — the standalone card composable — is still unused; the unlock sheet has its own presentation.
-
-> **TODO:** `PACK_UNLOCK_REWARDED` currently points at Google's test rewarded unit in *both* build types. Create a Rewarded ad unit in the AdMob dashboard and paste its id into `AdUnitIds.Production` (`ui/common/AdBannerView.kt`). Until then the unlock flow works end to end in release builds but earns nothing.
->
-> This is the only ad placement without a production id. It is tracked as setup step 5 and on the first-release checklist in [release.md](release.md).
-
----
-
-## Remove Ads — In-App Purchase
-
-The app has a single "Remove Ads" one-time purchase. There is only one app listing on the Play Store; ads are toggled at runtime based on purchase state.
-
-It doubles as the **full unlock**: owning it unlocks every premium question pack permanently. This is deliberate — one SKU, presented in the unlock sheet as "Unlock everything · all packs, no ads", rather than a second product to create and maintain. See [question-packs.md](question-packs.md).
-
-Only `PackTier.PREMIUM` is gated. Official packs are free, and custom packs the user wrote are always unlocked — nothing to sell, so they carry no lock, no badge affordance and never reach the unlock sheet. See [custom-packs.md](custom-packs.md).
-
-### Product ID
-
-`remove_ads` — create this as a **one-time product (INAPP)** in Play Console → Monetize → Products → In-app products.
-
-> **TODO:** Go to Play Console → your app → Monetize → Products → In-app products → Create product. Set the product ID to exactly `remove_ads`, type **One-time**, set the price, and activate it. The billing client will fail silently to find the product until this is done. Tracked as setup step 4 in [release.md](release.md).
->
-> `launchPurchaseFlow` returns `false` while the product is missing, and `GameConfigScreen` shows the `unlock_purchase_unavailable` snackbar rather than appearing to do nothing.
+> **TODO:** Play Console → Monetize → Products → In-app products → Create product. Set the id to
+> exactly `remove_ads`, type **One-time**, set the price, and activate it. Tracked as setup step 4 in
+> [release.md](release.md). While it is missing, `launchPurchaseFlow` returns `false` and
+> `GameConfigScreen` shows the `unlock_purchase_unavailable` snackbar.
 
 ### Purchase flow
 
-1. `BillingManager.connect()` is called in `PartyPuzlApplication.onCreate()`.
-2. On connection it queries existing purchases and product details from the Play Store.
-3. If the user already owns `remove_ads`, `UserPreferencesRepository.setAdFree(true)` is called and the state is persisted in DataStore.
-4. The Settings screen exposes a **Remove Ads** row (under the "Purchases" section). Tapping it calls `BillingManager.launchPurchaseFlow(activity)`.
-5. On successful purchase, `onPurchasesUpdated` fires, the purchase is acknowledged, and `isAdFree` flips to `true` app-wide immediately.
-
-`launchPurchaseFlow(activity)` returns `false` when the Play Store has no details for the product yet — no billing connection, or the product was never created in Play Console. `GameConfigScreen` surfaces that as a snackbar rather than appearing to do nothing.
+1. `BillingManager.connect()` runs in `PartyPuzlApplication.onCreate()`.
+2. Once connected, it queries existing purchases and the product details.
+3. If `remove_ads` is already owned, `UserPreferencesRepository.setAdFree(true)` persists that.
+4. Settings → Purchases → **Purchase App** calls `BillingManager.launchPurchaseFlow(activity)`.
+5. On success the purchase is acknowledged, and `isAdFree` flips to `true` app-wide.
 
 ### How `isAdFree` propagates
 
 | Layer | Mechanism |
 |---|---|
-| DataStore | `UserPreferencesRepository.isAdFree: Flow<Boolean>` — source of truth |
-| `AppOpenAdManager` | Collects `isAdFree` via a coroutine scope; `loadAd()` and `showWhenReady()` no-op when true |
-| Banner composables | `LocalIsAdFree` CompositionLocal provided in `MainActivity`; `AdBannerView` returns early when true |
-| Settings screen | Reads `uiState.isAdFree` from `SettingsViewModel`; bottom padding removed when true |
-| Question packs | `GameConfigViewModel` treats `isAdFree` as "all premium unlocked", and mirrors it onto the `question_packs` rows once so it survives a reset of the flag |
-
-### Build types
-
-| Build type | `USE_TEST_ADS` | Debuggable | Purpose |
-|---|---|---|---|
-| `debug` | `true` | Yes | Local development |
-| `staging` | `true` | No | QA — release-like but safe (no risk of invalid traffic) |
-| `release` | `false` | No | Production |
-
----
-
-## Key Files
-
-| File | Role |
-|---|---|
-| `ui/common/AdBannerView.kt` | `AdBannerView` composable + `AdUnitIds` constants |
-| `ui/common/AppOpenAdManager.kt` | App Open Ad load / show lifecycle manager |
-| `ui/common/RewardedAdCard.kt` | `RewardedAdState`, `rememberRewardedAd`, `RewardedAdCard` |
-| `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt` | Rewarded-ad vs. purchase choice for premium packs |
-| `data/local/appData/appDataSource/SessionUnlocksSource.kt` | In-memory session unlocks earned from rewarded ads |
-| `PartyPuzlApplication.kt` | `MobileAds.initialize()` + `appOpenAdManager.loadAd()` on app start |
-| `ui/MainActivity.kt` | `showWhenReady` / `clearPendingActivity` hooks + full-screen overlay |
-| `AndroidManifest.xml` | `APPLICATION_ID` meta-data |
-| `gradle/libs.versions.toml` | `play-services-ads` version entry |
+| DataStore | `UserPreferencesRepository.isAdFree: Flow<Boolean>` is the source of truth |
+| Banners and padding | `LocalIsAdFree`, provided in `MainActivity`. `AdBanner` and `adBannerReservedHeight` check it |
+| Full-screen ads | Each provider collects `isAdFree` and skips loads and shows |
+| Settings | `PurchaseAppRow` switches to "App Purchased" |
+| Question packs | `GameConfigViewModel` treats it as "all premium unlocked" |

@@ -2,11 +2,15 @@
 
 ## Build types
 
-| Build type | Ads | Debuggable | Purpose |
-|---|---|---|---|
-| `debug` | Test IDs | Yes | Local development |
-| `staging` | Test IDs | No | QA — release-like, safe to test without risking invalid AdMob traffic |
-| `release` | Real IDs | No | Production / Play Store |
+| Build type | Debuggable | Purpose |
+|---|---|---|
+| `debug` | Yes | Local development |
+| `staging` | No | QA — release-like |
+| `release` | No | Production / Play Store |
+
+`main` has no ads. On the `ads/admob` and `ads/meta` branches each build type also sets
+`USE_TEST_ADS` — test ads in `debug`/`staging`, real ones in `release`; see that branch's
+`docs/ads-*.md`.
 
 All three share one `applicationId` (`com.restrusher.partypuzl`) — to the device they are the same app, and only one can be installed at a time.
 

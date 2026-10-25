@@ -192,7 +192,7 @@ internal fun OptionRowWithIcon(
 }
 
 @Composable
-internal fun RemoveAdsRow(
+internal fun PurchaseAppRow(
     isAdFree: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -210,14 +210,14 @@ internal fun RemoveAdsRow(
         Spacer(modifier = Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = stringResource(if (isAdFree) R.string.ads_removed else R.string.remove_ads),
+                text = stringResource(if (isAdFree) R.string.app_purchased else R.string.purchase_app),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Medium,
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
                 text = stringResource(
-                    if (isAdFree) R.string.ads_removed_subtitle else R.string.remove_ads_subtitle
+                    if (isAdFree) R.string.app_purchased_subtitle else R.string.purchase_app_subtitle
                 ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)

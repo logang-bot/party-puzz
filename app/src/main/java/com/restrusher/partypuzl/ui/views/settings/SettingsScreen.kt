@@ -44,8 +44,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
-import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.ads.AdBanner
+import com.restrusher.partypuzl.ui.common.ads.AdPlacement
+import com.restrusher.partypuzl.ui.common.ads.adBannerReservedHeight
 import com.restrusher.partypuzl.ui.common.hasCameraPermission
 import com.restrusher.partypuzl.ui.common.rememberCameraPermissionRequester
 import com.restrusher.partypuzl.ui.theme.appColors
@@ -68,7 +69,7 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = if (uiState.isAdFree) 0.dp else 50.dp)
+                .padding(bottom = adBannerReservedHeight())
         ) {
             SettingsSectionHeader(title = stringResource(id = R.string.appearance))
 
@@ -110,9 +111,9 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(8.dp))
             SettingsSectionHeader(title = stringResource(id = R.string.purchases))
 
-            RemoveAdsRow(
+            PurchaseAppRow(
                 isAdFree = uiState.isAdFree,
-                onClick = { viewModel.purchaseRemoveAds(context as Activity) }
+                onClick = { viewModel.purchaseApp(context as Activity) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -128,8 +129,8 @@ fun SettingsScreen(
             )
         }
 
-        AdBannerView(
-            adUnitId = AdUnitIds.SETTINGS_BANNER,
+        AdBanner(
+            placement = AdPlacement.SETTINGS_BANNER,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
     }

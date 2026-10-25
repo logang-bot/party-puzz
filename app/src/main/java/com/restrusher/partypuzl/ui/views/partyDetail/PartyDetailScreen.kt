@@ -37,8 +37,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.entities.GameMode
-import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.ads.AdBanner
+import com.restrusher.partypuzl.ui.common.ads.AdPlacement
+import com.restrusher.partypuzl.ui.common.ads.adBannerReservedHeight
 import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.gameModeTheme
 import com.restrusher.partypuzl.ui.theme.ReportPageTint
@@ -97,7 +98,7 @@ fun PartyDetailScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 50.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = adBannerReservedHeight())
             ) {
                 val party = uiState.party!!
                 val lastModeRes = GameMode.fromKey(party.party.lastGameMode)?.nameRes
@@ -142,8 +143,8 @@ fun PartyDetailScreen(
             }
         }
 
-        AdBannerView(
-            adUnitId = AdUnitIds.PARTY_DETAIL_BANNER,
+        AdBanner(
+            placement = AdPlacement.PARTY_DETAIL_BANNER,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
 

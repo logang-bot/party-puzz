@@ -64,7 +64,7 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch { userPreferencesRepository.setPartyPhotosEnabled(enabled) }
     }
 
-    fun purchaseRemoveAds(activity: Activity) {
+    fun purchaseApp(activity: Activity) {
         billingManager.launchPurchaseFlow(activity)
     }
 

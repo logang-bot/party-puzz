@@ -45,8 +45,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
-import com.restrusher.partypuzl.ui.common.AdBannerView
-import com.restrusher.partypuzl.ui.common.AdUnitIds
+import com.restrusher.partypuzl.ui.common.ads.AdBanner
+import com.restrusher.partypuzl.ui.common.ads.AdPlacement
+import com.restrusher.partypuzl.ui.common.ads.adBannerReservedHeight
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.gameModeTheme
 import com.restrusher.partypuzl.ui.theme.Ink
@@ -72,7 +73,7 @@ fun SharedTransitionScope.HomeScreen(
         if (uiState.isLoading) {
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         } else {
-            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = 50.dp)) {
+            Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = adBannerReservedHeight())) {
                 val pagerState = rememberPagerState(initialPage = 0) { uiState.gameModes.size }
                 // The page background picks up whichever mode card the carousel is showing,
                 // so swiping the carousel washes the whole screen in that mode's colour.
@@ -189,8 +190,8 @@ fun SharedTransitionScope.HomeScreen(
             }
         }
 
-        AdBannerView(
-            adUnitId = AdUnitIds.HOME_BANNER,
+        AdBanner(
+            placement = AdPlacement.HOME_BANNER,
             modifier = Modifier.align(Alignment.BottomCenter)
         )
 
