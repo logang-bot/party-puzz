@@ -124,7 +124,7 @@ fun SettingsScreen(
                 subtitle = stringResource(id = R.string.privacy_policy_subtitle),
                 iconRes = R.drawable.ic_info,
                 onClick = {
-                    uriHandler.openUri("https://logang-bot.github.io/partypuzz-legal/privacy-policy.html")
+                    uriHandler.openUri("https://logang-bot.github.io/partypuzl-legal/privacy-policy.html")
                 }
             )
         }
