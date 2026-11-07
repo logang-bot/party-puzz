@@ -120,12 +120,15 @@ Unmapped routes fall back to `R.string.home_screen`.
 ## Process restart opens on Home
 
 The game session (`GamePlayersList`, `GameOptionsSource`) lives only in memory. When Android kills the
-app in the background — commonly while the camera app is open — and the user comes back, Android would
+app in the background and the user comes back, Android would
 normally rebuild the last screen from saved state, and a rebuilt game screen would have no players.
 
 `ui/ProcessRestart` detects that case (a saved-state bundle arriving in a process that has not created
 `MainActivity` yet) and `MainActivity` drops the bundle, so the app opens on Home. Configuration changes
 (rotation, a language switch from Settings) happen in a live process and still restore normally. Nothing
 is lost: players and parties are in Room and can be resumed from the Parties screen.
+
+Photos used to be a common trigger, because the system camera app pushed PartyPuzl into the
+background. The camera is now in-app ([in-app-camera.md](in-app-camera.md)), so that path is gone.
 
 A user swiping the app away from Recents clears the task, so that path always started on Home.
