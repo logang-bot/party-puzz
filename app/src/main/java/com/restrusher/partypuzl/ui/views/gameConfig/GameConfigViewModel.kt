@@ -122,6 +122,7 @@ class GameConfigViewModel @Inject constructor(
                 if (models.needsPurchaseSync) persistPurchaseUnlock()
                 _uiState.update { state ->
                     state.copy(
+                        arePacksLoaded = true,
                         officialPacks = models.catalog.filter { it.tier == PackTier.OFFICIAL },
                         premiumPacks = models.catalog.filter { it.tier == PackTier.PREMIUM },
                         customPacks = models.custom

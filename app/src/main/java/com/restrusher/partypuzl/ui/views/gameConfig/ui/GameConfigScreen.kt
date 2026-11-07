@@ -111,6 +111,7 @@ fun SharedTransitionScope.GameConfigScreen(
     // previous session's tint.
     ReportPageTint(gameModeTheme(gameModeName).gradientColors.first())
 
+    val isEnterSettled = rememberEnterTransitionSettled(animatedVisibilityScope)
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
     val snackbarHostState = remember { SnackbarHostState() }
@@ -155,6 +156,7 @@ fun SharedTransitionScope.GameConfigScreen(
             Spacer(modifier = Modifier.height(12.dp))
             PlayersContainer(
                 animatedVisibilityScope = animatedVisibilityScope,
+                showPlayers = isEnterSettled,
                 onAddPlayerClick = onCreatePlayerClick,
                 onDeletePlayer = viewModel::deletePlayer,
                 onEditPlayer = { player -> onEditPlayerClick(player.id) },
@@ -163,6 +165,7 @@ fun SharedTransitionScope.GameConfigScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
             QuestionPacksSection(
+                isReady = isEnterSettled && uiState.arePacksLoaded,
                 officialPacks = uiState.officialPacks,
                 premiumPacks = uiState.premiumPacks,
                 customPacks = uiState.customPacks,

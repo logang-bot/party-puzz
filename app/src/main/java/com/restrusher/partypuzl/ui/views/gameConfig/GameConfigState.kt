@@ -26,6 +26,8 @@ data class PackUiModel(
 
 data class GameConfigState(
     val isLoading: Boolean = false,
+    /** False until the first pack emission lands; the packs section shows a spinner until then. */
+    val arePacksLoaded: Boolean = false,
     val officialPacks: List<PackUiModel> = emptyList(),
     val premiumPacks: List<PackUiModel> = emptyList(),
     val customPacks: List<PackUiModel> = emptyList(),

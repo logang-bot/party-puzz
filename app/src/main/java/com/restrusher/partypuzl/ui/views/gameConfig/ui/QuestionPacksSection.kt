@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +34,9 @@ import com.restrusher.partypuzl.ui.views.gameConfig.PackUiModel
 import com.restrusher.partypuzl.ui.views.gameConfig.text
 import com.restrusher.partypuzl.ui.theme.color
 
+/** Holds the section's place while it waits, so the page doesn't collapse under the spinner. */
+private val PACKS_LOADING_HEIGHT = 160.dp
+
 /**
  * "Choose your packs" — the setup screen's replacement for the old deal-category toggles.
  *
@@ -40,6 +45,7 @@ import com.restrusher.partypuzl.ui.theme.color
  */
 @Composable
 internal fun QuestionPacksSection(
+    isReady: Boolean,
     officialPacks: List<PackUiModel>,
     premiumPacks: List<PackUiModel>,
     customPacks: List<PackUiModel>,
@@ -56,56 +62,67 @@ internal fun QuestionPacksSection(
             color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
         )
 
-        if (officialPacks.isNotEmpty()) {
-            PackGroupLabel(stringResource(R.string.pack_group_official))
-            PackGroup {
-                officialPacks.forEachIndexed { index, pack ->
-                    PackRow(
-                        name = pack.name.text(),
-                        meta = stringResource(R.string.pack_prompts_count, pack.promptCount),
-                        accent = pack.accent.color,
-                        iconRes = pack.iconRes,
-                        badgeLabel = stringResource(R.string.pack_group_official),
-                        badgeColor = MaterialTheme.appColors.badgeOfficial,
-                        isEnabled = pack.isEnabled,
-                        isFirst = index == 0,
-                        cornerIcon = R.drawable.ic_check,
-                        cornerColor = pack.accent.color,
-                        onClick = { onTogglePack(pack.id) }
-                    )
+        if (!isReady) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(PACKS_LOADING_HEIGHT)
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.appColors.brandAccent)
+            }
+        } else {
+            if (officialPacks.isNotEmpty()) {
+                PackGroupLabel(stringResource(R.string.pack_group_official))
+                PackGroup {
+                    officialPacks.forEachIndexed { index, pack ->
+                        PackRow(
+                            name = pack.name.text(),
+                            meta = stringResource(R.string.pack_prompts_count, pack.promptCount),
+                            accent = pack.accent.color,
+                            iconRes = pack.iconRes,
+                            badgeLabel = stringResource(R.string.pack_group_official),
+                            badgeColor = MaterialTheme.appColors.badgeOfficial,
+                            isEnabled = pack.isEnabled,
+                            isFirst = index == 0,
+                            cornerIcon = R.drawable.ic_check,
+                            cornerColor = pack.accent.color,
+                            onClick = { onTogglePack(pack.id) }
+                        )
+                    }
                 }
             }
-        }
 
-        if (premiumPacks.isNotEmpty()) {
-            PackGroupLabel(stringResource(R.string.pack_group_premium))
-            PackGroup {
-                premiumPacks.forEachIndexed { index, pack ->
-                    PackRow(
-                        name = pack.name.text(),
-                        meta = premiumMeta(pack),
-                        accent = pack.accent.color,
-                        iconRes = pack.iconRes,
-                        badgeLabel = stringResource(R.string.pack_group_premium),
-                        badgeColor = MaterialTheme.appColors.badgePremium,
-                        isEnabled = pack.isEnabled,
-                        isLocked = !pack.isUnlocked,
-                        isFirst = index == 0,
-                        cornerIcon = if (pack.isUnlocked) null else R.drawable.ic_lock,
-                        cornerColor = MaterialTheme.appColors.badgePremium,
-                        onClick = {
-                            if (pack.isUnlocked) onTogglePack(pack.id) else onUnlockPack(pack)
-                        }
-                    )
+            if (premiumPacks.isNotEmpty()) {
+                PackGroupLabel(stringResource(R.string.pack_group_premium))
+                PackGroup {
+                    premiumPacks.forEachIndexed { index, pack ->
+                        PackRow(
+                            name = pack.name.text(),
+                            meta = premiumMeta(pack),
+                            accent = pack.accent.color,
+                            iconRes = pack.iconRes,
+                            badgeLabel = stringResource(R.string.pack_group_premium),
+                            badgeColor = MaterialTheme.appColors.badgePremium,
+                            isEnabled = pack.isEnabled,
+                            isLocked = !pack.isUnlocked,
+                            isFirst = index == 0,
+                            cornerIcon = if (pack.isUnlocked) null else R.drawable.ic_lock,
+                            cornerColor = MaterialTheme.appColors.badgePremium,
+                            onClick = {
+                                if (pack.isUnlocked) onTogglePack(pack.id) else onUnlockPack(pack)
+                            }
+                        )
+                    }
                 }
             }
-        }
 
-        CustomPackGroup(
-            customPacks = customPacks,
-            onTogglePack = onTogglePack,
-            onManagePacks = onManagePacks
-        )
+            CustomPackGroup(
+                customPacks = customPacks,
+                onTogglePack = onTogglePack,
+                onManagePacks = onManagePacks
+            )
+        }
     }
 }
 

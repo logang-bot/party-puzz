@@ -49,6 +49,7 @@ private const val MAX_PLAYERS = 8
 @Composable
 fun SharedTransitionScope.PlayersContainer(
     animatedVisibilityScope: AnimatedVisibilityScope,
+    showPlayers: Boolean,
     onAddPlayerClick: () -> Unit,
     onDeletePlayer: (Player) -> Unit,
     onEditPlayer: (Player) -> Unit,
@@ -56,11 +57,16 @@ fun SharedTransitionScope.PlayersContainer(
 ) {
     // Local display list drives the forEach — it keeps animating-out players visible
     // until their exit animation completes, regardless of GamePlayersList.PlayersList.
-    val displayList = remember { mutableStateListOf<Player>().also { it.addAll(GamePlayersList.PlayersList) } }
+    // Held back while the enter transition runs (showPlayers false): a party's players load
+    // mid-transition and their slide-ins would compete with it. Only the Add card shows until then.
+    val displayList = remember {
+        mutableStateListOf<Player>().also { if (showPlayers) it.addAll(GamePlayersList.PlayersList) }
+    }
 
     // Keep displayList in sync with external additions (e.g. after CreatePlayer returns).
     // We deliberately never remove here — removal is driven by the exit animation below.
-    LaunchedEffect(Unit) {
+    LaunchedEffect(showPlayers) {
+        if (!showPlayers) return@LaunchedEffect
         snapshotFlow { GamePlayersList.PlayersList.toList() }
             .distinctUntilChanged()
             .collect { latest ->
@@ -152,6 +158,7 @@ fun PlayersContainerPreview() {
             AnimatedVisibility(visible = true) {
                 PlayersContainer(
                     animatedVisibilityScope = this,
+                    showPlayers = true,
                     onAddPlayerClick = { },
                     onDeletePlayer = { },
                     onEditPlayer = { }
