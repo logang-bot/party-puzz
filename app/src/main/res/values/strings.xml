@@ -1141,4 +1141,10 @@
         <item>Swap one item of clothing with the player to your right.</item>
     </string-array>
 
+    <string name="camera_shutter">Take photo</string>
+    <string name="camera_flip">Switch camera</string>
+    <string name="camera_close">Close camera</string>
+    <string name="camera_retake">Retake</string>
+    <string name="camera_use_photo">Use photo</string>
+    <string name="camera_captured_photo">Captured photo</string>
 </resources>

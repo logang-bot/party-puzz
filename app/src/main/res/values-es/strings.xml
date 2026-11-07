@@ -1138,4 +1138,10 @@
         <item>Intercambia una prenda con quien tienes a la derecha.</item>
     </string-array>
 
+    <string name="camera_shutter">Tomar foto</string>
+    <string name="camera_flip">Cambiar cámara</string>
+    <string name="camera_close">Cerrar cámara</string>
+    <string name="camera_retake">Repetir</string>
+    <string name="camera_use_photo">Usar foto</string>
+    <string name="camera_captured_photo">Foto tomada</string>
 </resources>

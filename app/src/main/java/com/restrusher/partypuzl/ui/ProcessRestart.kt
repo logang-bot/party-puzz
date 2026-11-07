@@ -5,9 +5,8 @@ import android.os.Bundle
 /**
  * Tells a recreated process apart from a configuration change.
  *
- * Android can kill the app while it is in the background (often while the camera app is open)
- * and later rebuild the last screen from saved state. The game session — players, party id,
- * mode — lives only in memory, so a rebuilt game screen would start with nothing. After such a
+ * Android can kill the app while it is in the background and later rebuild the last screen
+ * from saved state. The game session — players, party id, mode — lives only in memory, so a rebuilt game screen would start with nothing. After such a
  * restart the app opens on Home instead; everything worth keeping is already in Room.
  */
 internal object ProcessRestart {

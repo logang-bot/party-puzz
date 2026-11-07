@@ -2,8 +2,6 @@ package com.restrusher.partypuzl.ui.views.game.gameScreen
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,18 +28,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavBackStackEntry
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Player
+import com.restrusher.partypuzl.ui.camera.InAppCameraDialog
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.ads.rememberGameSessionExit
 import com.restrusher.partypuzl.ui.common.hasCameraPermission
 import com.restrusher.partypuzl.ui.theme.appBackground
-import java.io.File
 import kotlinx.coroutines.flow.filterNotNull
 
 private const val KEY_MINI_GAME_P1_SCORE = "mini_game_p1_score"
@@ -112,14 +109,7 @@ fun GameScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val gameBackground = rememberGameBackground(uiState)
 
-    val cameraUri = remember {
-        val tempFile = File.createTempFile("party_photo_${System.currentTimeMillis()}", ".jpg", context.cacheDir)
-            .apply { createNewFile(); deleteOnExit() }
-        FileProvider.getUriForFile(context.applicationContext, "${context.packageName}.provider", tempFile)
-    }
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) viewModel.onPhotoCaptured(cameraUri) else viewModel.onCameraRequestDismissed()
-    }
+    var isCameraOpen by remember { mutableStateOf(false) }
 
     var showExitDialog by remember { mutableStateOf(false) }
     // null = all dares; non-null = only that player's dares
@@ -226,7 +216,7 @@ fun GameScreen(
                 onModeEventDismissed = viewModel::onModeEventDismissed,
                 onGiveDrinksTargetSelected = viewModel::onGiveDrinksTargetSelected,
                 onCameraRequested = {
-                    if (hasCameraPermission(context)) cameraLauncher.launch(cameraUri)
+                    if (hasCameraPermission(context)) isCameraOpen = true
                     else viewModel.onCameraRequestDismissed()
                 },
                 onCameraRequestDismissed = viewModel::onCameraRequestDismissed,
@@ -248,5 +238,18 @@ fun GameScreen(
                     .height(PLAYER_RAIL_HEIGHT_DP.dp)
             )
         }
+    }
+
+    if (isCameraOpen) {
+        InAppCameraDialog(
+            onCaptured = { uri ->
+                isCameraOpen = false
+                viewModel.onPhotoCaptured(uri)
+            },
+            onDismiss = {
+                isCameraOpen = false
+                viewModel.onCameraRequestDismissed()
+            }
+        )
     }
 }
