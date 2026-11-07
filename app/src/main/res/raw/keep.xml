@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The random avatars are looked up by name (getIdentifier), so neither lint nor the resource
+     shrinker can see them being used. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/img_dummy_avatar_*" />

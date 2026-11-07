@@ -252,7 +252,6 @@ The ViewModel's couples-mode surface area (shared with all modes via the handler
 
 | Key | EN value |
 |---|---|
-| `couples_event_title` | `"Couples Event!"` |
 | `couples_event_give_a_kiss` | `"You can give a kiss to whoever you choose!"` |
 | `couples_event_chose_kissers` | `"You choose who the kissers will be!"` |
 | `couples_event_make_love_declaration` | `"Make a love declaration to %1$s!"` (`%1$s` = target player name) |

@@ -45,6 +45,42 @@ Use the same keystore you sign staging and Play uploads with. Without the file (
 
 ---
 
+## Room schema export
+
+`PartyPuzlDatabase` has `exportSchema = true` and `app/build.gradle.kts` passes
+`ksp { arg("room.schemaLocation", "$projectDir/schemas") }`, so every build writes the current
+schema to `app/schemas/com.restrusher.partypuzl.data.local.PartyPuzlDatabase/<version>.json`.
+**Commit those files.** v14 is the first one exported.
+
+When bumping the database version:
+1. Build once so Room writes `<new version>.json`.
+2. Copy each `CREATE`/`ALTER` statement in the new `Migration` from that file's `createSql` rather
+   than writing it by hand — a registered migration whose SQL differs (even a default value) throws
+   on open, and `fallbackToDestructiveMigration()` does not cover that path.
+3. Commit the new JSON next to the migration.
+
+The files also make `MigrationTestHelper` tests and Room auto-migrations possible later.
+
+---
+
+## Manifest permissions
+
+| Permission | From | Why |
+|---|---|---|
+| `CAMERA` | app | Player and party photos |
+| `WRITE_EXTERNAL_STORAGE` (`maxSdkVersion=28`) | app | Saving a photo to the gallery on API 24–28 |
+| `com.android.vending.BILLING` | Play Billing | Purchase App |
+| `INTERNET`, `ACCESS_NETWORK_STATE` | Play Billing 9.x, via Google's `datatransport` logging library | The library's own telemetry. The app itself makes no network calls |
+
+The app loads only local images; `coil-network-okhttp` was removed for 1.0, so Coil has no network
+stack. Declare the billing-library network use accordingly in the Play Console **Data safety** form.
+
+The `FileProvider` (`res/xml/path_provider.xml`) exposes only `cache-path` — the camera writes its
+temp captures to the root of `cacheDir`. Saving to the gallery goes through `MediaStore` and never
+touches the provider. Widen the paths only if a new feature shares a file from somewhere else.
+
+---
+
 ## R8 (code shrinking)
 
 **Off in 1.0.** In `app/build.gradle.kts` the `release` block has `isMinifyEnabled = false`, and

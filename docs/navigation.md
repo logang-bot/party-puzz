@@ -114,3 +114,18 @@ Unmapped routes fall back to `R.string.home_screen`.
 `GameScreen` now carries the enter transition that `LoadingScreen` used (`slideInVertically { it } + fadeIn`, 400 ms), so the move from setup into the game looks unchanged.
 
 `LoadingScreen.kt`, its `loading_texts` array, `TripleOrbitLoadingAnimation` and `BlurredAnimatedText` are all **kept** for possible reuse; only the `composable<LoadingScreen>` registration and the route's entry in `isFullScreenRoute` were removed. Re-enabling it means restoring those two blocks.
+
+---
+
+## Process restart opens on Home
+
+The game session (`GamePlayersList`, `GameOptionsSource`) lives only in memory. When Android kills the
+app in the background — commonly while the camera app is open — and the user comes back, Android would
+normally rebuild the last screen from saved state, and a rebuilt game screen would have no players.
+
+`ui/ProcessRestart` detects that case (a saved-state bundle arriving in a process that has not created
+`MainActivity` yet) and `MainActivity` drops the bundle, so the app opens on Home. Configuration changes
+(rotation, a language switch from Settings) happen in a live process and still restore normally. Nothing
+is lost: players and parties are in Room and can be resumed from the Parties screen.
+
+A user swiping the app away from Recents clears the task, so that path always started on Home.

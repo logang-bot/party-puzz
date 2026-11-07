@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        super.onCreate(savedInstanceState)
+        super.onCreate(ProcessRestart.stateToRestore(savedInstanceState))
         enableEdgeToEdge()
 
         lifecycleScope.launch {

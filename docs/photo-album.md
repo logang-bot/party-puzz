@@ -273,7 +273,7 @@ Triggered from the three-dot menu → "Save". The save runs on `Dispatchers.IO` 
 
 | API level | Mechanism |
 |---|---|
-| API 29+ (Q+) | `MediaStore` scoped storage — no extra permission needed. Photos are saved to `Pictures/PartyPuzz/`. `IS_PENDING` flag is set during write and cleared on success. |
+| API 29+ (Q+) | `MediaStore` scoped storage — no extra permission needed. Photos are saved to `Pictures/PartyPuzl/`. `IS_PENDING` flag is set during write and cleared on success. |
 | API 24–28 | `MediaStore.Images.Media.EXTERNAL_CONTENT_URI` — requires `WRITE_EXTERNAL_STORAGE` runtime permission (see *Permission Handling*). |
 
 **Result feedback** — `downloadResult: DownloadResult?` in `PartyDetailState`:
@@ -349,7 +349,6 @@ When the user confirms party deletion in `PartyDetailViewModel.confirmDelete()`:
 | `camera_request_title` | Camera card heading ("Freeze this moment forever") |
 | `camera_request_subtitle` | Camera card body copy |
 | `camera_request_button` | "Take a photo" button label |
-| `party_album_title` | Section heading in `PartyDetailScreen` |
 | `party_album_empty` | Empty-state copy when no photos exist |
 | `grant_camera_permission` | Button label when camera permission is not yet granted |
 | `close` | Content description for the viewer close button |

@@ -25,7 +25,7 @@ Play Console shows a task list. Required before publishing:
 - **Target audience** — confirm not targeting children
 - **App access** — describe any login-gated features
 - **Ads declaration** — `main` contains **no ads**; a build from `ads/admob` or `ads/meta` does — declare accordingly
-- **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`)
+- **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main` makes no network calls of its own; the only `INTERNET` permission comes from Play Billing — see [builds.md](builds.md#manifest-permissions)
 
 ### 4. Create the Purchase App in-app product
 
@@ -58,6 +58,9 @@ versionName = "1.1"    // what users see in the store
 The first public release is **`versionName = "1.0"`, `versionCode = 11`**. The closed-testing
 builds used codes up to 10 and the name "2.1". The name was reset for launch, and only the code has
 to keep going up. Never reuse or lower a `versionCode`.
+
+If this release bumps the database version, commit the new `app/schemas/…/<version>.json` with
+its migration — see [builds.md](builds.md#room-schema-export).
 
 ### 2. Generate the signed AAB
 
@@ -110,6 +113,7 @@ Install from the internal testing track on a real device and verify:
 - [ ] New entry screen offers **three** deal cards; Truth or Dare asks which half in step 02, and every path runs 01–04
 - [ ] Switching a pack off in Your packs removes it from the setup screen's Custom group entirely, and its entries never come up in a game; switching it back on restores it, already selected
 - [ ] Toggling a custom pack's row *on the setup screen* does not flip its switch in Your packs — they are separate flags
+- [ ] **A process kill mid-game reopens on Home** — start a game, press Home, run `adb shell am kill com.restrusher.partypuzl`, reopen from Recents. The app lands on Home (not an empty game), and the party is on Parties. Rotating during a game still keeps it. See [navigation.md](navigation.md#process-restart-opens-on-home)
 - [ ] Force-stop and relaunch: the custom pack and its entries survive (regression test for the seeder's `tier != 'CUSTOM'` guard)
 
 ### 5. Promote to production
@@ -149,6 +153,9 @@ Decided before shipping 1.0 from `main`:
 | Ads | None. `main` ships `NoAdsProvider` until there's a working AdMob account. See [ads.md](ads.md) |
 | Purchase App (Settings) | Visible, but raises "Coming soon!", gated by `PACK_UNLOCK_COMING_SOON` like the setup screen's unlock sheet |
 | R8 | **Off** for 1.0. Closed testing ran without it, so turning it on would ship an untested build. Planned for a later release. See [builds.md](builds.md#r8-code-shrinking) |
+| Process kill mid-game | Reopens on Home; the game is not restored. Players and parties are already in Room. See [navigation.md](navigation.md#process-restart-opens-on-home) |
+| Permissions | `coil-network-okhttp` removed; `INTERNET` remains only because Play Billing brings it. `FileProvider` narrowed to `cache-path`. See [builds.md](builds.md#manifest-permissions) |
+| Room schema | Export turned on; `app/schemas/` is committed from v14. See [builds.md](builds.md#room-schema-export) |
 | Privacy policy | Link fixed. The page text still describes AdMob and "Remove Ads" and needs rewriting for a no-ads build |
 
 Planned for a later release:

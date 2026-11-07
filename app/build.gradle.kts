@@ -81,6 +81,10 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 composeCompiler {
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
 }
@@ -117,7 +121,6 @@ dependencies {
 
     // Coil
     implementation(libs.coil.compose)
-    implementation(libs.coil.network.okhttp)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

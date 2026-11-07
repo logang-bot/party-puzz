@@ -192,7 +192,6 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 
 | Key | EN value |
 |---|---|
-| `bar_event_title` | `"Bar Event!"` |
 | `bar_event_no_action` | `"Nothing happens — carry on!"` |
 | `bar_event_take_drinks` | `"Take %1$d drink(s)!"` |
 | `bar_event_give_drinks` | `"Give %1$d drink(s) to %2$s!"` (`%1$d` = amount, `%2$s` = target player name) |

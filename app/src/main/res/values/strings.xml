@@ -3,7 +3,6 @@
 
     <!-- Navigation Routes -->
     <string name="home_screen">HomeScreen</string>
-    <string name="game_config_screen">GameConfigScreen</string>
 
     <!-- Navigation Routes Titles -->
     <string name="prepare_your_party">Prepare your Party</string>
@@ -20,7 +19,6 @@
     <string name="spanish">Español</string>
     <string name="select_theme">Select theme</string>
     <string name="select_language">Select language</string>
-    <string name="create_player">Create player</string>
     <string name="edit_player">Edit player</string>
     <string name="update">Update</string>
 
@@ -39,16 +37,13 @@
     <!-- Bar time event dialog -->
     <string name="skip">Skip</string>
     <string name="finish">Finish</string>
-    <string name="give">Give</string>
     <string name="tap_to_continue">Tap to continue</string>
-    <string name="bar_event_title">Bar Event!</string>
     <string name="bar_event_no_action">Nothing happens — carry on!</string>
     <string name="bar_event_take_drinks">Take %1$d drink(s)!</string>
     <string name="bar_event_give_drinks">Give %1$d drink(s) to %2$s!</string>
     <string name="bar_event_give_drinks_choose">Give %1$d drink(s) to:</string>
 
     <!-- Couples mode event dialog -->
-    <string name="couples_event_title">Couples Event!</string>
     <string name="couples_event_give_a_kiss">You can give a kiss to whoever you choose!</string>
     <string name="couples_event_chose_kissers">You choose who the kissers will be!</string>
     <string name="couples_event_make_love_declaration">Make a love declaration to %1$s!</string>
@@ -93,37 +88,22 @@
     <string name="couples_description">Strengthen your love with your partner, playing as a team!</string>
     <string name="party_puzz_description">The ultimate mix — every round is a surprise, combining all game modes into one unpredictable experience!</string>
 
-    <string name="welcome">Welcome</string>
-    <string name="glad_to_have_you_back">Hi %1$s, we are glad to have you back. What do you want to play today?</string>
 
     <!-- Image Descriptions -->
     <string name="back_button">Back</string>
     <string name="game_mode_image">Game mode image</string>
     <string name="player_avatar">Player Avatar</string>
-    <string name="player_gender">Player Gender</string>
-    <string name="option_description">Option Description</string>
-    <string name="random_image">Random Image</string>
 
-    <string name="lets_set_up_your_party">Let\'s set up your party</string>
-    <string name="enter_the_players_name">Enter the players\' names</string>
     <string name="players_name">Player\'s name</string>
-    <string name="add_player">Add player</string>
     <string name="add">Add</string>
-    <string name="customize_your_party">Customize your party</string>
     <string name="mode_selected">Mode selected</string>
     <string name="added">added</string>
     <string name="start_the_party">Start the party</string>
     <string name="mini_games_hint">The phone passes between players each turn — on your turn, pick your deal, take it on, then hand the phone to the next player.</string>
-    <string name="bar_mode">Bar Mode</string>
-    <string name="can_skip_questions">Can skip questions</string>
-    <string name="unlimited_mode">No-end mode</string>
     <string name="mini_games">Mini-games</string>
     <string name="truth_or_dare">Truth or Dare</string>
     <string name="sticky_dares">Sticky Dares</string>
-    <string name="save_stats">Save stats</string>
-    <string name="start_game">Start Game</string>
     <string name="generate_random_name">Generate random name</string>
-    <string name="generate_random_image">Generate random image</string>
     <string name="take_photo">Take Photo</string>
     <string name="play">Play</string>
     <string name="male">Male</string>
@@ -131,14 +111,8 @@
     <string name="man">Man</string>
     <string name="woman">Woman</string>
     <string name="both">Both</string>
-    <string name="interested_in">Interested in</string>
-    <string name="name_is_required">Name is required</string>
-    <string name="last_party">Last party</string>
-    <string name="selected_party">Selected party</string>
     <string name="close">Close</string>
-    <string name="see">See</string>
     <string name="players">Players</string>
-    <string name="options">Options</string>
     <string name="confirm">Confirm</string>
     <string name="new_player">New player</string>
     <string name="step_pick_face">Step 01 · Pick your face</string>
@@ -148,20 +122,16 @@
     <string name="generated">Generated</string>
     <string name="add_to_the_party">Add to the party</string>
     <string name="name_auto_generated_hint">Names are auto-generated from a deck of mildly stupid adjectives. You can edit anything.</string>
-    <string name="gather_your_friends_for_a_night_of_fun">Gather your friends for a night of fun and friendly competition in our new Bar Brawl game mode! This immersive experience will transport you to a virtual bar where you can challenge your friends to a variety of drinking games and challenges.</string>
     <string name="choose_a_different_party">Choose a different party</string>
     <string name="parties_load_error">Something went wrong loading your parties</string>
     <string name="no_parties_yet">No parties created yet, start a game and enjoy</string>
     <string name="party_detail">Party Detail</string>
-    <string name="last_used">Last used: %1$s</string>
-    <string name="created_on">Created: %1$s</string>
     <string name="edit_party_name">Edit party name</string>
     <string name="save">Save</string>
     <string name="discard">Discard</string>
     <string name="camera_request_title">Freeze this moment forever</string>
     <string name="camera_request_subtitle">Some memories are worth keeping — take a photo before it slips away.</string>
     <string name="camera_request_button">Take a photo</string>
-    <string name="party_album_title">Photo Album</string>
     <string name="party_album_empty">No photos yet. Play a game session to capture moments!</string>
     <string name="grant_camera_permission">Allow camera to capture party moments</string>
     <string name="photo_options">Photo options</string>
@@ -171,9 +141,6 @@
     <string name="delete_party">Delete party</string>
     <string name="delete_party_title">Delete party?</string>
     <string name="delete_party_message">This action cannot be undone. Are you sure you want to delete this party?</string>
-    <string name="game_mode_tap_prefix">Tap to play on</string>
-    <string name="game_mode_tap_suffix">mode</string>
-    <string name="with">with</string>
     <string name="and_x_more">and %1$d more</string>
     <string name="parties_summary">%1$d sessions · %2$d photos</string>
     <string name="recent_parties">Recent parties</string>
@@ -187,7 +154,6 @@
     <string name="photos_label">Photos</string>
     <string name="select_a_party">Select a party</string>
     <string name="cancel">Cancel</string>
-    <string name="game">Game</string>
     <string name="tap_to_play">Tap to play</string>
     <string name="tap_to_play_with">Tap to play with %1$s</string>
     <string name="truth">Truth</string>
@@ -611,19 +577,13 @@
     <string name="simon_says">Simon Says</string>
     <string name="simon_says_description">Follow the flashing sequence — whoever breaks it first drinks.</string>
     <string name="simon_says_round">Round %1$d</string>
-    <string name="simon_says_watch">Watch carefully…</string>
     <string name="simon_says_watch_player">Hey %1$s, watch carefully!</string>
-    <string name="simon_says_your_turn">Tap it back!</string>
     <string name="simon_says_now_your_turn">Your turn, %1$s!</string>
     <string name="simon_says_step">%1$d of %2$d</string>
-    <string name="simon_says_pass_to">Pass to %1$s!</string>
     <string name="simon_says_pass_complete">Well done, pass it to %1$s and tap here when ready!</string>
     <string name="simon_says_missed">Oops, %1$s missed it!</string>
-    <string name="simon_says_game_over">%1$s drinks!</string>
-    <string name="simon_says_done">Done</string>
     <string name="hot_potato_tap_to_pass">Tap to pass!</string>
     <string name="hot_potato_next">Next up</string>
-    <string name="hot_potato_waiting">Waiting…</string>
     <string name="hot_potato_boom">BOOM!</string>
     <string name="circle_master">Circle Master</string>
     <string name="circle_master_description">Take turns drawing a perfect circle — the shakiest hand drinks.</string>
@@ -798,7 +758,6 @@
     <string name="pack_manage">Manage</string>
     <string name="pack_write_first">Write your first pack</string>
     <string name="pack_write_first_subtitle">Truth or Dare for your friend group, sticky dares for the bachelorette — your room, your prompts.</string>
-    <string name="packs_none_enabled_warning">Turn on at least one pack to start the party.</string>
 
     <!-- Custom packs · manager -->
     <string name="custom_packs_title">Your packs</string>

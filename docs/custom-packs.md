@@ -162,7 +162,7 @@ Database **v11**.
   ```
   Existing packs default to available, so nothing the user wrote disappears on upgrade.
 
-The statements were verified against Room's own generated schema rather than hand-written: `exportSchema` was flipped on temporarily, a `room.schemaLocation` ksp arg added, the build run once, the `createSql` compared against `11.json`, and every temporary edit reverted. This matters because `exportSchema = false` leaves nothing to diff against, and a *registered* migration whose SQL doesn't match throws on open — `fallbackToDestructiveMigration()` does **not** rescue that path.
+The statements were verified against Room's own generated schema rather than hand-written: at the time `exportSchema` was flipped on temporarily, the build run once, and the `createSql` compared against `11.json`. Schema export is now on permanently (see [builds.md](builds.md#room-schema-export)), so `app/schemas/` always holds the JSON to diff against. This matters because a *registered* migration whose SQL doesn't match throws on open — `fallbackToDestructiveMigration()` does **not** rescue that path.
 
 That check earned its keep on v11: Room compares **default values** during validation, so `isAvailable` needs `@ColumnInfo(defaultValue = "1")` on the entity as well as the Kotlin `= true`. A plain Kotlin default would have Room expect a column with no SQL default, and the `ALTER TABLE` above would fail validation on the next open.
 

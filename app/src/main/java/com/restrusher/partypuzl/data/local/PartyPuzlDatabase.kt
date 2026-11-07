@@ -38,7 +38,7 @@ import kotlinx.coroutines.internal.synchronized
         CustomEntryEntity::class
     ],
     version = 14,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class PartyPuzlDatabase : RoomDatabase() {
 

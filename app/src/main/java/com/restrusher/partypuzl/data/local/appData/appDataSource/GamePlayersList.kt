@@ -4,7 +4,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.restrusher.partypuzl.data.models.Player
 
-// TODO: This class and functionality needs to be migrated to ROOM
+/**
+ * The running game's roster, in memory only. The players themselves are already saved in Room as
+ * the party's members; this is just the session's working copy. If Android kills the process the
+ * app reopens on Home rather than rebuilding a game from it — see `ui/ProcessRestart`.
+ */
 object GamePlayersList {
     var PlayersList: SnapshotStateList<Player> = mutableStateListOf()
     var currentPartyId: Int? = null
