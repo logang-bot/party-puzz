@@ -121,7 +121,7 @@ The callback navigates **straight to `GameScreen`**. The intermediate `LoadingSc
 | `mini_games_hint` | "The phone passes between players each turn — …" |
 | `start_the_party` | "Start the party" |
 | `choose_your_packs` | "Choose your packs" |
-| `choose_your_packs_subtitle` | "Curated by PartyPuzz or written by you — …" |
+| `choose_your_packs_subtitle` | "Curated by PartyPuzl or written by you — …" |
 | `pack_group_official` / `_premium` / `_custom` | Group and badge labels |
 | `pack_prompts_count` | "%1$d prompts" |
 | `pack_unlock` | "Unlock" |

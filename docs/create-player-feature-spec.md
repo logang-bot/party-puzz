@@ -103,12 +103,12 @@ CreatePlayerScreen
 | `PartyRepositoryImpl` | `data/repositories/` | Creates parties and cross-ref links |
 | `PlayerLocalProxy` | `data/local/proxies/` | Room-backed `PlayerProxy` |
 | `PartyLocalProxy` | `data/local/proxies/` | Room-backed `PartyProxy` |
-| `PartyPuzzDatabase` | `data/local/` | Room DB v7; entities: `Player`, `Party`, `PartyPlayerCrossRef`, `PartyPhotoEntity` |
+| `PartyPuzlDatabase` | `data/local/` | Room DB v7; entities: `Player`, `Party`, `PartyPlayerCrossRef`, `PartyPhotoEntity` |
 | `GamePlayersList` | `data/local/appData/appDataSource/` | Singleton holding in-memory player list + `currentPartyId` |
 
 ### DI wiring (`di/`)
 
-- `DatabaseModule` — provides `PlayerDao` and `PartyDao` from `PartyPuzzDatabase`.
+- `DatabaseModule` — provides `PlayerDao` and `PartyDao` from `PartyPuzlDatabase`.
 - `ProxyModule` — binds `PlayerLocalProxy → @DatabaseProxy PlayerProxy` and
   `PartyLocalProxy → @DatabaseProxy PartyProxy`.
 - `RepositoryModule` — provides `PlayerRepository` and `PartyRepository` singletons.

@@ -5,7 +5,7 @@ declares a colour literal, with one documented exception (the photo lightbox in
 `PhotoViewerDialog`, which is black in both themes because a cream backdrop
 would cast the photos it surrounds).
 
-The palette is a port of the PartyPuzz design system. Light is warm cream with
+The palette is a port of the PartyPuzl design system. Light is warm cream with
 **cool** teal-black ink; dark is a teal surface ramp. The two used to be
 generated from unrelated seeds — light from a yellow/olive one, dark from a teal
 one — which is why the old light theme read as muddy: warm brown ink on a warm

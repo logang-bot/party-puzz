@@ -743,7 +743,7 @@
          Paquetes de preguntas — pantalla de configuración
          ============================================================ -->
     <string name="choose_your_packs">Elige tus paquetes</string>
-    <string name="choose_your_packs_subtitle">Creados por PartyPuzz o escritos por ti — todo se mezcla en su jugada correspondiente.</string>
+    <string name="choose_your_packs_subtitle">Creados por PartyPuzl o escritos por ti — todo se mezcla en su jugada correspondiente.</string>
     <string name="pack_group_official">Oficiales</string>
     <string name="pack_group_premium">Premium</string>
     <string name="pack_group_custom">Personalizados</string>

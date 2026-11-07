@@ -745,7 +745,7 @@
          Question packs — setup screen
          ============================================================ -->
     <string name="choose_your_packs">Choose your packs</string>
-    <string name="choose_your_packs_subtitle">Curated by PartyPuzz or written by you — everything shuffles into its matching deal.</string>
+    <string name="choose_your_packs_subtitle">Curated by PartyPuzl or written by you — everything shuffles into its matching deal.</string>
     <string name="pack_group_official">Official</string>
     <string name="pack_group_premium">Premium</string>
     <string name="pack_group_custom">Custom</string>

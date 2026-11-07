@@ -25,6 +25,7 @@ Play Console shows a task list. Required before publishing:
 - **Target audience** — confirm not targeting children
 - **App access** — describe any login-gated features
 - **Ads declaration** — `main` contains **no ads**; a build from `ads/admob` or `ads/meta` does — declare accordingly
+- **Advertising ID** (App content → Advertising ID) — **No** for a release from `main`. `main` has no ad or analytics SDK, so its merged manifest has no `com.google.android.gms.permission.AD_ID`; a "Yes" here makes Play reject the release with *"Your advertising ID declaration says that your app uses advertising ID…"*. Do **not** add the permission to silence it. An ad branch (`ads/admob`, `ads/meta`) uses the advertising ID — switch this to **Yes** before shipping one
 - **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main` makes no network calls of its own; the only `INTERNET` permission comes from Play Billing — see [builds.md](builds.md#manifest-permissions)
 
 ### 4. Create the Purchase App in-app product
@@ -80,6 +81,12 @@ Or via command line — `app/build.gradle.kts` signs with the keystore in `keyst
 ```
 
 ### 3. Upload to Play Console
+
+> **Switching between `main` and an ad branch?** Update **App content → Advertising ID** (No for
+> `main`, Yes for an ad branch) and the **Data safety** form *before* submitting, and make sure the
+> privacy policy matches the build. Play checks the declaration against every *active* artifact on
+> every track, so an older build still live on a testing track can trip the AD_ID check too — replace
+> it with the new build on that track, or pause the track.
 
 Play Console → your app → **Testing → Internal testing → Create new release → Upload** the `.aab`
 

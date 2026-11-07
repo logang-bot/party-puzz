@@ -149,7 +149,7 @@ data class GameScreenState(
 )
 ```
 
-This pattern is intended to scale: when other modes (Couples, PartyPuzz) gain their own runtime logic they each get a sibling state class (`CouplesModeState`, etc.) added to `GameScreenState`.
+This pattern is intended to scale: when other modes (Couples, Party Puzl) gain their own runtime logic they each get a sibling state class (`CouplesModeState`, etc.) added to `GameScreenState`.
 
 ### ViewModel responsibilities
 

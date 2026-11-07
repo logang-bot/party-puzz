@@ -118,7 +118,7 @@ Adding a new mini-game usually means reusing one of the two variants; only intro
 | `NoOpModeHandler` | Standard | All methods return `state` unchanged — no events fire |
 | `BarModeHandler` | Bar Time | Produces `TakeDrinks` / `GiveDrinks` / `GiveDrinksPickTarget` / `NoAction` |
 | `CouplesModeHandler` | Couples | Produces `MakeALoveDeclaration` / `ActOfLove` / `GiveAKiss` / `ChoseKissers` / `ChoseLovers` |
-| `PartyPuzzModeHandler` | Party Puzl | Randomly delegates to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler` on each trigger; `clearEvent` clears both sub-mode events |
+| `PartyPuzlModeHandler` | Party Puzl | Randomly delegates to `BarModeHandler`, `CouplesModeHandler`, or `NoOpModeHandler` on each trigger; `clearEvent` clears both sub-mode events |
 
 ---
 
@@ -130,7 +130,7 @@ The handler is chosen once at ViewModel initialisation and never changes during 
 private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameModeNameRes) {
     R.string.bar_game_mode        -> BarModeHandler()
     R.string.couples_game_mode    -> CouplesModeHandler()
-    R.string.party_puzz_game_mode -> PartyPuzzModeHandler()
+    R.string.party_puzz_game_mode -> PartyPuzlModeHandler()
     else                          -> NoOpModeHandler()
 }
 ```

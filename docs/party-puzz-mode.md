@@ -9,8 +9,8 @@ Party Puzl is the "everything goes" game mode. Each turn ends with a mode event 
 The active game mode is a string resource ID (`Int`) set by `GameConfigScreen` into `GameOptionsSource.currentGameModeNameRes` via a `LaunchedEffect` when the screen is composed. `GameScreenViewModel` reads this value at state initialisation and activates both sub-mode states so that either can receive events:
 
 ```kotlin
-barMode    = BarModeState(isActive = … || isPartyPuzzMode),
-couplesMode = CouplesModeState(isActive = … || isPartyPuzzMode)
+barMode    = BarModeState(isActive = … || isPartyPuzlMode),
+couplesMode = CouplesModeState(isActive = … || isPartyPuzlMode)
 ```
 
 Both `isActive` flags are set to `true` for Party Puzl. This ensures `isModeActive = true`, which controls shared UI such as the Skip button on Sticky Dare and the Finish button on mini-game results.
@@ -19,10 +19,10 @@ Both `isActive` flags are set to `true` for Party Puzl. This ensures `isModeActi
 
 ## Event randomisation
 
-`PartyPuzzModeHandler` holds one instance of each sub-handler and picks randomly on every trigger:
+`PartyPuzlModeHandler` holds one instance of each sub-handler and picks randomly on every trigger:
 
 ```kotlin
-internal class PartyPuzzModeHandler : GameModeHandler {
+internal class PartyPuzlModeHandler : GameModeHandler {
     private val handlers = listOf(BarModeHandler(), CouplesModeHandler(), NoOpModeHandler())
 
     override fun applyPunishment(state, currentPlayer) = handlers.random().applyPunishment(state, currentPlayer)
@@ -112,7 +112,7 @@ random handler chosen
 
 ### No new state class
 
-Party Puzl reuses the existing `BarModeState` and `CouplesModeState` inside `GameScreenState`. No `PartyPuzzModeState` class is needed because the mode has no state of its own beyond what the sub-modes already track.
+Party Puzl reuses the existing `BarModeState` and `CouplesModeState` inside `GameScreenState`. No `PartyPuzlModeState` class is needed because the mode has no state of its own beyond what the sub-modes already track.
 
 ### Handler selection
 
@@ -120,7 +120,7 @@ Party Puzl reuses the existing `BarModeState` and `CouplesModeState` inside `Gam
 private val modeHandler: GameModeHandler = when (GameOptionsSource.currentGameModeNameRes) {
     R.string.bar_game_mode        -> BarModeHandler()
     R.string.couples_game_mode    -> CouplesModeHandler()
-    R.string.party_puzz_game_mode -> PartyPuzzModeHandler()
+    R.string.party_puzz_game_mode -> PartyPuzlModeHandler()
     else                          -> NoOpModeHandler()
 }
 ```
@@ -135,8 +135,8 @@ Party Puzl produces no new overlay. The shared outcome overlay (`OutcomeSpinCont
 
 | File | Role |
 |---|---|
-| `GameModeHandler.kt` | `PartyPuzzModeHandler` implementation |
-| `GameScreenViewModel.kt` | Routes `party_puzz_game_mode` to `PartyPuzzModeHandler`; activates both sub-modes |
+| `GameModeHandler.kt` | `PartyPuzlModeHandler` implementation |
+| `GameScreenViewModel.kt` | Routes `party_puzz_game_mode` to `PartyPuzlModeHandler`; activates both sub-modes |
 | `BarModeState.kt` / `CouplesModeState.kt` | Sub-mode states that Party Puzl can populate |
 | `outcome/OutcomeSpinContent.kt` / `outcome/OutcomeRevealContent.kt` | Shared roll + reveal, reused as-is by Party Puzl |
 | `outcome/OutcomeTheme.kt` | `activeOutcomeMode` resolves Couples first when both sub-mode events are set |
