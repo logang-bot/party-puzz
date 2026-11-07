@@ -156,7 +156,7 @@ Decided before shipping 1.0 from `main`:
 | Process kill mid-game | Reopens on Home; the game is not restored. Players and parties are already in Room. See [navigation.md](navigation.md#process-restart-opens-on-home) |
 | Permissions | `coil-network-okhttp` removed; `INTERNET` remains only because Play Billing brings it. `FileProvider` narrowed to `cache-path`. See [builds.md](builds.md#manifest-permissions) |
 | Room schema | Export turned on; `app/schemas/` is committed from v14. See [builds.md](builds.md#room-schema-export) |
-| Privacy policy | Link fixed. The page text still describes AdMob and "Remove Ads" and needs rewriting for a no-ads build |
+| Privacy policy | Link fixed, and the text rewritten for the no-ads build (`partypuzl-legal` `e66de25`, "Last updated: November 7, 2026"): no ads, all data local, uninstall deletes it with no backup, camera use, Google Play Billing as the only third party. When switching to an ad branch, the policy must gain that network's disclosures first |
 
 Planned for a later release:
 - **Ads frequency (user feedback).** On `ads/admob` the App Open ad showed on every return to the app,
