@@ -45,6 +45,38 @@ Use the same keystore you sign staging and Play uploads with. Without the file (
 
 ---
 
+## R8 (code shrinking)
+
+**Off in 1.0.** In `app/build.gradle.kts` the `release` block has `isMinifyEnabled = false`, and
+`staging` inherits it. Turning it on means setting `isMinifyEnabled = true` and adding
+`isShrinkResources = true`.
+
+What it does for `release` / `staging` only:
+- **Removes** unused code and, with resource shrinking, unused resources. The 1.0 release APK is
+  about 22 MB without it.
+- **Optimises** the code that's left.
+- **Obfuscates** class and method names.
+
+What it does **not** change:
+- **`debug` builds.** They never run R8. Breakpoints, the debugger, Layout Inspector and logs work
+  exactly as before.
+- **Debugging `release`.** Release builds aren't debuggable with or without R8. To debug a
+  release-only problem, build `debug` or add `isDebuggable = true` to `staging` temporarily.
+
+What it costs:
+- **Release-only crashes** if R8 strips or renames something used through reflection. In this
+  app that's kotlinx.serialization (navigation routes), Room and Hilt. `proguard-rules.pro` already
+  keeps all three, but only a full test pass on a minified build proves it.
+- **Obfuscated stack traces.** Play Console deobfuscates them automatically for AABs, which carry
+  `mapping.txt`. Also keep `app/build/outputs/mapping/release/mapping.txt` for each released
+  version, to decode traces from other sources.
+
+**Turning it on:** change the two lines above on `main`, then put the build through internal testing
+before production. Don't merge `feature/r8`. It branched from a much older `main` (versionCode 3,
+compileSdk 35), and merging would revert newer work.
+
+---
+
 ## How to build
 
 ### From the command line

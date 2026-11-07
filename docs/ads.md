@@ -10,8 +10,9 @@ lives on its own branch:
 | `ads/admob` | `AdMobProvider` | Banners, App Open, rewarded | `docs/ads-admob.md` (on that branch) |
 | `ads/meta` | `MetaProvider` | Banners, rewarded, interstitial after a game | `docs/ads-meta.md` (on that branch) |
 
-`main` ships without ads because the AdMob account is suspended. The billing purchase still works on
-every branch (see [Purchase app](#purchase-app--in-app-purchase)).
+`main` ships without ads because there is no working AdMob account. The billing code is wired on
+every branch, but it can't be bought yet: the pack unlock is switched off (see
+[below](#the-pack-unlock-is-switched-off)).
 
 ---
 
@@ -93,8 +94,9 @@ inside the provider.
 
 ## The pack unlock is switched off
 
-⚠️ **Both** routes into unlocking a premium pack, "watch a short ad" *and* the one-time purchase,
-currently just raise a **"Coming soon!"** toast. They are gated by
+⚠️ **Every** route into unlocking a premium pack currently just raises a **"Coming soon!"** toast:
+"watch a short ad" and the one-time purchase on the setup screen's unlock sheet, *and* the
+**Purchase App** row in Settings. They are gated by
 `FeatureFlags.PACK_UNLOCK_COMING_SOON`. This is deliberate and **temporary**.
 
 **Why.** Neither route can earn yet:
@@ -103,7 +105,11 @@ currently just raise a **"Coming soon!"** toast. They are gated by
 - `ads/meta` has placeholder placement ids.
 - The `remove_ads` product is not set up in Play Console.
 
-**What is stubbed.** Only the two click handlers in `GameConfigScreen`. Everything underneath is still
+**What is stubbed.** Only the click handlers: the two in `GameConfigScreen` and the Purchase App
+row's in `SettingsScreen`. All three call `Context.showComingSoon()` from
+`ui/common/ComingSoonToast.kt`. The Settings row stays visible on purpose, so users can see the
+premium tier exists. Before it was gated (fixed for 1.0), that row started a real purchase while the
+setup screen said "Coming soon". Everything underneath is still
 wired: `RewardedAdHandle`, `BillingManager`, `SessionUnlocksSource`, `onRewardEarned` and the sheet.
 The screen also skips `rememberRewardedAd` while the flag is on, so no ad requests are made.
 
@@ -111,10 +117,13 @@ The screen also skips `rememberRewardedAd` while the flag is on, so no ad reques
 
 1. Give `PACK_UNLOCK_REWARDED` a real unit / placement id (see that branch's ads doc).
 2. Create and activate `remove_ads` in Play Console (setup step 4 in [release.md](release.md)).
-3. Delete `PACK_UNLOCK_COMING_SOON` from `ui/common/FeatureFlags.kt` and the `comingSoon` branches
-   in `GameConfigScreen`.
-4. Delete the `coming_soon` string from both `strings.xml` files.
-5. Delete this section, and the note in [question-packs.md](question-packs.md).
+3. Delete `PACK_UNLOCK_COMING_SOON` from `ui/common/FeatureFlags.kt`, the `comingSoon` branches
+   in `GameConfigScreen`, and the flag check on `PurchaseAppRow`'s `onClick` in `SettingsScreen`.
+4. Delete `ui/common/ComingSoonToast.kt` and the `coming_soon` string from both `strings.xml` files.
+5. `SettingsViewModel.purchaseApp` ignores `launchPurchaseFlow`'s `false` (product unavailable),
+   so the row would do nothing on failure. Show `unlock_purchase_unavailable` there too, as
+   `GameConfigScreen` does.
+6. Delete this section, and the note in [question-packs.md](question-packs.md).
 
 On `main` the "Watch a short ad" row can never become ready even with the flag off, because
 `NoAdsProvider` never loads anything.
@@ -149,7 +158,8 @@ Only `PackTier.PREMIUM` is gated. Official packs are free. Custom packs are alwa
 1. `BillingManager.connect()` runs in `PartyPuzlApplication.onCreate()`.
 2. Once connected, it queries existing purchases and the product details.
 3. If `remove_ads` is already owned, `UserPreferencesRepository.setAdFree(true)` persists that.
-4. Settings → Purchases → **Purchase App** calls `BillingManager.launchPurchaseFlow(activity)`.
+4. Settings → Purchases → **Purchase App** calls `BillingManager.launchPurchaseFlow(activity)`
+   (once `PACK_UNLOCK_COMING_SOON` is gone; until then it shows the toast).
 5. On success the purchase is acknowledged, and `isAdFree` flips to `true` app-wide.
 
 ### How `isAdFree` propagates
@@ -161,3 +171,56 @@ Only `PackTier.PREMIUM` is gated. Official packs are free. Custom packs are alwa
 | Full-screen ads | Each provider collects `isAdFree` and skips loads and shows |
 | Settings | `PurchaseAppRow` switches to "App Purchased" |
 | Question packs | `GameConfigViewModel` treats it as "all premium unlocked" |
+
+### Buying before ads exist
+
+A purchase made while a build has no ads still removes ads in every later build. The entitlement
+is the Play purchase record, not the build:
+
+- `isAdFree` is persisted in DataStore and every provider checks it, so a future AdMob or Meta
+  build never loads full-screen ads or banners for that user.
+- The app has no backup, so a reinstall or new phone starts with `isAdFree = false`. On the next
+  launch `queryExistingPurchases()` finds the owned `remove_ads` and sets it back to `true`.
+- The subtitle "All packs, no ads" stays accurate either way: the packs unlock right away, and the
+  no-ads part covers any ads added later.
+
+While `PACK_UNLOCK_COMING_SOON` is on nobody can buy, so this only matters once the flag is removed.
+
+---
+
+## Known issue: App Open ad shows on every return to the app (`ads/admob`)
+
+**User feedback:** "too many ads". The full-screen ad came back every time people left the app and
+returned, including right after taking a photo.
+
+**Cause.** `MainActivity.onStart()` calls `adsProvider.onActivityStarted(this)`, and
+`AdMobProvider` forwards that to `AdMobAppOpenManager.showWhenReady()`. `onStart` runs on **every**
+return to the foreground, not just launch:
+
+- coming back from the home screen or the recents list
+- coming back from the **system camera**. The photo features hand off to the camera app via
+  `FileProvider`, so `MainActivity` stops and starts again
+- the activity being recreated, for example on a language change in Settings (`applyLanguage`)
+
+The manager's own doc says it all: "shows it on every launch / return to the foreground". After
+each dismissal it immediately preloads the next ad, so one is nearly always ready.
+
+`ads/meta` is not affected. Its `onActivityStarted` is a no-op, and its interstitial only shows
+when a game ends.
+
+**Fix (planned for a release after 1.0, on `ads/admob`).** Show the App Open ad only on a **cold
+start**, meaning once per process:
+
+1. Add a `private var hasShownThisProcess = false` to `AdMobAppOpenManager`. `showWhenReady()`
+   returns early when it is `true`, and `showAd()` sets it once the ad actually shows. The manager is
+   a `@Singleton`, so the flag resets only when the process dies, which is exactly a fresh open.
+2. Keep the preload, so the cold-start ad is ready on the next launch.
+3. Optional: if a warm return after a long absence (for example 4 h or more) should also count as
+   an open, compare against a timestamp of the last `onStop`. Never do this for returns from the
+   camera.
+4. Update the manager's KDoc and the `AdsProvider` table above ("Launch-time ads").
+
+**Verify:** open the app (ad shows), take a party photo (no ad), go home and come back (no ad),
+change the language (no ad), then swipe the app away and open it again (ad shows).
+
+The fix is on the seam's provider side only, so `main` and `ads/meta` don't change.

@@ -44,6 +44,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.common.FeatureFlags
+import com.restrusher.partypuzl.ui.common.showComingSoon
 import com.restrusher.partypuzl.ui.common.ads.AdBanner
 import com.restrusher.partypuzl.ui.common.ads.AdPlacement
 import com.restrusher.partypuzl.ui.common.ads.adBannerReservedHeight
@@ -113,7 +115,10 @@ fun SettingsScreen(
 
             PurchaseAppRow(
                 isAdFree = uiState.isAdFree,
-                onClick = { viewModel.purchaseApp(context as Activity) }
+                onClick = {
+                    if (FeatureFlags.PACK_UNLOCK_COMING_SOON) context.showComingSoon()
+                    else viewModel.purchaseApp(context as Activity)
+                }
             )
 
             Spacer(modifier = Modifier.height(8.dp))

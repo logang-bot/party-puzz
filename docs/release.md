@@ -51,15 +51,23 @@ See `docs/ads.md` for more context.
 ### 1. Bump the version in `app/build.gradle.kts`
 
 ```kotlin
-versionCode = 2        // must be higher than the previous upload — Play Store rejects duplicates
+versionCode = 12       // must be higher than every earlier upload, on any track
 versionName = "1.1"    // what users see in the store
 ```
+
+The first public release is **`versionName = "1.0"`, `versionCode = 11`**. The closed-testing
+builds used codes up to 10 and the name "2.1". The name was reset for launch, and only the code has
+to keep going up. Never reuse or lower a `versionCode`.
 
 ### 2. Generate the signed AAB
 
 **Build → Generate Signed Bundle/APK → Android App Bundle → Next**
 
-- Select your keystore and enter credentials
+- Select the **upload key** (`partyPuzlUploadKey.jks`, created with this wizard and kept outside
+  the repo) and enter its passwords. Studio signs with the key you pick here and ignores
+  `keystore.properties`, which only matters for command-line builds. Play only accepts this key,
+  because it is registered under **App integrity → App signing**. Keep a backup of the file and its
+  passwords in a password manager
 - Select the `release` build variant
 - The signed `.aab` lands in `app/release/`
 
@@ -83,6 +91,7 @@ Install from the internal testing track on a real device and verify:
 - [ ] From an ad branch: run the ad checks in its `docs/ads-*.md`
 - [ ] "Purchase App" purchase flow opens correctly
 - [ ] Premium packs appear locked on the setup screen; tapping one opens the unlock sheet
+- [ ] **Settings → Purchase App raises the same "Coming soon!" toast**, and no Play purchase sheet opens
 - [ ] **Both unlock options raise a "Coming soon!" toast and nothing else** — that is `FeatureFlags.PACK_UNLOCK_COMING_SOON` doing its job. If either one actually unlocks a pack, the flag has been turned off before its two prerequisites landed; see [ads.md](ads.md)
 - [ ] Deal several quiz questions: the correct answer lands on the left and right roughly evenly, including on a repeat of a question already seen (the deal-time option swap)
 - [ ] Each premium pack plays enabled on its own — Movie Night offers quiz only, Spicy offers sticky dares only, NSFW deals both Truth and Dare and neither card comes back empty
@@ -115,7 +124,10 @@ Consider a staged rollout (e.g. 20%) for larger updates to catch regressions bef
 
 On the very first release there are extra steps before promoting to production:
 
-- [ ] Add a privacy policy URL to Play Console → **App content → Privacy policy**
+- [ ] Add the privacy policy URL to Play Console → **App content → Privacy policy**:
+  `https://logang-bot.github.io/partypuzl-legal/privacy-policy.html` (repo `partypuzl-legal`,
+  with an **L**. A `partypuzz` typo in `SettingsScreen` made it 404 before 1.0). Its text must match
+  the branch you ship. A release from `main` must not describe AdMob ads
 - [ ] Publish to internal testing first and verify the build works
 - [ ] **Closed testing** — create a closed testing track with at least **20 testers** who must opt in and stay enrolled for **14 consecutive days** before the production track unlocks (required for personal Google accounts)
 - [ ] Releasing from an ad branch only: wait for the network to approve the app (see its `docs/ads-*.md`)
@@ -124,3 +136,23 @@ On the very first release there are extra steps before promoting to production:
 - [ ] **Only after both of the above:** remove `FeatureFlags.PACK_UNLOCK_COMING_SOON` to re-enable the unlock sheet. It is shipping switched off *on purpose* — leaving it on is safe, turning it off early sells a door that leads nowhere. Undo steps in [ads.md](ads.md)
 - [ ] Test the Purchase App purchase using a Play Store license tester account
 - [ ] Once any ad network approves and the 14-day closed testing period is complete → promote to production
+
+---
+
+## 1.0 release notes (first public release)
+
+Decided before shipping 1.0 from `main`:
+
+| Topic | Decision |
+|---|---|
+| Version | `1.0` / code `11` (see [step 1](#1-bump-the-version-in-appbuildgradlekts)) |
+| Ads | None. `main` ships `NoAdsProvider` until there's a working AdMob account. See [ads.md](ads.md) |
+| Purchase App (Settings) | Visible, but raises "Coming soon!", gated by `PACK_UNLOCK_COMING_SOON` like the setup screen's unlock sheet |
+| R8 | **Off** for 1.0. Closed testing ran without it, so turning it on would ship an untested build. Planned for a later release. See [builds.md](builds.md#r8-code-shrinking) |
+| Privacy policy | Link fixed. The page text still describes AdMob and "Remove Ads" and needs rewriting for a no-ads build |
+
+Planned for a later release:
+- **Ads frequency (user feedback).** On `ads/admob` the App Open ad showed on every return to the app,
+  including after the camera. Fix: show it once per cold start. Root cause and steps are in
+  [ads.md](ads.md#known-issue-app-open-ad-shows-on-every-return-to-the-app-adsadmob).
+- **R8.** Turn it on, then run it through internal testing before production.

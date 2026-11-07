@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -68,6 +67,7 @@ import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.ui.common.ads.AdBanner
 import com.restrusher.partypuzl.ui.common.ads.AdPlacement
 import com.restrusher.partypuzl.ui.common.FeatureFlags
+import com.restrusher.partypuzl.ui.common.showComingSoon
 import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.gameModeTheme
@@ -227,11 +227,6 @@ fun SharedTransitionScope.GameConfigScreen(
             onDismiss = viewModel::onUnlockDismissed
         )
     }
-}
-
-/** Both unlock routes while [FeatureFlags.PACK_UNLOCK_COMING_SOON] stands. Delete with the flag. */
-private fun Context.showComingSoon() {
-    Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show()
 }
 
 /** Unwraps the Activity the composable is hosted in — needed to show ads and billing flows. */
