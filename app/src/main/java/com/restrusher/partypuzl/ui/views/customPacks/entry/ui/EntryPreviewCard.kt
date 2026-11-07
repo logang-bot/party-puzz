@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.CustomEntryType
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.Wash
@@ -61,7 +62,7 @@ internal fun EntryPreviewCard(state: CreateCustomEntryState, modifier: Modifier 
             Icon(
                 painter = painterResource(state.type.iconRes),
                 contentDescription = null,
-                tint = accent,
+                tint = accent.asPageInk(),
                 modifier = Modifier.size(14.dp)
             )
             Spacer(modifier = Modifier.size(8.dp))
@@ -69,7 +70,7 @@ internal fun EntryPreviewCard(state: CreateCustomEntryState, modifier: Modifier 
                 text = stringResource(state.type.labelRes).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.SemiBold,
-                color = accent
+                color = accent.asPageInk()
             )
         }
 
@@ -97,7 +98,7 @@ internal fun EntryPreviewCard(state: CreateCustomEntryState, modifier: Modifier 
                         stickyDurationLabel(state.durationSeconds)
                     ),
                     style = MaterialTheme.typography.labelMedium,
-                    color = accent,
+                    color = accent.asPageInk(),
                     modifier = Modifier
                         .clip(CircleShape)
                         .background(accent.wash(Wash.Hairline))

@@ -91,7 +91,7 @@ internal fun TopicPills(
                     Icon(
                         painter = painterResource(R.drawable.ic_check),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.appColors.brandAccent,
                         modifier = Modifier.size(13.dp)
                     )
                 }

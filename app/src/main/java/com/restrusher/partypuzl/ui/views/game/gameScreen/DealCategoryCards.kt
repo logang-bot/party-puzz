@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.Wash
@@ -148,7 +149,7 @@ internal fun DealCompactCard(
         Icon(
             painter = painterResource(accent.iconRes),
             contentDescription = null,
-            tint = accent.tone,
+            tint = accent.tone.asPageInk(),
             modifier = Modifier.size(22.dp)
         )
         Spacer(Modifier.height(8.dp))

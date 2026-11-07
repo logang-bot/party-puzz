@@ -171,7 +171,7 @@ internal fun OptionRowWithIcon(
             painter = painterResource(id = iconRes),
             contentDescription = null,
             tint = if (!tintIcon) Color.Unspecified
-            else if (selected) MaterialTheme.colorScheme.primary
+            else if (selected) MaterialTheme.colorScheme.onPrimaryContainer
             else MaterialTheme.colorScheme.onBackground
         )
         Text(

@@ -43,7 +43,6 @@ import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.theme.MiniGameAccents
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -94,7 +93,7 @@ internal fun TapWarSide(
         animationSpec = tween(500),
         label = "borderAlpha"
     )
-    val rippleColor = MaterialTheme.appColors.onAccentSurface
+    val rippleColor = MaterialTheme.colorScheme.onBackground
     val backgroundColor by animateColorAsState(
         targetValue = if (isActive) Color.Transparent else MaterialTheme.colorScheme.surface,
         animationSpec = tween(500),

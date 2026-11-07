@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.AccentViolet
 import com.restrusher.partypuzl.ui.theme.BrandTeal
 import com.restrusher.partypuzl.ui.theme.Ink
@@ -65,7 +66,7 @@ internal fun AccentIconTile(
         Icon(
             painter = painterResource(iconRes),
             contentDescription = null,
-            tint = if (filled) MaterialTheme.appColors.onAccentSurface else accent,
+            tint = if (filled) MaterialTheme.appColors.onAccentSurface else accent.asPageInk(),
             modifier = Modifier.size((size * 0.45f).dp)
         )
     }

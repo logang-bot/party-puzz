@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.entities.CustomEntryEntity
 import com.restrusher.partypuzl.data.models.CustomEntryType
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.AccentLime
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
@@ -67,7 +68,7 @@ internal fun CustomEntryRow(
                 text = stringResource(entry.type.labelRes).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.SemiBold,
-                color = accent
+                color = accent.asPageInk()
             )
             if (entry.type == CustomEntryType.STICKY_DARE && durationLabel != null) {
                 Text(
@@ -136,14 +137,14 @@ private fun TriviaOption(label: String?, isCorrect: Boolean, modifier: Modifier 
             Icon(
                 painter = painterResource(R.drawable.ic_check),
                 contentDescription = null,
-                tint = AccentLime,
+                tint = AccentLime.asPageInk(),
                 modifier = Modifier.size(10.dp)
             )
         }
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = if (isCorrect) AccentLime
+            color = if (isCorrect) AccentLime.asPageInk()
             else MaterialTheme.colorScheme.onSurface.ink(Ink.Secondary)
         )
     }

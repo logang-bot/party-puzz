@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.AccentPink
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
@@ -80,7 +81,7 @@ private const val SECONDS_PER_MINUTE = 60
 /** Small pill used for a pack's category and spice, and an entry's type. */
 @Composable
 internal fun MetaChip(label: String, modifier: Modifier = Modifier, tone: Color? = null) {
-    val color = tone ?: MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
+    val color = tone?.asPageInk() ?: MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
     Text(
         text = label.uppercase(),
         style = MaterialTheme.typography.labelSmall,

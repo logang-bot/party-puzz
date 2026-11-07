@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.Wash
 import com.restrusher.partypuzl.ui.theme.appColors
@@ -57,7 +58,7 @@ internal fun PackIconTile(
             Icon(
                 painter = painterResource(iconRes),
                 contentDescription = null,
-                tint = accent,
+                tint = accent.asPageInk(),
                 modifier = Modifier.size(18.dp)
             )
         }

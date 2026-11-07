@@ -275,14 +275,14 @@ private fun WinnerContent(
                     text = player.nickName.substringBefore(" "),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = if (isWinner) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isWinner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground,
+                    color = if (isWinner) MaterialTheme.appColors.brandAccent else MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = "$score%",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = if (isWinner) FontWeight.Bold else FontWeight.Normal,
-                    color = if (isWinner) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
+                    color = if (isWinner) MaterialTheme.appColors.brandAccent else MaterialTheme.colorScheme.onBackground
                 )
             }
         }

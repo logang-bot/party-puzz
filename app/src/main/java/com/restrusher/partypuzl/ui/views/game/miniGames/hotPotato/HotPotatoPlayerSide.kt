@@ -39,7 +39,6 @@ import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
-import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
 import com.restrusher.partypuzl.ui.views.game.common.PlayerPhoto
 
@@ -96,7 +95,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         text = holder?.nickName.orEmpty(),
         style = MaterialTheme.typography.displaySmall,
         fontWeight = FontWeight.Bold,
-        color = MaterialTheme.appColors.onAccentSurface,
+        color = MaterialTheme.colorScheme.onBackground,
         textAlign = TextAlign.Center
     )
     Spacer(Modifier.height(8.dp))
@@ -106,7 +105,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         text = stringResource(R.string.hot_potato_tap_to_pass),
         style = MaterialTheme.typography.titleLarge,
         fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Strong),
+        color = MaterialTheme.colorScheme.onBackground.ink(Ink.Strong),
         textAlign = TextAlign.Center
     )
     if (nextHolder != null) {
@@ -114,7 +113,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
         Text(
             text = stringResource(R.string.hot_potato_next),
             style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Secondary),
+            color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(8.dp))
@@ -126,7 +125,7 @@ private fun ActiveContent(holder: Player?, nextHolder: Player?) {
             Text(
                 text = nextHolder.nickName,
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.appColors.onAccentSurface.ink(Ink.Standard)
+                color = MaterialTheme.colorScheme.onBackground.ink(Ink.Standard)
             )
         }
     }

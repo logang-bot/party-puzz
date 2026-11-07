@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
@@ -126,7 +127,7 @@ internal fun SharedTransitionScope.OutcomeRevealContent(
             text = stringResource(theme.kickerRes).uppercase(),
             style = MaterialTheme.typography.labelMedium,
             letterSpacing = 3.sp,
-            color = theme.tone,
+            color = theme.tone.asPageInk(),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(10.dp))

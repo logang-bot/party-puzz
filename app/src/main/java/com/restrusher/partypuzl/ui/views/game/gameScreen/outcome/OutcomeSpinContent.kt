@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.ui.tooling.preview.Preview
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
 import com.restrusher.partypuzl.ui.views.game.gameScreen.BarModeState
@@ -105,7 +106,7 @@ internal fun SharedTransitionScope.OutcomeSpinContent(
             text = stringResource(theme.rollingRes).uppercase(),
             style = MaterialTheme.typography.labelMedium,
             letterSpacing = 3.sp,
-            color = theme.tone,
+            color = theme.tone.asPageInk(),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.height(20.dp))

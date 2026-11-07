@@ -27,6 +27,7 @@ import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.ui.theme.asPageInk
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
@@ -56,7 +57,7 @@ internal fun TruthOrDareChallengeContent(
                 text = stringResource(accent.labelRes).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 3.sp,
-                color = accent.tone,
+                color = accent.tone.asPageInk(),
                 textAlign = TextAlign.Center
             )
             Spacer(Modifier.height(20.dp))
