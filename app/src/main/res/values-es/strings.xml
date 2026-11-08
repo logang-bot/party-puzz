@@ -580,11 +580,11 @@
     <string name="follow_the_spot">Sigue el punto</string>
     <string name="follow_the_spot_description">¡Persigue el punto y tócalo! Gana quien consiga más toques en 10 segundos.</string>
     <string name="hot_potato">Papa Caliente</string>
-    <string name="hot_potato_description">Pasa el teléfono — quien lo tenga cuando explote toma un sorbo.</string>
+    <string name="hot_potato_description">Pasa el teléfono — quien lo tenga cuando explote pierde la ronda.</string>
     <string name="tap_war">Guerra de Toques</string>
     <string name="tap_war_description">Toca tu lado lo más rápido que puedas — empuja la barra hacia el lado de tu rival para ganar.</string>
     <string name="simon_says">Simón Dice</string>
-    <string name="simon_says_description">Sigue la secuencia — quien se equivoque primero toma un sorbo.</string>
+    <string name="simon_says_description">Sigue la secuencia — quien se equivoque primero pierde.</string>
     <string name="simon_says_round">Ronda %1$d</string>
     <string name="simon_says_watch_player">¡Hey %1$s, observa bien!</string>
     <string name="simon_says_now_your_turn">¡Tu turno, %1$s!</string>
@@ -595,7 +595,7 @@
     <string name="hot_potato_next">El siguiente</string>
     <string name="hot_potato_boom">¡BOOM!</string>
     <string name="circle_master">Maestro del Círculo</string>
-    <string name="circle_master_description">Por turnos, dibujen un círculo perfecto — quien lo haga peor toma un sorbo.</string>
+    <string name="circle_master_description">Por turnos, dibujen un círculo perfecto — quien lo haga peor pierde.</string>
     <string name="circle_master_draw_instruction">¡Dibuja un círculo alrededor del punto!</string>
     <string name="circle_master_score_perfect">¡Perfecto!</string>
     <string name="circle_master_score_great">¡Muy redondo!</string>

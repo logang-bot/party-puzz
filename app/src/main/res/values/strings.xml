@@ -582,11 +582,11 @@
     <string name="follow_the_spot">Follow The Spot</string>
     <string name="follow_the_spot_description">Chase the moving spot and tap it — whoever lands the most hits in 10 seconds wins.</string>
     <string name="hot_potato">Hot Potato</string>
-    <string name="hot_potato_description">Pass the phone around — whoever\'s holding it when it explodes takes a sip.</string>
+    <string name="hot_potato_description">Pass the phone around — whoever\'s holding it when it explodes loses the round.</string>
     <string name="tap_war">Tap War</string>
     <string name="tap_war_description">Tap your side as fast as you can — push the bar into your opponent\'s half to win.</string>
     <string name="simon_says">Simon Says</string>
-    <string name="simon_says_description">Follow the flashing sequence — whoever breaks it first takes a sip.</string>
+    <string name="simon_says_description">Follow the flashing sequence — whoever breaks it first loses.</string>
     <string name="simon_says_round">Round %1$d</string>
     <string name="simon_says_watch_player">Hey %1$s, watch carefully!</string>
     <string name="simon_says_now_your_turn">Your turn, %1$s!</string>
@@ -597,7 +597,7 @@
     <string name="hot_potato_next">Next up</string>
     <string name="hot_potato_boom">BOOM!</string>
     <string name="circle_master">Circle Master</string>
-    <string name="circle_master_description">Take turns drawing a perfect circle — the shakiest hand takes a sip.</string>
+    <string name="circle_master_description">Take turns drawing a perfect circle — the shakiest hand loses.</string>
     <string name="circle_master_draw_instruction">Draw a circle around the dot!</string>
     <string name="circle_master_score_perfect">Flawless!</string>
     <string name="circle_master_score_great">Pretty round!</string>

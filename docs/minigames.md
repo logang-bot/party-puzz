@@ -533,7 +533,7 @@ Nothing needs doing on the question-packs side: the Mini-games pack has no rows 
 | `follow_the_spot` | `"Follow the spot"` |
 | `follow_the_spot_description` | `"Chase the moving spot and tap it — whoever lands the most hits in 10 seconds wins."` |
 | `hot_potato` | `"Hot potato"` |
-| `hot_potato_description` | `"Pass the phone around — whoever's holding it when it explodes takes a sip."` |
+| `hot_potato_description` | `"Pass the phone around — whoever's holding it when it explodes loses the round."` |
 | `hot_potato_tap_to_pass` | `"Tap to pass!"` |
 | `hot_potato_next` | `"Next"` |
 | `hot_potato_boom` | `"BOOM!"` |
@@ -549,7 +549,7 @@ Nothing needs doing on the question-packs side: the Mini-games pack has no rows 
 | `tap_war` | `"Tap War"` |
 | `tap_war_description` | `"Tap your side as fast as you can — push the bar into your opponent's half to win."` |
 | `simon_says` | `"Simon Says"` |
-| `simon_says_description` | `"Follow the flashing sequence — whoever breaks it first takes a sip."` |
+| `simon_says_description` | `"Follow the flashing sequence — whoever breaks it first loses."` |
 | `simon_says_round` | `"Round %1$d"` |
 | `simon_says_step` | `"%1$d of %2$d"` (header tally during INPUT) |
 | `simon_says_watch_player` | `"Hey %1$s, watch carefully!"` (SHOWING footer) |
@@ -557,7 +557,7 @@ Nothing needs doing on the question-packs side: the Mini-games pack has no rows 
 | `simon_says_pass_complete` | `"Pass the phone to %1$s and tap here when ready!"` (PASS footer) |
 | `simon_says_missed` | `"Oops, %1$s missed it!"` (GAME_OVER footer) |
 | `circle_master` | `"Circle Master"` |
-| `circle_master_description` | `"Take turns drawing a perfect circle — the shakiest hand takes a sip."` |
+| `circle_master_description` | `"Take turns drawing a perfect circle — the shakiest hand loses."` |
 | `circle_master_draw_instruction` | `"Draw a circle around the dot!"` |
 | `circle_master_score_perfect` | `"Flawless!"` |
 | `circle_master_score_great` | `"Pretty round!"` |
@@ -567,7 +567,7 @@ Nothing needs doing on the question-packs side: the Mini-games pack has no rows 
 | `circle_master_pass_to` | `"Pass to %1$s and tap here when ready!"` |
 | `circle_master_results` | `"Results"` |
 
-All keys have matching `values-es/strings.xml` entries.
+All keys have matching `values-es/strings.xml` entries. Descriptions stay mode-neutral ("loses", never "drinks" or "takes a sip"), because the deal card shows in every mode. The mode's own result panel says what losing means: a sip in Bar Time, a punishment in Couples, nothing in Standard.
 
 ---
 
