@@ -150,6 +150,8 @@ fun SharedTransitionScope.GameConfigScreen(
                 gameModeDescription = gameModeDescription
             )
 
+            ResponsibleDrinkingHint(gameModeName, Modifier.padding(top = 12.dp))
+
             Spacer(modifier = Modifier.height(20.dp))
             AdBanner(placement = AdPlacement.GAME_CONFIG_BANNER)
 

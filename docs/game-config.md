@@ -83,9 +83,17 @@ If the Play Store has no details for `remove_ads` — no connection, or the prod
 
 ---
 
-## Mini-Games Hint Box
+## Setup Hints
 
-A small informational row below the packs section. An icon (`ic_lightbulb`) sits in a `primaryContainer` rounded box; the hint text (`mini_games_hint`) explains the phone-passing mechanic.
+Both hints use `SetupHint(iconRes, textRes)` (`SetupHints.kt`): an icon in a `primaryContainer` rounded tile, then one line of `bodySmall` text. Add any new setup tip through it so the tips stay visually identical.
+
+### Mini-games hint
+
+`MiniGamesHintBox` is a row below the packs section. It shows `ic_lightbulb`, and the hint text (`mini_games_hint`) explains the phone-passing mechanic. It is shown for every mode.
+
+### Responsible-drinking hint
+
+`ResponsibleDrinkingHint(gameModeName)` sits directly under `GameModeHeader`, 12 dp below it. It shows `ic_info` with `responsible_drinking_hint`. It appears only for modes where `GameMode.dealsSips` is true: **Bar Time**, and **Party Puzl**, because Party Puzl mixes Bar sip events in. Standard and Couples render nothing. It's a permanent line rather than a dialog, so players see the message every time they set up a drinking game without having to dismiss anything. It complements the launch-time responsible-drinking dialogs ([navigation.md](navigation.md#responsible-drinking-dialogs)). See [bar-mode.md](bar-mode.md#responsible-drinking-rules-play-policy).
 
 ---
 
@@ -119,6 +127,7 @@ The callback navigates **straight to `GameScreen`**. The intermediate `LoadingSc
 | `prepare_your_party` | "Prepare your party" |
 | `mode_selected` | "Mode selected" |
 | `mini_games_hint` | "The phone passes between players each turn — …" |
+| `responsible_drinking_hint` | "Any drink works — water and soft drinks too. Know your limits and skip whatever you like." (ES: "Cualquier bebida sirve — agua y refrescos también. Conoce tus límites y sáltate lo que quieras.") |
 | `start_the_party` | "Start the party" |
 | `choose_your_packs` | "Choose your packs" |
 | `choose_your_packs_subtitle` | "Curated by PartyPuzl or written by you — …" |
@@ -143,6 +152,7 @@ Removed with the categories section: `pick_what_to_play`, `categories_count_on`,
 |---|---|
 | `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, snackbar, unlock sheet host |
 | `ui/views/gameConfig/ui/GameConfigComponents.kt` | `GameModeHeader`, `GameConfigSectionLabel`, `MiniGamesHintBox`, `StartGameButton` |
+| `ui/views/gameConfig/ui/SetupHints.kt` | `SetupHint` layout shared by both hints, and `ResponsibleDrinkingHint` (Bar Time / Party Puzl only) |
 | `ui/views/gameConfig/ui/QuestionPacksSection.kt` | Official / Premium / Custom groups |
 | `ui/views/gameConfig/ui/PackGroupContainers.kt` | `PackGroupLabel` + `PackGroup` chrome shared by all three groups |
 | `ui/views/gameConfig/ui/CustomPackGroup.kt` | Custom rows, the Manage link, the tappable empty state |

@@ -21,9 +21,9 @@ barMode = BarModeState(isActive = GameOptionsSource.currentGameModeNameRes == R.
 | Event | Category | What happens |
 |---|---|---|
 | `NoAction` | Reward | Nothing — the player taps OK and the next deal begins |
-| `GiveDrinks(amount, targetPlayerName)` | Reward | The active player must give the displayed number of drinks to the named player |
+| `GiveDrinks(amount, targetPlayerName)` | Reward | The active player must give the displayed number of sips to the named player |
 | `GiveDrinksPickTarget(amount, candidates)` | Reward | Like `GiveDrinks` but the target has not been decided yet — the dialog shows a list of players to pick from. Tapping a name resolves to a `GiveDrinks` event. |
-| `TakeDrinks(amount)` | Punishment | The active player must drink the displayed amount |
+| `TakeDrinks(amount)` | Punishment | The active player must take the displayed number of sips |
 | `FlavourReward(textRes)` | Reward | One of `barRewardFlavours` (6 lines) — the text is the whole outcome, no mechanics |
 | `FlavourPunishment(textRes)` | Punishment | One of `barPunishmentFlavours` (7 lines) |
 
@@ -33,17 +33,17 @@ Which **category** fires is deterministic — each deal type rewards or punishes
 
 | Deal type | Outcome | Event |
 |---|---|---|
-| Truth or Dare | Skip tapped | `TakeDrinks(1–5)` |
-| Sticky Dare | Skip tapped | `TakeDrinks(1–5)` |
-| Sticky Dare | Running dare cancelled | `TakeDrinks(1–5)` |
-| Quiz | Wrong answer | `TakeDrinks(1–5)` |
-| Quiz | Correct answer | `GiveDrinksPickTarget(1–5, otherPlayers)` |
-| Mini-game (two-player) | Current player wins | `GiveDrinks(1–5, opponentName)` |
+| Truth or Dare | Skip tapped | `TakeDrinks(1–3)` |
+| Sticky Dare | Skip tapped | `TakeDrinks(1–3)` |
+| Sticky Dare | Running dare cancelled | `TakeDrinks(1–3)` |
+| Quiz | Wrong answer | `TakeDrinks(1–3)` |
+| Quiz | Correct answer | `GiveDrinksPickTarget(1–3, otherPlayers)` |
+| Mini-game (two-player) | Current player wins | `GiveDrinks(1–3, opponentName)` |
 | Mini-game (two-player) | Tie | `NoAction` |
-| Mini-game (two-player) | Current player loses | `TakeDrinks(1–5)` |
-| Mini-game (global) | A single loser identified | `TakeDrinks(1–5)` (punishment applied to the loser) |
+| Mini-game (two-player) | Current player loses | `TakeDrinks(1–3)` |
+| Mini-game (global) | A single loser identified | `TakeDrinks(1–3)` (punishment applied to the loser) |
 
-`amount` is always randomised 1–5 at trigger time. `BarModeState` exposes three factory methods used by the ViewModel: `takeDrinksEvent()`, `giveDrinksEvent(targetName)`, and `giveDrinksPickTargetEvent(players, currentPlayer)`.
+`amount` is always randomised 1–3 (kept low on purpose — see the responsible-drinking note below) at trigger time. `BarModeState` exposes three factory methods used by the ViewModel: `takeDrinksEvent()`, `giveDrinksEvent(targetName)`, and `giveDrinksPickTargetEvent(players, currentPlayer)`.
 
 ---
 
@@ -105,7 +105,7 @@ Bar events are rendered by the shared outcome overlay, not by a bespoke dialog. 
 ```
 [gradient badge + icon]   ← pops in with a bouncy spring
 REWARD / PUNISHMENT       ← kicker, tone-coloured
-"Take 3 drink(s)!"        ← message, italic headline
+"Take 3 sip(s)!"        ← message, italic headline
 "Tap to dismiss"          ← or the target buttons
 ```
 
@@ -115,9 +115,9 @@ REWARD / PUNISHMENT       ← kicker, tone-coloured
 |---|---|---|
 | `FlavourReward` / `FlavourPunishment` | The line itself | Tap to dismiss |
 | `NoAction` | "Nothing happens — carry on!" | Tap to dismiss |
-| `TakeDrinks` | "Take X drink(s)!" | Tap to dismiss |
-| `GiveDrinks` | "Give X drink(s) to PlayerName!" | Tap to dismiss |
-| `GiveDrinksPickTarget` | "Give X drink(s) to:" | One button per candidate |
+| `TakeDrinks` | "Take X sip(s)!" | Tap to dismiss |
+| `GiveDrinks` | "Give X sip(s) to PlayerName!" | Tap to dismiss |
+| `GiveDrinksPickTarget` | "Give X sip(s) to:" | One button per candidate |
 
 Tapping a player button calls `onGiveDrinksTargetSelected(name)`, which transitions the active event to `GiveDrinks(amount, name)` in place. `outcomeStage` stays `REVEALED`, so the reel does not spin again.
 
@@ -190,19 +190,71 @@ Mode-specific event logic is fully delegated to `BarModeHandler` — see [game-m
 
 ## String resources
 
-| Key | EN value |
-|---|---|
-| `bar_event_no_action` | `"Nothing happens — carry on!"` |
-| `bar_event_take_drinks` | `"Take %1$d drink(s)!"` |
-| `bar_event_give_drinks` | `"Give %1$d drink(s) to %2$s!"` (`%1$d` = amount, `%2$s` = target player name) |
-| `bar_event_give_drinks_choose` | `"Give %1$d drink(s) to:"` — header for the pick-target variant |
-| `skip` | `"Skip"` |
-| `finish` | `"Finish"` |
-| `give` | `"Give"` |
-| `tap_to_continue` | `"Tap to continue"` ← replaces `tap_to_dismiss` in the quiz when bar mode is active |
+Every key has a matching `values-es/strings.xml` entry. Keep both locales in step, and apply the [responsible-drinking rules](#responsible-drinking-rules-play-policy) to the Spanish copy too.
+
+Several keys still carry their old names (`*_drinks`, `*_tequila_shot`, `*_chug`). The values were rewritten for the Play policy, but the keys were kept so no Kotlin had to change. Read the value, not the key.
+
+### Events
+
+| Key | EN value | ES value |
+|---|---|---|
+| `bar_event_no_action` | `"Nothing happens — carry on!"` | `"¡No pasa nada — sigan!"` |
+| `bar_event_take_drinks` | `"Take %1$d sip(s)!"` | `"¡Toma %1$d sorbo(s)!"` |
+| `bar_event_give_drinks` | `"Give %1$d sip(s) to %2$s!"` (`%1$d` = amount, `%2$s` = target player name) | `"¡Da %1$d sorbo(s) a %2$s!"` |
+| `bar_event_give_drinks_choose` | `"Give %1$d sip(s) to:"`, the header for the pick-target variant | `"¡Da %1$d sorbo(s) a:"` |
+| `skip` | `"Skip"` | |
+| `finish` | `"Finish"` | |
+| `give` | `"Give"` | |
+| `tap_to_continue` | `"Tap to continue"`, which replaces `tap_to_dismiss` in the quiz when bar mode is active | |
+| `bar_description` | `"Made for game nights with friends — rounds of wild challenges and sips (any drink works!)"` | `"Hecho para noches de juegos con amigos — rondas de locos desafíos y sorbos (¡cualquier bebida sirve!)"` |
+
+### Flavour decks (`OutcomeFlavours.kt`)
+
+| Key | EN value | ES value |
+|---|---|---|
+| `bar_reward_skip_next_drink` | Skip your next sip | Sáltate tu próximo sorbo |
+| `bar_reward_steal_a_sip` | Pick who takes the next sip | Elige quién toma el próximo sorbo |
+| `bar_reward_new_house_rule` | Make a new house rule for the rest of the night | Inventa una regla nueva para el resto de la noche |
+| `bar_reward_crown_yourself` | Crown yourself MVP — everyone toasts you | Corónate MVP — todos brindan por ti |
+| `bar_reward_send_for_a_round` | Send someone to fetch snacks for the table | Manda a alguien a traer botanas para la mesa |
+| `bar_reward_swap_drinks` | Swap seats with whoever you want | Cambia de lugar con quien quieras |
+| `bar_punishment_tequila_shot` | Talk in an accent until your next turn | Habla con un acento hasta tu próximo turno |
+| `bar_punishment_finish_your_drink` | Take one sip — then sing the chorus of a song the group picks | Toma un sorbo — y canta el coro de una canción que elija el grupo |
+| `bar_punishment_group_picks_shot` | The group picks your next dare | El grupo elige tu próximo reto |
+| `bar_punishment_table_mixed_shot` | Swap seats with the player the table chooses | Cambia de lugar con el jugador que elija la mesa |
+| `bar_punishment_shame_sash` | Wear the "walk of shame" sash for 3 rounds | Lleva la banda del "paseo de la vergüenza" por 3 rondas |
+| `bar_punishment_five_second_chug` | Do 10 squats while the group counts | Haz 10 sentadillas mientras el grupo cuenta |
+| `bar_punishment_wrong_hand_shot` | Use only your non-dominant hand for the next round | Usa solo tu mano no dominante durante la próxima ronda |
+
+### Responsible-drinking dialogs (`ResponsibleDrinkingDialogs.kt`)
+
+The age confirmation (first launch) and the per-launch reminder share `drinking_notice_badge`. Both present drinking as **one optional part** of the game: most of PartyPuzl needs no drinks, and only some modes add sips. The confirmation asks for **18+** (the app's rating). The legal-drinking-age requirement applies only to players who choose alcohol, so keep that distinction in any rewrite.
+
+| Key | EN value | ES value |
+|---|---|---|
+| `drinking_notice_badge` | 18+ | 18+ |
+| `drinking_notice_title` | Welcome to PartyPuzl | Bienvenido a PartyPuzl |
+| `drinking_notice_body` | PartyPuzl is a party game for adults. Truth or Dare, trivia, sticky dares and mini-games all work without a single drink. Some modes, like Bar Time, add sips as a twist — any drink counts… If you choose alcohol, you must be of legal drinking age. Know your limits and never drink and drive. | PartyPuzl es un juego de fiesta para adultos. … Si eliges alcohol, debes tener la edad legal para beber. … |
+| `drinking_notice_accept` | I'm 18 or older | Tengo 18 años o más |
+| `drinking_notice_exit` | Exit | Salir |
+| `drinking_reminder_title` | Before you start | Antes de empezar |
+| `drinking_reminder_body` | Sips are optional and only some modes use them — water and soft drinks count just as much. Every challenge can be skipped. If you choose alcohol, pace yourself and never drink and drive. | Los sorbos son opcionales y solo algunos modos los usan — … nunca manejes después de beber. |
+| `drinking_reminder_ok` | Got it | Entendido |
 
 
 ---
+
+## Responsible-drinking rules (Play policy)
+
+Google Play rejected the app (Nov 2026) under *Inappropriate Content → Alcohol* for copy that pushed heavy drinking: shots of tequila, chugging, "finish your drink", "loser drinks". The mode now follows these rules. Keep them when writing new copy:
+
+- **Sips only.** No shots, chugging, downing, "finish your drink", or mixing drinks for someone else.
+- **Keep the numbers low.** `amount` is 1–3 sips.
+- **Any drink counts.** Copy never names a specific alcohol or tells anyone to buy a round.
+- **Most flavour punishments don't involve drinking at all.** They are physical or social forfeits.
+- **18+ confirmation and per-launch reminder.** `AgeConfirmationDialog` blocks the app on first launch until the player confirms they are 18 or older (the body adds that alcohol requires legal drinking age) (the flag is `UserPreferencesRepository.drinkingNoticeAccepted`). After that, `DrinkingReminderDialog` shows once per launch. See [navigation.md](navigation.md#responsible-drinking-dialogs).
+- **Setup reminder.** `ResponsibleDrinkingHint` shows "Any drink works… Know your limits" on the setup screen for every mode with `GameMode.dealsSips` (Bar Time and Party Puzl). See [game-config.md](game-config.md#responsible-drinking-hint).
+- **Store listing.** It must follow the same rules, and the IARC questionnaire must declare alcohol references.
 
 ## Related
 

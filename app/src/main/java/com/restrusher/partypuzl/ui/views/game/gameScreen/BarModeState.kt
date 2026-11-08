@@ -9,10 +9,10 @@ data class BarModeState(
 ) {
     companion object {
         fun takeDrinksEvent(): BarEvent.TakeDrinks =
-            BarEvent.TakeDrinks(amount = (1..5).random())
+            BarEvent.TakeDrinks(amount = (1..3).random())
 
         fun giveDrinksEvent(targetPlayerName: String): BarEvent.GiveDrinks =
-            BarEvent.GiveDrinks(amount = (1..5).random(), targetPlayerName = targetPlayerName)
+            BarEvent.GiveDrinks(amount = (1..3).random(), targetPlayerName = targetPlayerName)
 
         fun giveDrinksPickTargetEvent(
             players: List<Player>,
@@ -21,7 +21,7 @@ data class BarModeState(
             val candidates = players
                 .filter { it.id != currentPlayer?.id }
                 .map { it.nickName }
-            return BarEvent.GiveDrinksPickTarget(amount = (1..5).random(), candidates = candidates)
+            return BarEvent.GiveDrinksPickTarget(amount = (1..3).random(), candidates = candidates)
         }
     }
 }

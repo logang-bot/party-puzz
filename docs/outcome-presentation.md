@@ -23,7 +23,7 @@ handler produces an event
 | Stage | Composable | Interaction |
 |---|---|---|
 | `SPINNING` | `OutcomeSpinContent` | None — taps are ignored |
-| `REVEALED` | `OutcomeRevealContent` | Tap anywhere to dismiss, except while picking a drinks target |
+| `REVEALED` | `OutcomeRevealContent` | Tap anywhere to dismiss, except while picking who takes the sips |
 
 `OUTCOME_SPIN_DURATION_MS` (2200 ms) lives in `GameScreenState.kt` so the UI does not have to depend on the ViewModel. The reel animates for that duration minus a 250 ms hold, so it visibly settles before the reveal replaces it.
 
@@ -31,7 +31,7 @@ The reel lands on **what actually happened**: it renders this roll's deck and st
 
 ### The deck
 
-The reel used to cycle `R.array.outcome_reel_bar` / `outcome_reel_couples` — four and five *generic category labels* ("Take drinks", "Give a kiss") — while the reveal showed a different string composed at render time from a format string and runtime values. The player watched "Take drinks" scroll past and then read "Take 3 drink(s)!". The spin was decoration over a result it never showed.
+The reel used to cycle `R.array.outcome_reel_bar` / `outcome_reel_couples` — four and five *generic category labels* ("Take drinks", "Give a kiss") — while the reveal showed a different string composed at render time from a format string and runtime values. The player watched "Take drinks" scroll past and then read "Take 3 sip(s)!". The spin was decoration over a result it never showed.
 
 Now a roll builds a **deck** of every outcome it could land on, and the fired outcome is one of its entries:
 
@@ -44,7 +44,7 @@ Now a roll builds a **deck** of every outcome it could land on, and the fired ou
 
 The deck lives on the mode state — `BarModeState.deck` / `CouplesModeState.deck` — set by the handler in the same `copy` that sets `activeEvent`, so the two can never disagree. `clearEvent` empties both. Because the deck is `GameScreenState`, it dies with `GameScreenViewModel` when the game screen is popped: there is no cache to go stale and no reset call to forget.
 
-**Flavour outcomes** are the design's flat lines (`FlavourReward` / `FlavourPunishment` on both event classes), carrying a `@StringRes` and no mechanics. Everything else keeps its behaviour — drink counts, the bar target-picker, the couples artwork. A flavour couples outcome has no image, so `CouplesEvent.imageRes` is nullable and the reveal falls back to the gradient medallion.
+**Flavour outcomes** are the design's flat lines (`FlavourReward` / `FlavourPunishment` on both event classes), carrying a `@StringRes` and no mechanics. Everything else keeps its behaviour — sip counts (1–3), the bar target-picker, the couples artwork. A flavour couples outcome has no image, so `CouplesEvent.imageRes` is nullable and the reveal falls back to the gradient medallion.
 
 **Mini-games** roll their own outcome (`GiveDrinks` to the opponent on a win, `NoAction` on a draw, `takeDrinksEvent()` on a loss). `deckLandingOn(deck, fired)` puts it in the deck, *substituting* the generic entry of the same kind rather than joining it — otherwise the reel would offer two different "Take N drinks!" lines.
 
@@ -131,7 +131,7 @@ When Party Puzl leaves both sub-modes active, `activeOutcomeMode` resolves Coupl
 
         PUNISHMENT       ← kicker, tone-coloured, letter-spaced
 
-    Take 3 drink(s)!     ← message, italic headline
+    Take 3 sip(s)!     ← message, italic headline
 
      Tap to dismiss      ← or the target-picker buttons
 ```

@@ -60,10 +60,10 @@ class GameModeHandlerTest {
     }
 
     @Test
-    fun `drink amounts always stay between one and five`() {
+    fun `sip amounts always stay between one and three`() {
         repeat(REPEATS) {
-            assertTrue(BarModeState.takeDrinksEvent().amount in 1..5)
-            assertTrue(BarModeState.giveDrinksEvent("Bruno").amount in 1..5)
+            assertTrue(BarModeState.takeDrinksEvent().amount in 1..3)
+            assertTrue(BarModeState.giveDrinksEvent("Bruno").amount in 1..3)
         }
     }
 

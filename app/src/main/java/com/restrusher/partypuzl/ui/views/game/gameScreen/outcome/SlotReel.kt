@@ -44,10 +44,10 @@ import kotlin.math.floor
 private const val FULL_SPINS = 2
 
 private val previewLabels = listOf(
-    "Take a shot of tequila",
-    "Down a shot the group picks for you",
+    "Talk in an accent until your next turn",
+    "The group picks your next dare",
     "Confess your most-used emoji, out loud, dramatically",
-    "Take 3 drink(s)!"
+    "Take 3 sip(s)!"
 )
 
 private val reelShape = RoundedCornerShape(20.dp)

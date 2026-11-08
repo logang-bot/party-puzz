@@ -1,6 +1,8 @@
 # Mini-Game Suggestions (Backlog)
 
-Candidate mini-games for future implementation. All are designed for a drunk party context: short rounds, dead-simple controls, and entertaining even with impaired coordination.
+Candidate mini-games for future implementation. All are designed for a loud party table: short rounds, dead-simple controls, and fun for every player.
+
+> Losing outcomes follow the [responsible-drinking rules](bar-mode.md#responsible-drinking-rules-play-policy): a sip or a forfeit, never shots, chugging or "drink until". Write mini-game descriptions in both `values/` and `values-es/`.
 
 Each entry includes a rough implementation difficulty and which architectural pattern it would follow (see [minigames.md](minigames.md)).
 
@@ -14,7 +16,7 @@ Each entry includes a rough implementation difficulty and which architectural pa
 
 Players hold the phone as still as possible for a fixed duration (e.g. 10 s). The accelerometer measures cumulative wobble. The player with the most movement loses — or in global mode, the top wobbler takes the punishment.
 
-**Why it fits:** Great for drunk parties — the more drunk you are, the worse you perform. Requires `SensorManager` access via a `DisposableEffect`.
+**Why it fits:** Steady hands are harder than they look, and a laughing table makes them harder still. Requires `SensorManager` access via a `DisposableEffect`.
 
 **Implementation notes:**
 - Register a `SensorEventListener` on `Sensor.TYPE_ACCELEROMETER`.
@@ -30,7 +32,7 @@ Players hold the phone as still as possible for a fixed duration (e.g. 10 s). Th
 
 **Type:** Global | **Difficulty:** Low
 
-A prompt is shown (e.g. "Most likely to fall asleep first"). A countdown runs (e.g. 5 s). At Go, every player simultaneously points at someone. The player who receives the most fingers must drink.
+A prompt is shown (e.g. "Most likely to fall asleep first"). A countdown runs (e.g. 5 s). At Go, every player simultaneously points at someone. The player who receives the most fingers takes a sip.
 
 **Why it fits:** No phone interaction needed during voting — just a prompt display and a timer. Social, chaotic, and requires zero reflexes.
 
@@ -48,7 +50,7 @@ A prompt is shown (e.g. "Most likely to fall asleep first"). A countdown runs (e
 
 **Type:** Global | **Difficulty:** Very Low
 
-A statement is shown (e.g. "Never have I ever sent a text to the wrong person"). Players who have done it drink. Tap to get the next statement.
+A statement is shown (e.g. "Never have I ever sent a text to the wrong person"). Players who have done it take a sip. Tap to get the next statement.
 
 **Why it fits:** Instant to implement — one screen composable, a string array, and a "Next" button.
 
@@ -65,7 +67,7 @@ A statement is shown (e.g. "Never have I ever sent a text to the wrong person").
 
 **Type:** Global | **Difficulty:** Low
 
-Two options are shown (e.g. "Would you rather… fight 100 duck-sized horses OR 1 horse-sized duck?"). Players tap their choice. After all have chosen, the minority (fewer votes) must drink.
+Two options are shown (e.g. "Would you rather… fight 100 duck-sized horses OR 1 horse-sized duck?"). Players tap their choice. After all have chosen, the minority (fewer votes) takes a sip.
 
 **Why it fits:** Quick, high participation, no skill required.
 
@@ -83,7 +85,7 @@ Two options are shown (e.g. "Would you rather… fight 100 duck-sized horses OR 
 
 **Type:** Global | **Difficulty:** High
 
-One player draws a word on screen using their finger; the others must guess it. First correct guess wins; the drawer and guesser both avoid punishment; everyone else drinks.
+One player draws a word on screen using their finger; the others must guess it. First correct guess wins; the drawer and guesser both avoid punishment; everyone else takes a sip.
 
 **Why it fits:** High entertainment value as the game gets further along.
 
@@ -102,7 +104,7 @@ One player draws a word on screen using their finger; the others must guess it. 
 
 **Type:** Global | **Difficulty:** Very Low
 
-A category is displayed (e.g. "European countries"). Players take turns verbally naming one item. The phone is passed after each turn. First player to repeat an item or fail to name one within 5 s drinks.
+A category is displayed (e.g. "European countries"). Players take turns verbally naming one item. The phone is passed after each turn. First player to repeat an item or fail to name one within 5 s takes a sip.
 
 **Why it fits:** Zero UI beyond a timer and a category display. Phone passing is the mechanic.
 

@@ -18,11 +18,20 @@ Go to [play.google.com/console](https://play.google.com/console) → **Create ap
 
 ### 3. Complete the store listing
 
+> **Alcohol policy.** The Nov 2026 submission was rejected under *Inappropriate Content → Alcohol* for the full description ("Bar Time… pre-game", "whoever… drinks") and a screenshot showing a shot of tequila. The listing must follow the same [responsible-drinking rules](bar-mode.md#responsible-drinking-rules-play-policy) as the app:
+> - No shots, chugging, "nights out" or "pre-game" pitch.
+> - Losers "take a sip" or "lose the round".
+> - Say "any drink works, including non-alcoholic".
+> - End with an "18+ only. Play responsibly — know your limits, never drink and drive." line.
+> - Screenshots must not show heavy-drinking copy.
+>
+> Also keep the description in step with the build. A `main` release has no ads, so it must not say "remove ads".
+
 Play Console shows a task list. Required before publishing:
 
 - **Main store listing** — title, short/full description, screenshots (phone required), feature graphic (1024×500 px), icon (512×512 px)
-- **Content rating** — complete the questionnaire
-- **Target audience** — confirm not targeting children
+- **Content rating**: complete the IARC questionnaire honestly. PartyPuzl is a drinking game, so answer **Yes** to alcohol references/consumption, **Yes → "Suggestive references and innuendo in text"** only for sexual themes (kisses, flirting, crushes; nothing refers to sex itself or is shown visually), **No** to crude humour (that category means bodily-function humour: belching, flatulence, feces, urine, vomit, and the app has none), and **No** to user interaction or sharing, since the app is offline with no accounts. Expect around PEGI 16/18 and ESRB Mature. Understating it gets the release rejected under *Content Ratings* ("the content rating may be inaccurate"). Fix that with *Start new questionnaire*, not by toning down the answers
+- **Target audience**: **18+ only**. This matches the in-app `AgeConfirmationDialog` (see [navigation.md](navigation.md#responsible-drinking-dialogs))
 - **App access** — describe any login-gated features
 - **Ads declaration** — `main` contains **no ads**; a build from `ads/admob` or `ads/meta` does — declare accordingly
 - **Advertising ID** (App content → Advertising ID) — **No** for a release from `main`. `main` has no ad or analytics SDK, so its merged manifest has no `com.google.android.gms.permission.AD_ID`; a "Yes" here makes Play reject the release with *"Your advertising ID declaration says that your app uses advertising ID…"*. Do **not** add the permission to silence it. An ad branch (`ads/admob`, `ads/meta`) uses the advertising ID — switch this to **Yes** before shipping one

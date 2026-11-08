@@ -2,6 +2,8 @@
 
 Party Puzl is the "everything goes" game mode. Each turn ends with a mode event drawn randomly from the other three modes — Bar Time, Couples, or nothing at all — so no two rounds feel the same.
 
+Because Bar Time sip events can come up, `GameMode.PARTY_PUZL` has `dealsSips = true`. The setup screen shows the same responsible-drinking reminder as Bar Time (see [game-config.md](game-config.md#responsible-drinking-hint)).
+
 ---
 
 ## How the mode is detected

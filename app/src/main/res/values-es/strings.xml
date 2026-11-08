@@ -29,6 +29,16 @@
     <string name="vibe">el ambiente?</string>
     <string name="card_mode_label">MODO</string>
 
+    <!-- Diálogos de consumo responsable: confirmación 18+ (primer inicio) y recordatorio por inicio -->
+    <string name="drinking_notice_badge">18+</string>
+    <string name="drinking_notice_title">Bienvenido a PartyPuzl</string>
+    <string name="drinking_notice_body">PartyPuzl es un juego de fiesta para adultos. Verdad o reto, trivia, retos pegajosos y minijuegos funcionan sin una sola bebida. Algunos modos, como Bar time, añaden sorbos como giro — cualquier bebida cuenta, incluidos el agua y los refrescos. Si eliges alcohol, debes tener la edad legal para beber. Conoce tus límites y nunca manejes después de beber.</string>
+    <string name="drinking_notice_accept">Tengo 18 años o más</string>
+    <string name="drinking_notice_exit">Salir</string>
+    <string name="drinking_reminder_title">Antes de empezar</string>
+    <string name="drinking_reminder_body">Los sorbos son opcionales y solo algunos modos los usan — el agua y los refrescos cuentan igual. Todos los retos se pueden saltar. Si eliges alcohol, ve con calma y nunca manejes después de beber.</string>
+    <string name="drinking_reminder_ok">Entendido</string>
+
     <!-- Game Modes -->
     <string name="standard_game_mode">Estándar</string>
     <string name="bar_game_mode">Bar time</string>
@@ -40,9 +50,9 @@
     <string name="finish">Finalizar</string>
     <string name="tap_to_continue">Toca para continuar</string>
     <string name="bar_event_no_action">¡No pasa nada — sigan!</string>
-    <string name="bar_event_take_drinks">¡Bebe %1$d trago(s)!</string>
-    <string name="bar_event_give_drinks">¡Da %1$d trago(s) a %2$s!</string>
-    <string name="bar_event_give_drinks_choose">¡Da %1$d trago(s) a:</string>
+    <string name="bar_event_take_drinks">¡Toma %1$d sorbo(s)!</string>
+    <string name="bar_event_give_drinks">¡Da %1$d sorbo(s) a %2$s!</string>
+    <string name="bar_event_give_drinks_choose">¡Da %1$d sorbo(s) a:</string>
 
     <!-- Couples mode event dialog -->
     <string name="couples_event_give_a_kiss">¡Puedes darle un beso a quien tú elijas!</string>
@@ -52,20 +62,20 @@
     <string name="couples_event_chose_lovers">¡Tú decides quién hace la declaración de amor!</string>
 
     <!-- Mazos de recompensa / castigo — Bar y Parejas -->
-    <string name="bar_reward_skip_next_drink">Sáltate tu próximo trago</string>
-    <string name="bar_reward_steal_a_sip">Róbale un sorbo al vaso de quien quieras</string>
+    <string name="bar_reward_skip_next_drink">Sáltate tu próximo sorbo</string>
+    <string name="bar_reward_steal_a_sip">Elige quién toma el próximo sorbo</string>
     <string name="bar_reward_new_house_rule">Inventa una regla nueva para el resto de la noche</string>
     <string name="bar_reward_crown_yourself">Corónate MVP — todos brindan por ti</string>
-    <string name="bar_reward_send_for_a_round">Manda a alguien más a la barra por una ronda</string>
-    <string name="bar_reward_swap_drinks">Intercambia tu trago con quien quieras</string>
+    <string name="bar_reward_send_for_a_round">Manda a alguien a traer botanas para la mesa</string>
+    <string name="bar_reward_swap_drinks">Cambia de lugar con quien quieras</string>
 
-    <string name="bar_punishment_tequila_shot">Tómate un shot de tequila</string>
-    <string name="bar_punishment_finish_your_drink">Termina tu trago, ahora mismo</string>
-    <string name="bar_punishment_group_picks_shot">Tómate el shot que el grupo elija para ti</string>
-    <string name="bar_punishment_table_mixed_shot">Bébete un shot mezclado por toda la mesa</string>
+    <string name="bar_punishment_tequila_shot">Habla con un acento hasta tu próximo turno</string>
+    <string name="bar_punishment_finish_your_drink">Toma un sorbo — y canta el coro de una canción que elija el grupo</string>
+    <string name="bar_punishment_group_picks_shot">El grupo elige tu próximo reto</string>
+    <string name="bar_punishment_table_mixed_shot">Cambia de lugar con el jugador que elija la mesa</string>
     <string name="bar_punishment_shame_sash">Lleva la banda del “paseo de la vergüenza” por 3 rondas</string>
-    <string name="bar_punishment_five_second_chug">Bebe sin parar 5 segundos, cuenta el grupo</string>
-    <string name="bar_punishment_wrong_hand_shot">Tómate un shot con la mano que no usas</string>
+    <string name="bar_punishment_five_second_chug">Haz 10 sentadillas mientras el grupo cuenta</string>
+    <string name="bar_punishment_wrong_hand_shot">Usa solo tu mano no dominante durante la próxima ronda</string>
 
     <string name="couples_reward_whisper_something_sweet">Susúrrale algo dulce al oído</string>
     <string name="couples_reward_cuddle_break">Pide una pausa de mimos de 60 segundos</string>
@@ -84,7 +94,7 @@
 
     <!-- Game Modes Descriptions -->
     <string name="standard_description">El modo clásico donde cada jugador compite por su cuenta — ¡que gane el mejor!</string>
-    <string name="bar_description">Un modo hecho para noches de bar — ¡reúne a tu equipo y compite en rondas de locos desafíos!</string>
+    <string name="bar_description">Hecho para noches de juegos con amigos — rondas de locos desafíos y sorbos (¡cualquier bebida sirve!)</string>
     <string name="couples_description">Refuerza tu amor con tu pareja jugando en equipo</string>
     <string name="party_puzz_description">La mezcla definitiva — cada ronda es una sorpresa que combina todos los modos de juego en una experiencia impredecible!</string>
 
@@ -99,6 +109,7 @@
     <string name="mode_selected">Modo seleccionado</string>
     <string name="added">añadidos</string>
     <string name="start_the_party">Comenzar la fiesta</string>
+    <string name="responsible_drinking_hint">Cualquier bebida sirve — agua y refrescos también. Conoce tus límites y sáltate lo que quieras.</string>
     <string name="mini_games_hint">El teléfono pasa de jugador en jugador — en tu turno, elige tu jugada, complétala y pásale el teléfono al siguiente.</string>
     <string name="mini_games">Minijuegos</string>
     <string name="truth_or_dare">Verdad o Reto</string>
@@ -289,7 +300,7 @@
         <item>Deja que alguien del grupo te escriba algo en la frente con un marcador</item>
         <item>Huélele los zapatos a la persona a tu derecha</item>
         <item>Cruza el cuarto corriendo en cámara lenta, como en las películas</item>
-        <item>Bebe de tu vaso sin usar las manos</item>
+        <item>Cómete un snack sin usar las manos</item>
         <item>Actúa como un perro durante 30 segundos</item>
         <item>Muéstrale al grupo tus 3 canciones más escuchadas ahora mismo</item>
         <item>Intenta hacer un paro de manos</item>
@@ -569,11 +580,11 @@
     <string name="follow_the_spot">Sigue el punto</string>
     <string name="follow_the_spot_description">¡Persigue el punto y tócalo! Gana quien consiga más toques en 10 segundos.</string>
     <string name="hot_potato">Papa Caliente</string>
-    <string name="hot_potato_description">Pasa el teléfono — quien lo tenga cuando explote tiene que beber.</string>
+    <string name="hot_potato_description">Pasa el teléfono — quien lo tenga cuando explote toma un sorbo.</string>
     <string name="tap_war">Guerra de Toques</string>
     <string name="tap_war_description">Toca tu lado lo más rápido que puedas — empuja la barra hacia el lado de tu rival para ganar.</string>
     <string name="simon_says">Simón Dice</string>
-    <string name="simon_says_description">Sigue la secuencia — quien se equivoque primero bebe.</string>
+    <string name="simon_says_description">Sigue la secuencia — quien se equivoque primero toma un sorbo.</string>
     <string name="simon_says_round">Ronda %1$d</string>
     <string name="simon_says_watch_player">¡Hey %1$s, observa bien!</string>
     <string name="simon_says_now_your_turn">¡Tu turno, %1$s!</string>
@@ -584,7 +595,7 @@
     <string name="hot_potato_next">El siguiente</string>
     <string name="hot_potato_boom">¡BOOM!</string>
     <string name="circle_master">Maestro del Círculo</string>
-    <string name="circle_master_description">Por turnos, dibujen un círculo perfecto — quien lo haga peor bebe.</string>
+    <string name="circle_master_description">Por turnos, dibujen un círculo perfecto — quien lo haga peor toma un sorbo.</string>
     <string name="circle_master_draw_instruction">¡Dibuja un círculo alrededor del punto!</string>
     <string name="circle_master_score_perfect">¡Perfecto!</string>
     <string name="circle_master_score_great">¡Muy redondo!</string>
@@ -1015,7 +1026,7 @@
         <item>Durante 5 minutos el jugador debe sentarse tan cerca como se atreva de quien tiene a la izquierda</item>
         <item>Durante 3 minutos el jugador debe narrar sus propios movimientos como un documental de naturaleza</item>
         <item>Durante 2 minutos el jugador debe terminar cada frase con \"…y lo digo en serio\"</item>
-        <item>Durante 5 minutos el jugador debe pedirle permiso al grupo antes de cada trago</item>
+        <item>Durante 5 minutos el jugador debe pedirle permiso al grupo antes de cada sorbo</item>
         <item>Durante 3 minutos el jugador debe describir cada atuendo de la sala como si fuera una alfombra roja</item>
         <item>Durante 2 minutos el jugador debe darle la razón con entusiasmo a quien tiene enfrente</item>
         <item>Durante 5 minutos el jugador debe decir a quién elegiría en cada hipótesis que le planteen</item>
@@ -1037,7 +1048,7 @@
         <item>sentándose tan cerca como se atreva de quien tiene a la izquierda</item>
         <item>narrando sus propios movimientos como un documental de naturaleza</item>
         <item>terminando cada frase con \"…y lo digo en serio\"</item>
-        <item>pidiéndole permiso al grupo antes de cada trago</item>
+        <item>pidiéndole permiso al grupo antes de cada sorbo</item>
         <item>describiendo cada atuendo de la sala como si fuera una alfombra roja</item>
         <item>dándole la razón con entusiasmo a quien tiene enfrente</item>
         <item>diciendo a quién elegiría en cada hipótesis que le planteen</item>

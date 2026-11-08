@@ -20,6 +20,7 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         private val APP_LANGUAGE_KEY = stringPreferencesKey("app_language")
         private val IS_AD_FREE_KEY = booleanPreferencesKey("is_ad_free")
         private val PARTY_PHOTOS_ENABLED_KEY = booleanPreferencesKey("party_photos_enabled")
+        private val DRINKING_NOTICE_ACCEPTED_KEY = booleanPreferencesKey("drinking_notice_accepted")
         private val QUESTION_MAPPING_VERSION_KEY = intPreferencesKey("question_mapping_version")
         private val PACK_CATALOG_VERSION_KEY = intPreferencesKey("pack_catalog_version")
     }
@@ -36,6 +37,10 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
     override val partyPhotosEnabled: Flow<Boolean> = dataStore.data.map { prefs ->
         prefs[PARTY_PHOTOS_ENABLED_KEY] ?: true
+    }
+
+    override val drinkingNoticeAccepted: Flow<Boolean?> = dataStore.data.map { prefs ->
+        prefs[DRINKING_NOTICE_ACCEPTED_KEY] ?: false
     }
 
     override suspend fun setThemeMode(themeMode: ThemeMode) {
@@ -56,6 +61,10 @@ class UserPreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun setPartyPhotosEnabled(enabled: Boolean) {
         dataStore.edit { prefs -> prefs[PARTY_PHOTOS_ENABLED_KEY] = enabled }
+    }
+
+    override suspend fun acceptDrinkingNotice() {
+        dataStore.edit { prefs -> prefs[DRINKING_NOTICE_ACCEPTED_KEY] = true }
     }
 
     override suspend fun getQuestionMappingVersion(): Int =

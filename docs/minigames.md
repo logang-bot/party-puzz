@@ -255,7 +255,7 @@ The centre strip has two visual layers stacked in a `Box`:
 
 ## Hot Potato
 
-A global mini-game (all registered players participate). The phone represents the "hot potato" — players physically pass it around, each tapping the screen to confirm the pass. A hidden random timer (10–30 s) fires silently; whoever is showing on screen at that moment has the potato and must drink.
+A global mini-game (all registered players participate). The phone represents the "hot potato" — players physically pass it around, each tapping the screen to confirm the pass. A hidden random timer (10–30 s) fires silently; whoever is showing on screen at that moment has the potato and loses — Bar mode turns that into a sip, Couples into a punishment.
 
 ### Mechanics
 
@@ -267,7 +267,7 @@ A global mini-game (all registered players participate). The phone represents th
 - The player physically passes the phone; the new holder taps anywhere to advance to their name.
 - A cycling border animation (same 4 pastel colours, 600 ms per step) runs while active.
 - When the hidden timer fires: `isGameRunning = false`, `loserIndex` set → BOOM screen shown.
-- BOOM screen: 💥 emoji, "BOOM!" headline, "Tap to dismiss" hint. The loser's name and the drink prompt are intentionally **not** shown here — the result panel back on `GameScreen` owns that presentation.
+- BOOM screen: 💥 emoji, "BOOM!" headline, "Tap to dismiss" hint. The loser's name and the sip prompt are intentionally **not** shown here — the result panel back on `GameScreen` owns that presentation.
 - On dismiss: `onGameFinished(loserName)` → returns to `GameScreen`, which shows the `LoserResultContent` panel (and the mode event, if applicable).
 
 ### Hidden timer
@@ -327,7 +327,7 @@ In Bar Time / Couples / Party Puzl modes the challenge card flips to show the pu
 
 ## Simon Says
 
-A global mini-game (all registered players participate). The phone is passed around. A growing sequence of 4 coloured buttons is shown and highlighted one at a time. The active player must tap the same sequence back. Each round the sequence grows by one button. The first player to tap incorrectly loses and drinks.
+A global mini-game (all registered players participate). The phone is passed around. A growing sequence of 4 coloured buttons is shown and highlighted one at a time. The active player must tap the same sequence back. Each round the sequence grows by one button. The first player to tap incorrectly loses (Bar mode: takes a sip).
 
 ### Mechanics
 
@@ -418,7 +418,7 @@ onGameFinished(loserName)
 
 ## Circle Master
 
-A global mini-game (all registered players participate). Each player takes a turn drawing a circle around a fixed center dot on screen. When they lift their finger, a score (0–100 %) is computed based on how close the path is to a perfect circle. After every player has drawn, the one with the lowest score loses and drinks.
+A global mini-game (all registered players participate). Each player takes a turn drawing a circle around a fixed center dot on screen. When they lift their finger, a score (0–100 %) is computed based on how close the path is to a perfect circle. After every player has drawn, the one with the lowest score loses (Bar mode: takes a sip).
 
 ### Mechanics
 
@@ -533,7 +533,7 @@ Nothing needs doing on the question-packs side: the Mini-games pack has no rows 
 | `follow_the_spot` | `"Follow the spot"` |
 | `follow_the_spot_description` | `"Chase the moving spot and tap it — whoever lands the most hits in 10 seconds wins."` |
 | `hot_potato` | `"Hot potato"` |
-| `hot_potato_description` | `"Pass the phone around — whoever's holding it when it explodes has to drink."` |
+| `hot_potato_description` | `"Pass the phone around — whoever's holding it when it explodes takes a sip."` |
 | `hot_potato_tap_to_pass` | `"Tap to pass!"` |
 | `hot_potato_next` | `"Next"` |
 | `hot_potato_boom` | `"BOOM!"` |
@@ -549,7 +549,7 @@ Nothing needs doing on the question-packs side: the Mini-games pack has no rows 
 | `tap_war` | `"Tap War"` |
 | `tap_war_description` | `"Tap your side as fast as you can — push the bar into your opponent's half to win."` |
 | `simon_says` | `"Simon Says"` |
-| `simon_says_description` | `"Follow the flashing sequence — whoever breaks it first drinks."` |
+| `simon_says_description` | `"Follow the flashing sequence — whoever breaks it first takes a sip."` |
 | `simon_says_round` | `"Round %1$d"` |
 | `simon_says_step` | `"%1$d of %2$d"` (header tally during INPUT) |
 | `simon_says_watch_player` | `"Hey %1$s, watch carefully!"` (SHOWING footer) |
@@ -557,7 +557,7 @@ Nothing needs doing on the question-packs side: the Mini-games pack has no rows 
 | `simon_says_pass_complete` | `"Pass the phone to %1$s and tap here when ready!"` (PASS footer) |
 | `simon_says_missed` | `"Oops, %1$s missed it!"` (GAME_OVER footer) |
 | `circle_master` | `"Circle Master"` |
-| `circle_master_description` | `"Take turns drawing a perfect circle — the shakiest hand drinks."` |
+| `circle_master_description` | `"Take turns drawing a perfect circle — the shakiest hand takes a sip."` |
 | `circle_master_draw_instruction` | `"Draw a circle around the dot!"` |
 | `circle_master_score_perfect` | `"Flawless!"` |
 | `circle_master_score_great` | `"Pretty round!"` |

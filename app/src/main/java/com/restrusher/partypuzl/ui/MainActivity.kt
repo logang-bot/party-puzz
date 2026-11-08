@@ -21,6 +21,7 @@ import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
 import com.restrusher.partypuzl.navigation.HomeNavigation
+import com.restrusher.partypuzl.ui.common.ResponsibleDrinkingPrompts
 import com.restrusher.partypuzl.ui.common.ads.AdsProvider
 import com.restrusher.partypuzl.ui.common.ads.LocalAdsProvider
 import com.restrusher.partypuzl.ui.common.ads.LocalIsAdFree
@@ -57,6 +58,8 @@ class MainActivity : AppCompatActivity() {
                 .collectAsStateWithLifecycle(initialValue = ThemeMode.SYSTEM)
             val isAdFree by userPreferencesRepository.isAdFree
                 .collectAsStateWithLifecycle(initialValue = false)
+            val drinkingNoticeAccepted by userPreferencesRepository.drinkingNoticeAccepted
+                .collectAsStateWithLifecycle(initialValue = null)
 
             PartyPuzlTheme(themeMode = themeMode) {
                 CompositionLocalProvider(
@@ -65,6 +68,11 @@ class MainActivity : AppCompatActivity() {
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         HomeNavigation()
+                        ResponsibleDrinkingPrompts(
+                            noticeAccepted = drinkingNoticeAccepted,
+                            onAccept = ::acceptDrinkingNotice,
+                            onExit = ::finish
+                        )
                         if (adsProvider.isFullScreenAdVisible) {
                             Box(
                                 modifier = Modifier
@@ -86,6 +94,10 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         adsProvider.onActivityStopped()
+    }
+
+    private fun acceptDrinkingNotice() {
+        lifecycleScope.launch { userPreferencesRepository.acceptDrinkingNotice() }
     }
 
     private fun applyLanguage(language: AppLanguage) {

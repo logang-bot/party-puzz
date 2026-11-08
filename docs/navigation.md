@@ -117,6 +117,29 @@ Unmapped routes fall back to `R.string.home_screen`.
 
 ---
 
+## Responsible-drinking dialogs
+
+`MainActivity` always composes `HomeNavigation()`. On top of it sits `ResponsibleDrinkingPrompts` (`ui/common/`), which reads `UserPreferencesRepository.drinkingNoticeAccepted` and picks one of two tall dialogs (`ResponsibleDrinkingDialogs.kt`, 88 % wide × 70 % tall):
+
+| `drinkingNoticeAccepted` | Dialog |
+|---|---|
+| `null` (initial, before DataStore emits) | None, so nothing flashes while the preference loads |
+| `false` | `AgeConfirmationDialog`. Back and tapping outside are disabled. "I'm 18 or older" calls `acceptDrinkingNotice()` (writes `drinking_notice_accepted = true`); "Exit" calls `finish()` |
+| `true` | `DrinkingReminderDialog`, **once per launch**. "Got it", Back or tapping outside closes it |
+
+The 18+ flag is never reset, so the age dialog shows once per install, or again after the app's data is cleared. Backups are disabled, so a reinstall asks again.
+
+**Once per launch** is a `rememberSaveable` flag inside `ResponsibleDrinkingPrompts`:
+
+| Situation | Reminder shown? |
+|---|---|
+| Fresh start (cold launch, leaving with Back then relaunching, swiped from Recents) | Yes. No saved state, so the flag starts `false` |
+| Returning from the background, rotation, a language switch from Settings | No. The flag is restored from saved state |
+| Android killed the process in the background | Yes. `MainActivity` drops the bundle (see below), so the app reopens on Home as a fresh launch |
+| The launch where the player just accepted the age dialog | No. Accepting marks this launch's reminder as shown |
+
+Both dialogs exist because of the Play alcohol policy. See [bar-mode.md](bar-mode.md#responsible-drinking-rules-play-policy).
+
 ## Process restart opens on Home
 
 The game session (`GamePlayersList`, `GameOptionsSource`) lives only in memory. When Android kills the
