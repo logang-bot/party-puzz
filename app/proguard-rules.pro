@@ -34,3 +34,11 @@
     @androidx.room.* <methods>;
     @androidx.room.* <fields>;
 }
+
+# AppLovin MAX (the SDK ships consumer rules; these cover the mediated Meta adapter)
+-keep class com.applovin.** { *; }
+-dontwarn com.applovin.**
+-keep class com.facebook.ads.** { *; }
+-dontwarn com.facebook.ads.**
+-keep class com.facebook.infer.annotation.** { *; }
+-dontwarn com.facebook.infer.annotation.**

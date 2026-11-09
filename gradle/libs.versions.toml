@@ -17,6 +17,8 @@ testServices = "1.5.0"
 testOrchestrator = "1.5.1"
 uiautomator = "2.3.0"
 lifecycleRuntimeKtx = "2.8.4"
+applovinSdk = "13.7.0"
+applovinFacebookAdapter = "6.22.0.1"
 activityCompose = "1.9.1"
 composeBom = "2024.04.01"
 navigationCompose = "2.8.1"
@@ -59,6 +61,8 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+applovin-sdk = { group = "com.applovin", name = "applovin-sdk", version.ref = "applovinSdk" }
+applovin-facebook-adapter = { group = "com.applovin.mediation", name = "facebook-adapter", version.ref = "applovinFacebookAdapter" }
 billing = { group = "com.android.billingclient", name = "billing", version.ref = "billing" }
 
 [plugins]
