@@ -19,3 +19,6 @@ app/staging/
 
 # Signing key shared by every build type
 keystore.properties
+
+# Generated Play Store screenshots (scripts/store-screenshots.sh)
+store-screenshots/

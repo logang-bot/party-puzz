@@ -26,6 +26,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -73,6 +74,9 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+    testOptions {
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
     packaging {
         resources {
@@ -129,6 +133,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.storage)
+    androidTestImplementation(libs.androidx.test.uiautomator)
+    androidTestUtil(libs.androidx.test.services)
+    androidTestUtil(libs.androidx.test.orchestrator)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -137,4 +145,20 @@ dependencies {
 
     // Play Billing
     implementation(libs.billing)
+}
+
+// ScreenshotTour writes "<locale>__<theme>__NN_name.png" through TestStorage; Gradle pulls those to
+// connected_android_test_additional_output before uninstalling. This sorts them into
+// store-screenshots/<locale>/<theme>/ at the repo root. See docs/store-screenshots.md.
+val collectStoreScreenshots by tasks.registering(Copy::class) {
+    from(layout.buildDirectory.dir("outputs/connected_android_test_additional_output")) {
+        include("**/*__*__*.png")
+    }
+    into(rootProject.layout.projectDirectory.dir("store-screenshots"))
+    eachFile { path = name.split("__").joinToString("/") }
+    includeEmptyDirs = false
+}
+
+tasks.matching { it.name == "connectedDebugAndroidTest" }.configureEach {
+    finalizedBy(collectStoreScreenshots)
 }

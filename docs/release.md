@@ -29,7 +29,7 @@ Go to [play.google.com/console](https://play.google.com/console) → **Create ap
 
 Play Console shows a task list. Required before publishing:
 
-- **Main store listing** — title, short/full description, screenshots (phone required), feature graphic (1024×500 px), icon (512×512 px)
+- **Main store listing** — title, short/full description, screenshots (phone required; generate them with [store-screenshots.md](store-screenshots.md)), feature graphic (1024×500 px), icon (512×512 px)
 - **Content rating**: complete the IARC questionnaire honestly. PartyPuzl is a drinking game, so answer **Yes** to alcohol references/consumption, **Yes → "Suggestive references and innuendo in text"** only for sexual themes (kisses, flirting, crushes; nothing refers to sex itself or is shown visually), **No** to crude humour (that category means bodily-function humour: belching, flatulence, feces, urine, vomit, and the app has none), and **No** to user interaction or sharing, since the app is offline with no accounts. Expect around PEGI 16/18 and ESRB Mature. Understating it gets the release rejected under *Content Ratings* ("the content rating may be inaccurate"). Fix that with *Start new questionnaire*, not by toning down the answers
 - **Target audience**: **18+ only**. This matches the in-app `AgeConfirmationDialog` (see [navigation.md](navigation.md#responsible-drinking-dialogs))
 - **App access** — describe any login-gated features
