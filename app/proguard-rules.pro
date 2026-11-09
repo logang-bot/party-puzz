@@ -34,3 +34,13 @@
     @androidx.room.* <methods>;
     @androidx.room.* <fields>;
 }
+
+# Unity LevelPlay (the SDK ships consumer rules; these cover the mediated networks)
+-keep class com.unity3d.** { *; }
+-dontwarn com.unity3d.**
+-keep class com.ironsource.** { *; }
+-dontwarn com.ironsource.**
+-keep class com.facebook.ads.** { *; }
+-dontwarn com.facebook.ads.**
+-keep class com.facebook.infer.annotation.** { *; }
+-dontwarn com.facebook.infer.annotation.**

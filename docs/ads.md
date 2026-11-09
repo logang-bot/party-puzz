@@ -9,6 +9,7 @@ lives on its own branch:
 | `main` | `NoAdsProvider` | **None.** No ad SDK is in the build | this file |
 | `ads/admob` | `AdMobProvider` | Banners, App Open, rewarded | `docs/ads-admob.md` (on that branch) |
 | `ads/meta` | `MetaProvider` | Banners, rewarded, interstitial after a game | `docs/ads-meta.md` (on that branch) |
+| `ads/levelplay` | `LevelPlayProvider` | Same as Meta, through Unity LevelPlay mediation (ironSource Ads, Unity Ads, Meta bidding) | `docs/ads-levelplay.md` (on that branch) |
 
 `main` ships without ads because there is no working AdMob account. The billing code is wired on
 every branch, but it can't be bought yet: the pack unlock is switched off (see

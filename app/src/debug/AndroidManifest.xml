@@ -6,5 +6,9 @@
             android:name=".screenshots.ScreenshotHostActivity"
             android:exported="false"
             android:theme="@style/Theme.PartyPuzl" />
+        <activity
+            android:name=".ads.LevelPlayTestSuiteActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 </manifest>
