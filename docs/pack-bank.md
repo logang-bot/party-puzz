@@ -64,5 +64,21 @@ Edit `v1/packs.json` in `partypuzl-packs` and push; see its README. No app relea
 
 ## Tests
 
-`PackBankParserTest`, `PackBankCacheTest`, `PackBankRepositoryTest`, `PremiumPackContentLoaderTest`
-(unit; `org.json` is a `testImplementation` because Android's stub throws on the JVM).
+All unit tests (`./gradlew testDebugUnitTest`):
+
+| Test | Covers |
+|---|---|
+| `PackBankClientTest` | The real `HttpURLConnection` code against a local socket server: 200 + ETag, ETag sent → 304, no ETag on first download, 404, 500, unreachable host |
+| `PackBankParserTest` | Full document, unknown schema, non-JSON, malformed entries/packs skipped, English fallback, counts |
+| `PackBankCacheTest` | Empty on fresh install, round trip with ETag, ETag removal, no temp files left |
+| `PackBankRepositoryTest` | Cache before network, new download replaces content + cache, failure and 304 keep content, broken download never overwrites the cache, `isRefreshing`, 12 h throttle and `force`, retry after failure |
+| `PremiumPackContentLoaderTest` | Only enabled premium packs are dealt, localised sticky-dare labels, an undownloaded pack adds nothing |
+| `PackUiMappersTest`, `GameConfigStateTest` | Premium counts from the bank, `needsDownload`, Start not enabled by an undownloaded pack |
+| `QuestionPackContentLoaderTest` | Premium prompts join the same deck as official and custom ones |
+
+`org.json` is a `testImplementation` because Android's stub throws on the JVM.
+
+Not unit-tested: the `MainActivity.onStart()` trigger, the retry tap in `GameConfigViewModel` (a
+one-line call into the tested repository), and `currentPackLanguage()` (a thin wrapper over
+AppCompat). The release checklist's offline/online pass covers these on a device
+([release.md](release.md), step 4).

@@ -50,6 +50,22 @@ Three groups — **Official** (11 packs), **Premium** (3) and **Custom** — sha
 
 Tapping an unlocked row toggles it. Tapping a locked premium row opens `UnlockChoiceBottomSheet`.
 
+### Premium content download
+
+Premium prompts are downloaded from the pack bank ([pack-bank.md](pack-bank.md)), so a premium row's
+count comes from the downloaded content (`PackBankRepository.content`, in the user's language) rather
+than from `questions` rows. A premium pack with nothing downloaded has `PackUiModel.needsDownload`
+set, and its meta line replaces the count:
+
+| State | Meta line | Tap |
+|---|---|---|
+| Download in progress (`isPackBankRefreshing`) | "Downloading…" | As usual |
+| Unlocked, nothing downloaded | "Couldn't download · tap to retry" | Retries the download (`refresh(force = true)`) instead of toggling |
+| Locked, nothing downloaded | "Downloads when you're online" | Opens the unlock sheet |
+
+A premium pack that `needsDownload` doesn't count toward `hasEnabledPack`, so it can't be the only
+thing that enables Start.
+
 ### The Custom group
 
 Written by the user and, once offered, toggled per session exactly like the official ones. Group chrome lives in `PackGroupContainers.kt`; the group itself in `CustomPackGroup.kt`.
@@ -104,7 +120,7 @@ Pinned at the bottom of the screen, above the navigation bar (`navigationBarsPad
 Enabled when **both**:
 
 - at least 2 players are registered (`GamePlayersList.PlayersList.size >= 2`), and
-- at least one pack is enabled (`GameConfigState.hasEnabledPack`) — official, premium **or** custom.
+- at least one pack is enabled (`GameConfigState.hasEnabledPack`) — official, premium **or** custom. An enabled premium pack only counts once its content has downloaded.
 
 > The second condition replaces the old "at least one category enabled" check that was dropped with the categories section. It is meaningful again now that every pack can be switched off — without it the game would open with nothing to draw.
 
@@ -135,6 +151,7 @@ The callback navigates **straight to `GameScreen`**. The intermediate `LoadingSc
 | `pack_prompts_count` | "%1$d prompts" |
 | `pack_unlock` | "Unlock" |
 | `pack_unlocked_session` | "Unlocked for this session" |
+| `pack_downloading` / `pack_download_failed` / `pack_download_pending` | Premium download states (see [above](#premium-content-download)) |
 | `pack_write_first` / `_subtitle` | Custom empty state (tappable — opens the manager) |
 | `pack_manage` | "Manage" link on the Custom group label |
 | `unlock_sheet_*`, `unlock_option_*`, `unlock_not_now` | Unlock bottom sheet |
@@ -150,7 +167,7 @@ Removed with the categories section: `pick_what_to_play`, `categories_count_on`,
 
 | File | Role |
 |---|---|
-| `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, snackbar, unlock sheet host |
+| `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, unlock sheet host |
 | `ui/views/gameConfig/ui/GameConfigComponents.kt` | `GameModeHeader`, `GameConfigSectionLabel`, `MiniGamesHintBox`, `StartGameButton` |
 | `ui/views/gameConfig/ui/SetupHints.kt` | `SetupHint` layout shared by both hints, and `ResponsibleDrinkingHint` (Bar Time / Party Puzl only) |
 | `ui/views/gameConfig/ui/QuestionPacksSection.kt` | Official / Premium / Custom groups |
@@ -162,7 +179,8 @@ Removed with the categories section: `pick_what_to_play`, `categories_count_on`,
 | `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt` | Rewarded ad vs. purchase sheet |
 | `ui/views/gameConfig/ui/PlayersContainer.kt` | Player list + add-player affordance |
 | `ui/views/gameConfig/ui/PlayerDataCard.kt` | Individual player card with edit/delete |
-| `ui/views/gameConfig/GameConfigViewModel.kt` | Pack state, unlock flows, `onStartGame`, `deletePlayer` |
+| `ui/views/gameConfig/GameConfigViewModel.kt` | Pack state, unlock flows, download retry, `onStartGame`, `deletePlayer` |
+| `ui/views/gameConfig/PackUiMappers.kt` | Catalog and custom rows → `PackUiModel`, including premium counts and `needsDownload` |
 | `ui/views/gameConfig/GameConfigState.kt` | `GameConfigState`, `PackUiModel` |
 | `data/local/appData/appDataSource/GameOptionsSource.kt` | Singleton holding `currentGameModeNameRes` |
 | `data/local/appData/appDataSource/GamePlayersList` | Singleton holding the registered player list |

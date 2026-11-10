@@ -33,6 +33,12 @@ class GameConfigStateTest {
         assertTrue(GameConfigState(premiumPacks = listOf(pack(PackTier.PREMIUM, true))).hasEnabledPack)
     }
 
+    @Test
+    fun `an enabled premium pack with nothing downloaded is not enough to start`() {
+        val notDownloaded = pack(PackTier.PREMIUM, enabled = true).copy(needsDownload = true)
+        assertFalse(GameConfigState(premiumPacks = listOf(notDownloaded)).hasEnabledPack)
+    }
+
     private fun pack(tier: PackTier, enabled: Boolean) = PackUiModel(
         id = tier.name,
         tier = tier,

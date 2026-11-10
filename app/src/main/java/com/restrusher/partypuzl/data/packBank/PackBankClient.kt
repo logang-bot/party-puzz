@@ -18,14 +18,17 @@ sealed interface PackBankFetch {
  * [PackBankFetch.Failed]. Sending the cached ETag lets an unchanged file come back as a bodiless
  * 304.
  */
-class PackBankClient @Inject constructor() {
+class PackBankClient(private val url: String) {
+
+    @Inject
+    constructor() : this(BuildConfig.PACK_BANK_URL)
 
     suspend fun fetch(etag: String?): PackBankFetch = withContext(Dispatchers.IO) {
         runCatching { request(etag) }.getOrDefault(PackBankFetch.Failed)
     }
 
     private fun request(etag: String?): PackBankFetch {
-        val connection = URL(BuildConfig.PACK_BANK_URL).openConnection() as HttpURLConnection
+        val connection = URL(url).openConnection() as HttpURLConnection
         connection.connectTimeout = TIMEOUT_MILLIS
         connection.readTimeout = TIMEOUT_MILLIS
         etag?.let { connection.setRequestProperty("If-None-Match", it) }

@@ -7,6 +7,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PackBankRepositoryTest {
@@ -49,6 +50,28 @@ class PackBankRepositoryTest {
         givenCache("old", etag = "e1")
         coEvery { client.fetch(any()) } returns PackBankFetch.Fetched("broken", "e2")
         every { parser.parse("broken") } returns null
+        repository.refresh()
+        assertEquals(cached, repository.content.value)
+        coVerify(exactly = 0) { cache.write(any()) }
+    }
+
+    @Test
+    fun `refreshing is reported only while the download runs`() = runTest {
+        givenCache("old", etag = "e1")
+        var refreshingDuringFetch = false
+        coEvery { client.fetch(any()) } coAnswers {
+            refreshingDuringFetch = repository.isRefreshing.value
+            PackBankFetch.NotModified
+        }
+        repository.refresh()
+        assertTrue(refreshingDuringFetch)
+        assertFalse(repository.isRefreshing.value)
+    }
+
+    @Test
+    fun `not modified keeps the cached content`() = runTest {
+        givenCache("old", etag = "e1")
+        coEvery { client.fetch("e1") } returns PackBankFetch.NotModified
         repository.refresh()
         assertEquals(cached, repository.content.value)
         coVerify(exactly = 0) { cache.write(any()) }
