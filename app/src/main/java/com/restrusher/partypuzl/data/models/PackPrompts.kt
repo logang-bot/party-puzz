@@ -45,4 +45,12 @@ data class EnabledPackContent(
         }
 
     val isEmpty: Boolean get() = availableCategories.isEmpty()
+
+    operator fun plus(other: EnabledPackContent) = EnabledPackContent(
+        truths = truths + other.truths,
+        dares = dares + other.dares,
+        stickyDares = stickyDares + other.stickyDares,
+        trivia = trivia + other.trivia,
+        hasMiniGames = hasMiniGames || other.hasMiniGames
+    )
 }

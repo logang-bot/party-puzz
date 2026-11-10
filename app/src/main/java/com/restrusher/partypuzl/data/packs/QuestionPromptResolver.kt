@@ -30,8 +30,6 @@ class QuestionPromptResolver @Inject constructor(
     fun textAt(source: QuestionSource, index: Int): String? = when (source) {
         QuestionSource.OFFICIAL_TRUTHS -> strings(R.array.truth_texts).getOrNull(index)
         QuestionSource.OFFICIAL_DARES -> strings(R.array.dare_texts).getOrNull(index)
-        QuestionSource.NSFW_TRUTHS -> strings(R.array.nsfw_truth_texts).getOrNull(index)
-        QuestionSource.NSFW_DARES -> strings(R.array.nsfw_dare_texts).getOrNull(index)
         else -> null
     }
 
@@ -42,13 +40,6 @@ class QuestionPromptResolver @Inject constructor(
                 R.array.sticky_dares_present_continuous,
                 R.array.sticky_dares_duration_labels,
                 R.array.sticky_dares_duration_seconds
-            )
-
-            QuestionSource.SPICY_STICKY_DARES -> StickyArrays(
-                R.array.spicy_sticky_dares,
-                R.array.spicy_sticky_dares_present_continuous,
-                R.array.spicy_sticky_dares_duration_labels,
-                R.array.spicy_sticky_dares_duration_seconds
             )
 
             else -> return null
@@ -68,13 +59,6 @@ class QuestionPromptResolver @Inject constructor(
                 R.array.quiz_options_a,
                 R.array.quiz_options_b,
                 R.array.quiz_correct_options
-            )
-
-            QuestionSource.MOVIE_TRIVIA -> TriviaArrays(
-                R.array.movie_quiz_questions,
-                R.array.movie_quiz_options_a,
-                R.array.movie_quiz_options_b,
-                R.array.movie_quiz_correct_options
             )
 
             else -> return null
@@ -108,10 +92,6 @@ class QuestionPromptResolver @Inject constructor(
         QuestionSource.OFFICIAL_DARES -> R.array.dare_texts
         QuestionSource.OFFICIAL_STICKY_DARES -> R.array.sticky_dares
         QuestionSource.OFFICIAL_TRIVIA -> R.array.quiz_questions
-        QuestionSource.MOVIE_TRIVIA -> R.array.movie_quiz_questions
-        QuestionSource.SPICY_STICKY_DARES -> R.array.spicy_sticky_dares
-        QuestionSource.NSFW_TRUTHS -> R.array.nsfw_truth_texts
-        QuestionSource.NSFW_DARES -> R.array.nsfw_dare_texts
     }
 
     private fun strings(resId: Int): Array<String> = context.resources.getStringArray(resId)

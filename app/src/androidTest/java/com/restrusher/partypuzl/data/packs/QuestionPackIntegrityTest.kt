@@ -53,26 +53,6 @@ class QuestionPackIntegrityTest {
         }
     }
 
-    /**
-     * Premium packs own their arrays outright — they take every index — so the declared count and
-     * the array length must agree exactly. This is the half that catches orphaned content.
-     */
-    @Test
-    fun premiumPacksClaimTheirWholeArray() {
-        QuestionPackCatalog.tier(PackTier.PREMIUM).forEach { definition ->
-            QuestionCatalog.questionsFor(definition.id)
-                .groupBy { it.source }
-                .forEach { (source, refs) ->
-                    assertEquals(
-                        "${definition.id} declares ${refs.size} of ${source.name}, " +
-                                "but the array holds ${resolver.sizeOf(source)}",
-                        resolver.sizeOf(source),
-                        refs.size
-                    )
-                }
-        }
-    }
-
     /** A trivia answer key that is neither A nor B leaves the question unanswerable. */
     @Test
     fun everyTriviaKeyIsAOrB() {
@@ -95,7 +75,7 @@ class QuestionPackIntegrityTest {
     @Test
     fun truthOrDarePacksShipBothHalves() {
         QuestionPackCatalog.all
-            .filter { it.category == PackCategory.TRUTH_OR_DARE }
+            .filter { it.category == PackCategory.TRUTH_OR_DARE && it.tier != PackTier.PREMIUM }
             .forEach { definition ->
                 val sources = QuestionCatalog.questionsFor(definition.id).map { it.source }
                 assertTrue(
@@ -115,7 +95,7 @@ class QuestionPackIntegrityTest {
      */
     @Test
     fun stickyDareArraysAreParallel() {
-        listOf(QuestionSource.OFFICIAL_STICKY_DARES, QuestionSource.SPICY_STICKY_DARES)
+        listOf(QuestionSource.OFFICIAL_STICKY_DARES)
             .forEach { source ->
                 repeat(resolver.sizeOf(source)) { index ->
                     val prompt = resolver.stickyDareAt(source, index)

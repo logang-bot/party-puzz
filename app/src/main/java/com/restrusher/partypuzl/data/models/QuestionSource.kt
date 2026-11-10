@@ -15,14 +15,10 @@ enum class QuestionSource(val category: PackCategory) {
     OFFICIAL_TRUTHS(PackCategory.TRUTH_OR_DARE),
     OFFICIAL_DARES(PackCategory.TRUTH_OR_DARE),
     OFFICIAL_STICKY_DARES(PackCategory.STICKY_DARE),
-    OFFICIAL_TRIVIA(PackCategory.QUIZ),
-    MOVIE_TRIVIA(PackCategory.QUIZ),
-    SPICY_STICKY_DARES(PackCategory.STICKY_DARE),
-    NSFW_TRUTHS(PackCategory.TRUTH_OR_DARE),
-    NSFW_DARES(PackCategory.TRUTH_OR_DARE);
+    OFFICIAL_TRIVIA(PackCategory.QUIZ);
 
     /** True for the Dare half of a Truth-or-Dare source. */
-    val isDare: Boolean get() = this == OFFICIAL_DARES || this == NSFW_DARES
+    val isDare: Boolean get() = this == OFFICIAL_DARES
 }
 
 /** One question, addressed by its source deck and position within it. */

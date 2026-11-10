@@ -48,19 +48,25 @@ private data class CatalogPack(
     val entity: QuestionPackEntity
 )
 
-/** A locked pack can never read as enabled, whatever the stored flag says. */
-private fun CatalogPack.toUiModel(access: PremiumAccess, promptCounts: Map<String, Int>) =
-    PackUiModel(
+/**
+ * A locked pack can never read as enabled, whatever the stored flag says. A premium pack with no
+ * prompts is one the pack bank hasn't delivered yet.
+ */
+private fun CatalogPack.toUiModel(access: PremiumAccess, promptCounts: Map<String, Int>): PackUiModel {
+    val promptCount = definition.promptCount(promptCounts)
+    return PackUiModel(
         id = definition.id,
         tier = definition.tier,
         name = PackLabel.Resource(definition.nameRes),
         iconRes = definition.spice.iconRes,
         accent = definition.spice.packAccent,
-        promptCount = definition.promptCount(promptCounts),
+        promptCount = promptCount,
         isEnabled = entity.isEnabled && isUnlocked(access),
         isUnlocked = isUnlocked(access),
-        isSessionUnlocked = isOnlySessionUnlocked(access)
+        isSessionUnlocked = isOnlySessionUnlocked(access),
+        needsDownload = definition.tier == PackTier.PREMIUM && promptCount == 0
     )
+}
 
 private fun CatalogPack.isUnlocked(access: PremiumAccess): Boolean =
     definition.tier != PackTier.PREMIUM || entity.isUnlocked || access.isAdFree ||

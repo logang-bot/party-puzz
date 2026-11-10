@@ -35,7 +35,7 @@ Play Console shows a task list. Required before publishing:
 - **App access** — describe any login-gated features
 - **Ads declaration** — `main` contains **no ads**; a build from `ads/admob` or `ads/meta` does — declare accordingly
 - **Advertising ID** (App content → Advertising ID) — **No** for a release from `main`. `main` has no ad or analytics SDK, so its merged manifest has no `com.google.android.gms.permission.AD_ID`; a "Yes" here makes Play reject the release with *"Your advertising ID declaration says that your app uses advertising ID…"*. Do **not** add the permission to silence it. An ad branch (`ads/admob`, `ads/meta`) uses the advertising ID — switch this to **Yes** before shipping one
-- **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main` makes no network calls of its own; the only `INTERNET` permission comes from Play Billing — see [builds.md](builds.md#manifest-permissions)
+- **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main`'s only network call of its own downloads the public premium pack bank from GitHub Pages and sends no user data, so it adds no data type. See [builds.md](builds.md#manifest-permissions)
 
 ### 4. Set up the premium in-app product
 
@@ -119,6 +119,7 @@ Install from the internal testing track on a real device and verify:
 - [ ] With a license tester: buying from the unlock sheet unlocks all three premium packs; buying from Settings → Purchase App does the same and the row turns into "App Purchased"
 - [ ] Refund the test order (Order management): on next launch the premium packs relock and switch off, and custom packs are capped again
 - [ ] Free user: Your packs allows 1 pack; a second opens the premium sheet. A pack allows 5 entries; the 6th opens it too
+- [ ] Pack bank: on a fresh install with network, the premium rows show prompt counts (24 / 20 / 40) within a few seconds. Then reinstall, open the app in **airplane mode**: the rows read "Downloads when you're online", free and custom packs still play, and nothing crashes. Turn the network on, tap an unlocked premium row: it downloads and fills in
 - [ ] Deal several quiz questions: the correct answer lands on the left and right roughly evenly, including on a repeat of a question already seen (the deal-time option swap)
 - [ ] Each premium pack plays enabled on its own — Movie Night offers quiz only, Spicy offers sticky dares only, NSFW deals both Truth and Dare and neither card comes back empty
 - [ ] `./gradlew connectedDebugAndroidTest` passes — `QuestionPackIntegrityTest` is the only guard on the catalog-to-array indices

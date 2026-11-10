@@ -53,6 +53,12 @@ Use a fresh account, or refund first (below), to repeat from each entry point.
 - [ ] Repeat once starting from **Settings → Purchase App**.
 - [ ] Each premium pack plays when enabled on its own.
 
+### Premium content downloads
+Premium prompts come from the pack bank ([pack-bank.md](pack-bank.md)), not the APK.
+- [ ] After buying, each premium pack shows its prompt count (24 / 20 / 40), not a download message.
+- [ ] Airplane mode on, force-stop, reopen: premium packs still show their counts and still play (cached copy).
+- [ ] Clear the app's storage, keep airplane mode on, and open the app: premium rows read "Downloads when you're online" (premium isn't restored yet either, since that needs Play too). Turn the network on, then leave the app and come back: premium is restored and the counts appear.
+
 ### Survives a reinstall
 - [ ] Uninstall, reinstall from Play, open the app. Within a few seconds premium is restored without buying again.
 

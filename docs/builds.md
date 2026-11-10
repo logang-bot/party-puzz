@@ -70,10 +70,13 @@ The files also make `MigrationTestHelper` tests and Room auto-migrations possibl
 | `CAMERA` | app | Player and party photos |
 | `WRITE_EXTERNAL_STORAGE` (`maxSdkVersion=28`) | app | Saving a photo to the gallery on API 24–28 |
 | `com.android.vending.BILLING` | Play Billing | Purchase App |
-| `INTERNET`, `ACCESS_NETWORK_STATE` | Play Billing 9.x, via Google's `datatransport` logging library | The library's own telemetry. The app itself makes no network calls |
+| `INTERNET` | app (also merged in by Play Billing) | Downloading the premium pack bank, a public JSON file on GitHub Pages ([pack-bank.md](pack-bank.md)) |
+| `ACCESS_NETWORK_STATE` | Play Billing 9.x, via Google's `datatransport` logging library | The library's own telemetry |
 
-The app loads only local images; `coil-network-okhttp` was removed for 1.0, so Coil has no network
-stack. Declare the billing-library network use accordingly in the Play Console **Data safety** form.
+The app's only own network call is a plain GET of the pack bank. It sends no user data, only the
+cached ETag. The app loads only local images; `coil-network-okhttp` was removed for 1.0, so Coil
+has no network stack. Declare the billing-library network use accordingly in the Play Console
+**Data safety** form.
 
 The `FileProvider` (`res/xml/path_provider.xml`) exposes only `cache-path` — the in-app camera
 (`CameraController`, see [in-app-camera.md](in-app-camera.md)) writes its temp captures to the root

@@ -10,6 +10,8 @@ import com.restrusher.partypuzl.data.local.entities.GameMode
 import com.restrusher.partypuzl.data.local.entities.PlayerEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import com.restrusher.partypuzl.data.models.PackTier
+import com.restrusher.partypuzl.data.packBank.PackBankRepository
+import com.restrusher.partypuzl.data.packBank.currentPackLanguage
 import com.restrusher.partypuzl.data.models.Player
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
@@ -38,6 +40,7 @@ class GameConfigViewModel @Inject constructor(
     private val questionRepository: QuestionRepository,
     private val customPackRepository: CustomPackRepository,
     private val questionPackSeeder: QuestionPackSeeder,
+    private val packBankRepository: PackBankRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
@@ -45,8 +48,9 @@ class GameConfigViewModel @Inject constructor(
     private val args = savedStateHandle.toRoute<GameConfigScreen>()
 
     /**
-     * Prompt count per pack, read once after seeding. These only change when the catalog's
-     * mapping version does, so there is nothing to observe.
+     * Prompt count per built-in free pack, read once after seeding. These only change when the
+     * catalog's mapping version does, so there is nothing to observe. Premium counts come from the
+     * pack bank instead, which can change while the screen is open.
      */
     private var promptCounts: Map<String, Int> = emptyMap()
 
@@ -57,6 +61,17 @@ class GameConfigViewModel @Inject constructor(
         GamePlayersList.resetPlayersList()
         loadParty()
         observePacks()
+        observePackBankRefresh()
+    }
+
+    /** Tapping a premium pack that never downloaded retries the download instead of toggling it. */
+    fun onTogglePack(packId: String) {
+        val state = uiState.value
+        val pack = (state.officialPacks + state.premiumPacks + state.customPacks)
+            .firstOrNull { it.id == packId } ?: return
+        if (!pack.isUnlocked) return
+        if (pack.needsDownload) return retryPackDownload()
+        viewModelScope.launch { questionPackRepository.setEnabled(packId, !pack.isEnabled) }
     }
 
     private fun loadParty() {
@@ -88,14 +103,17 @@ class GameConfigViewModel @Inject constructor(
         viewModelScope.launch {
             questionPackSeeder.seedIfNeeded()
             promptCounts = questionRepository.countsByPack()
+            packBankRepository.loadCache()
             combine(
                 questionPackRepository.getPacks(),
                 SessionUnlocksSource.unlockedPackIds,
                 userPreferencesRepository.isAdFree,
-                customPackRepository.getSummaries()
-            ) { packs, sessionUnlocks, isAdFree, customSummaries ->
+                customPackRepository.getSummaries(),
+                packBankRepository.content
+            ) { packs, sessionUnlocks, isAdFree, customSummaries, packBank ->
+                val counts = promptCounts + packBank.countsFor(currentPackLanguage())
                 PackModels(
-                    catalog = packs.toCatalogUiModels(PremiumAccess(sessionUnlocks, isAdFree), promptCounts),
+                    catalog = packs.toCatalogUiModels(PremiumAccess(sessionUnlocks, isAdFree), counts),
                     // A pack the user has withdrawn in the manager is not offered here at all.
                     // The catalog plays that role for built-in packs; authored packs have no
                     // catalog, so `isAvailable` is what decides they exist for this screen.
@@ -116,8 +134,20 @@ class GameConfigViewModel @Inject constructor(
         }
     }
 
+    private fun observePackBankRefresh() {
+        viewModelScope.launch {
+            packBankRepository.isRefreshing.collect { refreshing ->
+                _uiState.update { it.copy(isPackBankRefreshing = refreshing) }
+            }
+        }
+    }
+
+    private fun retryPackDownload() {
+        viewModelScope.launch { packBankRepository.refresh(force = true) }
+    }
+
     /**
-     * Bundles one emission of the four-flow combine, which has outgrown a Triple.
+     * Bundles one emission of the five-flow combine, which has outgrown a Triple.
      * [premiumRowsToSync] is the ownership the premium rows must be rewritten to, or null when they
      * already agree — guarding on that keeps the write (which re-emits) from looping.
      */
@@ -129,14 +159,6 @@ class GameConfigViewModel @Inject constructor(
 
     private fun List<QuestionPackEntity>.premiumRowsDisagreeWith(isAdFree: Boolean): Boolean =
         any { it.tier == PackTier.PREMIUM && it.isUnlocked != isAdFree }
-
-    fun onTogglePack(packId: String) {
-        val state = uiState.value
-        val pack = (state.officialPacks + state.premiumPacks + state.customPacks)
-            .firstOrNull { it.id == packId } ?: return
-        if (!pack.isUnlocked) return
-        viewModelScope.launch { questionPackRepository.setEnabled(packId, !pack.isEnabled) }
-    }
 
     fun onUnlockRequested(pack: PackUiModel) {
         _uiState.update { it.copy(unlockTarget = pack) }

@@ -6,6 +6,7 @@ import com.restrusher.partypuzl.data.local.entities.QuestionEntity
 import com.restrusher.partypuzl.data.local.entities.QuestionPackEntity
 import com.restrusher.partypuzl.data.models.CustomEntryType
 import com.restrusher.partypuzl.data.models.DEFAULT_STICKY_DURATION_SECONDS
+import com.restrusher.partypuzl.data.models.EnabledPackContent
 import com.restrusher.partypuzl.data.models.PackCategory
 import com.restrusher.partypuzl.data.models.PackTier
 import com.restrusher.partypuzl.data.models.QuestionSource
@@ -31,8 +32,9 @@ class QuestionPackContentLoaderTest {
     private val customPackRepository = mockk<CustomPackRepository>()
     private val resolver = mockk<QuestionPromptResolver>()
     private val seeder = mockk<QuestionPackSeeder>(relaxed = true)
+    private val premiumLoader = mockk<PremiumPackContentLoader>()
     private val loader = QuestionPackContentLoader(
-        questionRepository, questionPackRepository, customPackRepository, resolver, seeder
+        questionRepository, questionPackRepository, customPackRepository, resolver, seeder, premiumLoader
     )
 
     @Before
@@ -41,6 +43,17 @@ class QuestionPackContentLoaderTest {
         coEvery { customPackRepository.getPlayableEntries() } returns emptyList()
         coEvery { questionPackRepository.getPacksOnce() } returns emptyList()
         every { resolver.durationLabel(any()) } returns "label"
+        coEvery { premiumLoader.load() } returns EnabledPackContent()
+    }
+
+    @Test
+    fun `downloaded premium prompts join the same deck`() = runTest {
+        givenQuestions(question(QuestionSource.OFFICIAL_TRUTHS, 0))
+        every { resolver.textAt(QuestionSource.OFFICIAL_TRUTHS, 0) } returns "truth"
+        coEvery { premiumLoader.load() } returns EnabledPackContent(truths = listOf("premium"), dares = listOf("dare"))
+        val content = loader.loadEnabledContent()
+        assertEquals(listOf("truth", "premium"), content.truths)
+        assertEquals(listOf("dare"), content.dares)
     }
 
     @Test
@@ -54,9 +67,9 @@ class QuestionPackContentLoaderTest {
 
     @Test
     fun `official rows are pooled into truths and dares by source`() = runTest {
-        givenQuestions(question(QuestionSource.OFFICIAL_TRUTHS, 0), question(QuestionSource.NSFW_DARES, 1))
+        givenQuestions(question(QuestionSource.OFFICIAL_TRUTHS, 0), question(QuestionSource.OFFICIAL_DARES, 1))
         every { resolver.textAt(QuestionSource.OFFICIAL_TRUTHS, 0) } returns "truth"
-        every { resolver.textAt(QuestionSource.NSFW_DARES, 1) } returns "dare"
+        every { resolver.textAt(QuestionSource.OFFICIAL_DARES, 1) } returns "dare"
         val content = loader.loadEnabledContent()
         assertEquals(listOf("truth"), content.truths)
         assertEquals(listOf("dare"), content.dares)

@@ -20,7 +20,9 @@ data class PackUiModel(
     /** True if the pack is playable — free, purchased, or unlocked for this session. */
     val isUnlocked: Boolean,
     /** True only when the unlock came from a rewarded ad and dies with the process. */
-    val isSessionUnlocked: Boolean = false
+    val isSessionUnlocked: Boolean = false,
+    /** A premium pack whose prompts haven't downloaded yet, so it has nothing to deal. */
+    val needsDownload: Boolean = false
 )
 
 data class GameConfigState(
@@ -31,7 +33,8 @@ data class GameConfigState(
     val premiumPacks: List<PackUiModel> = emptyList(),
     val customPacks: List<PackUiModel> = emptyList(),
     /** Non-null while the unlock bottom sheet is open, holding the pack being unlocked. */
-    val unlockTarget: PackUiModel? = null
+    val unlockTarget: PackUiModel? = null,
+    val isPackBankRefreshing: Boolean = false
 ) {
     /**
      * The game needs something to draw from. Gates the Start button alongside the player count,
@@ -43,6 +46,6 @@ data class GameConfigState(
      */
     val hasEnabledPack: Boolean
         get() = officialPacks.any { it.isEnabled } ||
-                premiumPacks.any { it.isEnabled } ||
+                premiumPacks.any { it.isEnabled && !it.needsDownload } ||
                 customPacks.any { it.isEnabled }
 }

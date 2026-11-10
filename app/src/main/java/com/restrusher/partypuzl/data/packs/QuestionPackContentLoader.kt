@@ -25,7 +25,8 @@ class QuestionPackContentLoader @Inject constructor(
     private val questionPackRepository: QuestionPackRepository,
     private val customPackRepository: CustomPackRepository,
     private val promptResolver: QuestionPromptResolver,
-    private val seeder: QuestionPackSeeder
+    private val seeder: QuestionPackSeeder,
+    private val premiumPackContentLoader: PremiumPackContentLoader
 ) {
 
     suspend fun loadEnabledContent(): EnabledPackContent {
@@ -68,7 +69,7 @@ class QuestionPackContentLoader @Inject constructor(
             stickyDares = stickyDares,
             trivia = trivia,
             hasMiniGames = isMiniGamePackEnabled()
-        )
+        ) + premiumPackContentLoader.load()
     }
 
     /**

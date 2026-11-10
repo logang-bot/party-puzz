@@ -153,6 +153,7 @@ fun SharedTransitionScope.GameConfigScreen(
                 officialPacks = uiState.officialPacks,
                 premiumPacks = uiState.premiumPacks,
                 customPacks = uiState.customPacks,
+                isPackBankRefreshing = uiState.isPackBankRefreshing,
                 onTogglePack = viewModel::onTogglePack,
                 onUnlockPack = viewModel::onUnlockRequested,
                 onManagePacks = onManagePacksClick

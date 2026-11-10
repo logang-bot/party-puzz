@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.restrusher.partypuzl.data.billing.PremiumBilling
 import com.restrusher.partypuzl.data.billing.PurchaseOutcome
+import com.restrusher.partypuzl.data.packBank.PackBankRepository
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
@@ -46,6 +47,9 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var premiumBilling: PremiumBilling
+
+    @Inject
+    lateinit var packBankRepository: PackBankRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -98,6 +102,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         adsProvider.onActivityStarted(this)
         premiumBilling.refreshEntitlement()
+        lifecycleScope.launch { packBankRepository.refresh() }
     }
 
     override fun onStop() {

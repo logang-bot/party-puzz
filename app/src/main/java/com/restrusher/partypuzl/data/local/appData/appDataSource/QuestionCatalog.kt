@@ -20,8 +20,11 @@ import com.restrusher.partypuzl.data.models.QuestionSource
  */
 object QuestionCatalog {
 
-    /** Bump whenever any source array is edited. Forces a rebuild of the question rows. */
-    const val MAPPING_VERSION = 2
+    /**
+     * Bump whenever any source array is edited. Forces a rebuild of the question rows. Version 3
+     * dropped the premium rows, whose content now comes from the pack bank.
+     */
+    const val MAPPING_VERSION = 3
 
     // ── Truth or Dare ────────────────────────────────────────────────────────
     // truth_texts (40) and dare_texts (52) split across four themed packs.
@@ -93,22 +96,7 @@ object QuestionCatalog {
                 refs(QuestionSource.OFFICIAL_TRIVIA, SPACE_SCIENCE),
 
         QuestionPackCatalog.OFFICIAL_MIXED_BAG.id to
-                refs(QuestionSource.OFFICIAL_TRIVIA, MIXED_BAG),
-
-        // Premium packs own their arrays outright, so they take every index. These counts must
-        // track the array lengths exactly: a range *wider* than its array degrades to a shorter
-        // deck (the seeder drops what doesn't resolve), but a range *narrower* than its array
-        // silently orphans the extra prompts — they are never dealt and nothing reports it.
-        // `QuestionPackIntegrityTest` fails on either.
-        QuestionPackCatalog.PREMIUM_MOVIE_NIGHT.id to
-                refs(QuestionSource.MOVIE_TRIVIA, 0 until 24),
-
-        QuestionPackCatalog.PREMIUM_SPICY.id to
-                refs(QuestionSource.SPICY_STICKY_DARES, 0 until 20),
-
-        QuestionPackCatalog.PREMIUM_NSFW.id to
-                refs(QuestionSource.NSFW_TRUTHS, 0 until 20) +
-                refs(QuestionSource.NSFW_DARES, 0 until 20)
+                refs(QuestionSource.OFFICIAL_TRIVIA, MIXED_BAG)
     )
 
     fun questionsFor(packId: String): List<QuestionRef> = byPack[packId].orEmpty()

@@ -54,19 +54,15 @@ As a backstop, `QuestionPackSeeder` drops any index that no longer resolves and 
 
 ### Where the prompts live
 
-Both `strings.xml` files carry two banner-marked sections — **Official pack content** and
-**Premium pack content** — and inside each, arrays are grouped by deck with **every parallel array
-of a deck kept adjacent**:
+Official prompts live in a banner-marked **Official pack content** section of both `strings.xml`
+files, grouped by deck with **every parallel array of a deck kept adjacent**. Premium prompts are
+not in the app at all; they are downloaded (see [Premium](#premium) below).
 
 ```
 Official pack content
   Truth or Dare        truth_texts, dare_texts
   Sticky dares         sticky_dares, _present_continuous, _duration_labels, _duration_seconds
   Quiz    quiz_questions, quiz_options_a, quiz_options_b, quiz_correct_options
-Premium pack content
-  Movie Night          movie_quiz_questions, _options_a, _options_b, _correct_options
-  Spicy                spicy_sticky_dares, _present_continuous, _duration_labels, _duration_seconds
-  NSFW Confessions     nsfw_truth_texts, nsfw_dare_texts
 ```
 
 Adjacency is the point, not tidiness. The sticky-dare text used to sit 136 lines from the three
@@ -118,24 +114,21 @@ Every Truth-or-Dare pack deliberately holds **both** halves — see the empty-po
 
 ### Premium
 
-| Pack | Category | Content |
+| Pack | Category | Content (pack bank `v1/packs.json`) |
 |---|---|---|
-| **Movie Night** | Quiz | `movie_quiz_*` (24) |
-| **Spicy** | Sticky Dare | `spicy_sticky_dares_*` (20) |
-| **NSFW Confessions** | Truth or Dare | `nsfw_truth_texts` + `nsfw_dare_texts` (20 + 20) |
+| **Movie Night** | Quiz | `premium_movie_night.trivia` (24) |
+| **Spicy** | Sticky Dare | `premium_spicy.sticky` (20) |
+| **NSFW Confessions** | Truth or Dare | `premium_nsfw.truths` + `.dares` (20 + 20) |
 
-Premium packs own their arrays outright, so they take every index — and **the declared range in
-`QuestionCatalog` has to track the array length exactly**. The two failure modes are asymmetric and
-both silent:
+Premium prompts are **not bundled**. They are downloaded from the pack bank (static JSON on GitHub
+Pages), cached on the device, and dealt by `PremiumPackContentLoader`, so they have no `questions`
+rows and no `QuestionSource` (`MAPPING_VERSION` 3 dropped them). The pack definitions themselves
+(name, spice, tier) still live in `QuestionPackCatalog`. Format, failure handling and publishing:
+[pack-bank.md](pack-bank.md).
 
-- a range **wider** than its array degrades safely — `QuestionPackSeeder` drops what will not
-  resolve, and the deck is just shorter;
-- a range **narrower** than its array **orphans** the extra prompts. They sit in `strings.xml`,
-  never get a `questions` row, and are never dealt. Nothing warns.
-
-`QuestionPackIntegrityTest` (`app/src/androidTest`) asserts the equality in both directions, along
-with parallel-array alignment, A/B keys and both-halves-present for Truth or Dare. It is the only
-automated check on this seam; run it after touching any array.
+On the setup screen a premium pack's count comes from the downloaded content. A pack with nothing
+downloaded yet reads "Downloading…", "Couldn't download · tap to retry" (unlocked; the tap retries)
+or "Downloads when you're online" (locked), and doesn't count toward enabling Start.
 
 ### Custom
 

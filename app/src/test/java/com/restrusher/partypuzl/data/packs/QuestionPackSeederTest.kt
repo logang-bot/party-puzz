@@ -79,9 +79,12 @@ class QuestionPackSeederTest {
 
     @Test
     fun `indices past the end of their array are dropped`() = runTest {
-        every { resolver.sizeOf(QuestionSource.MOVIE_TRIVIA) } returns 10
-        val movieRows = rebuiltRows().filter { it.source == QuestionSource.MOVIE_TRIVIA }
-        assertEquals((0 until 10).toList(), movieRows.map { it.sourceIndex })
+        every { resolver.sizeOf(QuestionSource.OFFICIAL_TRUTHS) } returns 10
+        val expected = QuestionCatalog.allEntries().map { it.second }
+            .filter { it.source == QuestionSource.OFFICIAL_TRUTHS && it.index < 10 }
+            .map { it.index }
+        val truthRows = rebuiltRows().filter { it.source == QuestionSource.OFFICIAL_TRUTHS }
+        assertEquals(expected, truthRows.map { it.sourceIndex })
     }
 
     private suspend fun rebuiltRows(): List<QuestionEntity> {

@@ -49,6 +49,7 @@ internal fun QuestionPacksSection(
     officialPacks: List<PackUiModel>,
     premiumPacks: List<PackUiModel>,
     customPacks: List<PackUiModel>,
+    isPackBankRefreshing: Boolean,
     onTogglePack: (String) -> Unit,
     onUnlockPack: (PackUiModel) -> Unit,
     onManagePacks: () -> Unit,
@@ -99,7 +100,7 @@ internal fun QuestionPacksSection(
                     premiumPacks.forEachIndexed { index, pack ->
                         PackRow(
                             name = pack.name.text(),
-                            meta = premiumMeta(pack),
+                            meta = premiumMeta(pack, isPackBankRefreshing),
                             accent = pack.accent.color,
                             iconRes = pack.iconRes,
                             badgeLabel = stringResource(R.string.pack_group_premium),
@@ -126,9 +127,13 @@ internal fun QuestionPacksSection(
     }
 }
 
-/** Meta line for a premium row — flags a session unlock so it doesn't look permanent. */
+/**
+ * Meta line for a premium row. Flags a session unlock so it doesn't look permanent, and stands in
+ * for the prompt count while the pack's content hasn't downloaded.
+ */
 @Composable
-private fun premiumMeta(pack: PackUiModel): String {
+private fun premiumMeta(pack: PackUiModel, isPackBankRefreshing: Boolean): String {
+    if (pack.needsDownload) return packDownloadMeta(pack, isPackBankRefreshing)
     val prompts = stringResource(R.string.pack_prompts_count, pack.promptCount)
     return if (pack.isSessionUnlocked) {
         "$prompts · ${stringResource(R.string.pack_unlocked_session)}"
@@ -136,3 +141,14 @@ private fun premiumMeta(pack: PackUiModel): String {
         prompts
     }
 }
+
+/** Only an unlocked pack offers a retry; tapping a locked one opens the unlock sheet instead. */
+@Composable
+private fun packDownloadMeta(pack: PackUiModel, isPackBankRefreshing: Boolean): String =
+    stringResource(
+        when {
+            isPackBankRefreshing -> R.string.pack_downloading
+            pack.isUnlocked -> R.string.pack_download_failed
+            else -> R.string.pack_download_pending
+        }
+    )

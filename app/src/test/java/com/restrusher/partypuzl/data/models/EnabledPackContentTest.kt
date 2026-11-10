@@ -34,7 +34,7 @@ class EnabledPackContentTest {
     @Test
     fun `only the dare sources count as dares`() {
         val dares = QuestionSource.entries.filter { it.isDare }.toSet()
-        assertEquals(setOf(QuestionSource.OFFICIAL_DARES, QuestionSource.NSFW_DARES), dares)
+        assertEquals(setOf(QuestionSource.OFFICIAL_DARES), dares)
     }
 
     @Test

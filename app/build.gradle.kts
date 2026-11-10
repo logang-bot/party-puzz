@@ -25,6 +25,12 @@ android {
         versionCode = 13
         versionName = "1.0"
 
+        buildConfigField(
+            "String",
+            "PACK_BANK_URL",
+            "\"https://logang-bot.github.io/partypuzl-packs/v1/packs.json\""
+        )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
         vectorDrawables {
@@ -134,6 +140,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.org.json)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
