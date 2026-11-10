@@ -37,15 +37,22 @@ Play Console shows a task list. Required before publishing:
 - **Advertising ID** (App content → Advertising ID) — **No** for a release from `main`. `main` has no ad or analytics SDK, so its merged manifest has no `com.google.android.gms.permission.AD_ID`; a "Yes" here makes Play reject the release with *"Your advertising ID declaration says that your app uses advertising ID…"*. Do **not** add the permission to silence it. An ad branch (`ads/admob`, `ads/meta`) uses the advertising ID — switch this to **Yes** before shipping one
 - **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main` makes no network calls of its own; the only `INTERNET` permission comes from Play Billing — see [builds.md](builds.md#manifest-permissions)
 
-### 4. Create the Purchase App in-app product
+### 4. Set up the premium in-app product
 
-Play Console → your app → **Monetize → Products → In-app products → Create product**
+The product `remove_ads` already exists. Its id can never change, so the app keeps using it (see
+[ads.md](ads.md#premium--the-one-time-purchase)). What it needs:
 
-- Product ID: `remove_ads` (must match exactly)
-- Type: One-time
-- Set price and activate it
+Step-by-step test pass: [testing-purchases.md](testing-purchases.md).
 
-See `docs/ads.md` for more context.
+1. **Payments profile**: Setup → Payments profile must be complete (merchant account), or nothing can be priced.
+2. **A build with billing on a track**: Play only allows products once it has seen a build carrying the `BILLING` permission. An internal-testing upload is enough.
+3. **The product**: Monetize with Play → Products → **One-time products** → `remove_ads`.
+   - Name / description: describe premium packs and unlimited custom packs. **Do not mention removing ads** while shipping from `main`, which has none.
+   - Confirm the price and the purchase option, and that the product is **Active**.
+4. **License testers**: Settings → License testing → add your Google account(s), response `RESPOND_NORMALLY`. Their purchases are never charged.
+5. **Install from Play**: product details (and so the purchase sheet and price) only load for a build installed from a Play track, signed with the release key, with an `applicationId` and `versionCode` Play has seen. A sideloaded debug build reports "Purchases are unavailable right now".
+6. **Store listing**: "Contains in-app purchases" is shown automatically. Mention the premium packs in the full description.
+7. **Data safety**: no change. Purchases go through Google Play and the app sends nothing off the device.
 
 ### 5. Ad network setup (ad branches only)
 
@@ -108,18 +115,15 @@ Install from the internal testing track on a real device and verify:
 - [ ] App opens correctly
 - [ ] From `main`: no ads anywhere, and no empty gap at the bottom of Home, Parties, Party detail or Settings
 - [ ] From an ad branch: run the ad checks in its `docs/ads-*.md`
-- [ ] "Purchase App" purchase flow opens correctly
-- [ ] Premium packs appear locked on the setup screen; tapping one opens the unlock sheet
-- [ ] **Settings → Purchase App raises the same "Coming soon!" toast**, and no Play purchase sheet opens
-- [ ] **Both unlock options raise a "Coming soon!" toast and nothing else** — that is `FeatureFlags.PACK_UNLOCK_COMING_SOON` doing its job. If either one actually unlocks a pack, the flag has been turned off before its two prerequisites landed; see [ads.md](ads.md)
+- [ ] Premium packs appear locked on the setup screen; tapping one opens the unlock sheet with the purchase option and its price (and, from `main`, no "Watch a short ad" row)
+- [ ] With a license tester: buying from the unlock sheet unlocks all three premium packs; buying from Settings → Purchase App does the same and the row turns into "App Purchased"
+- [ ] Refund the test order (Order management): on next launch the premium packs relock and switch off, and custom packs are capped again
+- [ ] Free user: Your packs allows 1 pack; a second opens the premium sheet. A pack allows 5 entries; the 6th opens it too
 - [ ] Deal several quiz questions: the correct answer lands on the left and right roughly evenly, including on a repeat of a question already seen (the deal-time option swap)
 - [ ] Each premium pack plays enabled on its own — Movie Night offers quiz only, Spicy offers sticky dares only, NSFW deals both Truth and Dare and neither card comes back empty
 - [ ] `./gradlew connectedDebugAndroidTest` passes — `QuestionPackIntegrityTest` is the only guard on the catalog-to-array indices
 
-*Once `PACK_UNLOCK_COMING_SOON` is removed, these two become live again and must be checked:*
-
-- [ ] "Watch a short ad" grants the pack for the session
-- [ ] Purchasing the app unlocks all three premium packs permanently
+- [ ] From an ad branch only: "Watch a short ad" grants the pack for the session
 - [ ] **Upgrading over an existing install keeps saved parties and photos** — the v10 migration adds the custom-pack tables, the v11 one adds `custom_packs.isAvailable`; a wrong statement throws on open. See [custom-packs.md](custom-packs.md)
 - [ ] **Upgrading keeps the game mode on played parties** — play a party on the previous release, then upgrade. Its card on Parties still shows the mode; `MIGRATION_12_13` only clears a mode whose stored resource id no longer matches this build. A crash on opening Parties means a stale `R.string` id reached `stringResource()` again
 - [ ] **Upgrading keeps the quiz packs** — upgrade over a v13 install. The app opens, and the quiz packs (World Geography, Space & Science, Mixed Bag, Movie Night) still show on the setup screen. A crash on launch means `MIGRATION_13_14` did not rewrite `GENERAL_KNOWLEDGE` to `QUIZ`
@@ -151,9 +155,8 @@ On the very first release there are extra steps before promoting to production:
 - [ ] Publish to internal testing first and verify the build works
 - [ ] **Closed testing** — create a closed testing track with at least **20 testers** who must opt in and stay enrolled for **14 consecutive days** before the production track unlocks (required for personal Google accounts)
 - [ ] Releasing from an ad branch only: wait for the network to approve the app (see its `docs/ads-*.md`)
-- [ ] Verify the `remove_ads` in-app product is created and active in Play Console
-- [ ] Releasing from an ad branch only: give `PACK_UNLOCK_REWARDED` a real id (setup step 5) — until then the premium unlock earns nothing
-- [ ] **Only after both of the above:** remove `FeatureFlags.PACK_UNLOCK_COMING_SOON` to re-enable the unlock sheet. It is shipping switched off *on purpose* — leaving it on is safe, turning it off early sells a door that leads nowhere. Undo steps in [ads.md](ads.md)
+- [ ] Verify the `remove_ads` in-app product is active in Play Console, with premium-pack wording (setup step 4)
+- [ ] Releasing from an ad branch only: give `PACK_UNLOCK_REWARDED` a real id (setup step 5) — until then the "Watch a short ad" option earns nothing
 - [ ] Test the Purchase App purchase using a Play Store license tester account
 - [ ] Once any ad network approves and the 14-day closed testing period is complete → promote to production
 
@@ -167,7 +170,7 @@ Decided before shipping 1.0 from `main`:
 |---|---|
 | Version | `1.0` / code `11` (see [step 1](#1-bump-the-version-in-appbuildgradlekts)) |
 | Ads | None. `main` ships `NoAdsProvider` until there's a working AdMob account. See [ads.md](ads.md) |
-| Purchase App (Settings) | Visible, but raises "Coming soon!", gated by `PACK_UNLOCK_COMING_SOON` like the setup screen's unlock sheet |
+| Purchase App (Settings) | Visible, but raised "Coming soon!" in 1.0. Enabled afterwards: see [ads.md](ads.md#premium--the-one-time-purchase) |
 | R8 | **Off** for 1.0. Closed testing ran without it, so turning it on would ship an untested build. Planned for a later release. See [builds.md](builds.md#r8-code-shrinking) |
 | Process kill mid-game | Reopens on Home; the game is not restored. Players and parties are already in Room. See [navigation.md](navigation.md#process-restart-opens-on-home) |
 | Permissions | `coil-network-okhttp` removed; `INTERNET` remains only because Play Billing brings it. `FileProvider` narrowed to `cache-path`. See [builds.md](builds.md#manifest-permissions) |

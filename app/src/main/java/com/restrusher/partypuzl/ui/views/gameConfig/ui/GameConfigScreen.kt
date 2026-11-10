@@ -35,8 +35,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -66,8 +64,7 @@ import com.restrusher.partypuzl.data.local.appData.appDataSource.GameOptionsSour
 import com.restrusher.partypuzl.data.local.appData.appDataSource.GamePlayersList
 import com.restrusher.partypuzl.ui.common.ads.AdBanner
 import com.restrusher.partypuzl.ui.common.ads.AdPlacement
-import com.restrusher.partypuzl.ui.common.FeatureFlags
-import com.restrusher.partypuzl.ui.common.showComingSoon
+import com.restrusher.partypuzl.ui.common.ads.LocalAdsProvider
 import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.gameModeTheme
@@ -114,25 +111,10 @@ fun SharedTransitionScope.GameConfigScreen(
     val isEnterSettled = rememberEnterTransitionSettled(animatedVisibilityScope)
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
-    val snackbarHostState = remember { SnackbarHostState() }
 
     // Loaded up front so the unlock sheet can offer the ad immediately rather than after a wait.
-    // While the unlock is stubbed out nothing will ever show it, so skip the request entirely
-    // rather than fetch a rewarded ad on every visit to this screen. The flag is a compile-time
-    // constant, so this branch is fixed for the process and never restructures the composition.
-    val rewardedAd = if (FeatureFlags.PACK_UNLOCK_COMING_SOON) {
-        null
-    } else {
-        rememberRewardedAd(AdPlacement.PACK_UNLOCK_REWARDED)
-    }
-
-    uiState.messageRes?.let { messageRes ->
-        val message = stringResource(messageRes)
-        LaunchedEffect(messageRes) {
-            snackbarHostState.showSnackbar(message)
-            viewModel.onMessageShown()
-        }
-    }
+    val rewardedAd = rememberRewardedAd(AdPlacement.PACK_UNLOCK_REWARDED)
+    val showAdOption = LocalAdsProvider.current.supportsRewardedAds
 
     Box(modifier = modifier.fillMaxSize()) {
         // The page scrolls under the CTA rather than stopping above it, so the bottom inset
@@ -192,42 +174,25 @@ fun SharedTransitionScope.GameConfigScreen(
                 .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
         )
 
-        SnackbarHost(
-            hostState = snackbarHostState,
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .navigationBarsPadding()
-                .padding(bottom = 72.dp)
-        )
-
         if (uiState.isLoading) {
             LoadingScrim()
         }
     }
 
     uiState.unlockTarget?.let { target ->
-        val comingSoon = FeatureFlags.PACK_UNLOCK_COMING_SOON
         UnlockChoiceBottomSheet(
             pack = target,
-            // Coming-soon: there is no ad to wait for, so the row reads ready rather than
-            // "Loading…" and stays tappable — a dead button would swallow the toast.
-            isAdReady = comingSoon || rewardedAd?.isReady == true,
+            showAdOption = showAdOption,
+            isAdReady = rewardedAd.isReady,
             activity = activity,
             onWatchAd = {
-                if (comingSoon) {
-                    context.showComingSoon()
-                } else {
-                    activity?.let { host ->
-                        rewardedAd?.show(host) {
-                            viewModel.onRewardEarned(target.id)
-                            // show() consumes the ad; reload so another pack can be unlocked too.
-                            rewardedAd.reload()
-                        }
+                activity?.let { host ->
+                    rewardedAd.show(host) {
+                        viewModel.onRewardEarned(target.id)
+                        // show() consumes the ad; reload so another pack can be unlocked too.
+                        rewardedAd.reload()
                     }
                 }
-            },
-            onPurchase = { host ->
-                if (comingSoon) context.showComingSoon() else viewModel.onPurchaseRequested(host)
             },
             onDismiss = viewModel::onUnlockDismissed
         )

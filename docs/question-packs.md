@@ -180,20 +180,14 @@ Bump it when you change a stored column — a definition's **tier** or **categor
 
 ## Unlocking a premium pack
 
-> ⚠️ **Neither option works today.** `FeatureFlags.PACK_UNLOCK_COMING_SOON` replaces both with a
-> "Coming soon!" toast until the real rewarded ad unit and the `remove_ads` product exist, so
-> **premium packs cannot currently be unlocked at all**. The wiring below is intact and unchanged —
-> only the two click handlers are stubbed. Full reasoning and the undo steps are in
-> [ads.md](ads.md).
-
-Tapping a locked row opens `UnlockChoiceBottomSheet` with two options:
+Tapping a locked row opens `UnlockChoiceBottomSheet`:
 
 | Option | Grants | Persisted where |
 |---|---|---|
-| **Watch a short ad** | This pack only, until the process dies | `SessionUnlocksSource` (in-memory) |
-| **Unlock everything** | Every premium pack, permanently, plus ad removal | `remove_ads` purchase → `isAdFree` in DataStore, mirrored to `isUnlocked` rows |
+| **Watch a short ad** (ad branches only — hidden when `AdsProvider.supportsRewardedAds` is false, as on `main`) | This pack only, until the process dies | `SessionUnlocksSource` (in-memory) |
+| **Unlock everything** | Every premium pack and unlimited custom packs, permanently | `remove_ads` purchase → `isAdFree` in DataStore, mirrored onto the premium rows' `isUnlocked` |
 
-The purchase reuses the existing `remove_ads` product rather than adding a second SKU — see [ads.md](ads.md). `GameConfigViewModel` treats `isAdFree == true` as "all premium unlocked".
+The purchase reuses the existing `remove_ads` product — see [ads.md](ads.md#premium--the-one-time-purchase). `GameConfigViewModel` treats `isAdFree == true` as "all premium unlocked" and keeps the premium rows' `isUnlocked` equal to it in both directions (`setPremiumUnlocked`). When a refund relocks them, the same write switches them off, so a refunded pack is never dealt.
 
 A pack unlocked by ad is switched **on** immediately, and its meta line reads "Unlocked for this session" so the unlock doesn't look permanent. `isEnabled` is always ANDed with `isUnlocked` when building the UI model, so a locked pack can never read as enabled whatever the stored flag says.
 

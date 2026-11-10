@@ -7,12 +7,17 @@ import com.restrusher.partypuzl.data.models.DEFAULT_STICKY_DURATION_SECONDS
 import com.restrusher.partypuzl.data.models.ENTRY_TEXT_MAX
 import com.restrusher.partypuzl.data.models.TRIVIA_TEXT_MAX
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
+import com.restrusher.partypuzl.domain.customPacks.CustomPackQuota
+import com.restrusher.partypuzl.domain.customPacks.ObserveCustomPackQuotaUseCase
 import com.restrusher.partypuzl.testutil.MainDispatcherRule
 import com.restrusher.partypuzl.ui.views.customPacks.model.EntryDeal
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -26,8 +31,12 @@ class CreateCustomEntryViewModelTest {
     @get:Rule
     val mainRule = MainDispatcherRule()
 
-    private val repository = mockk<CustomPackRepository>(relaxed = true)
-    private val viewModel = CreateCustomEntryViewModel(repository)
+    private val repository = mockk<CustomPackRepository>(relaxed = true) {
+        every { getEntries(any()) } returns flowOf(List(CustomPackQuota.MAX_FREE_ENTRIES) { stickyEntry() })
+    }
+    private val quota = MutableStateFlow(CustomPackQuota(isPremium = true, packCount = 1))
+    private val observeQuota = mockk<ObserveCustomPackQuotaUseCase>().also { every { it() } returns quota }
+    private val viewModel = CreateCustomEntryViewModel(repository, observeQuota)
     private val state get() = viewModel.uiState.value
 
     @Test
@@ -121,6 +130,24 @@ class CreateCustomEntryViewModelTest {
         advanceUntilIdle()
         coVerify(exactly = 1) { repository.getSummaryOnce(any()) }
         assertEquals("pack", state.packId)
+    }
+
+    @Test
+    fun `a free user's new entry past the cap is not saved`() = runTest(mainRule.dispatcher) {
+        quota.value = CustomPackQuota(isPremium = false, packCount = 1)
+        viewModel.onTextChange("one too many")
+        viewModel.onSave {}
+        advanceUntilIdle()
+        coVerify(exactly = 0) { repository.saveEntry(any()) }
+    }
+
+    @Test
+    fun `a free user can still edit an entry in a full pack`() = runTest(mainRule.dispatcher) {
+        quota.value = CustomPackQuota(isPremium = false, packCount = 1)
+        coEvery { repository.getEntry("e1") } returns stickyEntry()
+        viewModel.load("pack", "e1")
+        advanceUntilIdle()
+        assertEquals("spin", savedDraft().text)
     }
 
     private fun TestScope.savedDraft(): CustomEntryDraft {

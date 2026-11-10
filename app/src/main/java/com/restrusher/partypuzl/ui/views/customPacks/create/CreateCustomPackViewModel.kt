@@ -7,17 +7,20 @@ import com.restrusher.partypuzl.data.models.PACK_DESCRIPTION_MAX
 import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
+import com.restrusher.partypuzl.domain.customPacks.ObserveCustomPackQuotaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateCustomPackViewModel @Inject constructor(
-    private val customPackRepository: CustomPackRepository
+    private val customPackRepository: CustomPackRepository,
+    private val observeCustomPackQuota: ObserveCustomPackQuotaUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateCustomPackState())
@@ -53,11 +56,15 @@ class CreateCustomPackViewModel @Inject constructor(
         it.copy(description = value.take(PACK_DESCRIPTION_MAX))
     }
 
-    /** Hands the id back so a freshly created pack can open straight into its editor. */
+    /**
+     * Hands the id back so a freshly created pack can open straight into its editor. A new pack
+     * over the free cap is dropped; the manager's upsell is the normal way that is stopped.
+     */
     fun onSave(onSaved: (String) -> Unit) {
         val state = uiState.value
         if (!state.canSave) return
         viewModelScope.launch {
+            if (state.packId == null && !observeCustomPackQuota().first().canCreatePack) return@launch
             val id = customPackRepository.savePack(
                 CustomPackDraft(
                     id = state.packId,

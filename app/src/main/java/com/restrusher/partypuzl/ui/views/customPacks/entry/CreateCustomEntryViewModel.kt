@@ -8,6 +8,7 @@ import com.restrusher.partypuzl.data.models.DEFAULT_STICKY_DURATION_SECONDS
 import com.restrusher.partypuzl.data.models.ENTRY_TEXT_MAX
 import com.restrusher.partypuzl.data.models.TRIVIA_TEXT_MAX
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
+import com.restrusher.partypuzl.domain.customPacks.ObserveCustomPackQuotaUseCase
 import com.restrusher.partypuzl.ui.views.customPacks.model.EntryDeal
 import com.restrusher.partypuzl.ui.views.customPacks.model.defaultType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,12 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateCustomEntryViewModel @Inject constructor(
-    private val customPackRepository: CustomPackRepository
+    private val customPackRepository: CustomPackRepository,
+    private val observeCustomPackQuota: ObserveCustomPackQuotaUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CreateCustomEntryState())
@@ -79,13 +82,20 @@ class CreateCustomEntryViewModel @Inject constructor(
 
     fun onCorrectOptionChange(value: Char) = _uiState.update { it.copy(correctOption = value) }
 
+    /** A new entry over the free cap is dropped; the editor's upsell normally stops it first. */
     fun onSave(onSaved: () -> Unit) {
         val state = uiState.value
         if (!state.canSave) return
         viewModelScope.launch {
+            if (state.entryId == null && !canAddEntryTo(state.packId)) return@launch
             customPackRepository.saveEntry(state.toDraft())
             onSaved()
         }
+    }
+
+    private suspend fun canAddEntryTo(packId: String): Boolean {
+        val entryCount = customPackRepository.getEntries(packId).first().size
+        return observeCustomPackQuota().first().canAddEntry(entryCount)
     }
 }
 

@@ -1,6 +1,5 @@
 package com.restrusher.partypuzl.ui.views.settings
 
-import android.app.Activity
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,10 +41,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.common.purchase.PremiumPurchaseViewModel
+import com.restrusher.partypuzl.utils.getActivity
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
-import com.restrusher.partypuzl.ui.common.FeatureFlags
-import com.restrusher.partypuzl.ui.common.showComingSoon
 import com.restrusher.partypuzl.ui.common.ads.AdBanner
 import com.restrusher.partypuzl.ui.common.ads.AdPlacement
 import com.restrusher.partypuzl.ui.common.ads.adBannerReservedHeight
@@ -58,12 +57,14 @@ fun SettingsScreen(
     setAppBarTitle: (String) -> Unit,
     onManagePacksClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel(),
+    purchaseViewModel: PremiumPurchaseViewModel = hiltViewModel()
 ) {
     val title = stringResource(id = R.string.settings)
     LaunchedEffect(Unit) { setAppBarTitle(title) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val premiumPrice by purchaseViewModel.formattedPrice.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
 
@@ -115,10 +116,8 @@ fun SettingsScreen(
 
             PurchaseAppRow(
                 isAdFree = uiState.isAdFree,
-                onClick = {
-                    if (FeatureFlags.PACK_UNLOCK_COMING_SOON) context.showComingSoon()
-                    else viewModel.purchaseApp(context as Activity)
-                }
+                price = premiumPrice,
+                onClick = { context.getActivity()?.let(purchaseViewModel::purchase) }
             )
 
             Spacer(modifier = Modifier.height(8.dp))

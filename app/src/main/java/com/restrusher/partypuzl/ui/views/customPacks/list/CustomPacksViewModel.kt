@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.restrusher.partypuzl.data.local.dao.CustomPackSummary
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
+import com.restrusher.partypuzl.domain.customPacks.ObserveCustomPackQuotaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomPacksViewModel @Inject constructor(
-    private val customPackRepository: CustomPackRepository
+    private val customPackRepository: CustomPackRepository,
+    private val observeCustomPackQuota: ObserveCustomPackQuotaUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CustomPacksState())
@@ -28,7 +30,12 @@ class CustomPacksViewModel @Inject constructor(
                 }
             }
         }
+        observeQuota()
     }
+
+    fun onUpsellRequested() = _uiState.update { it.copy(isUpsellOpen = true) }
+
+    fun onUpsellDismissed() = _uiState.update { it.copy(isUpsellOpen = false) }
 
     fun onToggle(packId: String) {
         val pack = uiState.value.packs.firstOrNull { it.id == packId } ?: return
@@ -48,6 +55,12 @@ class CustomPacksViewModel @Inject constructor(
         viewModelScope.launch {
             customPackRepository.deletePack(target.id)
             _uiState.update { it.copy(deleteTarget = null) }
+        }
+    }
+
+    private fun observeQuota() {
+        viewModelScope.launch {
+            observeCustomPackQuota().collect { quota -> _uiState.update { it.copy(quota = quota) } }
         }
     }
 }

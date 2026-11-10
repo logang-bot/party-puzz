@@ -1,9 +1,7 @@
 package com.restrusher.partypuzl.ui.views.settings
 
-import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.restrusher.partypuzl.data.billing.BillingManager
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
@@ -19,8 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val customPackRepository: CustomPackRepository,
-    private val billingManager: BillingManager
+    private val customPackRepository: CustomPackRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsState())
@@ -62,10 +59,6 @@ class SettingsViewModel @Inject constructor(
 
     fun setPartyPhotosEnabled(enabled: Boolean) {
         viewModelScope.launch { userPreferencesRepository.setPartyPhotosEnabled(enabled) }
-    }
-
-    fun purchaseApp(activity: Activity) {
-        billingManager.launchPurchaseFlow(activity)
     }
 
     /** Collected separately so the row's count refreshes when the user comes back from managing. */

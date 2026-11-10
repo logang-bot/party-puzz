@@ -113,6 +113,29 @@ Shown on the pack card in the manager and as a line under the header in the edit
 
 ---
 
+## Free-version limits
+
+Free users may have **1** custom pack holding up to **5** entries. Buying premium (the
+`remove_ads` product, see [ads.md](ads.md#premium--the-one-time-purchase)) lifts both caps.
+
+| Piece | Role |
+|---|---|
+| `domain/customPacks/CustomPackQuota` | `canCreatePack`, `canAddEntry(entryCount)`, and the `MAX_FREE_PACKS` / `MAX_FREE_ENTRIES` constants |
+| `domain/customPacks/ObserveCustomPackQuotaUseCase` | Combines `isAdFree` with the pack count. Every pack counts, including ones switched off in the manager |
+| `FreeQuotaHint`, `CustomPacksUpsellSheet`, `CustomEntriesUpsellSheet` (`ui/views/customPacks/ui/CustomPackQuotaViews.kt`) | The "Free version · 1 of 1 packs used" line and the premium sheets |
+
+- **Only adding is blocked.** Packs and entries a free user already has above the caps (from before
+  the limits existed, or after a refund) stay playable, editable and deletable.
+- **Where it is enforced:** the manager's create button and the editor's add-entry button open the
+  premium sheet instead of navigating. `CreateCustomPackViewModel` and `CreateCustomEntryViewModel`
+  check again on save, so a new pack or entry over the cap is never written.
+- **Editing is never blocked.** The save-time check only applies to a new pack (`packId == null`)
+  or a new entry (`entryId == null`).
+- The caps are enforced on the device only. That is deliberate: the authored content is the
+  user's own, so the limit is a nudge toward premium, not protection of anything.
+
+---
+
 ## Screens
 
 | Screen | Package | Does |

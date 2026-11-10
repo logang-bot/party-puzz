@@ -30,7 +30,8 @@ class QuestionPackRepositoryImpl(
     override suspend fun setUnlocked(id: String, unlocked: Boolean) =
         questionPackLocalProxy.setUnlocked(id, unlocked)
 
-    override suspend fun unlockAllPremium() = questionPackLocalProxy.unlockAllPremium()
+    override suspend fun setPremiumUnlocked(unlocked: Boolean) =
+        questionPackLocalProxy.setPremiumUnlocked(unlocked)
 
     override suspend fun deleteRetiredCatalogPacks(keepIds: List<String>) =
         questionPackLocalProxy.deleteRetiredCatalogPacks(keepIds)

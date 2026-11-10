@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +31,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.domain.customPacks.CustomPackQuota.Companion.MAX_FREE_PACKS
+import com.restrusher.partypuzl.utils.getActivity
+import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomPacksUpsellSheet
+import com.restrusher.partypuzl.ui.views.customPacks.ui.FreeQuotaHint
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appBackground
@@ -61,10 +66,12 @@ fun CustomPacksScreen(
     LaunchedEffect(Unit) { setAppBarTitle(title) }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val activity = LocalContext.current.getActivity()
 
     CustomPacksContent(
         state = uiState,
-        onCreatePack = onCreatePack,
+        onCreatePack = { if (uiState.canCreatePack) onCreatePack() else viewModel.onUpsellRequested() },
+        onQuotaHintClick = viewModel::onUpsellRequested,
         onOpenPack = onOpenPack,
         onEditPack = onEditPack,
         onToggle = viewModel::onToggle,
@@ -73,12 +80,17 @@ fun CustomPacksScreen(
         onDeleteDismissed = viewModel::onDeleteDismissed,
         modifier = modifier
     )
+
+    if (uiState.isUpsellOpen) {
+        CustomPacksUpsellSheet(activity = activity, onDismiss = viewModel::onUpsellDismissed)
+    }
 }
 
 @Composable
 private fun CustomPacksContent(
     state: CustomPacksState,
     onCreatePack: () -> Unit,
+    onQuotaHintClick: () -> Unit,
     onOpenPack: (String) -> Unit,
     onEditPack: (String) -> Unit,
     onToggle: (String) -> Unit,
@@ -94,6 +106,15 @@ private fun CustomPacksContent(
             modifier = Modifier.fillMaxSize()
         ) {
             item { PacksHeader(packCount = state.packs.size, entryCount = state.totalEntries) }
+
+            state.quota?.takeUnless { it.isPremium }?.let { quota ->
+                item {
+                    FreeQuotaHint(
+                        text = stringResource(R.string.custom_packs_quota_hint, quota.packCount, MAX_FREE_PACKS),
+                        onClick = onQuotaHintClick
+                    )
+                }
+            }
 
             if (state.packs.isEmpty() && !state.isLoading) {
                 item {
@@ -197,6 +218,7 @@ private fun CustomPacksSample(state: CustomPacksState) {
         CustomPacksContent(
             state = state,
             onCreatePack = {},
+            onQuotaHintClick = {},
             onOpenPack = {},
             onEditPack = {},
             onToggle = {},

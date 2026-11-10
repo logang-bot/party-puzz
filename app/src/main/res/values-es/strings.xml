@@ -741,7 +741,6 @@
     <!-- Purchases -->
     <string name="purchases">Compras</string>
     <string name="purchase_app">Comprar la app</string>
-    <string name="purchase_app_subtitle">Compra única · Todos los paquetes, sin anuncios</string>
     <string name="app_purchased">App comprada</string>
     <string name="app_purchased_subtitle">¡Gracias por tu apoyo!</string>
 
@@ -778,6 +777,20 @@
     <string name="custom_packs_empty_subtitle">Chistes privados, retos picantes para una cita, trivia sobre tus amigos — lo que quieras.</string>
     <string name="custom_packs_create_cta">Crear paquete nuevo</string>
     <string name="custom_pack_entries_count">%1$d entradas</string>
+    <string name="custom_packs_quota_hint">Versión gratuita · %1$d de %2$d paquetes usados</string>
+    <string name="custom_pack_entries_quota_hint">Versión gratuita · %1$d de %2$d preguntas usadas</string>
+    <string name="custom_packs_upsell_title">¿Quieres más paquetes?</string>
+    <plurals name="custom_packs_upsell_message">
+        <item quantity="one">La versión gratuita incluye %1$d paquete propio. Hazte premium para crear todos los que quieras.</item>
+        <item quantity="many">La versión gratuita incluye %1$d paquetes propios. Hazte premium para crear todos los que quieras.</item>
+        <item quantity="other">La versión gratuita incluye %1$d paquetes propios. Hazte premium para crear todos los que quieras.</item>
+    </plurals>
+    <string name="custom_pack_entries_upsell_title">¿Quieres más preguntas?</string>
+    <plurals name="custom_pack_entries_upsell_message">
+        <item quantity="one">Los paquetes propios gratuitos admiten hasta %1$d pregunta. Hazte premium para tenerlas ilimitadas.</item>
+        <item quantity="many">Los paquetes propios gratuitos admiten hasta %1$d preguntas. Hazte premium para tenerlas ilimitadas.</item>
+        <item quantity="other">Los paquetes propios gratuitos admiten hasta %1$d preguntas. Hazte premium para tenerlas ilimitadas.</item>
+    </plurals>
     <string name="custom_pack_edit">Editar</string>
     <string name="custom_pack_delete">Eliminar</string>
     <string name="custom_pack_delete_title">¿Eliminar este paquete?</string>
@@ -887,12 +900,14 @@
     <string name="unlock_option_ad_subtitle">Gratis · se desbloquea por esta sesión</string>
     <string name="unlock_option_ad_loading">Cargando anuncio…</string>
     <string name="unlock_option_purchase_title">Desbloquear todo</string>
-    <string name="unlock_option_purchase_subtitle">Pago único · todos los paquetes, sin anuncios</string>
     <string name="unlock_not_now">Ahora no</string>
-    <!-- Temporal — lo muestran ambas opciones de desbloqueo mientras siga activo
-         FeatureFlags.PACK_UNLOCK_COMING_SOON. Eliminar junto con el flag. -->
-    <string name="coming_soon">¡Muy pronto!</string>
     <string name="unlock_purchase_unavailable">Las compras no están disponibles ahora. Inténtalo más tarde.</string>
+    <string name="unlock_sheet_subtitle_purchase_only">Desbloquéalo con un pago único.</string>
+    <string name="premium_purchase_subtitle">Pago único · paquetes premium + paquetes propios ilimitados</string>
+    <string name="premium_purchase_subtitle_priced">%1$s pago único · paquetes premium + paquetes propios ilimitados</string>
+    <string name="purchase_outcome_purchased">¡Premium desbloqueado! Disfruta de todos los paquetes.</string>
+    <string name="purchase_outcome_pending">Pago pendiente. Premium se desbloqueará en cuanto se confirme.</string>
+    <string name="purchase_outcome_failed">La compra no se completó. Inténtalo de nuevo.</string>
 
     <!-- ============================================================
          Contenido de paquetes premium

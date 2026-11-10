@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.PackTopic
 import com.restrusher.partypuzl.data.models.SpiceLevel
+import com.restrusher.partypuzl.domain.customPacks.CustomPackQuota
 
 /**
  * Why a pack won't contribute anything playable yet. Advisory only — nothing is blocked, because
@@ -39,7 +40,12 @@ data class CustomPacksState(
     val isLoading: Boolean = true,
     val packs: List<CustomPackUiModel> = emptyList(),
     /** Non-null while the delete confirmation is up, holding the pack about to go. */
-    val deleteTarget: CustomPackUiModel? = null
+    val deleteTarget: CustomPackUiModel? = null,
+    /** Null until loaded; creating is allowed meanwhile and re-checked when the pack is saved. */
+    val quota: CustomPackQuota? = null,
+    val isUpsellOpen: Boolean = false
 ) {
+    val canCreatePack: Boolean get() = quota?.canCreatePack ?: true
+
     val totalEntries: Int get() = packs.sumOf { it.entryCount }
 }

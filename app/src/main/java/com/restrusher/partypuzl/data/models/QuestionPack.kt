@@ -5,8 +5,8 @@ package com.restrusher.partypuzl.data.models
  *
  * - [OFFICIAL] — curated by PartyPuzz, free, always available.
  * - [PREMIUM] — curated by PartyPuzz, needs a rewarded ad (session) or the purchase (permanent).
- * - [CUSTOM] — written by the user. No authoring flow ships yet; the tier exists so the
- *   catalog and the Prepare screen already have a place for them.
+ * - [CUSTOM] — written by the user in Settings → Your packs. Never locked; the free version only
+ *   caps how many can be written — see `CustomPackQuota`.
  */
 enum class PackTier { OFFICIAL, PREMIUM, CUSTOM }
 

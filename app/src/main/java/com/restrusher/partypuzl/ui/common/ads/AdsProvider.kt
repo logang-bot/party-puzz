@@ -19,6 +19,9 @@ interface AdsProvider {
     /** Height a screen reserves at its bottom edge for a pinned banner. */
     val bannerHeight: Dp
 
+    /** False for a build with no ad network, so unlock prompts drop their "watch an ad" option. */
+    val supportsRewardedAds: Boolean get() = true
+
     fun initialize()
     fun onActivityStarted(activity: Activity)
     fun onActivityStopped()

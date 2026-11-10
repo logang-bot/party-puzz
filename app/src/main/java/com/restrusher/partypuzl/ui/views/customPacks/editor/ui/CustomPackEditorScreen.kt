@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,10 @@ import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.local.entities.CustomEntryEntity
 import com.restrusher.partypuzl.data.models.CustomEntryType
 import com.restrusher.partypuzl.data.preferences.ThemeMode
+import com.restrusher.partypuzl.domain.customPacks.CustomPackQuota.Companion.MAX_FREE_ENTRIES
+import com.restrusher.partypuzl.utils.getActivity
+import com.restrusher.partypuzl.ui.views.customPacks.ui.CustomEntriesUpsellSheet
+import com.restrusher.partypuzl.ui.views.customPacks.ui.FreeQuotaHint
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.ReportPageTint
 import com.restrusher.partypuzl.ui.theme.appBackground
@@ -60,21 +65,29 @@ fun CustomPackEditorScreen(
     // The page washes in the pack's own spice accent, the same colour its icon tile uses.
     ReportPageTint(uiState.pack?.spice?.accent)
 
+    val activity = LocalContext.current.getActivity()
+
     CustomPackEditorContent(
         state = uiState,
-        onAddEntry = onAddEntry,
+        onAddEntry = { if (uiState.canAddEntry) onAddEntry() else viewModel.onUpsellRequested() },
+        onQuotaHintClick = viewModel::onUpsellRequested,
         onEditEntry = onEditEntry,
         onDeleteRequested = viewModel::onDeleteRequested,
         onDeleteConfirmed = viewModel::onDeleteConfirmed,
         onDeleteDismissed = viewModel::onDeleteDismissed,
         modifier = modifier
     )
+
+    if (uiState.isUpsellOpen) {
+        CustomEntriesUpsellSheet(activity = activity, onDismiss = viewModel::onUpsellDismissed)
+    }
 }
 
 @Composable
 private fun CustomPackEditorContent(
     state: CustomPackEditorState,
     onAddEntry: () -> Unit,
+    onQuotaHintClick: () -> Unit,
     onEditEntry: (String) -> Unit,
     onDeleteRequested: (CustomEntryEntity) -> Unit,
     onDeleteConfirmed: () -> Unit,
@@ -90,6 +103,15 @@ private fun CustomPackEditorContent(
             state.pack?.let { pack ->
                 item { PackHeader(pack = pack) }
                 item { EntriesLabel(count = state.entries.size, onAdd = onAddEntry) }
+            }
+
+            state.quota?.takeUnless { it.isPremium }?.let {
+                item {
+                    FreeQuotaHint(
+                        text = stringResource(R.string.custom_pack_entries_quota_hint, state.entries.size, MAX_FREE_ENTRIES),
+                        onClick = onQuotaHintClick
+                    )
+                }
             }
 
             if (state.entries.isEmpty()) {
@@ -158,6 +180,7 @@ private fun CustomPackEditorSample(state: CustomPackEditorState) {
         CustomPackEditorContent(
             state = state,
             onAddEntry = {},
+            onQuotaHintClick = {},
             onEditEntry = {},
             onDeleteRequested = {},
             onDeleteConfirmed = {},

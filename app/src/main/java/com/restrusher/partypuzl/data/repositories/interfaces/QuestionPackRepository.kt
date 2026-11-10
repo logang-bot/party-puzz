@@ -18,7 +18,7 @@ interface QuestionPackRepository {
 
     suspend fun setEnabled(id: String, enabled: Boolean)
     suspend fun setUnlocked(id: String, unlocked: Boolean)
-    suspend fun unlockAllPremium()
+    suspend fun setPremiumUnlocked(unlocked: Boolean)
 
     /** Removes packs the catalog no longer defines. */
     suspend fun deleteRetiredCatalogPacks(keepIds: List<String>)

@@ -1,6 +1,7 @@
 package com.restrusher.partypuzl.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.restrusher.partypuzl.data.billing.PremiumBilling
+import com.restrusher.partypuzl.data.billing.PurchaseOutcome
 import com.restrusher.partypuzl.data.preferences.AppLanguage
 import com.restrusher.partypuzl.data.preferences.ThemeMode
 import com.restrusher.partypuzl.data.preferences.UserPreferencesRepository
@@ -25,6 +28,7 @@ import com.restrusher.partypuzl.ui.common.ResponsibleDrinkingPrompts
 import com.restrusher.partypuzl.ui.common.ads.AdsProvider
 import com.restrusher.partypuzl.ui.common.ads.LocalAdsProvider
 import com.restrusher.partypuzl.ui.common.ads.LocalIsAdFree
+import com.restrusher.partypuzl.ui.common.purchase.messageRes
 import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import androidx.compose.runtime.CompositionLocalProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -40,6 +44,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var adsProvider: AdsProvider
 
+    @Inject
+    lateinit var premiumBilling: PremiumBilling
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(ProcessRestart.stateToRestore(savedInstanceState))
@@ -52,6 +59,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        lifecycleScope.launch { premiumBilling.outcomes.collect(::showPurchaseOutcome) }
 
         setContent {
             val themeMode by userPreferencesRepository.themeMode
@@ -89,11 +97,17 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         adsProvider.onActivityStarted(this)
+        premiumBilling.refreshEntitlement()
     }
 
     override fun onStop() {
         super.onStop()
         adsProvider.onActivityStopped()
+    }
+
+    private fun showPurchaseOutcome(outcome: PurchaseOutcome) {
+        val messageRes = outcome.messageRes ?: return
+        Toast.makeText(this, messageRes, Toast.LENGTH_LONG).show()
     }
 
     private fun acceptDrinkingNotice() {

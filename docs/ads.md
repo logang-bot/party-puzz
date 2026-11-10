@@ -92,99 +92,70 @@ inside the provider.
 
 ---
 
-## The pack unlock is switched off
+## Premium — the one-time purchase
 
-⚠️ **Every** route into unlocking a premium pack currently just raises a **"Coming soon!"** toast:
-"watch a short ad" and the one-time purchase on the setup screen's unlock sheet, *and* the
-**Purchase App** row in Settings. They are gated by
-`FeatureFlags.PACK_UNLOCK_COMING_SOON`. This is deliberate and **temporary**.
+One one-time product unlocks **premium**: every `PackTier.PREMIUM` pack and unlimited custom packs
+(free users get 1 custom pack of up to 5 entries — see [custom-packs.md](custom-packs.md)). On
+builds with an ad provider it also removes ads. Copy on `main` never promises ad removal, because
+`main` shows none and Play treats that as a misleading claim.
 
-**Why.** Neither route can earn yet:
-- `main` has no ad provider at all.
-- `ads/admob` still points the rewarded placement at Google's *test* unit.
-- `ads/meta` has placeholder placement ids.
-- The `remove_ads` product is not set up in Play Console.
-
-**What is stubbed.** Only the click handlers: the two in `GameConfigScreen` and the Purchase App
-row's in `SettingsScreen`. All three call `Context.showComingSoon()` from
-`ui/common/ComingSoonToast.kt`. The Settings row stays visible on purpose, so users can see the
-premium tier exists. Before it was gated (fixed for 1.0), that row started a real purchase while the
-setup screen said "Coming soon". Everything underneath is still
-wired: `RewardedAdHandle`, `BillingManager`, `SessionUnlocksSource`, `onRewardEarned` and the sheet.
-The screen also skips `rememberRewardedAd` while the flag is on, so no ad requests are made.
-
-**To undo** (on the branch you ship):
-
-1. Give `PACK_UNLOCK_REWARDED` a real unit / placement id (see that branch's ads doc).
-2. Create and activate `remove_ads` in Play Console (setup step 4 in [release.md](release.md)).
-3. Delete `PACK_UNLOCK_COMING_SOON` from `ui/common/FeatureFlags.kt`, the `comingSoon` branches
-   in `GameConfigScreen`, and the flag check on `PurchaseAppRow`'s `onClick` in `SettingsScreen`.
-4. Delete `ui/common/ComingSoonToast.kt` and the `coming_soon` string from both `strings.xml` files.
-5. `SettingsViewModel.purchaseApp` ignores `launchPurchaseFlow`'s `false` (product unavailable),
-   so the row would do nothing on failure. Show `unlock_purchase_unavailable` there too, as
-   `GameConfigScreen` does.
-6. Delete this section, and the note in [question-packs.md](question-packs.md).
-
-On `main` the "Watch a short ad" row can never become ready even with the flag off, because
-`NoAdsProvider` never loads anything.
-
----
-
-## Purchase app — In-App Purchase
-
-A single one-time purchase. Settings shows it as **"Purchase App"** ("One-time purchase · All
-packs, no ads"). It used to be called "Remove Ads". It was renamed because it also unlocks every
-premium question pack, which matters on `main` where there are no ads to remove.
-
-Only the user-facing text changed. The code names stay as they were:
+The code still uses some older names:
 
 | Thing | Name | Why it was not renamed |
 |---|---|---|
-| Play product id | `remove_ads` (`BillingManager.REMOVE_ADS_PRODUCT_ID`) | Must match Play Console exactly |
-| Owned flag | `UserPreferencesRepository.isAdFree` | Persisted in DataStore and mirrored onto `question_packs` rows |
-| Row / action | `PurchaseAppRow` / `SettingsViewModel.purchaseApp` | |
-| Strings | `purchase_app`, `purchase_app_subtitle`, `app_purchased`, `app_purchased_subtitle` | |
+| Play product id | `remove_ads` (`PREMIUM_PRODUCT_ID` in `data/billing/PremiumProduct.kt`) | Already created in Play Console; ids can never be renamed or reused |
+| Owned flag | `UserPreferencesRepository.isAdFree` / `LocalIsAdFree` | Renaming it would conflict with every `ads/*` branch |
 
-Only `PackTier.PREMIUM` is gated. Official packs are free. Custom packs are always unlocked. See
-[question-packs.md](question-packs.md) and [custom-packs.md](custom-packs.md).
+### Entry points
 
-> **TODO:** Play Console → Monetize → Products → In-app products → Create product. Set the id to
-> exactly `remove_ads`, type **One-time**, set the price, and activate it. Tracked as setup step 4 in
-> [release.md](release.md). While it is missing, `launchPurchaseFlow` returns `false` and
-> `GameConfigScreen` shows the `unlock_purchase_unavailable` snackbar.
+Both open Play's purchase sheet through `PremiumPurchaseViewModel.purchase(activity)`:
+
+1. **Setup screen**: tapping a locked premium pack opens `UnlockChoiceBottomSheet`. Its "Watch a
+   short ad" row only appears when `AdsProvider.supportsRewardedAds` is true, so on `main`
+   (`NoAdsProvider`) the sheet offers the purchase alone.
+2. **Settings → Purchases → Purchase App** (`PurchaseAppRow`). It shows "App Purchased" once owned.
+
+The custom-pack manager and editor add a third and fourth: `PremiumUpsellSheet` opens when a free
+user hits the pack or entry cap. Every purchase button shows Play's localised price
+(`PremiumBilling.formattedPrice`) once the product has loaded.
+
+### Billing pieces (`data/billing/`)
+
+| File | Role |
+|---|---|
+| `PremiumBilling` | Interface the app depends on, bound in `di/BillingModule` |
+| `BillingManager` | Play `BillingClient`: connection, product query, purchase flow, acknowledgement |
+| `PurchaseEntitlementSync` | Turns Play's purchase lists into `isAdFree` (unit-tested) |
+| `PurchaseOutcome` | `Purchased` / `Pending` / `Cancelled` / `Failed` / `Unavailable` |
+| `PremiumProduct.kt` | The product id and the `Purchase.isPremiumOwned` / `isPremiumPending` checks |
 
 ### Purchase flow
 
-1. `BillingManager.connect()` runs in `PartyPuzlApplication.onCreate()`.
-2. Once connected, it queries existing purchases and the product details.
-3. If `remove_ads` is already owned, `UserPreferencesRepository.setAdFree(true)` persists that.
-4. Settings → Purchases → **Purchase App** calls `BillingManager.launchPurchaseFlow(activity)`
-   (once `PACK_UNLOCK_COMING_SOON` is gone; until then it shows the toast).
-5. On success the purchase is acknowledged, and `isAdFree` flips to `true` app-wide.
+1. `PartyPuzlApplication.onCreate()` calls `connect()`. Once connected, it loads the product
+   details (and price) and runs `refreshEntitlement()`.
+2. `MainActivity.onStart()` calls `refreshEntitlement()` again on every return to the app.
+3. `refreshEntitlement()` reads Play's **owned** purchases and sets `isAdFree` to whether premium
+   is among them. A refunded or revoked purchase disappears from that list, so this **relocks**.
+   Unacknowledged purchases are acknowledged here too, which retries any that failed before.
+4. A purchase reports back through `onPurchasesUpdated`. Completed → `isAdFree = true`, acknowledged,
+   `Purchased`. Pending (e.g. cash payment) → nothing granted yet, `Pending`; it unlocks on the
+   next refresh after it clears. `ITEM_ALREADY_OWNED` triggers a refresh.
+5. `MainActivity` collects `PremiumBilling.outcomes` and shows a toast for every outcome except
+   a cancel. `Unavailable` (product never loaded: no Play connection, or a build not installed from
+   Play) uses `unlock_purchase_unavailable`.
 
 ### How `isAdFree` propagates
 
 | Layer | Mechanism |
 |---|---|
 | DataStore | `UserPreferencesRepository.isAdFree: Flow<Boolean>` is the source of truth |
-| Banners and padding | `LocalIsAdFree`, provided in `MainActivity`. `AdBanner` and `adBannerReservedHeight` check it |
-| Full-screen ads | Each provider collects `isAdFree` and skips loads and shows |
+| Question packs | `GameConfigViewModel` treats it as "all premium unlocked", and mirrors it both ways onto the premium `question_packs` rows with `setPremiumUnlocked`. Relocking also switches those packs off, because the deal only reads `isEnabled` |
+| Custom packs | `ObserveCustomPackQuotaUseCase` lifts the pack and entry caps |
 | Settings | `PurchaseAppRow` switches to "App Purchased" |
-| Question packs | `GameConfigViewModel` treats it as "all premium unlocked" |
+| Banners and full-screen ads (ad branches) | `LocalIsAdFree` and each provider skip ads |
 
-### Buying before ads exist
-
-A purchase made while a build has no ads still removes ads in every later build. The entitlement
-is the Play purchase record, not the build:
-
-- `isAdFree` is persisted in DataStore and every provider checks it, so a future AdMob or Meta
-  build never loads full-screen ads or banners for that user.
-- The app has no backup, so a reinstall or new phone starts with `isAdFree = false`. On the next
-  launch `queryExistingPurchases()` finds the owned `remove_ads` and sets it back to `true`.
-- The subtitle "All packs, no ads" stays accurate either way: the packs unlock right away, and the
-  no-ads part covers any ads added later.
-
-While `PACK_UNLOCK_COMING_SOON` is on nobody can buy, so this only matters once the flag is removed.
+A reinstall or new phone starts with `isAdFree = false`; the first refresh finds the owned product
+and sets it back. Play Console setup is in [release.md](release.md), setup step 4.
 
 ---
 

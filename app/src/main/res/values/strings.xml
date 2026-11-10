@@ -743,7 +743,6 @@
     <!-- Purchases -->
     <string name="purchases">Purchases</string>
     <string name="purchase_app">Purchase App</string>
-    <string name="purchase_app_subtitle">One-time purchase · All packs, no ads</string>
     <string name="app_purchased">App Purchased</string>
     <string name="app_purchased_subtitle">Thank you for your support!</string>
 
@@ -780,6 +779,18 @@
     <string name="custom_packs_empty_subtitle">Inside jokes, spicy dares for date night, trivia about your friends — anything goes.</string>
     <string name="custom_packs_create_cta">Create new pack</string>
     <string name="custom_pack_entries_count">%1$d entries</string>
+    <string name="custom_packs_quota_hint">Free version · %1$d of %2$d packs used</string>
+    <string name="custom_pack_entries_quota_hint">Free version · %1$d of %2$d entries used</string>
+    <string name="custom_packs_upsell_title">Want more packs?</string>
+    <plurals name="custom_packs_upsell_message">
+        <item quantity="one">The free version includes %1$d custom pack. Go premium to create as many as you like.</item>
+        <item quantity="other">The free version includes %1$d custom packs. Go premium to create as many as you like.</item>
+    </plurals>
+    <string name="custom_pack_entries_upsell_title">Want more entries?</string>
+    <plurals name="custom_pack_entries_upsell_message">
+        <item quantity="one">Free custom packs hold up to %1$d entry. Go premium for unlimited entries.</item>
+        <item quantity="other">Free custom packs hold up to %1$d entries. Go premium for unlimited entries.</item>
+    </plurals>
     <string name="custom_pack_edit">Edit</string>
     <string name="custom_pack_delete">Delete</string>
     <string name="custom_pack_delete_title">Delete this pack?</string>
@@ -889,12 +900,14 @@
     <string name="unlock_option_ad_subtitle">Free · unlocks for this session</string>
     <string name="unlock_option_ad_loading">Loading ad…</string>
     <string name="unlock_option_purchase_title">Unlock everything</string>
-    <string name="unlock_option_purchase_subtitle">One-time purchase · all packs, no ads</string>
     <string name="unlock_not_now">Not now</string>
-    <!-- Temporary — shown by both unlock options while FeatureFlags.PACK_UNLOCK_COMING_SOON
-         stands. Remove with the flag. -->
-    <string name="coming_soon">Coming soon!</string>
     <string name="unlock_purchase_unavailable">Purchases are unavailable right now. Try again later.</string>
+    <string name="unlock_sheet_subtitle_purchase_only">Unlock it with a one-time purchase.</string>
+    <string name="premium_purchase_subtitle">One-time purchase · premium packs + unlimited custom packs</string>
+    <string name="premium_purchase_subtitle_priced">%1$s one-time · premium packs + unlimited custom packs</string>
+    <string name="purchase_outcome_purchased">Premium unlocked. Enjoy every pack!</string>
+    <string name="purchase_outcome_pending">Payment pending. Premium unlocks as soon as it clears.</string>
+    <string name="purchase_outcome_failed">The purchase didn\'t go through. Please try again.</string>
 
     <!-- ============================================================
          Premium pack content

@@ -75,11 +75,11 @@ Full behaviour — tiers, unlocking, and how enabled packs reach the game — is
 
 **File:** `ui/views/gameConfig/ui/UnlockChoiceBottomSheet.kt`
 
-A `ModalBottomSheet` offering two routes: watch a rewarded ad (unlocks that pack for the session) or buy the app — the one-time "Purchase App" upgrade (unlocks everything permanently and removes ads on the ad branches, via the existing `remove_ads` product).
+Built on the shared `PremiumSheet` (`ui/common/purchase/`). It offers up to two routes: watch a rewarded ad (unlocks that pack for the session) or buy premium, the one-time `remove_ads` product (every premium pack and unlimited custom packs, permanently; on ad branches it also removes ads). The ad row only appears when `AdsProvider.supportsRewardedAds` is true, so `main` offers the purchase alone.
 
 The rewarded ad is loaded on first composition of the screen, not when the sheet opens, so the option is usually ready the moment the sheet appears. While it is still loading the option stays visible but disabled and its subtitle reads "Loading ad…". After a reward is granted the ad is reloaded so a second pack can be unlocked in the same session.
 
-If the Play Store has no details for `remove_ads` — no connection, or the product was never created in Play Console — `launchPurchaseFlow` returns `false` and the screen shows a snackbar instead of appearing to do nothing.
+The purchase row shows Play's localised price once it has loaded. If Play has no details for `remove_ads` (no connection, or a build not installed from Play), `launchPurchaseFlow` reports `PurchaseOutcome.Unavailable` and `MainActivity` shows a toast instead of appearing to do nothing. See [ads.md](ads.md#premium--the-one-time-purchase).
 
 ---
 

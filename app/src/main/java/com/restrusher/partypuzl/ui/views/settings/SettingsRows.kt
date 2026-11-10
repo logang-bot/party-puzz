@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.restrusher.partypuzl.R
+import com.restrusher.partypuzl.ui.common.purchase.premiumPurchaseSubtitle
 import com.restrusher.partypuzl.ui.theme.Ink
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ink
@@ -194,6 +195,7 @@ internal fun OptionRowWithIcon(
 @Composable
 internal fun PurchaseAppRow(
     isAdFree: Boolean,
+    price: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -216,9 +218,8 @@ internal fun PurchaseAppRow(
                 color = MaterialTheme.colorScheme.onBackground
             )
             Text(
-                text = stringResource(
-                    if (isAdFree) R.string.app_purchased_subtitle else R.string.purchase_app_subtitle
-                ),
+                text = if (isAdFree) stringResource(R.string.app_purchased_subtitle)
+                else premiumPurchaseSubtitle(price),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground.ink(Ink.Secondary)
             )

@@ -6,6 +6,7 @@ import com.restrusher.partypuzl.data.local.dao.CustomPackSummary
 import com.restrusher.partypuzl.data.local.entities.CustomEntryEntity
 import com.restrusher.partypuzl.data.models.CustomEntryType
 import com.restrusher.partypuzl.data.repositories.interfaces.CustomPackRepository
+import com.restrusher.partypuzl.domain.customPacks.ObserveCustomPackQuotaUseCase
 import com.restrusher.partypuzl.ui.views.customPacks.list.CustomPackUiModel
 import com.restrusher.partypuzl.ui.views.customPacks.list.PackWarning
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,13 +20,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CustomPackEditorViewModel @Inject constructor(
-    private val customPackRepository: CustomPackRepository
+    private val customPackRepository: CustomPackRepository,
+    private val observeCustomPackQuota: ObserveCustomPackQuotaUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CustomPackEditorState())
     val uiState: StateFlow<CustomPackEditorState> = _uiState.asStateFlow()
 
     private var loadedPackId: String? = null
+
+    init {
+        viewModelScope.launch {
+            observeCustomPackQuota().collect { quota -> _uiState.update { it.copy(quota = quota) } }
+        }
+    }
 
     /**
      * Header and entries are collected together so an entry added or removed refreshes the count
@@ -46,6 +54,10 @@ class CustomPackEditorViewModel @Inject constructor(
                 }
         }
     }
+
+    fun onUpsellRequested() = _uiState.update { it.copy(isUpsellOpen = true) }
+
+    fun onUpsellDismissed() = _uiState.update { it.copy(isUpsellOpen = false) }
 
     fun onDeleteRequested(entry: CustomEntryEntity) {
         _uiState.update { it.copy(deleteTarget = entry) }

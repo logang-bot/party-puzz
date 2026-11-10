@@ -52,9 +52,15 @@ interface QuestionPackDao {
     @Query("UPDATE question_packs SET isUnlocked = :unlocked WHERE id = :id")
     suspend fun setUnlocked(id: String, unlocked: Boolean)
 
-    /** Used when the "remove ads" purchase lands — it unlocks every premium pack at once. */
-    @Query("UPDATE question_packs SET isUnlocked = 1 WHERE tier = 'PREMIUM'")
-    suspend fun unlockAllPremium()
+    /**
+     * Mirrors premium ownership onto every premium row. Relocking after a refund also switches the
+     * packs off, because the deal reads `isEnabled` alone and would otherwise keep playing them.
+     */
+    @Query(
+        "UPDATE question_packs SET isUnlocked = :unlocked, isEnabled = (isEnabled AND :unlocked) " +
+            "WHERE tier = 'PREMIUM'"
+    )
+    suspend fun setPremiumUnlocked(unlocked: Boolean)
 
     @Query("DELETE FROM question_packs WHERE id = :id")
     suspend fun delete(id: String)

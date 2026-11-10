@@ -14,6 +14,7 @@ import javax.inject.Inject
 class NoAdsProvider @Inject constructor() : AdsProvider {
     override val isFullScreenAdVisible = false
     override val bannerHeight: Dp = 0.dp
+    override val supportsRewardedAds = false
 
     override fun initialize() = Unit
     override fun onActivityStarted(activity: Activity) = Unit

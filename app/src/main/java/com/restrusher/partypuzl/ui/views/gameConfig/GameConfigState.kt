@@ -1,7 +1,6 @@
 package com.restrusher.partypuzl.ui.views.gameConfig
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import com.restrusher.partypuzl.data.models.PackAccent
 import com.restrusher.partypuzl.data.models.PackTier
 
@@ -32,9 +31,7 @@ data class GameConfigState(
     val premiumPacks: List<PackUiModel> = emptyList(),
     val customPacks: List<PackUiModel> = emptyList(),
     /** Non-null while the unlock bottom sheet is open, holding the pack being unlocked. */
-    val unlockTarget: PackUiModel? = null,
-    /** One-shot message resource; cleared by [GameConfigViewModel.onMessageShown]. */
-    @StringRes val messageRes: Int? = null
+    val unlockTarget: PackUiModel? = null
 ) {
     /**
      * The game needs something to draw from. Gates the Start button alongside the player count,
