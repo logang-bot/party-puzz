@@ -4,8 +4,7 @@ import com.restrusher.partypuzl.ui.common.ads.AdPlacement
 
 /**
  * Unity LevelPlay keys. The app key comes from LevelPlay → Apps; each ad unit id from LevelPlay →
- * Setup → Ad Units. Meta placement ids never appear here: they live in the Meta network setup inside
- * the LevelPlay dashboard. See docs/ads-levelplay.md.
+ * Setup → Ad Units. See docs/ads-levelplay.md.
  */
 object LevelPlayKeys {
     const val APP_KEY = "29712da25"

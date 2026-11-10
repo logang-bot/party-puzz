@@ -145,9 +145,8 @@ dependencies {
 
     implementation(libs.androidx.core.splashscreen)
 
-    // Unity LevelPlay mediation + Meta Audience Network and Unity Ads adapters
+    // Unity LevelPlay mediation + Unity Ads adapter
     implementation(libs.levelplay.sdk)
-    implementation(libs.levelplay.facebook.adapter)
     implementation(libs.levelplay.unityads.adapter)
     implementation(libs.unity.ads)
 

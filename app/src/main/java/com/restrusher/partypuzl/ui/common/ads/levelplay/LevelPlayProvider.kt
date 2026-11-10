@@ -26,8 +26,7 @@ import javax.inject.Singleton
 
 /**
  * Unity LevelPlay (formerly ironSource) mediation. One SDK auctions every request between
- * ironSource Ads, Unity Ads and Meta Audience Network and serves the winner: banners, rewarded, and
- * a game-end interstitial.
+ * ironSource Ads and Unity Ads and serves the winner: banners, rewarded, and a game-end interstitial.
  */
 @Singleton
 class LevelPlayProvider @Inject constructor(
