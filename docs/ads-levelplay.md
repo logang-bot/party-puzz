@@ -56,53 +56,99 @@ for `isSdkReady`.
 | `levelplay/LevelPlayProvider.kt` | Implements `AdsProvider`, runs init, and exposes `isSdkReady` to the banner and rewarded ad |
 | `levelplay/LevelPlayKeys.kt` | App key and ad unit ids per `AdPlacement` |
 | `levelplay/LevelPlayBanner.kt` | Compose wrapper around `LevelPlayBannerAdView` |
+| `levelplay/LevelPlayBannerLogger.kt` | Logs each banner result under the `LevelPlayBanner` tag, e.g. `failed <unit>: 509 Mediation No fill` |
 | `levelplay/LevelPlayInterstitialManager.kt` | Hilt `@Singleton`. Preloads, shows at game end, reloads on close or failure with exponential backoff (`LevelPlayRetryDelay`), and skips everything while `isAdFree` |
 | `levelplay/LevelPlayRewardedHandle.kt` | `RewardedAdHandle` around `LevelPlayRewardedAd` |
 
 ---
 
-## Dashboard setup
+## Dashboard setup (done 2026-11-10)
 
 Dashboard menu names change often. If one doesn't match, look for the same idea nearby.
 
-### 1. LevelPlay (Unity dashboard → Grow → LevelPlay)
-1. Sign up or sign in, and complete the company, payment and tax details.
-2. **Add app**: Android, package `com.restrusher.partypuzl` (or the Play Store URL). Copy the
-   **App Key** into `LevelPlayKeys.APP_KEY`.
-3. **Ad units**: create 5 × Banner, 1 × Interstitial and 1 × Rewarded. Paste each ad unit id into
-   `LevelPlayKeys`.
-4. **Networks / SDK networks**: turn on **Unity Ads**. ironSource Ads is on by default.
-5. **Test devices**: add your phone's advertising ID (Settings → Google → Ads) for test ads.
+### LevelPlay (ironSource platform)
+- App `PartyPuzl` (Android, live app), category Casual, **COPPA: No**. Publisher ID `699667`.
+- 7 ad units, ids in `LevelPlayKeys`: 5 × Banner (refresh 30 s), `game_end_interstitial` (pacing:
+  max 1 per 3 min) and `pack_unlock_rewarded` (reward `pack` × 1, no capping or pacing).
+- **SDK Networks → Unity Ads (Bidding)**: API key and Organization Core ID saved. Auto-setup is
+  **off**, because it isn't available for accounts on the new Unity dashboard. Instances use Game ID
+  `800079402`:
+  `levelplay_banner` → the 5 banners, `levelplay_interstitial` → `game_end_interstitial`,
+  `levelplay_rewarded` → `pack_unlock_rewarded`. Every ad unit shows **2** networks.
+- **Test devices**: "Second Redmi Note 9 Pro" `9b5e5334-62ba-4c62-9049-12b8d1b53a7c`, the Google
+  advertising ID the SDK actually reads, forced to UnityAds Bidding. Xiaomi phones also show a
+  separate MIUI ad ID in Privacy settings, which is **not** the one to register. Read the right one
+  from logcat: `advertisingId=` in the `LevelPlaySDK` lines. The older "My Redmi Note 9 Pro" entry
+  is stale and can be deleted.
 
-### 2. app-ads.txt
-Publish `app-ads.txt` at the root of the developer website on the Play listing
-(`https://logang-bot.github.io/app-ads.txt` needs a `logang-bot.github.io` repo). It holds the lines
-LevelPlay gives you.
+### Unity Ads (Unity dashboard → Monetization)
+- Project `PartyPuzl`, Android Store ID `com.restrusher.partypuzl`, general audience (not
+  child-directed), Game ID `800079402`.
+- Placements `levelplay_banner` (refresh 30 s), `levelplay_interstitial` and `levelplay_rewarded`.
 
-## Consent (open before release)
+### app-ads.txt
+Live at **https://logang-bot.github.io/app-ads.txt**, from the repo `logang-bot/logang-bot.github.io`
+(GitHub Pages, `main` / root). That repo sits next to this one locally, and also serves a small
+landing page `index.html`. The file holds:
+- `OWNERDOMAIN=logang-bot.github.io`
+- `ironsrc.com, 699667, DIRECT`
+- Unity's list, including `unity.com, 114967912, DIRECT, 96cabb5fbdde37a7`, copied from **Unity →
+  Monetization → Settings → Organization → App-ads.txt → Show full list**
+- the ironSource reseller list from
+  https://docs.unity.com/en-us/grow/programmatic/ironsource-exchange/app-ads-txt, without the lines
+  already in Unity's list
 
-If you distribute in the EEA/UK, you need an IAB TCF consent tool (CMP). LevelPlay reads the
-consent signal it writes. The privacy policy also needs the networks' disclosures, and the Play
-**Data safety** form needs updating.
+Both lists change over time. To refresh, re-copy them, rebuild the file and push to that repo.
+Unity Ads **won't serve banners at all without a verified app-ads.txt**.
 
 ---
 
-## Keys to import
+## Verified so far (2026-11-10, Redmi Note 9 Pro, debug build)
 
-- [x] `LevelPlayKeys.APP_KEY`
-- [x] `LevelPlayKeys.GAME_END_INTERSTITIAL`
-- [x] Five banner ad unit ids and `PACK_UNLOCK_REWARDED` in `LevelPlayKeys`
+- LevelPlay init succeeds. The Test Suite shows ironSource 9.7.0 and Unity Ads 4.21.0 (adapter
+  5.15.0) integrated, each with Rewarded, Interstitial and Banner.
+- Test Suite → `home_banner` in **Test** mode: a Unity Ads test banner and an ironSource "Demo App"
+  test banner both loaded and displayed.
+- In the app, `game_end_interstitial` loads (Unity Ads) on every launch.
+- In the app, every banner returns **`509 Mediation No fill`** with live demand. That's expected
+  until app-ads.txt is verified and the app has some traffic.
 
-## Checks
+---
 
-- [ ] Launch a debug build once, then run
-      `adb shell am start -n com.restrusher.partypuzl/.ads.LevelPlayTestSuiteActivity`. ironSource
-      and Unity Ads should both show as integrated
+## Open items
+
+**Finish testing**
+- [ ] Phone recognized as a test device. In the app (not the Test Suite), the home banner should
+      fill with a Unity Ads test banner. While it isn't recognized the phone receives **real ads**:
+      don't tap them. If still unrecognized, click **Reset** on the test device row, and check that
+      Settings → Google → Ads shows the same ID with ads personalization not deleted.
+- [ ] Test Suite, Test mode: load and show `game_end_interstitial` (`4t9hlie2nennlxmc`) and
+      `pack_unlock_rewarded` (`461k6cho7k1iadso`)
 - [ ] Banner on Home, Parties, Party detail, Settings and Game config, with no layout jump once it
       loads
-- [ ] "Exit game" → Yes shows the interstitial. The app stays masked until it closes
-- [ ] The rewarded ad unlocks a pack (once `PACK_UNLOCK_COMING_SOON` is gone, see [ads.md](ads.md))
+- [ ] "Exit game" → Yes shows the interstitial. The app stays masked until it closes, and pacing
+      holds it to 1 per 3 min
 - [ ] With the app purchased (`isAdFree`): no banners, no gap, no interstitial
+
+**app-ads.txt**
+- [ ] Play Console → Store presence → Store settings → **Website** = `https://logang-bot.github.io`
+- [ ] Unity → Monetization → Settings → Organization → Organization info → **Developer Website** =
+      `https://logang-bot.github.io`
+- [ ] A few days later: Unity's Organization page and LevelPlay report app-ads.txt as verified
+- [ ] Monthly: compare both seller lists against the live file and update it
+
+**Before releasing from this branch**
+- [ ] Privacy policy (`partypuzl-legal`) adds ironSource/Unity Ads disclosures: advertising ID,
+      device data, ad personalization
+- [ ] Play Console **Data safety** updated for the ad SDKs
+- [ ] Play Console **Ads**: "contains ads" = Yes. **Advertising ID** = Yes (the merged manifest
+      has `AD_ID`)
+- [ ] Consent: if distributing in the EEA/UK, add an IAB TCF consent tool (CMP); otherwise
+      exclude those countries
+- [ ] Re-enable the pack unlock: remove `FeatureFlags.PACK_UNLOCK_COMING_SOON` (steps in
+      [ads.md](ads.md)). The `remove_ads` product must exist in Play Console first
+- [ ] Release build smoke test: no test tools (`USE_TEST_ADS = false`), and ads appear for a
+      non-test device
 
 ---
 
