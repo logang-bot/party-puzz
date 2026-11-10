@@ -64,9 +64,12 @@ the soft limit is far away.
 
 ## Changing premium content
 
-Edit `v1/packs.json` in `partypuzl-packs` and push; see its README. No app release is needed unless:
+Step-by-step procedures (editing, adding a pack or language, rebuilding the repo, rollback) are in
+[premium-packs-runbook.md](premium-packs-runbook.md). In short: edit `v1/packs.json` in
+`partypuzl-packs` and push. No app release is needed unless:
 - you add a **new pack id**: it needs a `QuestionPackDefinition` in `QuestionPackCatalog` (name,
-  spice, `PackTier.PREMIUM`) and a `CATALOG_VERSION` bump. Ids the app doesn't know are ignored;
+  spice, `PackTier.PREMIUM`). No `CATALOG_VERSION` bump: missing catalog packs are inserted on
+  every launch. Ids the app doesn't know are ignored;
 - you change the **format**: bump `schemaVersion` in a new app release first, since older apps keep
   their cache when they see an unknown version. For an incompatible change, publish to a new path
   (`v2/packs.json`) and leave `v1` in place for older installs.
