@@ -31,7 +31,7 @@ fun LevelPlayBanner(
     val context = LocalContext.current
     val adView = remember(adUnitId) {
         val config = LevelPlayBannerAdView.Config.Builder().setAdSize(LevelPlayAdSize.BANNER).build()
-        LevelPlayBannerAdView(context, adUnitId, config)
+        LevelPlayBannerAdView(context, adUnitId, config).apply { setBannerListener(LevelPlayBannerLogger) }
     }
     DisposableEffect(adView) {
         adView.loadAd()
