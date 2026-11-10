@@ -215,7 +215,7 @@ class CreatePlayerViewModel @Inject constructor(
 
     private fun copyPhotoToFilesDir(sourceUri: Uri): String {
         val dir = File(context.filesDir, "player_photos").also { it.mkdirs() }
-        val dest = File(dir, "player_${System.currentTimeMillis()}.png")
+        val dest = File(dir, "player_${System.currentTimeMillis()}.jpg")
         context.contentResolver.openInputStream(sourceUri)?.use { it.copyTo(dest.outputStream()) }
         return dest.absolutePath
     }

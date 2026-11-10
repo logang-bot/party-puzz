@@ -11,7 +11,7 @@ players added during the current game session.
 ## User Flow
 
 1. User navigates from `GameConfigScreen` → `CreatePlayerScreen`.
-2. User optionally takes a camera photo or picks a random drawable avatar.
+2. User optionally takes a photo with the in-app camera ([in-app-camera.md](in-app-camera.md)) or picks a random drawable avatar.
 3. User optionally enters or generates a random name.
 4. User taps **Confirm**.
 5. A loading overlay appears while the async DB writes complete.
@@ -56,7 +56,7 @@ players added during the current game session.
 
 | Source | Storage location | DB field populated |
 |---|---|---|
-| Camera photo | Copied to `filesDir/player_photos/<timestamp>.png` | `photoPath` |
+| Camera photo | Copied to `filesDir/player_photos/player_<timestamp>.jpg`. The extension must stay `.jpg`: Coil picks the MIME type from it and only applies EXIF rotation to JPEGs | `photoPath` |
 | Random drawable avatar | Stays in APK; only name is stored | `avatarName` |
 | Neither | — | both `null` |
 
@@ -151,7 +151,7 @@ The arrays are read at call time via `context.resources.getStringArray(...)`, so
 Runs on `Dispatchers.IO` inside `viewModelScope`:
 
 1. Set `isLoading = true`.
-2. If `capturedImageUri != Uri.EMPTY` → copy from cache to `filesDir/player_photos/<ts>.png`; store absolute path as `photoPath`.
+2. If `capturedImageUri != Uri.EMPTY` → copy from cache to `filesDir/player_photos/player_<ts>.jpg`; store absolute path as `photoPath`.
 3. If `randomAvatarRes != null` → resolve entry name via `resources.getResourceEntryName(res)`; store as `avatarName`.
 4. Insert `PlayerEntity` via `playerRepository.createPlayer()` → returns `Long` player ID.
 5. Read `GamePlayersList.currentPartyId`; if `null` → create a new party via `partyRepository.createParty()` and store the result.

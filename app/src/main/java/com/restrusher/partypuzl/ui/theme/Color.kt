@@ -61,6 +61,11 @@ val SimonYellow = Color(0xFFFFEB3B)
 val AnswerCorrectGreen = Color(0xFF2E7D32)
 val AnswerWrongRed = Color(0xFFC62828)
 
+/** In-app camera chrome. Always dark, whatever the theme, so the viewfinder reads like a camera. */
+val CameraBackdrop = Color(0xFF000000)
+val CameraControlContent = Color(0xFFFFFFFF)
+val CameraControlScrim = Color(0x66000000)
+
 // ─────────────────────────────────────────────────────────────
 // App background gradients
 //

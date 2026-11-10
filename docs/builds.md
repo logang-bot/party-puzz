@@ -75,8 +75,9 @@ The files also make `MigrationTestHelper` tests and Room auto-migrations possibl
 The app loads only local images; `coil-network-okhttp` was removed for 1.0, so Coil has no network
 stack. Declare the billing-library network use accordingly in the Play Console **Data safety** form.
 
-The `FileProvider` (`res/xml/path_provider.xml`) exposes only `cache-path` — the camera writes its
-temp captures to the root of `cacheDir`. Saving to the gallery goes through `MediaStore` and never
+The `FileProvider` (`res/xml/path_provider.xml`) exposes only `cache-path` — the in-app camera
+(`CameraController`, see [in-app-camera.md](in-app-camera.md)) writes its temp captures to the root
+of `cacheDir`. Saving to the gallery goes through `MediaStore` and never
 touches the provider. Widen the paths only if a new feature shares a file from somewhere else.
 
 ---

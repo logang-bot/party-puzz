@@ -2,8 +2,6 @@ package com.restrusher.partypuzl.ui.views.createPlayer
 
 import android.content.pm.ActivityInfo
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.BoundsTransform
@@ -42,7 +40,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -58,12 +58,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.restrusher.partypuzl.R
 import com.restrusher.partypuzl.data.models.Gender
 import com.restrusher.partypuzl.data.models.InterestedIn
+import com.restrusher.partypuzl.ui.camera.InAppCameraDialog
 import com.restrusher.partypuzl.ui.common.LoadingScrim
 import com.restrusher.partypuzl.ui.common.LockScreenOrientation
 import com.restrusher.partypuzl.ui.common.rememberCameraPermissionRequester
@@ -72,7 +72,6 @@ import com.restrusher.partypuzl.ui.theme.PartyPuzlTheme
 import com.restrusher.partypuzl.ui.theme.appColors
 import com.restrusher.partypuzl.ui.theme.ctaScrim
 import com.restrusher.partypuzl.ui.theme.ink
-import java.io.File
 
 /** Matches the design's `.pp-btn:disabled { opacity: 0.45 }`. */
 private const val DISABLED_ALPHA = 0.45f
@@ -96,27 +95,8 @@ fun SharedTransitionScope.CreatePlayerScreen(
         viewModel.navigationEvents.collect { navigateBack() }
     }
 
-    val uri = remember {
-        val tempFile = File.createTempFile(
-            "picture_${System.currentTimeMillis()}", ".png", context.cacheDir
-        ).apply {
-            createNewFile()
-            deleteOnExit()
-        }
-
-        FileProvider.getUriForFile(
-            context.applicationContext,
-            "${context.packageName}.provider",
-            tempFile
-        )
-    }
-
-    val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicture()
-    ) { success ->
-        if (success) viewModel.onCapturedImage(uri)
-    }
-    val cameraPermission = rememberCameraPermissionRequester(onGranted = { cameraLauncher.launch(uri) })
+    var isCameraOpen by remember { mutableStateOf(false) }
+    val cameraPermission = rememberCameraPermissionRequester(onGranted = { isCameraOpen = true })
 
     setAppBarTitle(
         stringResource(if (uiState.isEditMode) R.string.edit_player else R.string.new_player)
@@ -187,6 +167,16 @@ fun SharedTransitionScope.CreatePlayerScreen(
         if (uiState.isLoading) {
             LoadingScrim()
         }
+    }
+
+    if (isCameraOpen) {
+        InAppCameraDialog(
+            onCaptured = { uri ->
+                isCameraOpen = false
+                viewModel.onCapturedImage(uri)
+            },
+            onDismiss = { isCameraOpen = false }
+        )
     }
 }
 

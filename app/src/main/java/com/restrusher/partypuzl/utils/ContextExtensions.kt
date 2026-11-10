@@ -14,16 +14,8 @@ fun Context.getActivity(): ComponentActivity? = when (this) {
     else -> null
 }
 
-fun Context.createTempPictureUri(
-    provider: String = "${BuildConfig.APPLICATION_ID}.provider",
-    fileName: String = "picture_${System.currentTimeMillis()}",
-    fileExtension: String = ".png"
-): Uri {
-    val tempFile = File.createTempFile(
-        fileName, fileExtension, cacheDir
-    ).apply {
-        createNewFile()
-    }
+fun Context.createTempPictureFile(fileName: String = "picture_${System.currentTimeMillis()}"): File =
+    File.createTempFile(fileName, ".jpg", cacheDir)
 
-    return FileProvider.getUriForFile(applicationContext, provider, tempFile)
-}
+fun Context.uriForCacheFile(file: File): Uri =
+    FileProvider.getUriForFile(applicationContext, "${BuildConfig.APPLICATION_ID}.provider", file)

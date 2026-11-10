@@ -2,13 +2,13 @@
 
 ## Overview
 
-Runtime permission requests follow an MVVM pattern: the **ViewModel** owns the permission dialog queue state, and the **Composable screen** handles the Android system interactions (launching the permission request and showing the dialog).
+Runtime permission requests are handled in the composable layer: launchers and rationale dialogs live in the screen (or a `remember…` helper such as `rememberCameraPermissionRequester`), and view models never see permission state.
 
 Two permissions are currently requested at runtime:
 
 | Permission | API scope | Location | Pattern | Purpose |
 |---|---|---|---|---|
-| `CAMERA` | All | `CreatePlayerScreen` | Full dialog queue flow (see below) | Take a player profile photo |
+| `CAMERA` | All | `CreatePlayerScreen` | `rememberCameraPermissionRequester` (see below) | Take a player profile photo |
 | `CAMERA` | All | `GameScreen` | Silent inline check (see below) | Capture a party album photo during a game session |
 | `CAMERA` | All | `PartyDetailScreen` | `RequestPermission` launcher | Grant camera access to enable the in-game photo feature |
 | `WRITE_EXTERNAL_STORAGE` | API ≤ 28 only | `PartyDetailScreen` | `RequestPermission` launcher + pending-path pattern | Save a photo to the device gallery from the photo viewer |
@@ -58,69 +58,30 @@ String resources used:
 | `R.string.camera_permission_rationale` | Rationale shown on first/subsequent denials |
 | `R.string.camera_permission_permanently_declined` | Copy shown after permanent denial |
 
-### `CreatePlayerViewModel` — queue state
+### `rememberCameraPermissionRequester` (`ui/common/CameraPermission.kt`)
 
-```kotlin
-val visiblePermissionDialogQueue = mutableStateListOf<String>()
-```
-
-A `SnapshotStateList` of permission strings that currently need a dialog shown. Compose automatically recomposes when it changes.
-
-| Method | Behaviour |
-|---|---|
-| `onPermissionResult(permission, isGranted)` | If denied and not already queued, adds the permission string to the queue |
-| `dismissDialog()` | Removes the first item in the queue |
-
-### `CreatePlayerScreen` — system interactions
-
-The screen owns the two `ActivityResultLauncher`s that interact with the Android system:
+`CreatePlayerScreen` asks for the camera through this composable helper. It owns its own
+`RequestPermission` launcher and dialog state, so no ViewModel is involved.
 
 ```
-multiplePermissionResultLauncher   →   RequestMultiplePermissions contract
-cameraLauncher                     →   TakePicture contract
-```
-
-**Permission check flow (on "Take Photo" tap):**
-
-```
-User taps "Take Photo"
+User taps "Take Photo"  →  cameraPermission.request()
     │
-    ├─ CAMERA granted?  ──Yes──►  cameraLauncher.launch(uri)
+    ├─ CAMERA granted?  ──Yes──►  onGranted()  →  isCameraOpen = true  →  InAppCameraDialog
     │
-    └─ No  ──────────────────►  multiplePermissionResultLauncher.launch(permissionsToRequest)
-                                        │
-                                        └─ Result callback
-                                               │
-                                               └─ viewModel.onPermissionResult(permission, isGranted)
-                                                       │
-                                                       └─ denied?  ──►  added to visiblePermissionDialogQueue
+    └─ No  ──►  launcher.launch(CAMERA)
+                    │
+                    ├─ granted  ──►  onGranted()
+                    │
+                    └─ denied   ──►  PermissionDialog
+                                        ├─ OK                ──►  request again
+                                        └─ Grant permission  ──►  app settings (permanent denial)
 ```
 
-**Dialog rendering:**
+`isPermanentlyDeclined` is `!shouldShowRequestPermissionRationale(CAMERA)`. That call returns
+`false` both before the first request and after a permanent denial. The dialog only shows after a
+failed request, so `false` at that point reliably means permanent denial.
 
-```kotlin
-dialogQueue
-    .reversed()          // most-recently-added permission shown first
-    .forEach { permission ->
-        PermissionDialog(
-            permissionTextProvider = when (permission) {
-                Manifest.permission.CAMERA -> CameraPermissionTextProvider()
-                else -> return@forEach      // unknown permissions are silently skipped
-            },
-            isPermanentlyDeclined = !mainActivity!!.shouldShowRequestPermissionRationale(permission),
-            onDismiss = viewModel::dismissDialog,
-            onOkClick = {
-                viewModel.dismissDialog()
-                multiplePermissionResultLauncher.launch(arrayOf(permission))
-            },
-            onGoToAppSettingsClick = { mainActivity.openAppSettings() }
-        )
-    }
-```
-
-`shouldShowRequestPermissionRationale()` returns `false` both before the permission has ever been requested **and** after the user has permanently declined it. The dialog is only shown after a failed request (i.e., when the queue is non-empty), so `false` at that point reliably means permanent denial.
-
----
+See [in-app-camera.md](in-app-camera.md) for what happens once the camera opens.
 
 ---
 
@@ -147,7 +108,7 @@ A second check runs when the user taps "Take a photo" as a safety net in case th
 ```
 User taps "Take a photo" (onCameraRequested callback)
     │
-    ├─ CAMERA granted?  ──Yes──►  cameraLauncher.launch(uri)
+    ├─ CAMERA granted?  ──Yes──►  isCameraOpen = true  →  InAppCameraDialog
     │
     └─ No  ──────────────────►  viewModel.onCameraRequestDismissed()
                                     (camera card dismissed silently, deal resets)
@@ -155,13 +116,12 @@ User taps "Take a photo" (onCameraRequested callback)
 
 This is intentional: the camera request card is an **opportunistic** prompt. Users who want the feature can grant the permission from `PartyDetailScreen`.
 
-**Launchers in `GameScreen`:**
+**Camera result in `GameScreen`:**
 
 ```
-cameraUri       →  FileProvider URI for a temp file in cacheDir
-cameraLauncher  →  TakePicture contract
-                       success  →  viewModel.onPhotoCaptured(uri)
-                       failure  →  viewModel.onCameraRequestDismissed()
+InAppCameraDialog
+    onCaptured(uri)  →  viewModel.onPhotoCaptured(uri)
+    onDismiss        →  viewModel.onCameraRequestDismissed()
 ```
 
 ---

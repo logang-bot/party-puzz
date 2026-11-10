@@ -17,7 +17,7 @@ Game session (CHALLENGE_SHOWN)
     │
     └─ Mode event dismissed   ──► camera request card appears (on top of challenge card)
                 │
-                ├─ User taps "Take Photo"  ──► camera app opens
+                ├─ User taps "Take Photo"  ──► InAppCameraDialog opens (see in-app-camera.md)
                 │       │
                 │       └─ Photo saved to  filesDir/party_photos/{partyId}/photo_{ts}.jpg
                 │              └─ Record inserted into  party_photos  table
@@ -138,7 +138,7 @@ onPhotoCaptured(uri)        ──► save file + DB record, then resetDealState
 |---|---|
 | Directory | `context.filesDir/party_photos/{partyId}/` |
 | Filename | `photo_{timestamp}.jpg` |
-| Source | Temporary URI created via `FileProvider` in `GameScreen`, written by the system camera app |
+| Source | Temporary FileProvider URI in `cacheDir`, written by the in-app camera (`CameraController.capture()`) |
 | Copy step | `InputStream` from `ContentResolver` piped to the destination file (on `Dispatchers.IO`) |
 
 ---
@@ -333,7 +333,7 @@ When the user confirms party deletion in `PartyDetailViewModel.confirmDelete()`:
 | `CameraRequestContent.kt` | The prompt itself |
 | `GameDealOverlays.kt` | `CameraRequestCard` — the flip wrapper the prompt arrives on |
 | `GameDealSection.kt` | The camera request `AnimatedVisibility` layer |
-| `GameScreen.kt` | `FileProvider` URI setup, `TakePicture` launcher, permission check on button tap |
+| `GameScreen.kt` | Permission check on button tap; opens `InAppCameraDialog` and routes its result |
 | `PartyDetailState.kt` | `photos`, `viewerPhotoIndex`, `downloadResult` fields; `DownloadResult` enum |
 | `PartyDetailViewModel.kt` | Photo Flow observation; viewer state; download logic; file + record cleanup on delete |
 | `PartyDetailScreen.kt` | Permission launchers, `PartyPhotoAlbumSection` and `PhotoViewerDialog` usage |

@@ -377,3 +377,4 @@ The glass card that used to hold every prompt is gone. Challenge content renders
 - [outcome-presentation.md](outcome-presentation.md) — Reward and punishment spin and reveal
 - [minigames.md](minigames.md) — The mini-game deal type
 - [photo-album.md](photo-album.md) — Camera request card, photo storage, and party album
+- [in-app-camera.md](in-app-camera.md) — The CameraX camera the photo prompt opens

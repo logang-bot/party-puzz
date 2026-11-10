@@ -198,8 +198,9 @@ returned, including right after taking a photo.
 return to the foreground, not just launch:
 
 - coming back from the home screen or the recents list
-- coming back from the **system camera**. The photo features hand off to the camera app via
-  `FileProvider`, so `MainActivity` stops and starts again
+- coming back from the **system camera**, on branches cut before the in-app camera. There the photo
+  features hand off to the camera app, so `MainActivity` stops and starts again. On `main` the camera
+  is in-app ([in-app-camera.md](in-app-camera.md)) and taking a photo no longer triggers `onStart`
 - the activity being recreated, for example on a language change in Settings (`applyLanguage`)
 
 The manager's own doc says it all: "shows it on every launch / return to the foreground". After
