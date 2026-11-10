@@ -41,22 +41,31 @@ class PackBankClientTest {
     }
 
     @Test
-    fun `a server error is a failure`() = runTest {
+    fun `a server error means the server is unavailable`() = runTest {
         respondOnce("500 Internal Server Error", body = "oops")
-        assertEquals(PackBankFetch.Failed, client().fetch(etag = null))
+        assertEquals(failed(PackBankError.SERVER_UNAVAILABLE), client().fetch(etag = null))
     }
 
     @Test
-    fun `a missing file is a failure`() = runTest {
+    fun `a missing file means the server is unavailable`() = runTest {
         respondOnce("404 Not Found", body = "not found")
-        assertEquals(PackBankFetch.Failed, client().fetch(etag = null))
+        assertEquals(failed(PackBankError.SERVER_UNAVAILABLE), client().fetch(etag = null))
     }
 
     @Test
-    fun `an unreachable host is a failure, not a crash`() = runTest {
-        val closedPort = ServerSocket(0).use { it.localPort }
-        assertEquals(PackBankFetch.Failed, PackBankClient("http://127.0.0.1:$closedPort/").fetch(null))
+    fun `a 429 means the host is throttling requests`() = runTest {
+        respondOnce("429 Too Many Requests", body = "slow down")
+        assertEquals(failed(PackBankError.RATE_LIMITED), client().fetch(etag = null))
     }
+
+    @Test
+    fun `an unreachable host means no connection, not a crash`() = runTest {
+        val closedPort = ServerSocket(0).use { it.localPort }
+        val result = PackBankClient("http://127.0.0.1:$closedPort/").fetch(null)
+        assertEquals(failed(PackBankError.NO_CONNECTION), result)
+    }
+
+    private fun failed(error: PackBankError) = PackBankFetch.Failed(error)
 
     private fun client() = PackBankClient("http://127.0.0.1:${server.localPort}/v1/packs.json")
 

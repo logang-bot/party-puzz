@@ -54,6 +54,9 @@ class GameConfigViewModel @Inject constructor(
      */
     private var promptCounts: Map<String, Int> = emptyMap()
 
+    /** The automatic download for an unlocked-but-empty pack runs once per visit; retries are taps. */
+    private var hasTriedMissingDownload = false
+
     private val _uiState = MutableStateFlow(GameConfigState())
     val uiState: StateFlow<GameConfigState> = _uiState.asStateFlow()
 
@@ -70,7 +73,7 @@ class GameConfigViewModel @Inject constructor(
         val pack = (state.officialPacks + state.premiumPacks + state.customPacks)
             .firstOrNull { it.id == packId } ?: return
         if (!pack.isUnlocked) return
-        if (pack.needsDownload) return retryPackDownload()
+        if (pack.needsDownload) return downloadMissingPacks(force = true)
         viewModelScope.launch { questionPackRepository.setEnabled(packId, !pack.isEnabled) }
     }
 
@@ -122,6 +125,7 @@ class GameConfigViewModel @Inject constructor(
                 )
             }.collect { models ->
                 models.premiumRowsToSync?.let(::mirrorPremiumOntoRows)
+                if (models.catalog.any { it.isUnlocked && it.needsDownload }) downloadMissingOnce()
                 _uiState.update { state ->
                     state.copy(
                         arePacksLoaded = true,
@@ -142,8 +146,26 @@ class GameConfigViewModel @Inject constructor(
         }
     }
 
-    private fun retryPackDownload() {
-        viewModelScope.launch { packBankRepository.refresh(force = true) }
+    private fun downloadMissingOnce() {
+        if (hasTriedMissingDownload) return
+        hasTriedMissingDownload = true
+        downloadMissingPacks(force = false)
+    }
+
+    /**
+     * A download the user is waiting on — a pack they own has nothing to play — so it shows the
+     * loading scrim and explains a failure. The silent background check in `MainActivity` does
+     * neither.
+     */
+    private fun downloadMissingPacks(force: Boolean) {
+        if (uiState.value.isDownloadingPacks) return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isDownloadingPacks = true) }
+            val result = packBankRepository.refresh(force)
+            _uiState.update {
+                it.copy(isDownloadingPacks = false, messageRes = result.failureMessageRes)
+            }
+        }
     }
 
     /**
@@ -184,6 +206,10 @@ class GameConfigViewModel @Inject constructor(
     /** Relocking after a refund also switches the packs off, so they stop being dealt. */
     private fun mirrorPremiumOntoRows(isAdFree: Boolean) {
         viewModelScope.launch { questionPackRepository.setPremiumUnlocked(isAdFree) }
+    }
+
+    fun onMessageShown() {
+        _uiState.update { it.copy(messageRes = null) }
     }
 
     fun onStartGame(onReady: () -> Unit) {

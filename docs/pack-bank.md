@@ -18,10 +18,11 @@ can read the content. A purchase-verified download is sketched in
 
 | Piece (`data/packBank/`) | Role |
 |---|---|
-| `PackBankClient` | `GET` with `If-None-Match` and a 10 s timeout. Returns `Fetched` / `NotModified` / `Failed` and never throws |
+| `PackBankClient` | `GET` with `If-None-Match` and a 10 s timeout. Returns `Fetched` / `NotModified` / `Failed(PackBankError)` and never throws |
+| `PackBankError` | `NO_CONNECTION` (any `IOException`), `RATE_LIMITED` (HTTP 429), `SERVER_UNAVAILABLE` (other HTTP errors), `INVALID_CONTENT` (didn't parse) |
 | `PackBankCache` | Last good download in `filesDir/pack_bank/` (body + ETag), written via temp file + rename |
 | `PackBankParser` | `org.json`, tolerant: bad entries, languages or packs are skipped; an unknown `schemaVersion` or non-JSON rejects the file |
-| `PackBankRepository` | Singleton. Exposes `content` and `isRefreshing`. `loadCache()` reads the device copy; `refresh(force)` downloads |
+| `PackBankRepository` | Singleton. Exposes `content` and `isRefreshing`. `loadCache()` reads the device copy; `refresh(force)` downloads and returns `PackBankRefresh` (`Updated` / `Unchanged` / `Skipped` / `Failed(error)`) |
 | `PackBankContent` | pack id → language → `RemotePackPrompts` (`truths`, `dares`, `stickyDares`, `trivia`) |
 | `currentPackLanguage()` | The app's language setting, else the device language. Packs fall back to `en` |
 | `data/packs/PremiumPackContentLoader` | Adds enabled premium packs' prompts to the deck. Sticky-dare labels come from `QuestionPromptResolver.durationLabel` |
@@ -42,6 +43,24 @@ can read the content. A purchase-verified download is sketched in
 - Official, custom and mini-game packs never depend on the network.
 - On the setup screen a premium pack with no content reads "Downloading…", "Couldn't download · tap
   to retry" or "Downloads when you're online", and doesn't count toward enabling Start.
+
+**What the user sees.** The background check from `MainActivity` is silent whether it works or not.
+The setup screen speaks up only when the user is waiting on a download, which is when a pack they
+own has no content: automatically once per visit, or when they tap the row to retry. Then:
+- the existing `LoadingScrim` covers the screen while the download runs;
+- a failure shows a long snackbar explaining why:
+
+| Error | Message |
+|---|---|
+| `NO_CONNECTION` | "Couldn't download the premium packs. Check your internet connection and try again." |
+| `RATE_LIMITED` | "The pack server is getting too many requests right now. Please try again in a while." |
+| `SERVER_UNAVAILABLE`, `INVALID_CONTENT` | "The pack server isn't available right now. Your other packs still work. Try again later." |
+
+**About GitHub's limits.** GitHub Pages has no hard quota. Its 100 GB/month bandwidth limit is soft,
+and when GitHub throttles a site it answers **429**, which the app reports as `RATE_LIMITED`. There
+is no signal that says "free quota exceeded" specifically. A disabled Pages site or a deleted file is
+a 404 (`SERVER_UNAVAILABLE`). At about 26 KB per full download, and a few hundred bytes per 304,
+the soft limit is far away.
 
 ## Changing premium content
 
@@ -68,17 +87,19 @@ All unit tests (`./gradlew testDebugUnitTest`):
 
 | Test | Covers |
 |---|---|
-| `PackBankClientTest` | The real `HttpURLConnection` code against a local socket server: 200 + ETag, ETag sent → 304, no ETag on first download, 404, 500, unreachable host |
+| `PackBankClientTest` | The real `HttpURLConnection` code against a local socket server: 200 + ETag, ETag sent → 304, no ETag on first download, 404 / 500 → `SERVER_UNAVAILABLE`, 429 → `RATE_LIMITED`, unreachable host → `NO_CONNECTION` |
 | `PackBankParserTest` | Full document, unknown schema, non-JSON, malformed entries/packs skipped, English fallback, counts |
 | `PackBankCacheTest` | Empty on fresh install, round trip with ETag, ETag removal, no temp files left |
-| `PackBankRepositoryTest` | Cache before network, new download replaces content + cache, failure and 304 keep content, broken download never overwrites the cache, `isRefreshing`, 12 h throttle and `force`, retry after failure |
+| `PackBankRepositoryTest` | Cache before network, new download replaces content + cache, failure and 304 keep content, broken download never overwrites the cache (`INVALID_CONTENT`), the `PackBankRefresh` each case returns, `isRefreshing`, 12 h throttle and `force`, retry after failure |
+| `PackDownloadMessagesTest` | Which snackbar each failure shows, and none on success |
 | `PremiumPackContentLoaderTest` | Only enabled premium packs are dealt, localised sticky-dare labels, an undownloaded pack adds nothing |
 | `PackUiMappersTest`, `GameConfigStateTest` | Premium counts from the bank, `needsDownload`, Start not enabled by an undownloaded pack |
 | `QuestionPackContentLoaderTest` | Premium prompts join the same deck as official and custom ones |
 
 `org.json` is a `testImplementation` because Android's stub throws on the JVM.
 
-Not unit-tested: the `MainActivity.onStart()` trigger, the retry tap in `GameConfigViewModel` (a
-one-line call into the tested repository), and `currentPackLanguage()` (a thin wrapper over
+Not unit-tested: the `MainActivity.onStart()` trigger, the auto-download / retry / scrim wiring in
+`GameConfigViewModel` (no ViewModel test harness for that screen yet; it calls the tested
+repository and the tested message mapping), and `currentPackLanguage()` (a thin wrapper over
 AppCompat). The release checklist's offline/online pass covers these on a device
 ([release.md](release.md), step 4).

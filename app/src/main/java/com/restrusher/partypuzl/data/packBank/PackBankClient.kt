@@ -3,6 +3,7 @@ package com.restrusher.partypuzl.data.packBank
 import com.restrusher.partypuzl.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.inject.Inject
@@ -10,13 +11,13 @@ import javax.inject.Inject
 sealed interface PackBankFetch {
     data class Fetched(val body: String, val etag: String?) : PackBankFetch
     data object NotModified : PackBankFetch
-    data object Failed : PackBankFetch
+    data class Failed(val error: PackBankError) : PackBankFetch
 }
 
 /**
- * Downloads `packs.json`. Never throws: no network, a timeout or any non-200/304 answer is
- * [PackBankFetch.Failed]. Sending the cached ETag lets an unchanged file come back as a bodiless
- * 304.
+ * Downloads `packs.json`. Never throws: a connection problem or any non-200/304 answer is
+ * [PackBankFetch.Failed] with the reason. Sending the cached ETag lets an unchanged file come back
+ * as a bodiless 304.
  */
 class PackBankClient(private val url: String) {
 
@@ -24,7 +25,13 @@ class PackBankClient(private val url: String) {
     constructor() : this(BuildConfig.PACK_BANK_URL)
 
     suspend fun fetch(etag: String?): PackBankFetch = withContext(Dispatchers.IO) {
-        runCatching { request(etag) }.getOrDefault(PackBankFetch.Failed)
+        try {
+            request(etag)
+        } catch (_: IOException) {
+            PackBankFetch.Failed(PackBankError.NO_CONNECTION)
+        } catch (_: RuntimeException) {
+            PackBankFetch.Failed(PackBankError.SERVER_UNAVAILABLE)
+        }
     }
 
     private fun request(etag: String?): PackBankFetch {
@@ -46,10 +53,12 @@ class PackBankClient(private val url: String) {
                 etag = connection.getHeaderField("ETag")
             )
             HttpURLConnection.HTTP_NOT_MODIFIED -> PackBankFetch.NotModified
-            else -> PackBankFetch.Failed
+            HTTP_TOO_MANY_REQUESTS -> PackBankFetch.Failed(PackBankError.RATE_LIMITED)
+            else -> PackBankFetch.Failed(PackBankError.SERVER_UNAVAILABLE)
         }
 
     private companion object {
         const val TIMEOUT_MILLIS = 10_000
+        const val HTTP_TOO_MANY_REQUESTS = 429
     }
 }

@@ -35,6 +35,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -115,6 +118,15 @@ fun SharedTransitionScope.GameConfigScreen(
     // Loaded up front so the unlock sheet can offer the ad immediately rather than after a wait.
     val rewardedAd = rememberRewardedAd(AdPlacement.PACK_UNLOCK_REWARDED)
     val showAdOption = LocalAdsProvider.current.supportsRewardedAds
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    uiState.messageRes?.let { messageRes ->
+        val message = stringResource(messageRes)
+        LaunchedEffect(messageRes) {
+            snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Long)
+            viewModel.onMessageShown()
+        }
+    }
 
     Box(modifier = modifier.fillMaxSize()) {
         // The page scrolls under the CTA rather than stopping above it, so the bottom inset
@@ -175,7 +187,15 @@ fun SharedTransitionScope.GameConfigScreen(
                 .padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 12.dp)
         )
 
-        if (uiState.isLoading) {
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 72.dp)
+        )
+
+        if (uiState.isLoading || uiState.isDownloadingPacks) {
             LoadingScrim()
         }
     }

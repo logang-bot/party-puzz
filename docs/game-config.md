@@ -66,6 +66,13 @@ set, and its meta line replaces the count:
 A premium pack that `needsDownload` doesn't count toward `hasEnabledPack`, so it can't be the only
 thing that enables Start.
 
+When an **unlocked** premium pack needs a download (the user owns it but has no content), the
+screen downloads it itself: once automatically per visit, and again on every retry tap. While that
+runs, `isDownloadingPacks` shows the same `LoadingScrim` as deleting a player. If it fails, a long
+snackbar explains why: no connection, server busy (HTTP 429) or server unavailable. See
+[pack-bank.md](pack-bank.md#how-the-app-uses-it). Locked packs never trigger this, so a free user
+with the server down sees no overlay or snackbar.
+
 ### The Custom group
 
 Written by the user and, once offered, toggled per session exactly like the official ones. Group chrome lives in `PackGroupContainers.kt`; the group itself in `CustomPackGroup.kt`.
@@ -152,6 +159,7 @@ The callback navigates **straight to `GameScreen`**. The intermediate `LoadingSc
 | `pack_unlock` | "Unlock" |
 | `pack_unlocked_session` | "Unlocked for this session" |
 | `pack_downloading` / `pack_download_failed` / `pack_download_pending` | Premium download states (see [above](#premium-content-download)) |
+| `pack_download_error_no_connection` / `_rate_limited` / `_unavailable` | Download failure snackbars |
 | `pack_write_first` / `_subtitle` | Custom empty state (tappable — opens the manager) |
 | `pack_manage` | "Manage" link on the Custom group label |
 | `unlock_sheet_*`, `unlock_option_*`, `unlock_not_now` | Unlock bottom sheet |
@@ -167,7 +175,8 @@ Removed with the categories section: `pick_what_to_play`, `categories_count_on`,
 
 | File | Role |
 |---|---|
-| `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, unlock sheet host |
+| `ui/views/gameConfig/ui/GameConfigScreen.kt` | Root layout, loading overlay, snackbar, unlock sheet host |
+| `ui/views/gameConfig/PackDownloadMessages.kt` | Download failure → snackbar message |
 | `ui/views/gameConfig/ui/GameConfigComponents.kt` | `GameModeHeader`, `GameConfigSectionLabel`, `MiniGamesHintBox`, `StartGameButton` |
 | `ui/views/gameConfig/ui/SetupHints.kt` | `SetupHint` layout shared by both hints, and `ResponsibleDrinkingHint` (Bar Time / Party Puzl only) |
 | `ui/views/gameConfig/ui/QuestionPacksSection.kt` | Official / Premium / Custom groups |

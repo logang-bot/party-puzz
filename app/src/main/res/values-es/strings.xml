@@ -764,6 +764,9 @@
     <string name="pack_downloading">Descargando…</string>
     <string name="pack_download_failed">No se pudo descargar · toca para reintentar</string>
     <string name="pack_download_pending">Se descargará cuando tengas conexión</string>
+    <string name="pack_download_error_no_connection">No se pudieron descargar los paquetes premium. Revisa tu conexión a internet e inténtalo de nuevo.</string>
+    <string name="pack_download_error_rate_limited">El servidor de paquetes está recibiendo demasiadas solicitudes ahora mismo. Inténtalo de nuevo más tarde.</string>
+    <string name="pack_download_error_unavailable">El servidor de paquetes no está disponible ahora mismo. Tus otros paquetes siguen funcionando. Inténtalo más tarde.</string>
     <string name="pack_enabled_content_description">%1$s activado</string>
     <string name="pack_disabled_content_description">%1$s desactivado</string>
     <string name="pack_manage">Gestionar</string>

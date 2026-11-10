@@ -31,7 +31,7 @@ class PackBankRepositoryTest {
     fun `a new download replaces the content and the cache`() = runTest {
         givenCache("old", etag = "e1")
         coEvery { client.fetch("e1") } returns PackBankFetch.Fetched("new", "e2")
-        repository.refresh()
+        assertEquals(PackBankRefresh.Updated, repository.refresh())
         assertEquals(fresh, repository.content.value)
         coVerify { cache.write(CachedPackBank("new", "e2")) }
     }
@@ -39,8 +39,8 @@ class PackBankRepositoryTest {
     @Test
     fun `a failed download keeps the cached content`() = runTest {
         givenCache("old", etag = "e1")
-        coEvery { client.fetch(any()) } returns PackBankFetch.Failed
-        repository.refresh()
+        coEvery { client.fetch(any()) } returns PackBankFetch.Failed(PackBankError.RATE_LIMITED)
+        assertEquals(PackBankRefresh.Failed(PackBankError.RATE_LIMITED), repository.refresh())
         assertEquals(cached, repository.content.value)
         assertFalse(repository.isRefreshing.value)
     }
@@ -50,7 +50,7 @@ class PackBankRepositoryTest {
         givenCache("old", etag = "e1")
         coEvery { client.fetch(any()) } returns PackBankFetch.Fetched("broken", "e2")
         every { parser.parse("broken") } returns null
-        repository.refresh()
+        assertEquals(PackBankRefresh.Failed(PackBankError.INVALID_CONTENT), repository.refresh())
         assertEquals(cached, repository.content.value)
         coVerify(exactly = 0) { cache.write(any()) }
     }
@@ -72,7 +72,7 @@ class PackBankRepositoryTest {
     fun `not modified keeps the cached content`() = runTest {
         givenCache("old", etag = "e1")
         coEvery { client.fetch("e1") } returns PackBankFetch.NotModified
-        repository.refresh()
+        assertEquals(PackBankRefresh.Unchanged, repository.refresh())
         assertEquals(cached, repository.content.value)
         coVerify(exactly = 0) { cache.write(any()) }
     }
@@ -82,7 +82,7 @@ class PackBankRepositoryTest {
         givenCache("old", etag = "e1")
         coEvery { client.fetch(any()) } returns PackBankFetch.NotModified
         repository.refresh()
-        repository.refresh()
+        assertEquals(PackBankRefresh.Skipped, repository.refresh())
         coVerify(exactly = 1) { client.fetch(any()) }
         repository.refresh(force = true)
         coVerify(exactly = 2) { client.fetch(any()) }
@@ -91,7 +91,7 @@ class PackBankRepositoryTest {
     @Test
     fun `a failed check is retried on the next refresh`() = runTest {
         coEvery { cache.read() } returns null
-        coEvery { client.fetch(null) } returns PackBankFetch.Failed
+        coEvery { client.fetch(null) } returns PackBankFetch.Failed(PackBankError.NO_CONNECTION)
         repository.refresh()
         repository.refresh()
         coVerify(exactly = 2) { client.fetch(null) }

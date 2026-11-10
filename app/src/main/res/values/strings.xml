@@ -766,6 +766,9 @@
     <string name="pack_downloading">Downloading…</string>
     <string name="pack_download_failed">Couldn\'t download · tap to retry</string>
     <string name="pack_download_pending">Downloads when you\'re online</string>
+    <string name="pack_download_error_no_connection">Couldn\'t download the premium packs. Check your internet connection and try again.</string>
+    <string name="pack_download_error_rate_limited">The pack server is getting too many requests right now. Please try again in a while.</string>
+    <string name="pack_download_error_unavailable">The pack server isn\'t available right now. Your other packs still work. Try again later.</string>
     <string name="pack_enabled_content_description">%1$s enabled</string>
     <string name="pack_disabled_content_description">%1$s disabled</string>
     <string name="pack_manage">Manage</string>

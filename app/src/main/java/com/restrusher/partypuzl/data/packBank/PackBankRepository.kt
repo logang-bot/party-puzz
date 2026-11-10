@@ -36,9 +36,9 @@ class PackBankRepository @Inject constructor(
     suspend fun loadCache() = mutex.withLock { loadCacheOnce() }
 
     /** Skipped while the last check is under [REFRESH_INTERVAL_MILLIS] old, unless [force]. */
-    suspend fun refresh(force: Boolean = false) = mutex.withLock {
+    suspend fun refresh(force: Boolean = false): PackBankRefresh = mutex.withLock {
         loadCacheOnce()
-        if (!force && isRecentlyChecked()) return@withLock
+        if (!force && isRecentlyChecked()) return@withLock PackBankRefresh.Skipped
         _isRefreshing.value = true
         try {
             apply(client.fetch(cachedEtag))
@@ -60,25 +60,25 @@ class PackBankRepository @Inject constructor(
         return System.currentTimeMillis() - checkedAt < REFRESH_INTERVAL_MILLIS
     }
 
-    private suspend fun apply(fetch: PackBankFetch) {
-        when (fetch) {
-            is PackBankFetch.Fetched -> store(fetch)
-            PackBankFetch.NotModified -> markChecked()
-            PackBankFetch.Failed -> Unit
-        }
+    private suspend fun apply(fetch: PackBankFetch): PackBankRefresh = when (fetch) {
+        is PackBankFetch.Fetched -> store(fetch)
+        PackBankFetch.NotModified -> markChecked(PackBankRefresh.Unchanged)
+        is PackBankFetch.Failed -> PackBankRefresh.Failed(fetch.error)
     }
 
     /** A download that doesn't parse is ignored, so a broken publish can't wipe a good cache. */
-    private suspend fun store(fetch: PackBankFetch.Fetched) {
-        val parsed = parser.parse(fetch.body) ?: return
+    private suspend fun store(fetch: PackBankFetch.Fetched): PackBankRefresh {
+        val parsed = parser.parse(fetch.body)
+            ?: return PackBankRefresh.Failed(PackBankError.INVALID_CONTENT)
         cache.write(CachedPackBank(fetch.body, fetch.etag))
         _content.value = parsed
         cachedEtag = fetch.etag
-        markChecked()
+        return markChecked(PackBankRefresh.Updated)
     }
 
-    private fun markChecked() {
+    private fun markChecked(result: PackBankRefresh): PackBankRefresh {
         lastCheckedAtMillis = System.currentTimeMillis()
+        return result
     }
 
     private companion object {
