@@ -8,17 +8,16 @@ import com.restrusher.partypuzl.ui.common.ads.AdPlacement
  * the LevelPlay dashboard. See docs/ads-levelplay.md.
  */
 object LevelPlayKeys {
-    // TODO: replace every placeholder with the real value from the LevelPlay dashboard.
-    const val APP_KEY = "YOUR_LEVELPLAY_APP_KEY"
-    const val GAME_END_INTERSTITIAL = "YOUR_GAME_END_INTERSTITIAL_AD_UNIT_ID"
+    const val APP_KEY = "29712da25"
+    const val GAME_END_INTERSTITIAL = "4t9hlie2nennlxmc"
 
     private val adUnitIds = mapOf(
-        AdPlacement.HOME_BANNER to "YOUR_HOME_BANNER_AD_UNIT_ID",
-        AdPlacement.PARTIES_BANNER to "YOUR_PARTIES_BANNER_AD_UNIT_ID",
-        AdPlacement.PARTY_DETAIL_BANNER to "YOUR_PARTY_DETAIL_BANNER_AD_UNIT_ID",
-        AdPlacement.SETTINGS_BANNER to "YOUR_SETTINGS_BANNER_AD_UNIT_ID",
-        AdPlacement.GAME_CONFIG_BANNER to "YOUR_GAME_CONFIG_BANNER_AD_UNIT_ID",
-        AdPlacement.PACK_UNLOCK_REWARDED to "YOUR_PACK_UNLOCK_REWARDED_AD_UNIT_ID"
+        AdPlacement.HOME_BANNER to "9lldu1d2i8moippz",
+        AdPlacement.PARTIES_BANNER to "6m7l1awolk2qscrb",
+        AdPlacement.PARTY_DETAIL_BANNER to "vrvyn54aufz2o856",
+        AdPlacement.SETTINGS_BANNER to "khw6ghoul4qkrkbp",
+        AdPlacement.GAME_CONFIG_BANNER to "qnglag1k04fklza9",
+        AdPlacement.PACK_UNLOCK_REWARDED to "461k6cho7k1iadso"
     )
 
     fun adUnitOf(placement: AdPlacement): String = adUnitIds.getValue(placement)

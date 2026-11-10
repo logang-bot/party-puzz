@@ -12,8 +12,8 @@ branch as the working route.
 Formats: **banners** on five screens, a **rewarded** ad for the premium-pack unlock, and an
 **interstitial when a game ends**.
 
-> ⚠️ **The keys are placeholders.** Until `LevelPlayKeys` is filled in, init fails quietly and
-> nothing shows. Nothing crashes.
+> The app key and all 7 ad unit ids are filled in (`LevelPlayKeys`). Real ads still depend on the
+> app passing LevelPlay's review and on the Meta setup in the dashboard.
 
 ---
 
@@ -94,9 +94,9 @@ consent signal it writes. The privacy policy also needs the networks' disclosure
 
 ## Keys to import
 
-- [ ] `LevelPlayKeys.APP_KEY`
-- [ ] `LevelPlayKeys.GAME_END_INTERSTITIAL`
-- [ ] Five banner ad unit ids and `PACK_UNLOCK_REWARDED` in `LevelPlayKeys`
+- [x] `LevelPlayKeys.APP_KEY`
+- [x] `LevelPlayKeys.GAME_END_INTERSTITIAL`
+- [x] Five banner ad unit ids and `PACK_UNLOCK_REWARDED` in `LevelPlayKeys`
 - [ ] Meta placement ids in the LevelPlay dashboard's Meta setup (dashboard only)
 
 ## Checks
