@@ -43,9 +43,10 @@ Play Console shows a task list. Required before publishing:
 - **Advertising ID** (App content → Advertising ID) — **No** for a release from `main`. `main` has no ad or analytics SDK, so its merged manifest has no `com.google.android.gms.permission.AD_ID`; a "Yes" here makes Play reject the release with *"Your advertising ID declaration says that your app uses advertising ID…"*. Do **not** add the permission to silence it. An ad branch (`ads/admob`, `ads/meta`) uses the advertising ID — switch this to **Yes** before shipping one
 - **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main`'s only network call of its own downloads the public premium pack bank from GitHub Pages and sends no user data, so it adds no data type. See [builds.md](builds.md#manifest-permissions). The answers for `main`:
   - *Does your app collect or share any of the required user data types?* **Yes**, for the purchase only
-  - **Financial info → Purchase history**: collected, **not** shared, **not** processed ephemerally, **required** (only when the user buys), purpose **App functionality**. Play Billing handles the order and the app reads the purchase back to unlock premium. Google's wording on whether Billing alone counts is ambiguous; declaring it is the safe side, and under-declaring is what Play flags
+  - **Financial info → Purchase history**: collected, **not** shared, **not** processed ephemerally, **optional** (users choose whether to buy), purpose **App functionality**. Play Billing handles the order and the app reads the purchase back to unlock premium. Google's wording on whether Billing alone counts is ambiguous; declaring it is the safe side, and under-declaring is what Play flags
   - *Is all data encrypted in transit?* **Yes** (Play Billing and the HTTPS pack download)
-  - *Can users request deletion?* Nothing is held by us; purchase records live with Google. Answer that no account or server data exists
+  - *Account creation:* **My app does not allow users to create an account**
+  - *Can users request that their data is deleted?* **No**. Nothing is held by us; purchase records live with Google
   - Nothing else: photos, player names and parties never leave the device, and "collected" in Play's terms means sent off it
 
 ### 4. Set up the premium in-app product
