@@ -16,6 +16,12 @@ In Android Studio: **Build → Generate Signed Bundle/APK → Android App Bundle
 
 Go to [play.google.com/console](https://play.google.com/console) → **Create app** and fill in the basic details.
 
+**Trader status (EU Digital Services Act).** Selling the premium in-app product makes you a
+*trader* under the DSA. Declare it in Play Console's developer account settings (Play
+prompts for the trader declaration there). Play then shows your name, address, email and phone on the store listing
+to EU users. That is the legal "who made this app" disclosure; the website in `logang-bot.github.io`
+is not a substitute for it.
+
 ### 3. Complete the store listing
 
 > **Alcohol policy.** The Nov 2026 submission was rejected under *Inappropriate Content → Alcohol* for the full description ("Bar Time… pre-game", "whoever… drinks") and a screenshot showing a shot of tequila. The listing must follow the same [responsible-drinking rules](bar-mode.md#responsible-drinking-rules-play-policy) as the app:
@@ -35,7 +41,12 @@ Play Console shows a task list. Required before publishing:
 - **App access** — describe any login-gated features
 - **Ads declaration** — `main` contains **no ads**; a build from `ads/admob` or `ads/meta` does — declare accordingly
 - **Advertising ID** (App content → Advertising ID) — **No** for a release from `main`. `main` has no ad or analytics SDK, so its merged manifest has no `com.google.android.gms.permission.AD_ID`; a "Yes" here makes Play reject the release with *"Your advertising ID declaration says that your app uses advertising ID…"*. Do **not** add the permission to silence it. An ad branch (`ads/admob`, `ads/meta`) uses the advertising ID — switch this to **Yes** before shipping one
-- **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main`'s only network call of its own downloads the public premium pack bank from GitHub Pages and sends no user data, so it adds no data type. See [builds.md](builds.md#manifest-permissions)
+- **Data safety** — declare what data is collected (an ad branch adds its network's disclosures — see its `docs/ads-*.md`). `main`'s only network call of its own downloads the public premium pack bank from GitHub Pages and sends no user data, so it adds no data type. See [builds.md](builds.md#manifest-permissions). The answers for `main`:
+  - *Does your app collect or share any of the required user data types?* **Yes**, for the purchase only
+  - **Financial info → Purchase history**: collected, **not** shared, **not** processed ephemerally, **required** (only when the user buys), purpose **App functionality**. Play Billing handles the order and the app reads the purchase back to unlock premium. Google's wording on whether Billing alone counts is ambiguous; declaring it is the safe side, and under-declaring is what Play flags
+  - *Is all data encrypted in transit?* **Yes** (Play Billing and the HTTPS pack download)
+  - *Can users request deletion?* Nothing is held by us; purchase records live with Google. Answer that no account or server data exists
+  - Nothing else: photos, player names and parties never leave the device, and "collected" in Play's terms means sent off it
 
 ### 4. Set up the premium in-app product
 
@@ -52,7 +63,7 @@ Step-by-step test pass: [testing-purchases.md](testing-purchases.md).
 4. **License testers**: Settings → License testing → add your Google account(s), response `RESPOND_NORMALLY`. Their purchases are never charged.
 5. **Install from Play**: product details (and so the purchase sheet and price) only load for a build installed from a Play track, signed with the release key, with an `applicationId` and `versionCode` Play has seen. A sideloaded debug build reports "Purchases are unavailable right now".
 6. **Store listing**: "Contains in-app purchases" is shown automatically. Mention the premium packs in the full description.
-7. **Data safety**: no change. Purchases go through Google Play and the app sends nothing off the device.
+7. **Data safety**: declare **Financial info → Purchase history** as in [step 3](#3-complete-the-store-listing). Purchases go through Google Play and the app itself sends nothing off the device.
 
 ### 5. Ad network setup (ad branches only)
 
@@ -60,6 +71,18 @@ Step-by-step test pass: [testing-purchases.md](testing-purchases.md).
 `ads/admob` or `ads/meta`, follow the keys checklist in that branch's `docs/ads-admob.md` /
 `docs/ads-meta.md` — including the still-outstanding real rewarded unit / placement id. See
 [ads.md](ads.md).
+
+Any ad branch (`ads/levelplay` included) also needs, before it ships:
+
+- **A consent prompt for EEA/UK users (GDPR).** Personalised ads need consent before the SDK
+  initialises. Use Google's UMP SDK or a certified CMP and pass the result to LevelPlay's consent
+  API. Google's ad demand only serves EEA/UK traffic through a Google-certified CMP.
+- **US state privacy (CCPA and similar).** Pass the "do not sell/share" signal to the network.
+- **The privacy policy**, **Advertising ID → Yes**, **Ads → Yes** and the **Data safety** form
+  updated with the network's data types (device or other IDs, approximate location, app
+  interactions, diagnostics, shared with the ad network for advertising).
+- **`app-ads.txt`** carries the network's lines at the root of the developer website
+  (`logang-bot.github.io/app-ads.txt`), and the store listing's website points there.
 
 ---
 
@@ -136,6 +159,7 @@ Install from the internal testing track on a real device and verify:
 - [ ] Toggling a custom pack's row *on the setup screen* does not flip its switch in Your packs — they are separate flags
 - [ ] **A process kill mid-game reopens on Home** — start a game, press Home, run `adb shell am kill com.restrusher.partypuzl`, reopen from Recents. The app lands on Home (not an empty game), and the party is on Parties. Rotating during a game still keeps it. See [navigation.md](navigation.md#process-restart-opens-on-home)
 - [ ] Force-stop and relaunch: the custom pack and its entries survive (regression test for the seeder's `tier != 'CUSTOM'` guard)
+- [ ] Settings → Open-source licenses lists the libraries, and tapping one shows its licence text. An empty list means the generated `aboutlibraries.json` went missing; see [open-source-licenses.md](open-source-licenses.md)
 
 ### 5. Promote to production
 
@@ -176,7 +200,8 @@ Decided before shipping 1.0 from `main`:
 | Process kill mid-game | Reopens on Home; the game is not restored. Players and parties are already in Room. See [navigation.md](navigation.md#process-restart-opens-on-home) |
 | Permissions | `coil-network-okhttp` removed; `INTERNET` remains only because Play Billing brings it. `FileProvider` narrowed to `cache-path`. See [builds.md](builds.md#manifest-permissions) |
 | Room schema | Export turned on; `app/schemas/` is committed from v14. See [builds.md](builds.md#room-schema-export) |
-| Privacy policy | Link fixed, and the text rewritten for the no-ads build (`partypuzl-legal` `e66de25`, "Last updated: November 7, 2026"): no ads, all data local, uninstall deletes it with no backup, camera use, Google Play Billing as the only third party. When switching to an ad branch, the policy must gain that network's disclosures first |
+| Privacy policy | Link fixed, and the text rewritten for the no-ads build (`partypuzl-legal` `e66de25`, then `3b21530`, "Last updated: November 10, 2026"): no ads, all data local, uninstall deletes it with no backup, camera use, Google Play Billing for the purchase, and GitHub Pages for the premium pack download. When switching to an ad branch, the policy must gain that network's disclosures first |
+| Open-source licences | Settings → Open-source licenses shows every bundled library and its licence text, generated at build time. See [open-source-licenses.md](open-source-licenses.md) |
 
 Planned for a later release:
 - **Ads frequency (user feedback).** On `ads/admob` the App Open ad showed on every return to the app,

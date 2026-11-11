@@ -43,7 +43,8 @@ internal fun pageBackgroundFor(
         destination.hasRoute(PartiesScreen::class) ||
                 destination.hasRoute(CreatePlayerScreen::class) -> PageBackground.Warm
 
-        destination.hasRoute(SettingsScreen::class) -> PageBackground.Bright
+        destination.hasRoute(SettingsScreen::class) ||
+                destination.hasRoute(LicensesRoute::class) -> PageBackground.Bright
 
         destination.hasRoute(PartyDetailScreen::class) -> PageBackground.TintedBright(tint)
 

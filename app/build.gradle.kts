@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
     id("dagger.hilt.android.plugin")
+    alias(libs.plugins.aboutlibraries)
 }
 
 val keystoreProperties = Properties().apply {
@@ -158,6 +159,16 @@ dependencies {
 
     // Play Billing
     implementation(libs.billing)
+
+    // Open-source licence notices (Settings → Open-source licenses)
+    implementation(libs.aboutlibraries.core)
+}
+
+// Generates res/raw/aboutlibraries.json from the resolved dependencies at build time.
+// Funding links are left out; the screen only shows names, versions and licence texts.
+aboutLibraries {
+    fetchRemoteFunding = false
+    excludeFields = arrayOf("funding")
 }
 
 // ScreenshotTour writes "<locale>__<theme>__NN_name.png" through TestStorage; Gradle pulls those to

@@ -737,6 +737,9 @@
     <string name="legal">Legal</string>
     <string name="privacy_policy">Política de privacidad</string>
     <string name="privacy_policy_subtitle">Cómo gestionamos tus datos</string>
+    <string name="open_source_licenses">Licencias de código abierto</string>
+    <string name="open_source_licenses_subtitle">Bibliotecas con las que se creó PartyPuzl</string>
+    <string name="open_source_licenses_intro">PartyPuzl se creó con estas bibliotecas de código abierto. Toca una para leer su licencia.</string>
 
     <!-- Purchases -->
     <string name="purchases">Compras</string>

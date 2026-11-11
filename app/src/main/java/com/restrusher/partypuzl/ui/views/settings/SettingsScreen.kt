@@ -56,6 +56,7 @@ import com.restrusher.partypuzl.ui.theme.appColors
 fun SettingsScreen(
     setAppBarTitle: (String) -> Unit,
     onManagePacksClick: () -> Unit,
+    onLicensesClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
     purchaseViewModel: PremiumPurchaseViewModel = hiltViewModel()
@@ -130,6 +131,13 @@ fun SettingsScreen(
                 onClick = {
                     uriHandler.openUri("https://logang-bot.github.io/partypuzl-legal/privacy-policy.html")
                 }
+            )
+
+            SettingsRow(
+                title = stringResource(id = R.string.open_source_licenses),
+                subtitle = stringResource(id = R.string.open_source_licenses_subtitle),
+                iconRes = R.drawable.ic_info,
+                onClick = onLicensesClick
             )
         }
 

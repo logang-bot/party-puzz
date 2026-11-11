@@ -58,6 +58,7 @@ import com.restrusher.partypuzl.ui.views.game.miniGames.simonSays.SimonSaysScree
 import com.restrusher.partypuzl.ui.views.game.miniGames.tapWar.TapWarScreen
 import com.restrusher.partypuzl.ui.views.gameConfig.ui.GameConfigScreen
 import com.restrusher.partypuzl.ui.views.home.HomeScreen
+import com.restrusher.partypuzl.ui.views.licenses.LicensesScreen
 import com.restrusher.partypuzl.ui.views.parties.PartiesScreen
 import com.restrusher.partypuzl.ui.views.partyDetail.PartyDetailScreen
 import com.restrusher.partypuzl.ui.views.settings.SettingsScreen
@@ -385,6 +386,13 @@ fun HomeNavigation(
                             SettingsScreen(
                                 setAppBarTitle = { title -> appBarTitle = title },
                                 onManagePacksClick = { navController.navigate(CustomPacksRoute) },
+                                onLicensesClick = { navController.navigate(LicensesRoute) },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                        composable<LicensesRoute> {
+                            LicensesScreen(
+                                setAppBarTitle = { title -> appBarTitle = title },
                                 modifier = Modifier.fillMaxSize()
                             )
                         }

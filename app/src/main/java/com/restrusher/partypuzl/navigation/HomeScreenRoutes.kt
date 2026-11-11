@@ -28,6 +28,10 @@ data object PartiesScreen
 @Serializable
 data object SettingsScreen
 
+/** The open-source licence notices, reached from Settings. */
+@Serializable
+data object LicensesRoute
+
 @Serializable
 data class PartyDetailScreen(val partyId: Int)
 
