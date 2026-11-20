@@ -62,6 +62,7 @@ fun SharedTransitionScope.PlayersContainer(
     val displayList = remember {
         mutableStateListOf<Player>().also { if (showPlayers) it.addAll(GamePlayersList.PlayersList) }
     }
+    val initiallyShownIds = remember { displayList.map { it.id }.toSet() }
 
     // Keep displayList in sync with external additions (e.g. after CreatePlayer returns).
     // We deliberately never remove here — removal is driven by the exit animation below.
@@ -95,7 +96,8 @@ fun SharedTransitionScope.PlayersContainer(
             displayList.forEach { player ->
                 key(player.id) {
                     val visibleState = remember {
-                        MutableTransitionState(false).apply { targetState = true }
+                        MutableTransitionState(player.id in initiallyShownIds)
+                            .apply { targetState = true }
                     }
 
                     AnimatedVisibility(

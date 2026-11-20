@@ -112,6 +112,7 @@ fun SharedTransitionScope.GameConfigScreen(
     ReportPageTint(gameModeTheme(gameModeName).gradientColors.first())
 
     val isEnterSettled = rememberEnterTransitionSettled(animatedVisibilityScope)
+    val isVisitSettled = rememberTransitionSettledThisVisit(animatedVisibilityScope)
     val context = LocalContext.current
     val activity = remember(context) { context.findActivity() }
 
@@ -161,7 +162,7 @@ fun SharedTransitionScope.GameConfigScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
             QuestionPacksSection(
-                isReady = isEnterSettled && uiState.arePacksLoaded,
+                isReady = isVisitSettled && uiState.arePacksLoaded,
                 officialPacks = uiState.officialPacks,
                 premiumPacks = uiState.premiumPacks,
                 customPacks = uiState.customPacks,

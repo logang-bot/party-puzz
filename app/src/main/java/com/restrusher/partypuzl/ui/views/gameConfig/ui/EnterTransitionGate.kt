@@ -5,10 +5,10 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.core.Transition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.first
 
@@ -24,15 +24,29 @@ import kotlinx.coroutines.flow.first
  * have nothing to land on.
  */
 @Composable
-internal fun rememberEnterTransitionSettled(scope: AnimatedVisibilityScope): Boolean {
-    var settled by rememberSaveable { mutableStateOf(false) }
-    if (!settled) {
+internal fun rememberEnterTransitionSettled(scope: AnimatedVisibilityScope): Boolean =
+    awaitSettled(rememberSaveable { mutableStateOf(false) }, scope)
+
+/**
+ * Like [rememberEnterTransitionSettled], but false again every time the screen re-enters
+ * composition — including the pop back from CreatePlayer.
+ *
+ * For heavy content nothing shared lands on (the pack rows): composing it all in the first frame
+ * of the return transition is what made that transition stutter, so it waits on every visit.
+ */
+@Composable
+internal fun rememberTransitionSettledThisVisit(scope: AnimatedVisibilityScope): Boolean =
+    awaitSettled(remember { mutableStateOf(false) }, scope)
+
+@Composable
+private fun awaitSettled(settled: MutableState<Boolean>, scope: AnimatedVisibilityScope): Boolean {
+    if (!settled.value) {
         LaunchedEffect(scope) {
             snapshotFlow { scope.transition.hasSettledVisible() }.first { it }
-            settled = true
+            settled.value = true
         }
     }
-    return settled
+    return settled.value
 }
 
 private fun Transition<EnterExitState>.hasSettledVisible() =
