@@ -75,9 +75,7 @@ class GameScreenViewModel @Inject constructor(
     private var outcomeJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
 
-    // Round-based player selection: each player plays once per round before any repeats
-    private val roundQueue = mutableListOf<Player>()
-    private var roundNumber = 0
+    private val playerPicker = WeightedPlayerPicker()
 
     /** Mirrors the Settings toggle so the per-turn camera decision can stay synchronous. */
     private var partyPhotosEnabled = true
@@ -136,15 +134,6 @@ class GameScreenViewModel @Inject constructor(
             )
         }
         packContentResolved.complete(Unit)
-    }
-
-    private fun nextPlayerInRound(players: List<Player>): Player? {
-        if (players.isEmpty()) return null
-        if (roundQueue.isEmpty()) {
-            roundQueue.addAll(players.shuffled())
-            roundNumber++
-        }
-        return roundQueue.removeAt(0)
     }
 
     fun onDealChosen(dealType: GameDealType, truthOrDareChoice: TruthOrDareChoice? = null) {
@@ -420,13 +409,13 @@ class GameScreenViewModel @Inject constructor(
         }
     }
 
-    // The round queue must advance exactly once per turn. MutableStateFlow.update is a
-    // compare-and-set retry loop whose lambda can run more than once, so the queue is
+    // The player picker must advance exactly once per turn. MutableStateFlow.update is a
+    // compare-and-set retry loop whose lambda can run more than once, so the picker is
     // stepped here, outside of it, and only the resulting values are folded into the state.
     private fun advanceToNextTurn() {
         outcomeJob?.cancel()
-        val nextPlayer = nextPlayerInRound(_uiState.value.players)
-        val round = roundNumber
+        val nextPlayer = playerPicker.pick(_uiState.value.players)
+        val round = playerPicker.roundNumber(_uiState.value.players.size)
         _uiState.update {
             clearedTurn(modeHandler.clearEvent(it)).copy(
                 dealPhase = GameDealPhase.PLAYER_PICK,

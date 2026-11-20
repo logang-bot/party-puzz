@@ -115,8 +115,9 @@ internal suspend fun cycleNames(path: NameCyclePath, onStep: (Int) -> Unit) {
  *
  * The run is a fixed [CYCLE_STEPS] long however many players there are and wherever the pick falls
  * among them, so every turn's intro takes exactly as long as the last one's. The lead-up is drawn
- * from the *other* players only: the picked name appearing mid-run would either give the answer
- * away or, landing next to itself, produce a swap with nothing to swap.
+ * from every name, the picked one included, so a two-player party still flicks between both. No
+ * name follows itself, since that would be a swap with nothing to swap, and the step before the
+ * landing is never the picked name, so the landing always arrives as a visible change.
  */
 internal data class NameCyclePath(val steps: List<String>) {
     val lastStep: Int get() = steps.size - 1
@@ -127,10 +128,18 @@ internal data class NameCyclePath(val steps: List<String>) {
 
     companion object {
         fun of(players: List<Player>, picked: Player): NameCyclePath {
-            val others = players.map { it.nickName } - picked.nickName
-            if (others.isEmpty()) return NameCyclePath(listOf(picked.nickName))
-            val lead = generateSequence { others.shuffled() }.flatten().take(CYCLE_STEPS - 1)
-            return NameCyclePath(lead.toList() + picked.nickName)
+            val names = (players.map { it.nickName } + picked.nickName).distinct()
+            if (names.size < 2) return NameCyclePath(listOf(picked.nickName))
+            return NameCyclePath(leadUp(names, picked.nickName) + picked.nickName)
+        }
+
+        private fun leadUp(names: List<String>, picked: String): List<String> {
+            val stepsBackFromLanding = mutableListOf<String>()
+            repeat(CYCLE_STEPS - 1) {
+                val laterNeighbour = stepsBackFromLanding.lastOrNull() ?: picked
+                stepsBackFromLanding += (names - laterNeighbour).random()
+            }
+            return stepsBackFromLanding.reversed()
         }
     }
 }
