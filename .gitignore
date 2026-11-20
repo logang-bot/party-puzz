@@ -22,3 +22,6 @@ keystore.properties
 
 # Generated Play Store screenshots (scripts/store-screenshots.sh)
 store-screenshots/
+
+# Raw screen recordings used by marketing/ad (too large for git)
+Screen_recording_*.webm
