@@ -24,6 +24,5 @@ Nobody maintains a list by hand. A new dependency shows up on the next build.
 - **Version pin.** The plugin and core are pinned to `11.2.3` because the project is on Kotlin
   2.0.0. Newer 11.x and 12.x lines expect a newer Kotlin. Move them together when Kotlin is bumped.
 - **R8 / resource shrinking.** The core looks the JSON up with `getIdentifier("aboutlibraries",
-  "raw", …)`. The shrinker's default safe mode keeps it, because that string literal is in the
-  code. If strict shrinking is ever turned on, add `@raw/aboutlibraries` to `res/raw/keep.xml`.
+  "raw", …)`, which the shrinker can't follow, so `res/raw/keep.xml` keeps `@raw/aboutlibraries`.
   Check the screen in the release checklist ([release.md](release.md#4-test-the-release-build)).

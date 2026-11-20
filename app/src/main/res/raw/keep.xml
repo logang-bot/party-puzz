@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The random avatars are looked up by name (getIdentifier), so neither lint nor the resource
-     shrinker can see them being used. -->
+<!-- Resources loaded by name, which neither lint nor the resource shrinker can see being used:
+     - the random avatars (getIdentifier)
+     - aboutlibraries.json, which AboutLibraries reads for Settings → Open-source licenses -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/img_dummy_avatar_*" />
+    tools:keep="@drawable/img_dummy_avatar_*,@raw/aboutlibraries" />

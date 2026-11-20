@@ -23,8 +23,8 @@ android {
         applicationId = "com.restrusher.partypuzl"
         minSdk = 24
         targetSdk = 36
-        versionCode = 14
-        versionName = "1.0"
+        versionCode = 15
+        versionName = "1.1"
 
         buildConfigField(
             "String",
@@ -58,17 +58,19 @@ android {
         debug {
             signingConfig = envSigningConfig
         }
-        create("staging") {
-            initWith(getByName("release"))
-            signingConfig = envSigningConfig
-        }
+        // Must stay above "staging": initWith copies release as it is at that point.
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             signingConfig = envSigningConfig
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        create("staging") {
+            initWith(getByName("release"))
+            signingConfig = envSigningConfig
         }
     }
     compileOptions {

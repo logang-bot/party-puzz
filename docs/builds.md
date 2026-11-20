@@ -87,13 +87,16 @@ touches the provider. Widen the paths only if a new feature shares a file from s
 
 ## R8 (code shrinking)
 
-**Off in 1.0.** In `app/build.gradle.kts` the `release` block has `isMinifyEnabled = false`, and
-`staging` inherits it. Turning it on means setting `isMinifyEnabled = true` and adding
-`isShrinkResources = true`.
+**On for `release` and `staging`** (off in 1.0). The `release` block in `app/build.gradle.kts` sets
+`isMinifyEnabled = true` and `isShrinkResources = true`, and `staging` copies it through
+`initWith(getByName("release"))`.
+
+> **Keep `release` above `create("staging")`.** `initWith` copies the release config as it is at
+> that line. With `release` below it, as in 1.0, staging silently ran without R8.
 
 What it does for `release` / `staging` only:
-- **Removes** unused code and, with resource shrinking, unused resources. The 1.0 release APK is
-  about 22 MB without it.
+- **Removes** unused code and, with resource shrinking, unused resources. The release APK went from
+  23.6 MB to 15.9 MB (versionCode 14).
 - **Optimises** the code that's left.
 - **Obfuscates** class and method names.
 
@@ -103,17 +106,20 @@ What it does **not** change:
 - **Debugging `release`.** Release builds aren't debuggable with or without R8. To debug a
   release-only problem, build `debug` or add `isDebuggable = true` to `staging` temporarily.
 
+What has to be kept by hand:
+- **Code used through reflection.** kotlinx.serialization (navigation routes), enum `valueOf`
+  (DataStore, `GameMode.fromKey`), Room and Hilt. `app/proguard-rules.pro` keeps them. The libraries
+  also ship their own consumer rules.
+- **Resources looked up by name.** `res/raw/keep.xml` keeps the random avatars
+  (`img_dummy_avatar_*`, loaded with `getIdentifier`) and `raw/aboutlibraries` (the licences
+  screen). Anything new loaded by name goes there too.
+
 What it costs:
-- **Release-only crashes** if R8 strips or renames something used through reflection. In this
-  app that's kotlinx.serialization (navigation routes), Room and Hilt. `proguard-rules.pro` already
-  keeps all three, but only a full test pass on a minified build proves it.
+- **Release-only crashes** if R8 strips or renames something used by name. Only a full test pass
+  on a minified build proves the rules are enough, so test `staging`, not `debug`, before a release.
 - **Obfuscated stack traces.** Play Console deobfuscates them automatically for AABs, which carry
   `mapping.txt`. Also keep `app/build/outputs/mapping/release/mapping.txt` for each released
   version, to decode traces from other sources.
-
-**Turning it on:** change the two lines above on `main`, then put the build through internal testing
-before production. Don't merge `feature/r8`. It branched from a much older `main` (versionCode 3,
-compileSdk 35), and merging would revert newer work.
 
 ---
 

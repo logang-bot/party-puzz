@@ -92,13 +92,16 @@ Any ad branch (`ads/levelplay` included) also needs, before it ships:
 ### 1. Bump the version in `app/build.gradle.kts`
 
 ```kotlin
-versionCode = 12       // must be higher than every earlier upload, on any track
+versionCode = 15       // must be higher than every earlier upload, on any track
 versionName = "1.1"    // what users see in the store
 ```
 
 The first public release is **`versionName = "1.0"`, `versionCode = 11`**. The closed-testing
 builds used codes up to 10 and the name "2.1". The name was reset for launch, and only the code has
 to keep going up. Never reuse or lower a `versionCode`.
+
+The next release is **`versionName = "1.1"`, `versionCode = 15`**. It is the first one built with R8
+(see [builds.md](builds.md#r8-code-shrinking)).
 
 If this release bumps the database version, commit the new `app/schemas/…/<version>.json` with
 its migration — see [builds.md](builds.md#room-schema-export).
@@ -161,6 +164,7 @@ Install from the internal testing track on a real device and verify:
 - [ ] **A process kill mid-game reopens on Home** — start a game, press Home, run `adb shell am kill com.restrusher.partypuzl`, reopen from Recents. The app lands on Home (not an empty game), and the party is on Parties. Rotating during a game still keeps it. See [navigation.md](navigation.md#process-restart-opens-on-home)
 - [ ] Force-stop and relaunch: the custom pack and its entries survive (regression test for the seeder's `tier != 'CUSTOM'` guard)
 - [ ] Settings → Open-source licenses lists the libraries, and tapping one shows its licence text. An empty list means the generated `aboutlibraries.json` went missing; see [open-source-licenses.md](open-source-licenses.md)
+- [ ] **R8:** visit every screen, play every game mode and Circle Master, and take a photo. Random avatars show on the player, game config, party card and party detail. Theme and language survive a restart. Keep `adb logcat` open for `ClassNotFoundException`, `NoSuchMethodException` or `SerializationException`, which mean a keep rule is missing. See [builds.md](builds.md#r8-code-shrinking)
 
 ### 5. Promote to production
 
@@ -197,7 +201,7 @@ Decided before shipping 1.0 from `main`:
 | Version | `1.0` / code `11` (see [step 1](#1-bump-the-version-in-appbuildgradlekts)) |
 | Ads | None. `main` ships `NoAdsProvider` until there's a working AdMob account. See [ads.md](ads.md) |
 | Purchase App (Settings) | Visible, but raised "Coming soon!" in 1.0. Enabled afterwards: see [ads.md](ads.md#premium--the-one-time-purchase) |
-| R8 | **Off** for 1.0. Closed testing ran without it, so turning it on would ship an untested build. Planned for a later release. See [builds.md](builds.md#r8-code-shrinking) |
+| R8 | **Off** for 1.0, because closed testing ran without it. **On** from 1.1 / code `15` (`release` and `staging`). Put it through internal testing before production. See [builds.md](builds.md#r8-code-shrinking) |
 | Process kill mid-game | Reopens on Home; the game is not restored. Players and parties are already in Room. See [navigation.md](navigation.md#process-restart-opens-on-home) |
 | Permissions | `coil-network-okhttp` removed; `INTERNET` remains only because Play Billing brings it. `FileProvider` narrowed to `cache-path`. See [builds.md](builds.md#manifest-permissions) |
 | Room schema | Export turned on; `app/schemas/` is committed from v14. See [builds.md](builds.md#room-schema-export) |
@@ -208,4 +212,3 @@ Planned for a later release:
 - **Ads frequency (user feedback).** On `ads/admob` the App Open ad showed on every return to the app,
   including after the camera. Fix: show it once per cold start. Root cause and steps are in
   [ads.md](ads.md#known-issue-app-open-ad-shows-on-every-return-to-the-app-adsadmob).
-- **R8.** Turn it on, then run it through internal testing before production.
