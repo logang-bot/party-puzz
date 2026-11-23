@@ -5,7 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,6 +40,7 @@ fun InAppCameraDialog(
     overlay: @Composable BoxScope.() -> Unit = {}
 ) {
     var capturedUri by remember { mutableStateOf<Uri?>(null) }
+    val navBarPadding = WindowInsets.navigationBars.asPaddingValues()
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -51,13 +56,15 @@ fun InAppCameraDialog(
                 LiveCameraContent(
                     onCaptured = { capturedUri = it },
                     onClose = onDismiss,
+                    navBarPadding = navBarPadding,
                     overlay = overlay
                 )
             } else {
                 PhotoReviewContent(
                     photo = photo,
                     onRetake = { capturedUri = null },
-                    onUsePhoto = { onCaptured(photo) }
+                    onUsePhoto = { onCaptured(photo) },
+                    navBarPadding = navBarPadding
                 )
             }
         }
@@ -68,6 +75,7 @@ fun InAppCameraDialog(
 private fun BoxScope.LiveCameraContent(
     onCaptured: (Uri) -> Unit,
     onClose: () -> Unit,
+    navBarPadding: PaddingValues,
     overlay: @Composable BoxScope.() -> Unit
 ) {
     val controller = rememberCameraController()
@@ -89,12 +97,17 @@ private fun BoxScope.LiveCameraContent(
         onFlip = controller::flipLens,
         modifier = Modifier
             .align(Alignment.BottomCenter)
-            .navigationBarsPadding()
+            .padding(navBarPadding)
     )
 }
 
 @Composable
-private fun BoxScope.PhotoReviewContent(photo: Uri, onRetake: () -> Unit, onUsePhoto: () -> Unit) {
+private fun BoxScope.PhotoReviewContent(
+    photo: Uri,
+    onRetake: () -> Unit,
+    onUsePhoto: () -> Unit,
+    navBarPadding: PaddingValues
+) {
     AsyncImage(
         model = photo,
         contentDescription = stringResource(R.string.camera_captured_photo),
@@ -106,7 +119,7 @@ private fun BoxScope.PhotoReviewContent(photo: Uri, onRetake: () -> Unit, onUseP
         onUsePhoto = onUsePhoto,
         modifier = Modifier
             .align(Alignment.BottomCenter)
-            .navigationBarsPadding()
+            .padding(navBarPadding)
     )
 }
 

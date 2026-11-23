@@ -75,7 +75,7 @@ class GameScreenViewModel @Inject constructor(
     private var outcomeJob: Job? = null
     private val stickyDareJobs = mutableMapOf<String, Job>()
 
-    private val playerPicker = WeightedPlayerPicker()
+    private val playerPicker = RoundPlayerPicker()
 
     /** Mirrors the Settings toggle so the per-turn camera decision can stay synchronous. */
     private var partyPhotosEnabled = true
@@ -415,7 +415,7 @@ class GameScreenViewModel @Inject constructor(
     private fun advanceToNextTurn() {
         outcomeJob?.cancel()
         val nextPlayer = playerPicker.pick(_uiState.value.players)
-        val round = playerPicker.roundNumber(_uiState.value.players.size)
+        val round = playerPicker.roundNumber
         _uiState.update {
             clearedTurn(modeHandler.clearEvent(it)).copy(
                 dealPhase = GameDealPhase.PLAYER_PICK,
